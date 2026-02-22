@@ -1,0 +1,123 @@
+"""Generowanie faktur PDF w formacie A4."""
+
+import os
+from django.conf import settings
+from reportlab.lib.pagesizes import A4
+from reportlab.lib import colors
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle, Spacer
+from reportlab.lib.units import cm
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
+from io import BytesIO
+from datetime import datetime
+
+PRIMARY = colors.HexColor('#1565C0')
+
+# Rejestracja czcionek wspierających polskie znaki
+FONT_PATH = os.path.join(settings.BASE_DIR, '..', 'public_html', 'fpdf', 'font', 'unifont')
+pdfmetrics.registerFont(TTFont('DejaVuSans', os.path.join(FONT_PATH, 'DejaVuSans.ttf')))
+pdfmetrics.registerFont(TTFont('DejaVuSans-Bold', os.path.join(FONT_PATH, 'DejaVuSans-Bold.ttf')))
+
+def generate_invoice_pdf(invoice) -> bytes:
+    """Generuje dokument PDF dla faktury."""
+    buffer = BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=A4,
+        rightMargin=1.5*cm, leftMargin=1.5*cm, topMargin=1.5*cm, bottomMargin=1.5*cm)
+    story = []
+    styles = getSampleStyleSheet()
+
+    # Style korzystające z DejaVuSans
+    title_style = ParagraphStyle('Title', parent=styles['Heading1'],
+        fontSize=18, spaceAfter=12, textColor=PRIMARY, fontName='DejaVuSans-Bold')
+    label_style = ParagraphStyle('Label', parent=styles['Normal'],
+        fontSize=9, textColor=colors.grey, spaceAfter=2, fontName='DejaVuSans')
+    value_style = ParagraphStyle('Value', parent=styles['Normal'],
+        fontSize=10, textColor=colors.black, spaceAfter=8, fontName='DejaVuSans')
+    table_header_style = ParagraphStyle('THeader', parent=styles['Normal'],
+        fontSize=9, textColor=colors.white, fontName='DejaVuSans-Bold')
+
+    # 1. Nagłówek (Numer faktury i daty)
+    story.append(Paragraph(f"FAKTURA NR {invoice.invoice_number}", title_style))
+    
+    header_data = [
+        [Paragraph("Data wystawienia:", label_style), Paragraph("Miejsce wystawienia:", label_style)],
+        [Paragraph(invoice.issue_date.strftime('%d.%m.%Y'), value_style), Paragraph("Warszawa", value_style)]
+    ]
+    header_table = Table(header_data, colWidths=[9*cm, 8*cm])
+    header_table.setStyle(TableStyle([('VALIGN', (0,0), (-1,-1), 'TOP'), ('LEFTPADDING', (0,0), (-1,-1), 0)]))
+    story.append(header_table)
+    story.append(Spacer(1, 0.5*cm))
+
+    # 2. Sprzedawca i Nabywca
+    sides_data = [
+        [Paragraph("SPRZEDAWCA", label_style), Paragraph("NABYWCA", label_style)],
+        [
+            Paragraph("<b>wyznaczresurs.com Sp. z o.o.</b><br/>ul. Przykładowa 123<br/>00-001 Warszawa<br/>NIP: 1234567890", value_style),
+            Paragraph(f"<b>{invoice.buyer_name}</b><br/>{invoice.buyer_address.replace(',', '<br/>')}<br/>NIP: {invoice.buyer_nip}", value_style)
+        ]
+    ]
+    sides_table = Table(sides_data, colWidths=[9*cm, 8*cm])
+    sides_table.setStyle(TableStyle([('VALIGN', (0,0), (-1,-1), 'TOP'), ('LEFTPADDING', (0,0), (-1,-1), 0)]))
+    story.append(sides_table)
+    story.append(Spacer(1, 1*cm))
+
+    # 3. Pozycje na fakturze
+    items_data = [
+        [Paragraph("Lp.", table_header_style), Paragraph("Nazwa usługi/towaru", table_header_style), 
+         Paragraph("Ilość", table_header_style), Paragraph("Netto", table_header_style), 
+         Paragraph("VAT", table_header_style), Paragraph("Brutto", table_header_style)]
+    ]
+    
+    # Tylko jedna pozycja - doładowanie punktów
+    items_data.append([
+        "1", 
+        f"Doładowanie punktów premium (+{invoice.points_added} pkt)", 
+        "1 szt.", 
+        f"{invoice.net_amount} PLN", 
+        "23%", 
+        f"{invoice.gross_amount} PLN"
+    ])
+
+    items_table = Table(items_data, colWidths=[1*cm, 8*cm, 2*cm, 2*cm, 2*cm, 3*cm])
+    items_table.setStyle(TableStyle([
+        ('BACKGROUND', (0,0), (-1,0), PRIMARY),
+        ('GRID', (0,0), (-1,-1), 0.5, colors.grey),
+        ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
+        ('ALIGN', (2,1), (-1,-1), 'RIGHT'),
+        ('FONTNAME', (0,0), (-1,-1), 'DejaVuSans'),
+        ('FONTNAME', (0,0), (-1,0), 'DejaVuSans-Bold'),
+        ('FONTSIZE', (0,0), (-1,-1), 9),
+        ('TOPPADDING', (0,0), (-1,-1), 6),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 6),
+    ]))
+    story.append(items_table)
+    story.append(Spacer(1, 0.5*cm))
+
+    # 4. Podsumowanie
+    summary_data = [
+        ["", "Stawka", "Netto", "VAT", "Brutto"],
+        ["RAZEM", "23%", f"{invoice.net_amount} PLN", f"{invoice.vat_amount} PLN", f"{invoice.gross_amount} PLN"]
+    ]
+    summary_table = Table(summary_data, colWidths=[9*cm, 2*cm, 2*cm, 2*cm, 3*cm])
+    summary_table.setStyle(TableStyle([
+        ('GRID', (1,0), (-1,-1), 0.5, colors.grey),
+        ('ALIGN', (1,0), (-1,-1), 'CENTER'),
+        ('FONTNAME', (0,0), (-1,-1), 'DejaVuSans'),
+        ('FONTNAME', (0,1), (0,1), 'DejaVuSans-Bold'),
+        ('BACKGROUND', (1,0), (-1,0), colors.whitesmoke),
+    ]))
+    story.append(summary_table)
+    story.append(Spacer(1, 1*cm))
+
+    # 5. KSeF info
+    if invoice.ksef_reference_number:
+        story.append(Paragraph("Informacje dodatkowe", label_style))
+        story.append(Paragraph(f"Faktura przesłana do KSeF. Numer referencyjny: {invoice.ksef_reference_number}", value_style))
+
+    # 6. Stopka
+    story.append(Spacer(1, 2*cm))
+    story.append(Paragraph("Dziękujemy za skorzystanie z naszych usług!", ParagraphStyle('Footer', parent=styles['Normal'], alignment=1, fontName='DejaVuSans')))
+
+    doc.build(story)
+    return buffer.getvalue()
