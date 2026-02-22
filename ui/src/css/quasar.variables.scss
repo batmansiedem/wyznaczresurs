@@ -1,0 +1,21 @@
+// Quasar SCSS (& Sass) Variables
+// --------------------------------------------------
+// Paleta inżynierska: głęboki niebieski primary, harmonijny secondary,
+// precyzyjne kolory statusów (bez cyjanowego akcentu).
+
+$primary:   #1565C0;    // Corporate deep blue
+$secondary: #1976D2;    // Harmonijny medium blue (zamiast cyjanowego #00BCD4)
+$accent:    #546E7A;    // Blue-grey — subtelny akcent
+
+$dark:      #212121;
+$dark-page: #121212;
+
+$positive:  #2E7D32;   // Ciemna zieleń — stan dobry
+$negative:  #C62828;   // Ciemna czerwień — stan zły / błąd
+$info:      #0288D1;   // Niebieski informacyjny
+$warning:   #E65100;   // Ciemna pomarańcz — ostrzeżenie
+
+// Warianty statusów dla trybu ciemnego (jaśniejsze, czytelne na ciemnym tle)
+$positive-dark: #81C784;
+$negative-dark: #EF5350;
+$warning-dark:  #FFA726;

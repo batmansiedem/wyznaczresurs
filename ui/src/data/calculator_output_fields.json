@@ -1,0 +1,907 @@
+{
+  "autotransporter": {
+    "name": "Autotransporter - Wyniki",
+    "fields": {
+      "resurs_wykorzystanie": {
+        "label": "Wykorzystanie resursu",
+        "type": "percentage",
+        "unit": "%"
+      },
+      "resurs_message": {
+        "label": "Status resursu",
+        "type": "text"
+      },
+      "data_prognoza": {
+        "label": "Prognozowana data",
+        "type": "date"
+      },
+      "resurs_prognoza_dni": {
+        "label": "Prognoza (dni)",
+        "type": "number",
+        "unit": "dni"
+      },
+      "U_WSK": {
+        "label": "Wartość U_WSK",
+        "type": "number"
+      },
+      "F_X": {
+        "label": "Współczynnik F_X",
+        "type": "number"
+      },
+      "ilosc_cykli": {
+        "label": "Ilość cykli",
+        "type": "number"
+      },
+      "wsp_kdr": {
+        "label": "Współczynnik KDR",
+        "type": "number"
+      },
+      "stan_obciazenia": {
+        "label": "Stan obciążenia",
+        "type": "text"
+      }
+    }
+  },
+  "dzwignik": {
+    "name": "Dźwignik - Wyniki",
+    "fields": {
+      "resurs_wykorzystanie": {
+        "label": "Wykorzystanie resursu",
+        "type": "percentage",
+        "unit": "%"
+      },
+      "resurs_message": {
+        "label": "Status resursu",
+        "type": "text"
+      },
+      "data_prognoza": {
+        "label": "Prognozowana data",
+        "type": "date"
+      },
+      "resurs_prognoza_dni": {
+        "label": "Prognoza (dni)",
+        "type": "number",
+        "unit": "dni"
+      },
+      "U_WSK": {
+        "label": "Wartość U_WSK",
+        "type": "number"
+      },
+      "F_X": {
+        "label": "Współczynnik F_X",
+        "type": "number"
+      },
+      "ilosc_cykli": {
+        "label": "Ilość cykli",
+        "type": "number"
+      },
+      "hdr": {
+        "label": "Współczynnik HDR",
+        "type": "number"
+      },
+      "wsp_kdr": {
+        "label": "Współczynnik KDR",
+        "type": "number"
+      }
+    }
+  },
+  "hakowiec": {
+    "name": "Hakowiec - Wyniki",
+    "fields": {
+      "resurs_wykorzystanie": {
+        "label": "Wykorzystanie resursu",
+        "type": "percentage",
+        "unit": "%"
+      },
+      "resurs_message": {
+        "label": "Status resursu",
+        "type": "text"
+      },
+      "data_prognoza": {
+        "label": "Prognozowana data",
+        "type": "date"
+      },
+      "resurs_prognoza_dni": {
+        "label": "Prognoza (dni)",
+        "type": "number",
+        "unit": "dni"
+      },
+      "U_WSK": {
+        "label": "Wartość U_WSK",
+        "type": "number"
+      },
+      "F_X": {
+        "label": "Współczynnik F_X",
+        "type": "number"
+      },
+      "ilosc_cykli": {
+        "label": "Ilość cykli",
+        "type": "number"
+      },
+      "wsp_kdr": {
+        "label": "Współczynnik KDR",
+        "type": "number"
+      },
+      "stan_obciazenia": {
+        "label": "Stan obciążenia",
+        "type": "text"
+      }
+    }
+  },
+  "dzwig": {
+    "name": "Dźwig - Wyniki",
+    "fields": {
+      "resurs": {
+        "label": "Resurs",
+        "type": "percentage",
+        "unit": "%"
+      },
+      "zalecenia": {
+        "label": "Zalecenia",
+        "type": "text"
+      },
+      "prognoza": {
+        "label": "Prognoza (lata)",
+        "type": "number",
+        "unit": "lata"
+      },
+      "data_prognoza": {
+        "label": "Prognozowana data",
+        "type": "date"
+      },
+      "wiek_dzwigu": {
+        "label": "Wiek dźwigu",
+        "type": "number",
+        "unit": "lata"
+      },
+      "ilosc_cykli": {
+        "label": "Ilość cykli",
+        "type": "number"
+      },
+      "ilosc_cykli_rok": {
+        "label": "Ilość cykli (rok)",
+        "type": "number"
+      },
+      "ilosc_motogodzin_rok": {
+        "label": "Motogodziny (rok)",
+        "type": "number",
+        "unit": "h"
+      },
+      "ilosc_motogodzin_dzien": {
+        "label": "Motogodziny (dzień)",
+        "type": "number",
+        "unit": "h"
+      }
+    }
+  },
+  "suwnica": {
+    "name": "Suwnica - Wyniki",
+    "fields": {
+      "resurs_wykorzystanie": {
+        "label": "Wykorzystanie resursu",
+        "type": "percentage",
+        "unit": "%"
+      },
+      "resurs_message": {
+        "label": "Status resursu",
+        "type": "text"
+      },
+      "data_prognoza": {
+        "label": "Prognozowana data",
+        "type": "date"
+      },
+      "resurs_prognoza_dni": {
+        "label": "Prognoza (dni)",
+        "type": "number",
+        "unit": "dni"
+      },
+      "U_WSK": {
+        "label": "Wartość U_WSK",
+        "type": "number"
+      },
+      "F_X": {
+        "label": "Współczynnik F_X",
+        "type": "number"
+      },
+      "ilosc_cykli": {
+        "label": "Ilość cykli",
+        "type": "number"
+      },
+      "wsp_kdr": {
+        "label": "Współczynnik KDR",
+        "type": "number"
+      },
+      "stan_obciazenia": {
+        "label": "Stan obciążenia",
+        "type": "text"
+      }
+    }
+  },
+  "wciagarka": {
+    "name": "Wciągarka - Wyniki",
+    "fields": {
+      "resurs_wykorzystanie": {
+        "label": "Wykorzystanie resursu",
+        "type": "percentage",
+        "unit": "%"
+      },
+      "resurs_message": {
+        "label": "Status resursu",
+        "type": "text"
+      },
+      "data_prognoza": {
+        "label": "Prognozowana data",
+        "type": "date"
+      },
+      "resurs_prognoza_dni": {
+        "label": "Prognoza (dni)",
+        "type": "number",
+        "unit": "dni"
+      },
+      "U_WSK": {
+        "label": "Wartość U_WSK",
+        "type": "number"
+      },
+      "F_X": {
+        "label": "Współczynnik F_X",
+        "type": "number"
+      },
+      "ilosc_cykli": {
+        "label": "Ilość cykli",
+        "type": "number"
+      },
+      "wsp_kdr": {
+        "label": "Współczynnik KDR",
+        "type": "number"
+      },
+      "stan_obciazenia": {
+        "label": "Stan obciążenia",
+        "type": "text"
+      }
+    }
+  },
+  "wciagnik": {
+    "name": "Wciągnik - Wyniki",
+    "fields": {
+      "resurs_wykorzystanie": {
+        "label": "Wykorzystanie resursu",
+        "type": "percentage",
+        "unit": "%"
+      },
+      "resurs_message": {
+        "label": "Status resursu",
+        "type": "text"
+      },
+      "data_prognoza": {
+        "label": "Prognozowana data",
+        "type": "date"
+      },
+      "resurs_prognoza_dni": {
+        "label": "Prognoza (dni)",
+        "type": "number",
+        "unit": "dni"
+      },
+      "U_WSK": {
+        "label": "Wartość U_WSK",
+        "type": "number"
+      },
+      "F_X": {
+        "label": "Współczynnik F_X",
+        "type": "number"
+      },
+      "ilosc_cykli": {
+        "label": "Ilość cykli",
+        "type": "number"
+      },
+      "wsp_kdr": {
+        "label": "Współczynnik KDR",
+        "type": "number"
+      },
+      "stan_obciazenia": {
+        "label": "Stan obciążenia",
+        "type": "text"
+      }
+    }
+  },
+  "zuraw": {
+    "name": "Żuraw - Wyniki",
+    "fields": {
+      "resurs_wykorzystanie": {
+        "label": "Wykorzystanie resursu",
+        "type": "percentage",
+        "unit": "%"
+      },
+      "resurs_message": {
+        "label": "Status resursu",
+        "type": "text"
+      },
+      "data_prognoza": {
+        "label": "Prognozowana data",
+        "type": "date"
+      },
+      "resurs_prognoza_dni": {
+        "label": "Prognoza (dni)",
+        "type": "number",
+        "unit": "dni"
+      },
+      "U_WSK": {
+        "label": "Wartość U_WSK",
+        "type": "number"
+      },
+      "F_X": {
+        "label": "Współczynnik F_X",
+        "type": "number"
+      },
+      "ilosc_cykli": {
+        "label": "Ilość cykli",
+        "type": "number"
+      },
+      "wsp_kdr": {
+        "label": "Współczynnik KDR",
+        "type": "number"
+      },
+      "stan_obciazenia": {
+        "label": "Stan obciążenia",
+        "type": "text"
+      }
+    }
+  },
+  "zuraw_przeladunkowy": {
+    "name": "Żuraw przeładunkowy - Wyniki",
+    "fields": {
+      "resurs_wykorzystanie": {
+        "label": "Wykorzystanie resursu",
+        "type": "percentage",
+        "unit": "%"
+      },
+      "resurs_message": {
+        "label": "Status resursu",
+        "type": "text"
+      },
+      "data_prognoza": {
+        "label": "Prognozowana data",
+        "type": "date"
+      },
+      "resurs_prognoza_dni": {
+        "label": "Prognoza (dni)",
+        "type": "number",
+        "unit": "dni"
+      },
+      "U_WSK": {
+        "label": "Wartość U_WSK",
+        "type": "number"
+      },
+      "F_X": {
+        "label": "Współczynnik F_X",
+        "type": "number"
+      },
+      "ilosc_cykli": {
+        "label": "Ilość cykli",
+        "type": "number"
+      },
+      "wsp_kdr": {
+        "label": "Współczynnik KDR",
+        "type": "number"
+      },
+      "stan_obciazenia": {
+        "label": "Stan obciążenia",
+        "type": "text"
+      },
+      "ldr": {
+        "label": "Współczynnik LDR",
+        "type": "number"
+      },
+      "ss_factor": {
+        "label": "Współczynnik SS",
+        "type": "number"
+      }
+    }
+  },
+  "wozek_jezdniowy": {
+    "name": "Wózek jezdniowy - Wyniki",
+    "fields": {
+      "resurs_wykorzystanie": {
+        "label": "Wykorzystanie resursu (całkowity)",
+        "type": "percentage",
+        "unit": "%"
+      },
+      "resurs_message": {
+        "label": "Status resursu (całkowity)",
+        "type": "text"
+      },
+      "data_prognoza": {
+        "label": "Prognozowana data (całkowity)",
+        "type": "date"
+      },
+      "resurs_prognoza_dni": {
+        "label": "Prognoza (dni, całkowity)",
+        "type": "number",
+        "unit": "dni"
+      },
+      "U_WSK": {
+        "label": "Wartość U_WSK (całkowity)",
+        "type": "number"
+      },
+      "F_X": {
+        "label": "Współczynnik F_X",
+        "type": "number"
+      },
+      "ilosc_cykli": {
+        "label": "Ilość cykli",
+        "type": "number"
+      },
+      "wsp_kdr": {
+        "label": "Współczynnik KDR",
+        "type": "number"
+      },
+      "stan_obciazenia": {
+        "label": "Stan obciążenia",
+        "type": "text"
+      },
+      "resurs_wyk_pod": {
+        "label": "Wykorzystanie resursu (mech. podnoszenia)",
+        "type": "percentage",
+        "unit": "%"
+      },
+      "resurs_prog_pod": {
+        "label": "Prognoza (mech. podnoszenia, dni)",
+        "type": "number",
+        "unit": "dni"
+      },
+      "data_prog_pod": {
+        "label": "Prognozowana data (mech. podnoszenia)",
+        "type": "date"
+      },
+      "resurs_wyk_jaz": {
+        "label": "Wykorzystanie resursu (mech. jazdy)",
+        "type": "percentage",
+        "unit": "%"
+      },
+      "resurs_prog_jaz": {
+        "label": "Prognoza (mech. jazdy, dni)",
+        "type": "number",
+        "unit": "dni"
+      },
+      "data_prog_jaz": {
+        "label": "Prognozowana data (mech. jazdy)",
+        "type": "date"
+      },
+      "resurs_wyk_prz": {
+        "label": "Wykorzystanie resursu (mech. przesuwu)",
+        "type": "percentage",
+        "unit": "%"
+      },
+      "resurs_prog_prz": {
+        "label": "Prognoza (mech. przesuwu, dni)",
+        "type": "number",
+        "unit": "dni"
+      },
+      "data_prog_prz": {
+        "label": "Prognozowana data (mech. przesuwu)",
+        "type": "date"
+      },
+      "resurs_wyk_mas": {
+        "label": "Wykorzystanie resursu (mech. masztu)",
+        "type": "percentage",
+        "unit": "%"
+      },
+      "resurs_prog_mas": {
+        "label": "Prognoza (mech. masztu, dni)",
+        "type": "number",
+        "unit": "dni"
+      },
+      "data_prog_mas": {
+        "label": "Prognozowana data (mech. masztu)",
+        "type": "date"
+      }
+    }
+  },
+  "mech_jazdy_suwnicy": {
+    "name": "Mechanizm jazdy suwnicy - Wyniki",
+    "fields": {
+      "resurs_wykorzystanie": {
+        "label": "Wykorzystanie resursu",
+        "type": "percentage",
+        "unit": "%"
+      },
+      "resurs_message": {
+        "label": "Status resursu",
+        "type": "text"
+      },
+      "data_prognoza": {
+        "label": "Prognozowana data",
+        "type": "date"
+      },
+      "wsp_km": {
+        "label": "Wsp. widma obciążeń km",
+        "type": "number"
+      },
+      "stan_obciazenia": {
+        "label": "Stan obciążenia",
+        "type": "text"
+      },
+      "T_WSK": {
+        "label": "Projektowa zdolność czasowa T_WSK",
+        "type": "number",
+        "unit": "h"
+      },
+      "F_X": {
+        "label": "Wsp. niepewności rejestracji F_X",
+        "type": "number"
+      },
+      "czas_uzytkowania_mech": {
+        "label": "Czas użytkowania mechanizmu",
+        "type": "number",
+        "unit": "h"
+      },
+      "czas_uzytkowania_mech_rok": {
+        "label": "Czas użytkowania mech./rok",
+        "type": "number",
+        "unit": "h/rok"
+      },
+      "resurs_prognoza_dni": {
+        "label": "Prognoza resursu",
+        "type": "number",
+        "unit": "dni"
+      }
+    }
+  },
+  "mech_jazdy_wciagarki": {
+    "name": "Mechanizm jazdy wciągarki - Wyniki",
+    "fields": {
+      "resurs_wykorzystanie": {
+        "label": "Wykorzystanie resursu",
+        "type": "percentage",
+        "unit": "%"
+      },
+      "resurs_message": {
+        "label": "Status resursu",
+        "type": "text"
+      },
+      "data_prognoza": {
+        "label": "Prognozowana data",
+        "type": "date"
+      },
+      "wsp_km": {
+        "label": "Wsp. widma obciążeń km",
+        "type": "number"
+      },
+      "stan_obciazenia": {
+        "label": "Stan obciążenia",
+        "type": "text"
+      },
+      "T_WSK": {
+        "label": "Projektowa zdolność czasowa T_WSK",
+        "type": "number",
+        "unit": "h"
+      },
+      "F_X": {
+        "label": "Wsp. niepewności rejestracji F_X",
+        "type": "number"
+      },
+      "czas_uzytkowania_mech": {
+        "label": "Czas użytkowania mechanizmu",
+        "type": "number",
+        "unit": "h"
+      },
+      "czas_uzytkowania_mech_rok": {
+        "label": "Czas użytkowania mech./rok",
+        "type": "number",
+        "unit": "h/rok"
+      },
+      "resurs_prognoza_dni": {
+        "label": "Prognoza resursu",
+        "type": "number",
+        "unit": "dni"
+      }
+    }
+  },
+  "mech_jazdy_zurawia": {
+    "name": "Mechanizm jazdy żurawia - Wyniki",
+    "fields": {
+      "resurs_wykorzystanie": {
+        "label": "Wykorzystanie resursu",
+        "type": "percentage",
+        "unit": "%"
+      },
+      "resurs_message": {
+        "label": "Status resursu",
+        "type": "text"
+      },
+      "data_prognoza": {
+        "label": "Prognozowana data",
+        "type": "date"
+      },
+      "wsp_km": {
+        "label": "Wsp. widma obciążeń km",
+        "type": "number"
+      },
+      "stan_obciazenia": {
+        "label": "Stan obciążenia",
+        "type": "text"
+      },
+      "T_WSK": {
+        "label": "Projektowa zdolność czasowa T_WSK",
+        "type": "number",
+        "unit": "h"
+      },
+      "F_X": {
+        "label": "Wsp. niepewności rejestracji F_X",
+        "type": "number"
+      },
+      "czas_uzytkowania_mech": {
+        "label": "Czas użytkowania mechanizmu",
+        "type": "number",
+        "unit": "h"
+      },
+      "czas_uzytkowania_mech_rok": {
+        "label": "Czas użytkowania mech./rok",
+        "type": "number",
+        "unit": "h/rok"
+      },
+      "resurs_prognoza_dni": {
+        "label": "Prognoza resursu",
+        "type": "number",
+        "unit": "dni"
+      }
+    }
+  },
+  "mech_podnoszenia": {
+    "name": "Mechanizm podnoszenia - Wyniki",
+    "fields": {
+      "resurs_wykorzystanie": {
+        "label": "Wykorzystanie resursu",
+        "type": "percentage",
+        "unit": "%"
+      },
+      "resurs_message": {
+        "label": "Status resursu",
+        "type": "text"
+      },
+      "data_prognoza": {
+        "label": "Prognozowana data",
+        "type": "date"
+      },
+      "wsp_km": {
+        "label": "Wsp. widma obciążeń km",
+        "type": "number"
+      },
+      "stan_obciazenia": {
+        "label": "Stan obciążenia",
+        "type": "text"
+      },
+      "T_WSK": {
+        "label": "Projektowa zdolność czasowa T_WSK",
+        "type": "number",
+        "unit": "h"
+      },
+      "F_X": {
+        "label": "Wsp. niepewności rejestracji F_X",
+        "type": "number"
+      },
+      "czas_uzytkowania_mech": {
+        "label": "Czas użytkowania mechanizmu",
+        "type": "number",
+        "unit": "h"
+      },
+      "czas_uzytkowania_mech_rok": {
+        "label": "Czas użytkowania mech./rok",
+        "type": "number",
+        "unit": "h/rok"
+      },
+      "resurs_prognoza_dni": {
+        "label": "Prognoza resursu",
+        "type": "number",
+        "unit": "dni"
+      }
+    }
+  },
+  "mech_zmiany_obrotu": {
+    "name": "Mechanizm zmiany obrotu - Wyniki",
+    "fields": {
+      "resurs_wykorzystanie": {
+        "label": "Wykorzystanie resursu",
+        "type": "percentage",
+        "unit": "%"
+      },
+      "resurs_message": {
+        "label": "Status resursu",
+        "type": "text"
+      },
+      "data_prognoza": {
+        "label": "Prognozowana data",
+        "type": "date"
+      },
+      "wsp_km": {
+        "label": "Wsp. widma obciążeń km",
+        "type": "number"
+      },
+      "stan_obciazenia": {
+        "label": "Stan obciążenia",
+        "type": "text"
+      },
+      "T_WSK": {
+        "label": "Projektowa zdolność czasowa T_WSK",
+        "type": "number",
+        "unit": "h"
+      },
+      "F_X": {
+        "label": "Wsp. niepewności rejestracji F_X",
+        "type": "number"
+      },
+      "czas_uzytkowania_mech": {
+        "label": "Czas użytkowania mechanizmu",
+        "type": "number",
+        "unit": "h"
+      },
+      "czas_uzytkowania_mech_rok": {
+        "label": "Czas użytkowania mech./rok",
+        "type": "number",
+        "unit": "h/rok"
+      },
+      "resurs_prognoza_dni": {
+        "label": "Prognoza resursu",
+        "type": "number",
+        "unit": "dni"
+      }
+    }
+  },
+  "mech_zmiany_wysiegu": {
+    "name": "Mechanizm zmiany wysięgu - Wyniki",
+    "fields": {
+      "resurs_wykorzystanie": {
+        "label": "Wykorzystanie resursu",
+        "type": "percentage",
+        "unit": "%"
+      },
+      "resurs_message": {
+        "label": "Status resursu",
+        "type": "text"
+      },
+      "data_prognoza": {
+        "label": "Prognozowana data",
+        "type": "date"
+      },
+      "wsp_km": {
+        "label": "Wsp. widma obciążeń km",
+        "type": "number"
+      },
+      "stan_obciazenia": {
+        "label": "Stan obciążenia",
+        "type": "text"
+      },
+      "T_WSK": {
+        "label": "Projektowa zdolność czasowa T_WSK",
+        "type": "number",
+        "unit": "h"
+      },
+      "F_X": {
+        "label": "Wsp. niepewności rejestracji F_X",
+        "type": "number"
+      },
+      "czas_uzytkowania_mech": {
+        "label": "Czas użytkowania mechanizmu",
+        "type": "number",
+        "unit": "h"
+      },
+      "czas_uzytkowania_mech_rok": {
+        "label": "Czas użytkowania mech./rok",
+        "type": "number",
+        "unit": "h/rok"
+      },
+      "resurs_prognoza_dni": {
+        "label": "Prognoza resursu",
+        "type": "number",
+        "unit": "dni"
+      }
+    }
+  },
+  "podest_ruchomy": {
+    "name": "Podest ruchomy - Wyniki",
+    "fields": {
+      "resurs_wykorzystanie": {
+        "label": "Wykorzystanie resursu",
+        "type": "percentage",
+        "unit": "%"
+      },
+      "resurs_message": {
+        "label": "Status resursu",
+        "type": "text"
+      },
+      "data_prognoza": {
+        "label": "Prognozowana data",
+        "type": "date"
+      }
+    }
+  },
+  "podest_zaladowczy": {
+    "name": "Podest załadowczy - Wyniki",
+    "fields": {
+      "resurs_wykorzystanie": {
+        "label": "Wykorzystanie resursu",
+        "type": "percentage",
+        "unit": "%"
+      },
+      "resurs_message": {
+        "label": "Status resursu",
+        "type": "text"
+      },
+      "data_prognoza": {
+        "label": "Prognozowana data",
+        "type": "date"
+      }
+    }
+  },
+  "podnosnik_samochodowy": {
+    "name": "Podnośnik samochodowy - Wyniki",
+    "fields": {
+      "resurs_wykorzystanie": {
+        "label": "Wykorzystanie resursu",
+        "type": "percentage",
+        "unit": "%"
+      },
+      "resurs_message": {
+        "label": "Status resursu",
+        "type": "text"
+      },
+      "data_prognoza": {
+        "label": "Prognozowana data",
+        "type": "date"
+      }
+    }
+  },
+  "ukladnica_magazynowa": {
+    "name": "Układnica magazynowa - Wyniki",
+    "fields": {
+      "resurs_wykorzystanie": {
+        "label": "Wykorzystanie resursu",
+        "type": "percentage",
+        "unit": "%"
+      },
+      "resurs_message": {
+        "label": "Status resursu",
+        "type": "text"
+      },
+      "data_prognoza": {
+        "label": "Prognozowana data",
+        "type": "date"
+      }
+    }
+  },
+  "winda_dekarska": {
+    "name": "Winda dekarska - Wyniki",
+    "fields": {
+      "resurs_wykorzystanie": {
+        "label": "Wykorzystanie resursu",
+        "type": "percentage",
+        "unit": "%"
+      },
+      "resurs_message": {
+        "label": "Status resursu",
+        "type": "text"
+      },
+      "data_prognoza": {
+        "label": "Prognozowana data",
+        "type": "date"
+      }
+    }
+  },
+  "wozek_specjalizowany": {
+    "name": "Wózek specjalizowany - Wyniki",
+    "fields": {
+      "resurs_wykorzystanie": {
+        "label": "Wykorzystanie resursu",
+        "type": "percentage",
+        "unit": "%"
+      },
+      "resurs_message": {
+        "label": "Status resursu",
+        "type": "text"
+      },
+      "data_prognoza": {
+        "label": "Prognozowana data",
+        "type": "date"
+      }
+    }
+  }
+}

@@ -1,0 +1,333 @@
+@use "sass:color";
+
+// app global css in SCSS form
+
+// =============================================
+// GLOBALNA TYPOGRAFIA I RESET
+// =============================================
+
+body {
+  font-family: 'Roboto', '-apple-system', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+// =============================================
+// GLOBALNE KOREKTY QUASAR KOMPONENTÓW
+// =============================================
+
+.q-field--outlined .q-field__control {
+  border-radius: 6px;
+}
+
+.q-field--outlined:not(.q-field--focused):not(.q-field--error) {
+  .q-field__control::before {
+    border-color: rgba(var(--q-primary-rgb), 0.2);
+  }
+}
+
+// =============================================
+// LAYOUT — KONTENER TREŚCI
+// =============================================
+
+.container {
+  width: 100%;
+  max-width: 1600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+// =============================================
+// ETYKIETY SEKCJI
+// =============================================
+
+.section-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--q-primary);
+  border-left: 3px solid var(--q-primary);
+  padding-left: 10px;
+  margin-bottom: 16px;
+  opacity: 0.75;
+}
+
+// =============================================
+// KARTY Z EFEKTEM HOVER
+// =============================================
+
+.hover-primary {
+  transition: all 0.2s ease-in-out;
+  border: 1px solid rgba(var(--q-primary-rgb), 0.12) !important;
+  &:hover {
+    border-color: rgba(var(--q-primary-rgb), 0.5) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(var(--q-primary-rgb), 0.08) !important;
+  }
+}
+
+.body--dark .hover-primary {
+  border-color: rgba(white, 0.08) !important;
+  &:hover {
+    border-color: rgba(var(--q-primary-rgb), 0.4) !important;
+    box-shadow: 0 4px 16px rgba(black, 0.4) !important;
+  }
+}
+
+// =============================================
+// TŁO IKON (MAŁE KWADRATOWE)
+// =============================================
+
+.icon-bg {
+  background-color: rgba(var(--q-primary-rgb), 0.07);
+  padding: 10px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.body--dark .icon-bg {
+  background-color: rgba(var(--q-primary-rgb), 0.15);
+}
+
+// =============================================
+// TEKST OPISU (SKRÓCONY DO 2 LINII)
+// =============================================
+
+.description-text {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  height: 2.8em;
+  line-height: 1.4;
+  font-size: 0.88rem;
+  opacity: 0.65;
+}
+
+// =============================================
+// NAGŁÓWKI STRON (KALKULATOR / LISTA)
+// =============================================
+
+.calc-page-header {
+  position: relative;
+  padding-left: 16px;
+  margin-bottom: 28px;
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 3px; bottom: 3px;
+    width: 4px;
+    background: $primary;
+    border-radius: 2px;
+  }
+
+  h1 { font-size: 1.6rem !important; margin: 0; font-weight: 800; }
+  p  { font-size: 0.92rem; margin: 4px 0 0 0; opacity: 0.55; }
+}
+
+// =============================================
+// PASKI SEKCJI KALKULATORA
+// =============================================
+
+.calc-section-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 16px;
+  background: rgba(var(--q-primary-rgb), 0.04);
+  border-bottom: 1px solid rgba(var(--q-primary-rgb), 0.08);
+  color: var(--q-primary);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+// =============================================
+// DANE INŻYNIERSKIE — CZCIONKA MONOSPACE
+// =============================================
+
+.eng-value, .result-value, .kpi-number {
+  font-family: 'Roboto Mono', 'Courier New', monospace !important;
+}
+
+// =============================================
+// BLOKI KPI (WYNIKI KALKULATORA)
+// =============================================
+
+.kpi-block {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 18px 20px;
+  border-radius: 8px;
+  border-left: 5px solid transparent;
+  margin-bottom: 20px;
+  background: rgba(var(--q-primary-rgb), 0.02);
+}
+
+// Kolory z SCSS variables (zdefiniowanych w quasar.variables.scss)
+.kpi-block-ok     { border-color: $positive; color: $positive; }
+.kpi-block-warn   { border-color: $warning;  color: $warning;  }
+.kpi-block-danger { border-color: $negative; color: $negative; }
+
+.body--dark {
+  .kpi-block-ok     { color: $positive-dark; border-color: $positive-dark; }
+  .kpi-block-warn   { color: $warning-dark;  border-color: $warning-dark;  }
+  .kpi-block-danger { color: $negative-dark; border-color: $negative-dark; }
+}
+
+// =============================================
+// PRINT
+// =============================================
+
+@media print {
+  .no-print { display: none !important; }
+  .q-drawer, .q-header { display: none !important; }
+  .q-page-container { padding: 0 !important; margin: 0 !important; }
+  .print-only { display: block !important; }
+}
+.print-only { display: none; }
+
+// =============================================
+// SUBTELNE OBRYSY FLAT KART (globalne)
+// =============================================
+
+.q-card--flat {
+  border: 1px solid rgba(black, 0.08) !important;
+}
+.body--dark .q-card--flat {
+  border-color: rgba(white, 0.08) !important;
+}
+
+// =============================================
+// AUTH PAGES — WSPÓLNE STYLE (login/register)
+// =============================================
+
+.auth-page {
+  display: flex;
+  flex-direction: column;
+}
+
+.auth-grid {
+  display: flex;
+  flex: 1;
+  min-height: calc(100vh - 66px); // odlicz nagłówek LandingLayout
+}
+
+.auth-left {
+  width: 44%;
+  flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(160deg, $primary 0%, color.scale($primary, $lightness: -22%) 100%);
+  display: flex;
+  align-items: center;
+  padding: 60px 48px;
+
+  @media (max-width: 1023px) { display: none; }
+}
+
+.auth-left-bg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  svg { width: 100%; height: 100%; }
+}
+
+.auth-left-content {
+  position: relative;
+  z-index: 1;
+  color: white;
+}
+
+.auth-brand {
+  font-size: 1rem;
+  font-weight: 900;
+  letter-spacing: -0.01em;
+  color: white;
+  margin-bottom: 32px;
+}
+
+.auth-left-h2 {
+  font-size: 1.75rem;
+  font-weight: 800;
+  line-height: 1.15;
+  color: white;
+  margin: 0 0 24px;
+}
+
+.auth-norm-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 32px;
+}
+
+.auth-norm {
+  font-family: 'Roboto Mono', monospace;
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  padding: 3px 8px;
+  border: 1px solid rgba(white, 0.3);
+  border-radius: 3px;
+  color: rgba(white, 0.6);
+}
+
+.auth-right {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+}
+
+.auth-form-wrap {
+  width: 100%;
+  max-width: 400px;
+}
+
+.auth-form-title {
+  font-size: 1.75rem;
+  font-weight: 800;
+  margin: 0 0 6px;
+}
+
+.auth-form-sub {
+  font-size: 0.9rem;
+  color: #607080;
+  margin: 0 0 32px;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.body--dark .auth-form-sub { color: rgba(white, 0.5); }
+
+.auth-submit {
+  margin-top: 8px;
+  border-radius: 6px;
+}
+
+.auth-features {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.9rem;
+    color: rgba(white, 0.75);
+  }
+}

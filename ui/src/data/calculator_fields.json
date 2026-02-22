@@ -1,0 +1,5923 @@
+{
+  "autotransporter": {
+    "name": "Autotransporter",
+    "description": "Kalkulator resursu dla autotransportera.",
+    "fields": {
+      "typ": {
+        "type": "select",
+        "label": "Typ autotransportera",
+        "required": false,
+        "options": [
+          "Autotransporter hakowy",
+          "Autotransporter z bramą",
+          "Autotransporter z żurawiem",
+          "Autotransporter specjalny"
+        ]
+      },
+      "nr_fabryczny": {
+        "type": "text",
+        "label": "Nr fabryczny",
+        "required": true
+      },
+      "lata_pracy": {
+        "type": "number",
+        "label": "Lata pracy",
+        "required": true,
+        "unit_type": "time",
+        "default_unit": "lata"
+      },
+      "tryb_pracy": {
+        "label": "Tryb pracy",
+        "type": "select",
+        "required": true,
+        "options": [
+          "jednozmianowy",
+          "dwuzmianowy",
+          "trzyzmianowy"
+        ]
+      },
+      "cykle_zmiana": {
+        "label": "Cykli na zmianę",
+        "type": "number",
+        "required": true
+      },
+      "dni_robocze": {
+        "label": "Dni roboczych w roku",
+        "type": "number",
+        "required": true,
+        "default_value": 250
+      },
+      "ilosc_cykli": {
+        "type": "number",
+        "label": "Ilość cykli",
+        "required": true,
+        "unit_type": "dimensionless",
+        "default_unit": "cykl"
+      },
+      "sposob_rejestracji": {
+        "type": "select",
+        "label": "Sposób rejestracji",
+        "required": true,
+        "options": [
+          "Rejestrowanie przyrządami",
+          "Rejestrowanie w dzienniku, łącznie ze stosowaniem licznika",
+          "Rejestrowanie na podstawie procesu technologicznego",
+          "Rejestrowanie na podstawie informacji o produkcji",
+          "Informacja o warunkach eksploatacji jest niekompletna",
+          "Brak informacji o historii urządzenia"
+        ]
+      },
+      "h_max": {
+        "type": "number",
+        "label": "Maks. wysokość podnoszenia h_max",
+        "required": false,
+        "unit_type": "length",
+        "default_unit": "m"
+      },
+      "v_pod": {
+        "type": "number",
+        "label": "Prędkość podnoszenia v_pod",
+        "required": false,
+        "unit_type": "speed",
+        "default_unit": "m/min"
+      },
+      "q_max": {
+        "type": "number",
+        "label": "Qmax (Maksymalny udźwig)",
+        "required": true,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "q_1": {
+        "type": "number",
+        "label": "Q1",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_1": {
+        "type": "number",
+        "label": "C1 (%)",
+        "required": false
+      },
+      "q_2": {
+        "type": "number",
+        "label": "Q2",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_2": {
+        "type": "number",
+        "label": "C2 (%)",
+        "required": false
+      },
+      "q_3": {
+        "type": "number",
+        "label": "Q3",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_3": {
+        "type": "number",
+        "label": "C3 (%)",
+        "required": false
+      },
+      "q_4": {
+        "type": "number",
+        "label": "Q4",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_4": {
+        "type": "number",
+        "label": "C4 (%)",
+        "required": false
+      },
+      "q_5": {
+        "type": "number",
+        "label": "Q5",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_5": {
+        "type": "number",
+        "label": "C5 (%)",
+        "required": false
+      },
+      "max_cykle_prod": {
+        "type": "number",
+        "label": "Maksymalna liczba cykli (wg producenta)",
+        "required": false,
+        "unit_type": "dimensionless",
+        "default_unit": "cycle"
+      },
+      "konstrukcja": {
+        "type": "select",
+        "label": "Stan konstrukcji",
+        "required": true,
+        "options": [
+          "Brak uszkodzeń",
+          "Uszkodzenia",
+          "Nie dotyczy"
+        ]
+      },
+      "automatyka": {
+        "type": "select",
+        "label": "Stan automatyki",
+        "required": true,
+        "options": [
+          "Brak uszkodzeń",
+          "Uszkodzenia",
+          "Nie dotyczy"
+        ]
+      },
+      "sworznie": {
+        "type": "select",
+        "label": "Stan sworzni",
+        "required": true,
+        "options": [
+          "Brak uszkodzeń",
+          "Uszkodzenia",
+          "Nie dotyczy"
+        ]
+      },
+      "ciegna": {
+        "type": "select",
+        "label": "Stan cięgien",
+        "required": true,
+        "options": [
+          "Brak uszkodzeń",
+          "Uszkodzenia",
+          "Nie dotyczy"
+        ]
+      },
+      "eksploatacja": {
+        "type": "select",
+        "label": "Warunki eksploatacji",
+        "required": true,
+        "options": [
+          "Zgodne",
+          "Niezgodne",
+          "Nie dotyczy"
+        ]
+      },
+      "szczelnosc": {
+        "type": "select",
+        "label": "Szczelność układu hydraulicznego",
+        "required": true,
+        "options": [
+          "Szczelny",
+          "Nieszczelny",
+          "Nie dotyczy"
+        ]
+      },
+      "nakretka": {
+        "type": "select",
+        "label": "Nakrętka bezpieczeństwa (jeśli występuje)",
+        "required": true,
+        "options": [
+          "Sprawna",
+          "Niesprawna",
+          "Nie dotyczy"
+        ]
+      }
+    }
+  },
+  "dzwignik": {
+    "name": "Dzwignik",
+    "description": "Kalkulator resursu dla dzwignika.",
+    "fields": {
+      "nr_fabryczny": {
+        "type": "text",
+        "label": "Nr fabryczny",
+        "required": true
+      },
+      "lata_pracy": {
+        "type": "number",
+        "label": "Lata pracy",
+        "required": true,
+        "unit_type": "time",
+        "default_unit": "lata"
+      },
+      "tryb_pracy": {
+        "label": "Tryb pracy",
+        "type": "select",
+        "required": true,
+        "options": [
+          "jednozmianowy",
+          "dwuzmianowy",
+          "trzyzmianowy"
+        ]
+      },
+      "cykle_zmiana": {
+        "label": "Cykli na zmianę",
+        "type": "number",
+        "required": true
+      },
+      "dni_robocze": {
+        "label": "Dni roboczych w roku",
+        "type": "number",
+        "required": true,
+        "default_value": 250
+      },
+      "ilosc_cykli": {
+        "type": "number",
+        "label": "Ilość cykli",
+        "required": true,
+        "unit_type": "dimensionless",
+        "default_unit": "cykl"
+      },
+      "sposob_rejestracji": {
+        "type": "select",
+        "label": "Sposób rejestracji",
+        "required": true,
+        "options": [
+          "Rejestrowanie przyrządami",
+          "Rejestrowanie w dzienniku, łącznie ze stosowaniem licznika",
+          "Rejestrowanie na podstawie procesu technologicznego",
+          "Rejestrowanie na podstawie informacji o produkcji",
+          "Informacja o warunkach eksploatacji jest niekompletna",
+          "Brak informacji o historii urządzenia"
+        ]
+      },
+      "typ": {
+        "type": "select",
+        "label": "Typ mechanizmu",
+        "required": true,
+        "options": [
+          "zębatkowy",
+          "śrubowy",
+          "tłokowy-hydrauliczny",
+          "dźwigniowy"
+        ]
+      },
+      "max_cykle_prod": {
+        "type": "number",
+        "label": "Maksymalna liczba cykli (wg producenta)",
+        "required": false,
+        "unit_type": "dimensionless",
+        "default_unit": "cycle"
+      },
+      "h_max": {
+        "type": "number",
+        "label": "Maksymalna wysokość podnoszenia (Hmax)",
+        "required": true,
+        "unit_type": "length",
+        "default_unit": "m"
+      },
+      "spec": {
+        "type": "select",
+        "label": "Praca w warunkach specjalnych",
+        "required": true,
+        "options": [
+          "Nie",
+          "Tak"
+        ]
+      },
+      "ponowny_resurs": {
+        "type": "select",
+        "label": "Ponowny resurs",
+        "required": true,
+        "options": [
+          "Nie",
+          "Tak"
+        ]
+      },
+      "ostatni_resurs": {
+        "type": "number",
+        "label": "Ostatni resurs",
+        "required": false,
+        "show_if": {
+          "field": "ponowny_resurs",
+          "value": "Tak"
+        }
+      },
+      "data_resurs": {
+        "type": "date",
+        "label": "Data poprzedniego resursu",
+        "required": false,
+        "show_if": {
+          "field": "ponowny_resurs",
+          "value": "Tak"
+        }
+      },
+      "cc_1": {
+        "type": "number",
+        "label": "Ciężar ładunku (C1)",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "h_1": {
+        "type": "number",
+        "label": "Wysokość podnoszenia (H1)",
+        "required": false,
+        "unit_type": "length",
+        "default_unit": "m"
+      },
+      "cc_2": {
+        "type": "number",
+        "label": "Ciężar ładunku (C2)",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "h_2": {
+        "type": "number",
+        "label": "Wysokość podnoszenia (H2)",
+        "required": false,
+        "unit_type": "length",
+        "default_unit": "m"
+      },
+      "cc_3": {
+        "type": "number",
+        "label": "Ciężar ładunku (C3)",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "h_3": {
+        "type": "number",
+        "label": "Wysokość podnoszenia (H3)",
+        "required": false,
+        "unit_type": "length",
+        "default_unit": "m"
+      },
+      "cc_4": {
+        "type": "number",
+        "label": "Ciężar ładunku (C4)",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "h_4": {
+        "type": "number",
+        "label": "Wysokość podnoszenia (H4)",
+        "required": false,
+        "unit_type": "length",
+        "default_unit": "m"
+      },
+      "cc_5": {
+        "type": "number",
+        "label": "Ciężar ładunku (C5)",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "h_5": {
+        "type": "number",
+        "label": "Wysokość podnoszenia (H5)",
+        "required": false,
+        "unit_type": "length",
+        "default_unit": "m"
+      },
+      "q_max": {
+        "type": "number",
+        "label": "Qmax (Maksymalny udźwig)",
+        "required": true,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "q_1": {
+        "type": "number",
+        "label": "Q1",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_1": {
+        "type": "number",
+        "label": "C1 (%)",
+        "required": false
+      },
+      "q_2": {
+        "type": "number",
+        "label": "Q2",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_2": {
+        "type": "number",
+        "label": "C2 (%)",
+        "required": false
+      },
+      "q_3": {
+        "type": "number",
+        "label": "Q3",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_3": {
+        "type": "number",
+        "label": "C3 (%)",
+        "required": false
+      },
+      "q_4": {
+        "type": "number",
+        "label": "Q4",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_4": {
+        "type": "number",
+        "label": "C4 (%)",
+        "required": false
+      },
+      "q_5": {
+        "type": "number",
+        "label": "Q5",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_5": {
+        "type": "number",
+        "label": "C5 (%)",
+        "required": false
+      },
+      "konstrukcja": {
+        "type": "select",
+        "label": "Stan konstrukcji",
+        "required": true,
+        "options": [
+          "Brak uszkodzeń",
+          "Uszkodzenia",
+          "Nie dotyczy"
+        ]
+      },
+      "automatyka": {
+        "type": "select",
+        "label": "Stan automatyki",
+        "required": true,
+        "options": [
+          "Brak uszkodzeń",
+          "Uszkodzenia",
+          "Nie dotyczy"
+        ]
+      },
+      "sworznie": {
+        "type": "select",
+        "label": "Stan sworzni",
+        "required": true,
+        "options": [
+          "Brak uszkodzeń",
+          "Uszkodzenia",
+          "Nie dotyczy"
+        ]
+      },
+      "ciegna": {
+        "type": "select",
+        "label": "Stan cięgien",
+        "required": true,
+        "options": [
+          "Brak uszkodzeń",
+          "Uszkodzenia",
+          "Nie dotyczy"
+        ]
+      },
+      "eksploatacja": {
+        "type": "select",
+        "label": "Warunki eksploatacji",
+        "required": true,
+        "options": [
+          "Zgodne",
+          "Niezgodne",
+          "Nie dotyczy"
+        ]
+      },
+      "szczelnosc": {
+        "type": "select",
+        "label": "Szczelność układu hydraulicznego",
+        "required": true,
+        "options": [
+          "Szczelny",
+          "Nieszczelny",
+          "Nie dotyczy"
+        ]
+      },
+      "hamulce": {
+        "type": "select",
+        "label": "Hamulce",
+        "required": true,
+        "options": [
+          "Sprawne",
+          "Niesprawne",
+          "Nie dotyczy"
+        ]
+      }
+    }
+  },
+  "hakowiec": {
+    "name": "Hakowiec",
+    "description": "Kalkulator resursu dla hakowca.",
+    "fields": {
+      "typ": {
+        "type": "select",
+        "label": "Typ hakowca",
+        "required": false,
+        "options": [
+          "Hakowiec z ramą hakową",
+          "Hakowiec z żurawiem"
+        ]
+      },
+      "nr_fabryczny": {
+        "type": "text",
+        "label": "Nr fabryczny",
+        "required": true
+      },
+      "lata_pracy": {
+        "type": "number",
+        "label": "Lata pracy",
+        "required": true,
+        "unit_type": "time",
+        "default_unit": "lata"
+      },
+      "tryb_pracy": {
+        "label": "Tryb pracy",
+        "type": "select",
+        "required": true,
+        "options": [
+          "jednozmianowy",
+          "dwuzmianowy",
+          "trzyzmianowy"
+        ]
+      },
+      "cykle_zmiana": {
+        "label": "Cykli na zmianę",
+        "type": "number",
+        "required": true
+      },
+      "dni_robocze": {
+        "label": "Dni roboczych w roku",
+        "type": "number",
+        "required": true,
+        "default_value": 250
+      },
+      "ilosc_cykli": {
+        "type": "number",
+        "label": "Ilość cykli",
+        "required": true,
+        "unit_type": "dimensionless",
+        "default_unit": "cykl"
+      },
+      "sposob_rejestracji": {
+        "type": "select",
+        "label": "Sposób rejestracji",
+        "required": true,
+        "options": [
+          "Rejestrowanie przyrządami",
+          "Rejestrowanie w dzienniku, łącznie ze stosowaniem licznika",
+          "Rejestrowanie na podstawie procesu technologicznego",
+          "Rejestrowanie na podstawie informacji o produkcji",
+          "Informacja o warunkach eksploatacji jest niekompletna",
+          "Brak informacji o historii urządzenia"
+        ]
+      },
+      "max_cykle_prod": {
+        "type": "number",
+        "label": "Maksymalna liczba cykli (wg producenta)",
+        "required": false,
+        "unit_type": "dimensionless",
+        "default_unit": "cycle"
+      },
+      "spec": {
+        "type": "select",
+        "label": "Praca w warunkach specjalnych",
+        "required": true,
+        "options": [
+          "Nie",
+          "Tak"
+        ]
+      },
+      "ponowny_resurs": {
+        "type": "select",
+        "label": "Ponowny resurs",
+        "required": true,
+        "options": [
+          "Nie",
+          "Tak"
+        ]
+      },
+      "ostatni_resurs": {
+        "type": "number",
+        "label": "Ostatni resurs",
+        "required": false,
+        "show_if": {
+          "field": "ponowny_resurs",
+          "value": "Tak"
+        }
+      },
+      "data_resurs": {
+        "type": "date",
+        "label": "Data poprzedniego resursu",
+        "required": false,
+        "show_if": {
+          "field": "ponowny_resurs",
+          "value": "Tak"
+        }
+      },
+      "q_max": {
+        "type": "number",
+        "label": "Qmax (Maksymalny udźwig)",
+        "required": true,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "q_1": {
+        "type": "number",
+        "label": "Q1",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_1": {
+        "type": "number",
+        "label": "C1 (%)",
+        "required": false
+      },
+      "q_2": {
+        "type": "number",
+        "label": "Q2",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_2": {
+        "type": "number",
+        "label": "C2 (%)",
+        "required": false
+      },
+      "q_3": {
+        "type": "number",
+        "label": "Q3",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_3": {
+        "type": "number",
+        "label": "C3 (%)",
+        "required": false
+      },
+      "q_4": {
+        "type": "number",
+        "label": "Q4",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_4": {
+        "type": "number",
+        "label": "C4 (%)",
+        "required": false
+      },
+      "q_5": {
+        "type": "number",
+        "label": "Q5",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_5": {
+        "type": "number",
+        "label": "C5 (%)",
+        "required": false
+      },
+      "konstrukcja": {
+        "type": "select",
+        "label": "Stan konstrukcji",
+        "required": true,
+        "options": [
+          "Brak uszkodzeń",
+          "Uszkodzenia",
+          "Nie dotyczy"
+        ]
+      },
+      "automatyka": {
+        "type": "select",
+        "label": "Stan automatyki",
+        "required": true,
+        "options": [
+          "Brak uszkodzeń",
+          "Uszkodzenia",
+          "Nie dotyczy"
+        ]
+      },
+      "sworznie": {
+        "type": "select",
+        "label": "Stan sworzni",
+        "required": true,
+        "options": [
+          "Brak uszkodzeń",
+          "Uszkodzenia",
+          "Nie dotyczy"
+        ]
+      },
+      "ciegna": {
+        "type": "select",
+        "label": "Stan cięgien",
+        "required": true,
+        "options": [
+          "Brak uszkodzeń",
+          "Uszkodzenia",
+          "Nie dotyczy"
+        ]
+      },
+      "eksploatacja": {
+        "type": "select",
+        "label": "Warunki eksploatacji",
+        "required": true,
+        "options": [
+          "Zgodne",
+          "Niezgodne",
+          "Nie dotyczy"
+        ]
+      },
+      "szczelnosc": {
+        "type": "select",
+        "label": "Szczelność układu hydraulicznego",
+        "required": true,
+        "options": [
+          "Szczelny",
+          "Nieszczelny",
+          "Nie dotyczy"
+        ]
+      }
+    }
+  },
+  "dzwig": {
+    "name": "Dźwig",
+    "description": "Kalkulator resursu dla dźwigu.",
+    "fields": {
+      "nr_fabryczny": {
+        "type": "text",
+        "label": "Nr fabryczny",
+        "required": true
+      },
+      "rok_budowy": {
+        "type": "number",
+        "label": "Rok budowy",
+        "required": true
+      },
+      "lata_pracy": {
+        "type": "number",
+        "label": "Lata pracy",
+        "required": true
+      },
+      "cykle_dzwig": {
+        "type": "number",
+        "label": "Ilość cykli dźwigu",
+        "required": false
+      },
+      "pyt_motogodzin": {
+        "type": "select",
+        "label": "Pytanie o motogodziny",
+        "required": true,
+        "options": [
+          {
+            "label": "Tak",
+            "value": "1"
+          },
+          {
+            "label": "Nie",
+            "value": "0"
+          }
+        ]
+      },
+      "licznik_pracy": {
+        "type": "number",
+        "label": "Licznik pracy",
+        "required": false,
+        "show_if": {
+          "field": "pyt_motogodzin",
+          "value": "Tak"
+        }
+      },
+      "dni_robocze": {
+        "type": "number",
+        "label": "Dni robocze",
+        "required": true
+      },
+      "zakres_godzin_1": {
+        "type": "number",
+        "label": "Zakres godzin 1",
+        "required": false,
+        "show_if": {
+          "field": "pyt_motogodzin",
+          "value": "Nie"
+        }
+      },
+      "zakres_godzin_2": {
+        "type": "number",
+        "label": "Zakres godzin 2",
+        "required": false,
+        "show_if": {
+          "field": "pyt_motogodzin",
+          "value": "Nie"
+        }
+      },
+      "zakres_godzin_3": {
+        "type": "number",
+        "label": "Zakres godzin 3",
+        "required": false,
+        "show_if": {
+          "field": "pyt_motogodzin",
+          "value": "Nie"
+        }
+      },
+      "zakres_godzin_4": {
+        "type": "number",
+        "label": "Zakres godzin 4",
+        "required": false,
+        "show_if": {
+          "field": "pyt_motogodzin",
+          "value": "Nie"
+        }
+      },
+      "zakres_godzin_5": {
+        "type": "number",
+        "label": "Zakres godzin 5",
+        "required": false,
+        "show_if": {
+          "field": "pyt_motogodzin",
+          "value": "Nie"
+        }
+      },
+      "zakres_godzin_6": {
+        "type": "number",
+        "label": "Zakres godzin 6",
+        "required": false,
+        "show_if": {
+          "field": "pyt_motogodzin",
+          "value": "Nie"
+        }
+      },
+      "v_jaz": {
+        "type": "number",
+        "label": "Prędkość jazdy (m/s)",
+        "required": true,
+        "unit_type": "velocity",
+        "default_unit": "m/min"
+      },
+      "h_pod": {
+        "type": "number",
+        "label": "Wysokość podnoszenia (m)",
+        "required": true,
+        "unit_type": "length",
+        "default_unit": "m"
+      },
+      "przystanki": {
+        "type": "number",
+        "label": "Liczba przystanków",
+        "required": true
+      },
+      "budynek": {
+        "type": "select",
+        "label": "Typ budynku",
+        "required": true,
+        "options": [
+          "budowa",
+          "magazyn",
+          "budynek mieszkalny",
+          "budynek firmowy",
+          "budynek administracji publicznej",
+          "budynek użyteczności publicznej",
+          "pojazd"
+        ]
+      },
+      "operator": {
+        "type": "select",
+        "label": "Typ operatora",
+        "required": true,
+        "options": [
+          "bez prawa jazdy w kabinie",
+          "jazda z operatorem",
+          "jazda bez operatora"
+        ]
+      },
+      "przeznaczenie": {
+        "type": "select",
+        "label": "Przeznaczenie",
+        "required": true,
+        "options": [
+          "dźwig osobowy",
+          "dźwig towarowy",
+          "dźwig osobowo-towarowy",
+          "transport osób niepełnosprawnych"
+        ]
+      },
+      "liczba_dzwigow": {
+        "type": "number",
+        "label": "Liczba dźwigów",
+        "required": true
+      },
+      "q_max": {
+        "type": "number",
+        "label": "Qmax (Maksymalny udźwig)",
+        "required": true,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "q_1": {
+        "type": "number",
+        "label": "Q1",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_1": {
+        "type": "number",
+        "label": "C1 (%)",
+        "required": false
+      },
+      "q_2": {
+        "type": "number",
+        "label": "Q2",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_2": {
+        "type": "number",
+        "label": "C2 (%)",
+        "required": false
+      },
+      "q_3": {
+        "type": "number",
+        "label": "Q3",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_3": {
+        "type": "number",
+        "label": "C3 (%)",
+        "required": false
+      },
+      "q_4": {
+        "type": "number",
+        "label": "Q4",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_4": {
+        "type": "number",
+        "label": "C4 (%)",
+        "required": false
+      },
+      "q_5": {
+        "type": "number",
+        "label": "Q5",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_5": {
+        "type": "number",
+        "label": "C5 (%)",
+        "required": false
+      },
+      "liny_nosne": {
+        "type": "select",
+        "label": "Liny nośne",
+        "required": true,
+        "options": [
+          {
+            "label": "Stan dobry",
+            "value": "1"
+          },
+          {
+            "label": "Stan zly",
+            "value": "0"
+          },
+          {
+            "label": "Nie dotyczy",
+            "value": "-1"
+          }
+        ]
+      },
+      "wciagarka": {
+        "type": "select",
+        "label": "Wciągarka",
+        "required": true,
+        "options": [
+          {
+            "label": "Stan dobry",
+            "value": "1"
+          },
+          {
+            "label": "Stan zly",
+            "value": "0"
+          },
+          {
+            "label": "Nie dotyczy",
+            "value": "-1"
+          }
+        ]
+      },
+      "konstrukcja_nosna": {
+        "type": "select",
+        "label": "Konstrukcja nośna",
+        "required": true,
+        "options": [
+          {
+            "label": "Stan dobry",
+            "value": "1"
+          },
+          {
+            "label": "Stan zly",
+            "value": "0"
+          },
+          {
+            "label": "Nie dotyczy",
+            "value": "-1"
+          }
+        ]
+      },
+      "mocowanie_lin": {
+        "type": "select",
+        "label": "Mocowanie lin",
+        "required": true,
+        "options": [
+          {
+            "label": "Stan dobry",
+            "value": "1"
+          },
+          {
+            "label": "Stan zly",
+            "value": "0"
+          },
+          {
+            "label": "Nie dotyczy",
+            "value": "-1"
+          }
+        ]
+      },
+      "ogranicznik_predkosci": {
+        "type": "select",
+        "label": "Ogranicznik prędkości",
+        "required": true,
+        "options": [
+          {
+            "label": "Stan dobry",
+            "value": "1"
+          },
+          {
+            "label": "Stan zly",
+            "value": "0"
+          },
+          {
+            "label": "Nie dotyczy",
+            "value": "-1"
+          }
+        ]
+      },
+      "chwytacze_kabiny": {
+        "type": "select",
+        "label": "Chwytacze kabiny",
+        "required": true,
+        "options": [
+          {
+            "label": "Stan dobry",
+            "value": "1"
+          },
+          {
+            "label": "Stan zly",
+            "value": "0"
+          },
+          {
+            "label": "Nie dotyczy",
+            "value": "-1"
+          }
+        ]
+      },
+      "kola_kabiny": {
+        "type": "select",
+        "label": "Koła kabiny",
+        "required": true,
+        "options": [
+          {
+            "label": "Stan dobry",
+            "value": "1"
+          },
+          {
+            "label": "Stan zly",
+            "value": "0"
+          },
+          {
+            "label": "Nie dotyczy",
+            "value": "-1"
+          }
+        ]
+      },
+      "kola_przeciwwagi": {
+        "type": "select",
+        "label": "Koła przeciwwagi",
+        "required": true,
+        "options": [
+          {
+            "label": "Stan dobry",
+            "value": "1"
+          },
+          {
+            "label": "Stan zly",
+            "value": "0"
+          },
+          {
+            "label": "Nie dotyczy",
+            "value": "-1"
+          }
+        ]
+      },
+      "prowadnice_kabiny": {
+        "type": "select",
+        "label": "Prowadnice kabiny",
+        "required": true,
+        "options": [
+          {
+            "label": "Stan dobry",
+            "value": "1"
+          },
+          {
+            "label": "Stan zly",
+            "value": "0"
+          },
+          {
+            "label": "Nie dotyczy",
+            "value": "-1"
+          }
+        ]
+      },
+      "prowadnice_przeciwwagi": {
+        "type": "select",
+        "label": "Prowadnice przeciwwagi",
+        "required": true,
+        "options": [
+          {
+            "label": "Stan dobry",
+            "value": "1"
+          },
+          {
+            "label": "Stan zly",
+            "value": "0"
+          },
+          {
+            "label": "Nie dotyczy",
+            "value": "-1"
+          }
+        ]
+      },
+      "zderzak_kabiny": {
+        "type": "select",
+        "label": "Zderzak kabiny",
+        "required": true,
+        "options": [
+          {
+            "label": "Stan dobry",
+            "value": "1"
+          },
+          {
+            "label": "Stan zly",
+            "value": "0"
+          },
+          {
+            "label": "Nie dotyczy",
+            "value": "-1"
+          }
+        ]
+      },
+      "zderzak_przeciwwagi": {
+        "type": "select",
+        "label": "Zderzak przeciwwagi",
+        "required": true,
+        "options": [
+          {
+            "label": "Stan dobry",
+            "value": "1"
+          },
+          {
+            "label": "Stan zly",
+            "value": "0"
+          },
+          {
+            "label": "Nie dotyczy",
+            "value": "-1"
+          }
+        ]
+      },
+      "automatyka": {
+        "type": "select",
+        "label": "Automatyka",
+        "required": true,
+        "options": [
+          {
+            "label": "Stan dobry",
+            "value": "1"
+          },
+          {
+            "label": "Stan zly",
+            "value": "0"
+          },
+          {
+            "label": "Nie dotyczy",
+            "value": "-1"
+          }
+        ]
+      },
+      "drzwi": {
+        "type": "select",
+        "label": "Drzwi",
+        "required": true,
+        "options": [
+          {
+            "label": "Stan dobry",
+            "value": "1"
+          },
+          {
+            "label": "Stan zly",
+            "value": "0"
+          },
+          {
+            "label": "Nie dotyczy",
+            "value": "-1"
+          }
+        ]
+      },
+      "silownik": {
+        "type": "select",
+        "label": "Siłownik",
+        "required": true,
+        "options": [
+          {
+            "label": "Stan dobry",
+            "value": "1"
+          },
+          {
+            "label": "Stan zly",
+            "value": "0"
+          },
+          {
+            "label": "Nie dotyczy",
+            "value": "-1"
+          }
+        ]
+      },
+      "zawor_blokowy": {
+        "type": "select",
+        "label": "Zawór blokowy",
+        "required": true,
+        "options": [
+          {
+            "label": "Stan dobry",
+            "value": "1"
+          },
+          {
+            "label": "Stan zly",
+            "value": "0"
+          },
+          {
+            "label": "Nie dotyczy",
+            "value": "-1"
+          }
+        ]
+      },
+      "zawor_zwrotny": {
+        "type": "select",
+        "label": "Zawór zwrotny",
+        "required": true,
+        "options": [
+          {
+            "label": "Stan dobry",
+            "value": "1"
+          },
+          {
+            "label": "Stan zly",
+            "value": "0"
+          },
+          {
+            "label": "Nie dotyczy",
+            "value": "-1"
+          }
+        ]
+      },
+      "przewody_hydrauliczne": {
+        "type": "select",
+        "label": "Przewody hydrauliczne",
+        "required": true,
+        "options": [
+          {
+            "label": "Stan dobry",
+            "value": "1"
+          },
+          {
+            "label": "Stan zly",
+            "value": "0"
+          },
+          {
+            "label": "Nie dotyczy",
+            "value": "-1"
+          }
+        ]
+      },
+      "przekladnia": {
+        "type": "select",
+        "label": "Przekładnia",
+        "required": true,
+        "options": [
+          {
+            "label": "Stan dobry",
+            "value": "1"
+          },
+          {
+            "label": "Stan zly",
+            "value": "0"
+          },
+          {
+            "label": "Nie dotyczy",
+            "value": "-1"
+          }
+        ]
+      },
+      "mechanizm_zebatkowy": {
+        "type": "select",
+        "label": "Mechanizm zębatkowy",
+        "required": true,
+        "options": [
+          {
+            "label": "Stan dobry",
+            "value": "1"
+          },
+          {
+            "label": "Stan zly",
+            "value": "0"
+          },
+          {
+            "label": "Nie dotyczy",
+            "value": "-1"
+          }
+        ]
+      },
+      "mechanizm_srubowy": {
+        "type": "select",
+        "label": "Mechanizm śrubowy",
+        "required": true,
+        "options": [
+          {
+            "label": "Stan dobry",
+            "value": "1"
+          },
+          {
+            "label": "Stan zly",
+            "value": "0"
+          },
+          {
+            "label": "Nie dotyczy",
+            "value": "-1"
+          }
+        ]
+      },
+      "mocowanie_napedu": {
+        "type": "select",
+        "label": "Mocowanie napędu",
+        "required": true,
+        "options": [
+          {
+            "label": "Stan dobry",
+            "value": "1"
+          },
+          {
+            "label": "Stan zly",
+            "value": "0"
+          },
+          {
+            "label": "Nie dotyczy",
+            "value": "-1"
+          }
+        ]
+      }
+    }
+  },
+  "suwnica": {
+    "name": "Suwnica",
+    "description": "Kalkulator resursu dla suwnicy.",
+    "fields": {
+      "typ": {
+        "type": "select",
+        "label": "Typ suwnicy",
+        "required": false,
+        "options": [
+          "Suwnica natorowa",
+          "Suwnica z napędem ręcznym",
+          "Suwnica warsztatowa montażowa",
+          "Suwnica montażowa w elektrowniach",
+          "Suwnica remontowa",
+          "Suwnica warsztatowa",
+          "Suwnica hakowa na składowiskach",
+          "Suwnica chwytakowa lub chwytnikowa na składowiskach",
+          "Suwnica hakowa na składowiskach złomu",
+          "Suwnica chwytakowa lub chwytnikowa na składowiskach złomu",
+          "Suwnica portowa przeładunkowa",
+          "Suwnica kontenerowa",
+          "Suwnica kontenerowa w portach",
+          "Suwnica hutnicza do wymiany walców",
+          "Suwnica hutnicza lejnicza",
+          "Suwnica hutnicza kleszczowa",
+          "Suwnica hutnicza wypychowa",
+          "Suwnica hutnicza wsadowa",
+          "Suwnica hutnicza odlewnicza",
+          "Suwnica bramowa",
+          "Suwnica jednodźwigarowa"
+        ]
+      },
+      "nr_fabryczny": {
+        "type": "text",
+        "label": "Nr fabryczny",
+        "required": true
+      },
+      "lata_pracy": {
+        "type": "number",
+        "label": "Lata pracy",
+        "required": true,
+        "unit_type": "time",
+        "default_unit": "lata"
+      },
+      "tryb_pracy": {
+        "label": "Tryb pracy",
+        "type": "select",
+        "required": true,
+        "options": [
+          "jednozmianowy",
+          "dwuzmianowy",
+          "trzyzmianowy"
+        ]
+      },
+      "cykle_zmiana": {
+        "label": "Cykli na zmianę",
+        "type": "number",
+        "required": true
+      },
+      "dni_robocze": {
+        "label": "Dni roboczych w roku",
+        "type": "number",
+        "required": true,
+        "default_value": 250
+      },
+      "ilosc_cykli": {
+        "type": "number",
+        "label": "Ilość cykli",
+        "required": true,
+        "unit_type": "dimensionless",
+        "default_unit": "cykl"
+      },
+      "sposob_rejestracji": {
+        "type": "select",
+        "label": "Sposób rejestracji",
+        "required": true,
+        "options": [
+          "Rejestrowanie przyrządami",
+          "Rejestrowanie w dzienniku, łącznie ze stosowaniem licznika",
+          "Rejestrowanie na podstawie procesu technologicznego",
+          "Rejestrowanie na podstawie informacji o produkcji",
+          "Informacja o warunkach eksploatacji jest niekompletna",
+          "Brak informacji o historii urządzenia"
+        ]
+      },
+      "gnp": {
+        "type": "select",
+        "label": "Grupa natężenia pracy",
+        "required": true,
+        "options": [
+          "A1",
+          "A2",
+          "A3",
+          "A4",
+          "A5",
+          "A6",
+          "A7",
+          "A8"
+        ]
+      },
+      "q_max": {
+        "type": "number",
+        "label": "Qmax (Maksymalny udźwig)",
+        "required": true,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "q_1": {
+        "type": "number",
+        "label": "Q1",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_1": {
+        "type": "number",
+        "label": "C1 (%)",
+        "required": false
+      },
+      "q_2": {
+        "type": "number",
+        "label": "Q2",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_2": {
+        "type": "number",
+        "label": "C2 (%)",
+        "required": false
+      },
+      "q_3": {
+        "type": "number",
+        "label": "Q3",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_3": {
+        "type": "number",
+        "label": "C3 (%)",
+        "required": false
+      },
+      "q_4": {
+        "type": "number",
+        "label": "Q4",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_4": {
+        "type": "number",
+        "label": "C4 (%)",
+        "required": false
+      },
+      "q_5": {
+        "type": "number",
+        "label": "Q5",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_5": {
+        "type": "number",
+        "label": "C5 (%)",
+        "required": false
+      },
+      "spec": {
+        "type": "select",
+        "label": "Praca w warunkach specjalnych",
+        "required": true,
+        "options": [
+          "Nie",
+          "Tak"
+        ]
+      },
+      "ponowny_resurs": {
+        "type": "select",
+        "label": "Ponowny resurs",
+        "required": true,
+        "options": [
+          "Nie",
+          "Tak"
+        ]
+      },
+      "ostatni_resurs": {
+        "type": "number",
+        "label": "Ostatni resurs",
+        "required": false,
+        "show_if": {
+          "field": "ponowny_resurs",
+          "value": "Tak"
+        }
+      },
+      "data_resurs": {
+        "type": "date",
+        "label": "Data poprzedniego resursu",
+        "required": false,
+        "show_if": {
+          "field": "ponowny_resurs",
+          "value": "Tak"
+        }
+      },
+      "konstrukcja": {
+        "type": "select",
+        "label": "Stan konstrukcji",
+        "required": true,
+        "options": [
+          "Brak uszkodzeń",
+          "Uszkodzenia"
+        ]
+      },
+      "automatyka": {
+        "type": "select",
+        "label": "Stan automatyki",
+        "required": true,
+        "options": [
+          "Sprawna",
+          "Niesprawna"
+        ]
+      },
+      "sworznie": {
+        "type": "select",
+        "label": "Stan sworzni",
+        "required": true,
+        "options": [
+          "Brak uszkodzeń",
+          "Uszkodzenia"
+        ]
+      },
+      "ciegna": {
+        "type": "select",
+        "label": "Stan cięgien",
+        "required": true,
+        "options": [
+          "Brak uszkodzeń",
+          "Uszkodzenia"
+        ]
+      },
+      "eksploatacja": {
+        "type": "select",
+        "label": "Warunki eksploatacji",
+        "required": true,
+        "options": [
+          "Zgodne",
+          "Niezgodne"
+        ]
+      }
+    }
+  },
+  "wciagarka": {
+    "name": "Wciągarka",
+    "description": "Kalkulator resursu dla wciągarki.",
+    "fields": {
+      "typ": {
+        "type": "select",
+        "label": "Typ wciągarki",
+        "required": false,
+        "options": [
+          "Wciągarka z napędem ręcznym",
+          "Wciągarka warsztatowa montażowa",
+          "Wciągarka montażowa w elektrowniach",
+          "Wciągarka remontowa",
+          "Wciągarka warsztatowa",
+          "Wciągarka hakowa na składowiskach",
+          "Wciągarka chwytakowa lub chwytnikowa na składowiskach",
+          "Wciągarka hakowa na składowiskach złomu",
+          "Wciągarka chwytakowa lub chwytnikowa na składowiskach złomu"
+        ]
+      },
+      "nr_fabryczny": {
+        "type": "text",
+        "label": "Nr fabryczny",
+        "required": true
+      },
+      "lata_pracy": {
+        "type": "number",
+        "label": "Lata pracy",
+        "required": true,
+        "unit_type": "time",
+        "default_unit": "lata"
+      },
+      "tryb_pracy": {
+        "label": "Tryb pracy",
+        "type": "select",
+        "required": true,
+        "options": [
+          "jednozmianowy",
+          "dwuzmianowy",
+          "trzyzmianowy"
+        ]
+      },
+      "cykle_zmiana": {
+        "label": "Cykli na zmianę",
+        "type": "number",
+        "required": true
+      },
+      "dni_robocze": {
+        "label": "Dni roboczych w roku",
+        "type": "number",
+        "required": true,
+        "default_value": 250
+      },
+      "ilosc_cykli": {
+        "type": "number",
+        "label": "Ilość cykli",
+        "required": true,
+        "unit_type": "dimensionless",
+        "default_unit": "cykl"
+      },
+      "sposob_rejestracji": {
+        "type": "select",
+        "label": "Sposób rejestracji",
+        "required": true,
+        "options": [
+          "Rejestrowanie przyrządami",
+          "Rejestrowanie w dzienniku, łącznie ze stosowaniem licznika",
+          "Rejestrowanie na podstawie procesu technologicznego",
+          "Rejestrowanie na podstawie informacji o produkcji",
+          "Informacja o warunkach eksploatacji jest niekompletna",
+          "Brak informacji o historii urządzenia"
+        ]
+      },
+      "gnp": {
+        "type": "select",
+        "label": "Grupa natężenia pracy",
+        "required": true,
+        "options": [
+          "A1",
+          "A2",
+          "A3",
+          "A4",
+          "A5",
+          "A6",
+          "A7",
+          "A8"
+        ]
+      },
+      "q_max": {
+        "type": "number",
+        "label": "Qmax (Maksymalny udźwig)",
+        "required": true,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "q_1": {
+        "type": "number",
+        "label": "Q1",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_1": {
+        "type": "number",
+        "label": "C1 (%)",
+        "required": false
+      },
+      "q_2": {
+        "type": "number",
+        "label": "Q2",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_2": {
+        "type": "number",
+        "label": "C2 (%)",
+        "required": false
+      },
+      "q_3": {
+        "type": "number",
+        "label": "Q3",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_3": {
+        "type": "number",
+        "label": "C3 (%)",
+        "required": false
+      },
+      "q_4": {
+        "type": "number",
+        "label": "Q4",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_4": {
+        "type": "number",
+        "label": "C4 (%)",
+        "required": false
+      },
+      "q_5": {
+        "type": "number",
+        "label": "Q5",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_5": {
+        "type": "number",
+        "label": "C5 (%)",
+        "required": false
+      },
+      "spec": {
+        "type": "select",
+        "label": "Praca w warunkach specjalnych",
+        "required": true,
+        "options": [
+          "Nie",
+          "Tak"
+        ]
+      },
+      "ponowny_resurs": {
+        "type": "select",
+        "label": "Ponowny resurs",
+        "required": true,
+        "options": [
+          "Nie",
+          "Tak"
+        ]
+      },
+      "ostatni_resurs": {
+        "type": "number",
+        "label": "Ostatni resurs",
+        "required": false,
+        "show_if": {
+          "field": "ponowny_resurs",
+          "value": "Tak"
+        }
+      },
+      "data_resurs": {
+        "type": "date",
+        "label": "Data poprzedniego resursu",
+        "required": false,
+        "show_if": {
+          "field": "ponowny_resurs",
+          "value": "Tak"
+        }
+      },
+      "konstrukcja": {
+        "type": "select",
+        "label": "Stan konstrukcji",
+        "required": true,
+        "options": [
+          "Brak uszkodzeń",
+          "Uszkodzenia"
+        ]
+      },
+      "automatyka": {
+        "type": "select",
+        "label": "Stan automatyki",
+        "required": true,
+        "options": [
+          "Sprawna",
+          "Niesprawna"
+        ]
+      },
+      "sworznie": {
+        "type": "select",
+        "label": "Stan sworzni",
+        "required": true,
+        "options": [
+          "Brak uszkodzeń",
+          "Uszkodzenia"
+        ]
+      },
+      "ciegna": {
+        "type": "select",
+        "label": "Stan cięgien",
+        "required": true,
+        "options": [
+          "Brak uszkodzeń",
+          "Uszkodzenia"
+        ]
+      },
+      "eksploatacja": {
+        "type": "select",
+        "label": "Warunki eksploatacji",
+        "required": true,
+        "options": [
+          "Zgodne",
+          "Niezgodne"
+        ]
+      }
+    }
+  },
+  "wciagnik": {
+    "name": "Wciągnik",
+    "description": "Kalkulator resursu dla wciągnika.",
+    "fields": {
+      "typ": {
+        "type": "select",
+        "label": "Typ wciągnika",
+        "required": false,
+        "options": [
+          "Wciągnik z napędem ręcznym",
+          "Wciągnik łańcuchowy elektryczny",
+          "Wciągnik linowy elektryczny",
+          "Wciągnik hydrauliczny",
+          "Wciągnik pneumatyczny"
+        ]
+      },
+      "nr_fabryczny": {
+        "type": "text",
+        "label": "Nr fabryczny",
+        "required": true
+      },
+      "lata_pracy": {
+        "type": "number",
+        "label": "Lata pracy",
+        "required": true,
+        "unit_type": "time",
+        "default_unit": "lata"
+      },
+      "tryb_pracy": {
+        "label": "Tryb pracy",
+        "type": "select",
+        "required": true,
+        "options": [
+          "jednozmianowy",
+          "dwuzmianowy",
+          "trzyzmianowy"
+        ]
+      },
+      "cykle_zmiana": {
+        "label": "Cykli na zmianę",
+        "type": "number",
+        "required": true
+      },
+      "dni_robocze": {
+        "label": "Dni roboczych w roku",
+        "type": "number",
+        "required": true,
+        "default_value": 250
+      },
+      "ilosc_cykli": {
+        "type": "number",
+        "label": "Ilość cykli",
+        "required": true,
+        "unit_type": "dimensionless",
+        "default_unit": "cykl"
+      },
+      "sposob_rejestracji": {
+        "type": "select",
+        "label": "Sposób rejestracji",
+        "required": true,
+        "options": [
+          "Rejestrowanie przyrządami",
+          "Rejestrowanie w dzienniku, łącznie ze stosowaniem licznika",
+          "Rejestrowanie na podstawie procesu technologicznego",
+          "Rejestrowanie na podstawie informacji o produkcji",
+          "Informacja o warunkach eksploatacji jest niekompletna",
+          "Brak informacji o historii urządzenia"
+        ]
+      },
+      "gnp": {
+        "type": "select",
+        "label": "Grupa natężenia pracy",
+        "required": true,
+        "options": [
+          "A1",
+          "A2",
+          "A3",
+          "A4",
+          "A5",
+          "A6",
+          "A7",
+          "A8"
+        ]
+      },
+      "q_max": {
+        "type": "number",
+        "label": "Qmax (Maksymalny udźwig)",
+        "required": true,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "q_1": {
+        "type": "number",
+        "label": "Q1",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_1": {
+        "type": "number",
+        "label": "C1 (%)",
+        "required": false
+      },
+      "q_2": {
+        "type": "number",
+        "label": "Q2",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_2": {
+        "type": "number",
+        "label": "C2 (%)",
+        "required": false
+      },
+      "q_3": {
+        "type": "number",
+        "label": "Q3",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_3": {
+        "type": "number",
+        "label": "C3 (%)",
+        "required": false
+      },
+      "q_4": {
+        "type": "number",
+        "label": "Q4",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_4": {
+        "type": "number",
+        "label": "C4 (%)",
+        "required": false
+      },
+      "q_5": {
+        "type": "number",
+        "label": "Q5",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_5": {
+        "type": "number",
+        "label": "C5 (%)",
+        "required": false
+      },
+      "spec": {
+        "type": "select",
+        "label": "Praca w warunkach specjalnych",
+        "required": true,
+        "options": [
+          "Nie",
+          "Tak"
+        ]
+      },
+      "ponowny_resurs": {
+        "type": "select",
+        "label": "Ponowny resurs",
+        "required": true,
+        "options": [
+          "Nie",
+          "Tak"
+        ]
+      },
+      "ostatni_resurs": {
+        "type": "number",
+        "label": "Ostatni resurs",
+        "required": false,
+        "show_if": {
+          "field": "ponowny_resurs",
+          "value": "Tak"
+        }
+      },
+      "data_resurs": {
+        "type": "date",
+        "label": "Data poprzedniego resursu",
+        "required": false,
+        "show_if": {
+          "field": "ponowny_resurs",
+          "value": "Tak"
+        }
+      },
+      "konstrukcja": {
+        "type": "select",
+        "label": "Stan konstrukcji",
+        "required": true,
+        "options": [
+          "Brak uszkodzeń",
+          "Uszkodzenia"
+        ]
+      },
+      "automatyka": {
+        "type": "select",
+        "label": "Stan automatyki",
+        "required": true,
+        "options": [
+          "Sprawna",
+          "Niesprawna"
+        ]
+      },
+      "sworznie": {
+        "type": "select",
+        "label": "Stan sworzni",
+        "required": true,
+        "options": [
+          "Brak uszkodzeń",
+          "Uszkodzenia"
+        ]
+      },
+      "ciegna": {
+        "type": "select",
+        "label": "Stan cięgien",
+        "required": true,
+        "options": [
+          "Brak uszkodzeń",
+          "Uszkodzenia"
+        ]
+      },
+      "eksploatacja": {
+        "type": "select",
+        "label": "Warunki eksploatacji",
+        "required": true,
+        "options": [
+          "Zgodne",
+          "Niezgodne"
+        ]
+      }
+    }
+  },
+  "zuraw": {
+    "name": "Żuraw",
+    "description": "Kalkulator resursu dla żurawia.",
+    "fields": {
+      "typ": {
+        "type": "select",
+        "label": "Typ żurawia",
+        "required": false,
+        "options": [
+          "Żuraw na podwoziu kołowym",
+          "Żuraw na podwoziu gąsienicowym",
+          "Żuraw przenośny",
+          "Żuraw leśny",
+          "Żuraw słupowy",
+          "Żuraw przyścienny",
+          "Żuraw szynowy z napędem ręcznym",
+          "Żuraw szynowy warsztatowy montażowy",
+          "Żuraw pokładowy hakowy",
+          "Żuraw pokładowy chwytakowy lub chwytnikowy",
+          "Żuraw stoczniowy",
+          "Żuraw hakowy na składowiskach",
+          "Żuraw chwytakowy lub chwytnikowy na składowiskach",
+          "Żuraw portowy hakowy",
+          "Żuraw portowy chwytakowy lub chwytnikowy",
+          "Żuraw wieżowy do pracy nieregularnej",
+          "Żuraw wieżowy na składowisku materiałów",
+          "Żuraw wieżowy remontowy na platformie wiertniczej",
+          "Żuraw wieżowy stoczniowy remontowy",
+          "Żuraw wieżowy samomontujący się",
+          "Żuraw wieżowy przewoźny (np. budowlany)",
+          "Żuraw wieżowy stoczniowy wyposażeniowy",
+          "Żuraw wieżowy portowy kontenerowy",
+          "Żuraw wieżowy stoczniowy do montażu sekcji",
+          "Żuraw wieżowy chwytakowy",
+          "Żuraw wieżowy dolnoobrotowy",
+          "Żuraw wieżowy górnoobrotowy",
+          "Żuraw samojezdny ogólny z hakiem",
+          "Żuraw samojezdny z chwytnikiem lub osprzętem specjalnym",
+          "Żuraw samojezdny do pracy ciężkiej",
+          "Żuraw boczny"
+        ]
+      },
+      "nr_fabryczny": {
+        "type": "text",
+        "label": "Nr fabryczny",
+        "required": true
+      },
+      "lata_pracy": {
+        "type": "number",
+        "label": "Lata pracy",
+        "required": true,
+        "unit_type": "time",
+        "default_unit": "lata"
+      },
+      "tryb_pracy": {
+        "label": "Tryb pracy",
+        "type": "select",
+        "required": true,
+        "options": [
+          "jednozmianowy",
+          "dwuzmianowy",
+          "trzyzmianowy"
+        ]
+      },
+      "cykle_zmiana": {
+        "label": "Cykli na zmianę",
+        "type": "number",
+        "required": true
+      },
+      "dni_robocze": {
+        "label": "Dni roboczych w roku",
+        "type": "number",
+        "required": true,
+        "default_value": 250
+      },
+      "ilosc_cykli": {
+        "type": "number",
+        "label": "Ilość cykli",
+        "required": true,
+        "unit_type": "dimensionless",
+        "default_unit": "cykl"
+      },
+      "sposob_rejestracji": {
+        "type": "select",
+        "label": "Sposób rejestracji",
+        "required": true,
+        "options": [
+          "Rejestrowanie przyrządami",
+          "Rejestrowanie w dzienniku, łącznie ze stosowaniem licznika",
+          "Rejestrowanie na podstawie procesu technologicznego",
+          "Rejestrowanie na podstawie informacji o produkcji",
+          "Informacja o warunkach eksploatacji jest niekompletna",
+          "Brak informacji o historii urządzenia"
+        ]
+      },
+      "gnp": {
+        "type": "select",
+        "label": "Grupa natężenia pracy",
+        "required": true,
+        "options": [
+          "A1",
+          "A2",
+          "A3",
+          "A4",
+          "A5",
+          "A6",
+          "A7",
+          "A8"
+        ]
+      },
+      "gnp_check": {
+        "type": "select",
+        "label": "Nie znam GNP urządzenia",
+        "required": false,
+        "options": [
+          "Nie",
+          "Tak"
+        ]
+      },
+      "gnp_czas": {
+        "type": "number",
+        "label": "Przewidywany czas użytkowania [lata]",
+        "required": false,
+        "unit_type": "time",
+        "default_unit": "lata",
+        "show_if": {
+          "field": "gnp_check",
+          "value": "Tak"
+        }
+      },
+      "q_max": {
+        "type": "number",
+        "label": "Qmax (Maksymalny udźwig)",
+        "required": true,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "q_o": {
+        "type": "number",
+        "label": "Masa osprzętu Q_osp",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "kg"
+      },
+      "q_1": {
+        "type": "number",
+        "label": "Q1",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_1": {
+        "type": "number",
+        "label": "C1 (%)",
+        "required": false
+      },
+      "q_2": {
+        "type": "number",
+        "label": "Q2",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_2": {
+        "type": "number",
+        "label": "C2 (%)",
+        "required": false
+      },
+      "q_3": {
+        "type": "number",
+        "label": "Q3",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_3": {
+        "type": "number",
+        "label": "C3 (%)",
+        "required": false
+      },
+      "q_4": {
+        "type": "number",
+        "label": "Q4",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_4": {
+        "type": "number",
+        "label": "C4 (%)",
+        "required": false
+      },
+      "q_5": {
+        "type": "number",
+        "label": "Q5",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_5": {
+        "type": "number",
+        "label": "C5 (%)",
+        "required": false
+      },
+      "spec": {
+        "type": "select",
+        "label": "Praca w warunkach specjalnych",
+        "required": true,
+        "options": [
+          "Nie",
+          "Tak"
+        ]
+      },
+      "ponowny_resurs": {
+        "type": "select",
+        "label": "Ponowny resurs",
+        "required": true,
+        "options": [
+          "Nie",
+          "Tak"
+        ]
+      },
+      "ostatni_resurs": {
+        "type": "number",
+        "label": "Ostatni resurs",
+        "required": false,
+        "show_if": {
+          "field": "ponowny_resurs",
+          "value": "Tak"
+        }
+      },
+      "data_resurs": {
+        "type": "date",
+        "label": "Data poprzedniego resursu",
+        "required": false,
+        "show_if": {
+          "field": "ponowny_resurs",
+          "value": "Tak"
+        }
+      },
+      "konstrukcja": {
+        "type": "select",
+        "label": "Stan konstrukcji",
+        "required": true,
+        "options": [
+          "Brak uszkodzeń",
+          "Uszkodzenia"
+        ]
+      },
+      "automatyka": {
+        "type": "select",
+        "label": "Stan automatyki",
+        "required": true,
+        "options": [
+          "Sprawna",
+          "Niesprawna"
+        ]
+      },
+      "sworznie": {
+        "type": "select",
+        "label": "Stan sworzni",
+        "required": true,
+        "options": [
+          "Brak uszkodzeń",
+          "Uszkodzenia"
+        ]
+      },
+      "ciegna": {
+        "type": "select",
+        "label": "Stan cięgien",
+        "required": true,
+        "options": [
+          "Brak uszkodzeń",
+          "Uszkodzenia"
+        ]
+      },
+      "eksploatacja": {
+        "type": "select",
+        "label": "Warunki eksploatacji",
+        "required": true,
+        "options": [
+          "Zgodne",
+          "Niezgodne"
+        ]
+      }
+    }
+  },
+  "zuraw_przeladunkowy": {
+    "name": "Żuraw przeładunkowy",
+    "description": "Kalkulator resursu dla żurawia przeładunkowego.",
+    "fields": {
+      "nr_fabryczny": {
+        "type": "text",
+        "label": "Nr fabryczny",
+        "required": true
+      },
+      "h_max": {
+        "type": "number",
+        "label": "Maks. wysokość podnoszenia h_max",
+        "required": false,
+        "unit_type": "length",
+        "default_unit": "m"
+      },
+      "L_b_max": {
+        "type": "number",
+        "label": "Maks. wysięg boczny L_b_max",
+        "required": false,
+        "unit_type": "length",
+        "default_unit": "m"
+      },
+      "v_pod": {
+        "type": "number",
+        "label": "Prędkość podnoszenia v_pod",
+        "required": false,
+        "unit_type": "speed",
+        "default_unit": "m/min"
+      },
+      "q_o": {
+        "type": "number",
+        "label": "Masa osprzętu Q_osp",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "kg"
+      },
+      "lata_pracy": {
+        "type": "number",
+        "label": "Lata pracy",
+        "required": true,
+        "unit_type": "time",
+        "default_unit": "lata"
+      },
+      "tryb_pracy": {
+        "label": "Tryb pracy",
+        "type": "select",
+        "required": true,
+        "options": [
+          "jednozmianowy",
+          "dwuzmianowy",
+          "trzyzmianowy"
+        ]
+      },
+      "cykle_zmiana": {
+        "label": "Cykli na zmianę",
+        "type": "number",
+        "required": true
+      },
+      "dni_robocze": {
+        "label": "Dni roboczych w roku",
+        "type": "number",
+        "required": true,
+        "default_value": 250
+      },
+      "ilosc_cykli": {
+        "type": "number",
+        "label": "Ilość cykli",
+        "required": true,
+        "unit_type": "dimensionless",
+        "default_unit": "cykl"
+      },
+      "sposob_rejestracji": {
+        "type": "select",
+        "label": "Sposób rejestracji",
+        "required": true,
+        "options": [
+          "Rejestrowanie przyrządami",
+          "Rejestrowanie w dzienniku, łącznie ze stosowaniem licznika",
+          "Rejestrowanie na podstawie procesu technologicznego",
+          "Rejestrowanie na podstawie informacji o produkcji",
+          "Informacja o warunkach eksploatacji jest niekompletna",
+          "Brak informacji o historii urządzenia"
+        ]
+      },
+      "q_max": {
+        "type": "number",
+        "label": "Qmax (Maksymalny udźwig)",
+        "required": true,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "q_1": {
+        "type": "number",
+        "label": "Q1",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_1": {
+        "type": "number",
+        "label": "C1 (%)",
+        "required": false
+      },
+      "q_2": {
+        "type": "number",
+        "label": "Q2",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_2": {
+        "type": "number",
+        "label": "C2 (%)",
+        "required": false
+      },
+      "q_3": {
+        "type": "number",
+        "label": "Q3",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_3": {
+        "type": "number",
+        "label": "C3 (%)",
+        "required": false
+      },
+      "q_4": {
+        "type": "number",
+        "label": "Q4",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_4": {
+        "type": "number",
+        "label": "C4 (%)",
+        "required": false
+      },
+      "q_5": {
+        "type": "number",
+        "label": "Q5",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_5": {
+        "type": "number",
+        "label": "C5 (%)",
+        "required": false
+      },
+      "spec": {
+        "type": "select",
+        "label": "Praca w warunkach specjalnych",
+        "required": true,
+        "options": [
+          "Nie",
+          "Tak"
+        ]
+      },
+      "ponowny_resurs": {
+        "type": "select",
+        "label": "Ponowny resurs",
+        "required": true,
+        "options": [
+          "Nie",
+          "Tak"
+        ]
+      },
+      "ostatni_resurs": {
+        "type": "number",
+        "label": "Ostatni resurs",
+        "required": false,
+        "show_if": {
+          "field": "ponowny_resurs",
+          "value": "Tak"
+        }
+      },
+      "data_resurs": {
+        "type": "date",
+        "label": "Data poprzedniego resursu",
+        "required": false,
+        "show_if": {
+          "field": "ponowny_resurs",
+          "value": "Tak"
+        }
+      },
+      "s_factor": {
+        "type": "select",
+        "label": "Współczynnik klasy obciążenia",
+        "required": true,
+        "options": [
+          "nieznana",
+          "S02",
+          "S01",
+          "S0",
+          "S1",
+          "S2",
+          "S3",
+          "S4",
+          "S5",
+          "S6",
+          "S7"
+        ]
+      },
+      "p_1": {
+        "type": "number",
+        "label": "Procent cykli (P1)",
+        "required": false
+      },
+      "p_2": {
+        "type": "number",
+        "label": "Procent cykli (P2)",
+        "required": false
+      },
+      "p_3": {
+        "type": "number",
+        "label": "Procent cykli (P3)",
+        "required": false
+      },
+      "p_4": {
+        "type": "number",
+        "label": "Procent cykli (P4)",
+        "required": false
+      },
+      "p_5": {
+        "type": "number",
+        "label": "Procent cykli (P5)",
+        "required": false
+      },
+      "p_6": {
+        "type": "number",
+        "label": "Procent cykli (P6)",
+        "required": false
+      },
+      "p_7": {
+        "type": "number",
+        "label": "Procent cykli (P7)",
+        "required": false
+      },
+      "p_8": {
+        "type": "number",
+        "label": "Procent cykli (P8)",
+        "required": false
+      },
+      "p_9": {
+        "type": "number",
+        "label": "Procent cykli (P9)",
+        "required": false
+      },
+      "p_10": {
+        "type": "number",
+        "label": "Procent cykli (P10)",
+        "required": false
+      },
+      "p_11": {
+        "type": "number",
+        "label": "Procent cykli (P11)",
+        "required": false
+      },
+      "p_12": {
+        "type": "number",
+        "label": "Procent cykli (P12)",
+        "required": false
+      },
+      "p_13": {
+        "type": "number",
+        "label": "Procent cykli (P13)",
+        "required": false
+      },
+      "p_14": {
+        "type": "number",
+        "label": "Procent cykli (P14)",
+        "required": false
+      },
+      "p_15": {
+        "type": "number",
+        "label": "Procent cykli (P15)",
+        "required": false
+      },
+      "p_16": {
+        "type": "number",
+        "label": "Procent cykli (P16)",
+        "required": false
+      },
+      "p_17": {
+        "type": "number",
+        "label": "Procent cykli (P17)",
+        "required": false
+      },
+      "p_18": {
+        "type": "number",
+        "label": "Procent cykli (P18)",
+        "required": false
+      },
+      "p_19": {
+        "type": "number",
+        "label": "Procent cykli (P19)",
+        "required": false
+      },
+      "p_20": {
+        "type": "number",
+        "label": "Procent cykli (P20)",
+        "required": false
+      },
+      "p_21": {
+        "type": "number",
+        "label": "Procent cykli (P21)",
+        "required": false
+      },
+      "p_22": {
+        "type": "number",
+        "label": "Procent cykli (P22)",
+        "required": false
+      },
+      "p_23": {
+        "type": "number",
+        "label": "Procent cykli (P23)",
+        "required": false
+      },
+      "p_24": {
+        "type": "number",
+        "label": "Procent cykli (P24)",
+        "required": false
+      },
+      "p_25": {
+        "type": "number",
+        "label": "Procent cykli (P25)",
+        "required": false
+      },
+      "konstrukcja": {
+        "type": "select",
+        "label": "Stan konstrukcji",
+        "required": true,
+        "options": [
+          "Brak uszkodzeń",
+          "Uszkodzenia"
+        ]
+      },
+      "automatyka": {
+        "type": "select",
+        "label": "Stan automatyki",
+        "required": true,
+        "options": [
+          "Sprawna",
+          "Niesprawna"
+        ]
+      },
+      "sworznie": {
+        "type": "select",
+        "label": "Stan sworzni",
+        "required": true,
+        "options": [
+          "Brak uszkodzeń",
+          "Uszkodzenia"
+        ]
+      },
+      "ciegna": {
+        "type": "select",
+        "label": "Stan cięgien",
+        "required": true,
+        "options": [
+          "Brak uszkodzeń",
+          "Uszkodzenia"
+        ]
+      },
+      "eksploatacja": {
+        "type": "select",
+        "label": "Warunki eksploatacji",
+        "required": true,
+        "options": [
+          "Zgodne",
+          "Niezgodne"
+        ]
+      },
+      "szczelnosc": {
+        "type": "select",
+        "label": "Szczelność układu hydraulicznego",
+        "required": true,
+        "options": [
+          "Szczelny",
+          "Nieszczelny"
+        ]
+      },
+      "hamulce": {
+        "type": "select",
+        "label": "Hamulce",
+        "required": true,
+        "options": [
+          "Sprawne",
+          "Niesprawne"
+        ]
+      }
+    }
+  },
+  "wozek_jezdniowy": {
+    "name": "Wózek jezdniowy",
+    "description": "Kalkulator resursu dla wózka jezdniowego.",
+    "fields": {
+      "nr_fabryczny": {
+        "type": "text",
+        "label": "Nr fabryczny",
+        "required": true
+      },
+      "lata_pracy": {
+        "type": "number",
+        "label": "Lata pracy",
+        "required": true,
+        "unit_type": "time",
+        "default_unit": "lata"
+      },
+      "tryb_pracy": {
+        "label": "Tryb pracy",
+        "type": "select",
+        "required": true,
+        "options": [
+          "jednozmianowy",
+          "dwuzmianowy",
+          "trzyzmianowy"
+        ]
+      },
+      "cykle_zmiana": {
+        "label": "Cykli na zmianę",
+        "type": "number",
+        "required": true
+      },
+      "dni_robocze": {
+        "label": "Dni roboczych w roku",
+        "type": "number",
+        "required": true,
+        "default_value": 250
+      },
+      "ilosc_cykli": {
+        "type": "number",
+        "label": "Ilość cykli",
+        "required": true,
+        "unit_type": "dimensionless",
+        "default_unit": "cykl"
+      },
+      "sposob_rejestracji": {
+        "type": "select",
+        "label": "Sposób rejestracji",
+        "required": true,
+        "options": [
+          "Rejestrowanie przyrządami",
+          "Rejestrowanie w dzienniku, łącznie ze stosowaniem licznika",
+          "Rejestrowanie na podstawie procesu technologicznego",
+          "Rejestrowanie na podstawie informacji o produkcji",
+          "Informacja o warunkach eksploatacji jest niekompletna",
+          "Brak informacji o historii urządzenia"
+        ]
+      },
+      "ponowny_resurs": {
+        "type": "select",
+        "label": "Ponowny resurs",
+        "required": true,
+        "options": [
+          "Nie",
+          "Tak"
+        ]
+      },
+      "ostatni_resurs": {
+        "type": "number",
+        "label": "Ostatni resurs (całościowy)",
+        "required": false,
+        "show_if": {
+          "field": "ponowny_resurs",
+          "value": "Tak"
+        }
+      },
+      "ostatni_resurs_mech_pod": {
+        "type": "number",
+        "label": "Ostatni resurs (mech. podnoszenia)",
+        "required": false,
+        "unit_type": "dimensionless",
+        "default_unit": "cycle",
+        "show_if": {
+          "field": "ponowny_resurs",
+          "value": "Tak"
+        }
+      },
+      "ostatni_resurs_mech_jaz": {
+        "type": "number",
+        "label": "Ostatni resurs (mech. jazdy)",
+        "required": false,
+        "unit_type": "dimensionless",
+        "default_unit": "cycle",
+        "show_if": {
+          "field": "ponowny_resurs",
+          "value": "Tak"
+        }
+      },
+      "ostatni_resurs_mech_prz": {
+        "type": "number",
+        "label": "Ostatni resurs (mech. przesuwu)",
+        "required": false,
+        "unit_type": "dimensionless",
+        "default_unit": "cycle",
+        "show_if": {
+          "field": "ponowny_resurs",
+          "value": "Tak"
+        }
+      },
+      "ostatni_resurs_mech_mas": {
+        "type": "number",
+        "label": "Ostatni resurs (mech. masztu)",
+        "required": false,
+        "unit_type": "dimensionless",
+        "default_unit": "cycle",
+        "show_if": {
+          "field": "ponowny_resurs",
+          "value": "Tak"
+        }
+      },
+      "ostatni_licznik": {
+        "type": "number",
+        "label": "Ostatni licznik pracy",
+        "required": false,
+        "unit_type": "time",
+        "default_unit": "lata",
+        "show_if": {
+          "field": "ponowny_resurs",
+          "value": "Tak"
+        }
+      },
+      "data_resurs": {
+        "type": "date",
+        "label": "Data poprzedniego resursu",
+        "required": false,
+        "show_if": {
+          "field": "ponowny_resurs",
+          "value": "Tak"
+        }
+      },
+      "spec": {
+        "type": "select",
+        "label": "Praca w warunkach specjalnych",
+        "required": true,
+        "options": [
+          "Nie",
+          "Tak"
+        ]
+      },
+      "naped": {
+        "type": "select",
+        "label": "Rodzaj napędu",
+        "required": true,
+        "options": [
+          "spalinowy",
+          "elektryczny",
+          "elektryczny prowadzony",
+          "hydrauliczny",
+          "hybrydowy"
+        ]
+      },
+      "operator": {
+        "type": "select",
+        "label": "Liczba operatorów",
+        "required": true,
+        "options": [
+          "1 operator",
+          "2 operatorów",
+          "3 operatorów",
+          "4 operatorów",
+          "5 i więcej operatorów"
+        ]
+      },
+      "temperatura": {
+        "type": "select",
+        "label": "Temperatura pracy",
+        "required": true,
+        "options": [
+          "normalna",
+          "praca w zmiennych temperaturach (praca na zewnątrz, chłodnie)"
+        ]
+      },
+      "srodowisko": {
+        "type": "select",
+        "label": "Środowisko agresywne",
+        "required": true,
+        "options": [
+          "TAK",
+          "NIE"
+        ]
+      },
+      "serwis": {
+        "type": "select",
+        "label": "Plan serwisowy",
+        "required": true,
+        "options": [
+          "plan serwisowy zgodny z wymogami instrukcji ekploatacji",
+          "rozszerzony plan serwisowy przekraczający wymogi instrukcji ekploatacjirozszerzony plan serwisowy przekraczający wymogi instrukcji ekploatacji"
+        ]
+      },
+      "licznik_pracy": {
+        "type": "number",
+        "label": "Licznik pracy",
+        "required": true,
+        "unit_type": "time",
+        "default_unit": "lata"
+      },
+      "h_max": {
+        "type": "number",
+        "label": "Maksymalna wysokość podnoszenia (Hmax)",
+        "required": true,
+        "unit_type": "length",
+        "default_unit": "m"
+      },
+      "v_pod": {
+        "type": "number",
+        "label": "Prędkość podnoszenia (m/s)",
+        "required": true,
+        "unit_type": "velocity",
+        "default_unit": "m/min"
+      },
+      "powierzchnia": {
+        "type": "select",
+        "label": "Rodzaj powierzchni",
+        "required": true,
+        "options": [
+          "równa, gładka bez ubytków",
+          "równa chropowata z małą ilością ubytków",
+          "różnorodna z dużą ilością ubytków"
+        ]
+      },
+      "widly_check": {
+        "type": "select",
+        "label": "Widły standardowe",
+        "required": true,
+        "options": [
+          "Tak",
+          "Nie"
+        ]
+      },
+      "dlugosc_widel": {
+        "type": "number",
+        "label": "Długość wideł (mm)",
+        "required": false,
+        "unit_type": "length",
+        "default_unit": "m"
+      },
+      "alfa": {
+        "type": "number",
+        "label": "Kąt Alfa (odchylenie masztu)",
+        "required": true,
+        "unit_type": "angle"
+      },
+      "beta": {
+        "type": "number",
+        "label": "Kąt Beta (przechył masztu)",
+        "required": true,
+        "unit_type": "angle"
+      },
+      "q_o": {
+        "type": "number",
+        "label": "Ciężar ładunku Qo (kg)",
+        "required": true,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "q_max": {
+        "type": "number",
+        "label": "Qmax (Maksymalny udźwig)",
+        "required": true,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "q_1": {
+        "type": "number",
+        "label": "Q1",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_1": {
+        "type": "number",
+        "label": "C1 (%)",
+        "required": false
+      },
+      "q_2": {
+        "type": "number",
+        "label": "Q2",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_2": {
+        "type": "number",
+        "label": "C2 (%)",
+        "required": false
+      },
+      "q_3": {
+        "type": "number",
+        "label": "Q3",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_3": {
+        "type": "number",
+        "label": "C3 (%)",
+        "required": false
+      },
+      "q_4": {
+        "type": "number",
+        "label": "Q4",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_4": {
+        "type": "number",
+        "label": "C4 (%)",
+        "required": false
+      },
+      "q_5": {
+        "type": "number",
+        "label": "Q5",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_5": {
+        "type": "number",
+        "label": "C5 (%)",
+        "required": false
+      },
+      "max_czas": {
+        "type": "number",
+        "label": "Maksymalny czas pracy (wg producenta)",
+        "required": false,
+        "unit_type": "time",
+        "default_unit": "lata"
+      },
+      "konstrukcja": {
+        "type": "select",
+        "label": "Stan konstrukcji",
+        "required": true,
+        "options": [
+          "Brak uszkodzeń",
+          "Uszkodzenia"
+        ]
+      },
+      "automatyka": {
+        "type": "select",
+        "label": "Stan automatyki",
+        "required": true,
+        "options": [
+          "Sprawna",
+          "Niesprawna"
+        ]
+      },
+      "sworznie": {
+        "type": "select",
+        "label": "Stan sworzni",
+        "required": true,
+        "options": [
+          "Brak uszkodzeń",
+          "Uszkodzenia"
+        ]
+      },
+      "ciegna": {
+        "type": "select",
+        "label": "Stan cięgien",
+        "required": true,
+        "options": [
+          "Brak uszkodzeń",
+          "Uszkodzenia"
+        ]
+      },
+      "eksploatacja": {
+        "type": "select",
+        "label": "Warunki eksploatacji",
+        "required": true,
+        "options": [
+          "Zgodne",
+          "Niezgodne"
+        ]
+      }
+    }
+  },
+  "ukladnica_magazynowa": {
+    "name": "Układnica magazynowa",
+    "description": "Kalkulator resursu dla układnicy magazynowej.",
+    "fields": {
+      "typ": {
+        "type": "select",
+        "label": "Typ układnicy magazynowej",
+        "required": false,
+        "options": [
+          "Układnica magazynowa jednokolomnowa",
+          "Układnica magazynowa dwukolumnowa",
+          "Układnica magazynowa przejezdna na szynach",
+          "Układnica magazynowa przejezdna podwieszana"
+        ]
+      },
+      "ster": {
+        "type": "select",
+        "label": "Rodzaj sterowania",
+        "required": true,
+        "options": [
+          "Układnica magazynowa sterowana autmatycznie",
+          "Układnica magazynowa sterowana ręcznie"
+        ]
+      },
+      "nr_fabryczny": {
+        "type": "text",
+        "label": "Nr fabryczny",
+        "required": true
+      },
+      "h_max": {
+        "type": "number",
+        "label": "Maks. wysokość podnoszenia h_max",
+        "required": true,
+        "unit_type": "length",
+        "default_unit": "m"
+      },
+      "v_pod": {
+        "type": "number",
+        "label": "Prędkość podnoszenia/opuszczania v_pod",
+        "required": true,
+        "unit_type": "speed",
+        "default_unit": "m/min"
+      },
+      "s_sz": {
+        "type": "number",
+        "label": "Długość szyny jezdnej s",
+        "required": true,
+        "unit_type": "length",
+        "default_unit": "m"
+      },
+      "v_jaz": {
+        "type": "number",
+        "label": "Prędkość jazdy v_jaz",
+        "required": true,
+        "unit_type": "speed",
+        "default_unit": "m/min"
+      },
+      "v_prz": {
+        "type": "number",
+        "label": "Prędkość przesuwu platformy v_prz",
+        "required": true,
+        "unit_type": "speed",
+        "default_unit": "m/min"
+      },
+      "q_max": {
+        "type": "number",
+        "label": "Qmax (Maksymalny udźwig)",
+        "required": true,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "licznik_pracy_pod": {
+        "type": "number",
+        "label": "Motogodziny mechanizmu podnoszenia [h]",
+        "required": false,
+        "unit_type": "time",
+        "default_unit": "h"
+      },
+      "licznik_pracy_jaz": {
+        "type": "number",
+        "label": "Motogodziny mechanizmu jazdy [h]",
+        "required": false,
+        "unit_type": "time",
+        "default_unit": "h"
+      },
+      "licznik_pracy_prz": {
+        "type": "number",
+        "label": "Motogodziny mechanizmu przesuwu palety [h]",
+        "required": false,
+        "unit_type": "time",
+        "default_unit": "h"
+      },
+      "lata_pracy": {
+        "type": "number",
+        "label": "Lata pracy",
+        "required": true,
+        "unit_type": "time",
+        "default_unit": "lata"
+      },
+      "tryb_pracy": {
+        "label": "Tryb pracy",
+        "type": "select",
+        "required": true,
+        "options": [
+          "jednozmianowy",
+          "dwuzmianowy",
+          "trzyzmianowy"
+        ]
+      },
+      "cykle_zmiana": {
+        "label": "Cykli na zmianę",
+        "type": "number",
+        "required": true
+      },
+      "dni_robocze": {
+        "label": "Dni roboczych w roku",
+        "type": "number",
+        "required": true,
+        "default_value": 250
+      },
+      "ilosc_cykli": {
+        "type": "number",
+        "label": "Ilość cykli",
+        "required": true,
+        "unit_type": "dimensionless",
+        "default_unit": "cykl"
+      },
+      "sposob_rejestracji": {
+        "type": "select",
+        "label": "Sposób rejestracji",
+        "required": true,
+        "options": [
+          "Rejestrowanie przyrządami",
+          "Rejestrowanie w dzienniku, łącznie ze stosowaniem licznika",
+          "Rejestrowanie na podstawie procesu technologicznego",
+          "Rejestrowanie na podstawie informacji o produkcji",
+          "Informacja o warunkach eksploatacji jest niekompletna",
+          "Brak informacji o historii urządzenia"
+        ]
+      },
+      "q_1": {
+        "type": "number",
+        "label": "Q1",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_1": {
+        "type": "number",
+        "label": "C1 (%)",
+        "required": false
+      },
+      "q_2": {
+        "type": "number",
+        "label": "Q2",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_2": {
+        "type": "number",
+        "label": "C2 (%)",
+        "required": false
+      },
+      "q_3": {
+        "type": "number",
+        "label": "Q3",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_3": {
+        "type": "number",
+        "label": "C3 (%)",
+        "required": false
+      },
+      "q_4": {
+        "type": "number",
+        "label": "Q4",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_4": {
+        "type": "number",
+        "label": "C4 (%)",
+        "required": false
+      },
+      "q_5": {
+        "type": "number",
+        "label": "Q5",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_5": {
+        "type": "number",
+        "label": "C5 (%)",
+        "required": false
+      },
+      "spec": {
+        "type": "select",
+        "label": "Praca w warunkach specjalnych",
+        "required": true,
+        "options": [
+          "Nie",
+          "Tak"
+        ]
+      },
+      "ponowny_resurs": {
+        "type": "select",
+        "label": "Ponowny resurs",
+        "required": true,
+        "options": [
+          "Nie",
+          "Tak"
+        ]
+      },
+      "ostatni_resurs": {
+        "type": "number",
+        "label": "Ostatni resurs",
+        "required": false,
+        "show_if": {
+          "field": "ponowny_resurs",
+          "value": "Tak"
+        }
+      },
+      "data_resurs": {
+        "type": "date",
+        "label": "Data poprzedniego resursu",
+        "required": false,
+        "show_if": {
+          "field": "ponowny_resurs",
+          "value": "Tak"
+        }
+      },
+      "konstrukcja": {
+        "type": "select",
+        "label": "Stan konstrukcji",
+        "required": true,
+        "options": [
+          "Brak uszkodzeń",
+          "Uszkodzenia"
+        ]
+      },
+      "automatyka": {
+        "type": "select",
+        "label": "Stan automatyki",
+        "required": true,
+        "options": [
+          "Sprawna",
+          "Niesprawna"
+        ]
+      },
+      "sworznie": {
+        "type": "select",
+        "label": "Stan sworzni",
+        "required": true,
+        "options": [
+          "Brak uszkodzeń",
+          "Uszkodzenia"
+        ]
+      },
+      "ciegna": {
+        "type": "select",
+        "label": "Stan cięgien",
+        "required": true,
+        "options": [
+          "Brak uszkodzeń",
+          "Uszkodzenia"
+        ]
+      },
+      "eksploatacja": {
+        "type": "select",
+        "label": "Warunki eksploatacji",
+        "required": true,
+        "options": [
+          "Zgodne",
+          "Niezgodne"
+        ]
+      }
+    }
+  },
+  "winda_dekarska": {
+    "name": "Winda Dekarska",
+    "description": "Kalkulator resursu dla windy dekarskiej.",
+    "fields": {
+      "producent": {
+        "type": "text",
+        "label": "Producent",
+        "required": true
+      },
+      "nr_fabryczny": {
+        "type": "text",
+        "label": "Nr fabryczny",
+        "required": true
+      },
+      "nr_udt": {
+        "type": "text",
+        "label": "Nr ewidencyjny UDT",
+        "required": true
+      },
+      "typ": {
+        "type": "select",
+        "label": "Typ windy",
+        "required": true,
+        "options": [
+          "elektryczny",
+          "hydrauliczny"
+        ]
+      },
+      "lata_pracy": {
+        "type": "number",
+        "label": "Lata pracy",
+        "required": true
+      },
+      "tryb_pracy": {
+        "label": "Tryb pracy",
+        "type": "select",
+        "required": true,
+        "options": [
+          "jednozmianowy",
+          "dwuzmianowy",
+          "trzyzmianowy"
+        ]
+      },
+      "cykle_zmiana": {
+        "label": "Cykli na zmianę",
+        "type": "number",
+        "required": true
+      },
+      "dni_robocze": {
+        "label": "Dni roboczych w roku",
+        "type": "number",
+        "required": true,
+        "default_value": 250
+      },
+      "ilosc_cykli": {
+        "type": "number",
+        "label": "Ilość cykli",
+        "required": true
+      },
+      "sposob_rejestracji": {
+        "type": "select",
+        "label": "Sposób rejestracji",
+        "required": true,
+        "options": [
+          "Rejestrowanie przyrządami",
+          "Rejestrowanie w dzienniku, łącznie ze stosowaniem licznika",
+          "Rejestrowanie na podstawie procesu technologicznego",
+          "Rejestrowanie na podstawie informacji o produkcji",
+          "Informacja o warunkach eksploatacji jest niekompletna",
+          "Brak informacji o historii urządzenia"
+        ]
+      },
+      "max_cykle": {
+        "type": "number",
+        "label": "Maks. cykle (producent)",
+        "required": false
+      },
+      "q_max": {
+        "type": "number",
+        "label": "Qmax (Maksymalny udźwig)",
+        "required": true,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "h_max": {
+        "type": "number",
+        "label": "Hmax (Maks. wysokość)",
+        "required": true,
+        "unit_type": "length",
+        "default_unit": "m"
+      },
+      "v_pod": {
+        "type": "number",
+        "label": "Prędkość podnoszenia",
+        "required": true
+      },
+      "jednostka": {
+        "type": "select",
+        "label": "Jednostka prędkości",
+        "required": true,
+        "options": [
+          "[m/s]",
+          "[m/min]"
+        ]
+      },
+      "a_1": {
+        "type": "number",
+        "label": "A1 (%)",
+        "required": true
+      },
+      "a_2": {
+        "type": "number",
+        "label": "A2 (%)",
+        "required": true
+      },
+      "a_3": {
+        "type": "number",
+        "label": "A3 (%)",
+        "required": true
+      },
+      "q_1": {
+        "type": "number",
+        "label": "Q1",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_1": {
+        "type": "number",
+        "label": "C1 (%)"
+      },
+      "q_2": {
+        "type": "number",
+        "label": "Q2",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_2": {
+        "type": "number",
+        "label": "C2 (%)"
+      },
+      "q_3": {
+        "type": "number",
+        "label": "Q3",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_3": {
+        "type": "number",
+        "label": "C3 (%)"
+      },
+      "q_4": {
+        "type": "number",
+        "label": "Q4",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_4": {
+        "type": "number",
+        "label": "C4 (%)"
+      },
+      "q_5": {
+        "type": "number",
+        "label": "Q5",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_5": {
+        "type": "number",
+        "label": "C5 (%)"
+      },
+      "konstrukcja": {
+        "type": "select",
+        "label": "Stan konstrukcji",
+        "options": [
+          "Brak uszkodzeń",
+          "Uszkodzenia"
+        ]
+      },
+      "automatyka": {
+        "type": "select",
+        "label": "Stan automatyki",
+        "options": [
+          "Sprawna",
+          "Niesprawna"
+        ]
+      },
+      "sworznie": {
+        "type": "select",
+        "label": "Stan sworzni",
+        "options": [
+          "Brak uszkodzeń",
+          "Uszkodzenia"
+        ]
+      },
+      "eksploatacja": {
+        "type": "select",
+        "label": "Warunki eksploatacji",
+        "options": [
+          "Zgodne",
+          "Niezgodne"
+        ]
+      },
+      "szczelnosc": {
+        "type": "select",
+        "label": "Szczelność",
+        "options": [
+          "Szczelny",
+          "Nieszczelny"
+        ]
+      },
+      "hamulce": {
+        "type": "select",
+        "label": "Hamulce",
+        "options": [
+          "Sprawne",
+          "Niesprawne"
+        ]
+      }
+    }
+  },
+  "wozek_specjalizowany": {
+    "name": "Wózek specjalizowany",
+    "description": "Kalkulator resursu dla wózka specjalizowanego.",
+    "fields": {
+      "typ": {
+        "type": "select",
+        "label": "Typ wózka specjalizowanego",
+        "required": false,
+        "options": [
+          "Wózek specjalizowany z masztem",
+          "Wózek specjalizowany z żurawiem",
+          "Wózek specjalizowany boczny"
+        ]
+      },
+      "nr_fabryczny": {
+        "type": "text",
+        "label": "Nr fabryczny",
+        "required": true
+      },
+      "lata_pracy": {
+        "type": "number",
+        "label": "Lata pracy",
+        "required": true,
+        "unit_type": "time",
+        "default_unit": "lata"
+      },
+      "tryb_pracy": {
+        "label": "Tryb pracy",
+        "type": "select",
+        "required": true,
+        "options": [
+          "jednozmianowy",
+          "dwuzmianowy",
+          "trzyzmianowy"
+        ]
+      },
+      "cykle_zmiana": {
+        "label": "Cykli na zmianę",
+        "type": "number",
+        "required": true
+      },
+      "dni_robocze": {
+        "label": "Dni roboczych w roku",
+        "type": "number",
+        "required": true,
+        "default_value": 250
+      },
+      "ilosc_cykli": {
+        "type": "number",
+        "label": "Ilość cykli",
+        "required": true,
+        "unit_type": "dimensionless",
+        "default_unit": "cykl"
+      },
+      "sposob_rejestracji": {
+        "type": "select",
+        "label": "Sposób rejestracji",
+        "required": true,
+        "options": [
+          "Rejestrowanie przyrządami",
+          "Rejestrowanie w dzienniku, łącznie ze stosowaniem licznika",
+          "Rejestrowanie na podstawie procesu technologicznego",
+          "Rejestrowanie na podstawie informacji o produkcji",
+          "Informacja o warunkach eksploatacji jest niekompletna",
+          "Brak informacji o historii urządzenia"
+        ]
+      },
+      "gnp": {
+        "type": "select",
+        "label": "Grupa natężenia pracy",
+        "required": true,
+        "options": [
+          "A1",
+          "A2",
+          "A3",
+          "A4",
+          "A5",
+          "A6",
+          "A7",
+          "A8"
+        ]
+      },
+      "q_max": {
+        "type": "number",
+        "label": "Qmax (Maksymalny udźwig)",
+        "required": true,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "q_1": {
+        "type": "number",
+        "label": "Q1",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_1": {
+        "type": "number",
+        "label": "C1 (%)",
+        "required": false
+      },
+      "q_2": {
+        "type": "number",
+        "label": "Q2",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_2": {
+        "type": "number",
+        "label": "C2 (%)",
+        "required": false
+      },
+      "q_3": {
+        "type": "number",
+        "label": "Q3",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_3": {
+        "type": "number",
+        "label": "C3 (%)",
+        "required": false
+      },
+      "q_4": {
+        "type": "number",
+        "label": "Q4",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_4": {
+        "type": "number",
+        "label": "C4 (%)",
+        "required": false
+      },
+      "q_5": {
+        "type": "number",
+        "label": "Q5",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_5": {
+        "type": "number",
+        "label": "C5 (%)",
+        "required": false
+      },
+      "spec": {
+        "type": "select",
+        "label": "Praca w warunkach specjalnych",
+        "required": true,
+        "options": [
+          "Nie",
+          "Tak"
+        ]
+      },
+      "ponowny_resurs": {
+        "type": "select",
+        "label": "Ponowny resurs",
+        "required": true,
+        "options": [
+          "Nie",
+          "Tak"
+        ]
+      },
+      "ostatni_resurs": {
+        "type": "number",
+        "label": "Ostatni resurs",
+        "required": false,
+        "show_if": {
+          "field": "ponowny_resurs",
+          "value": "Tak"
+        }
+      },
+      "data_resurs": {
+        "type": "date",
+        "label": "Data poprzedniego resursu",
+        "required": false,
+        "show_if": {
+          "field": "ponowny_resurs",
+          "value": "Tak"
+        }
+      },
+      "konstrukcja": {
+        "type": "select",
+        "label": "Stan konstrukcji",
+        "required": true,
+        "options": [
+          "Brak uszkodzeń",
+          "Uszkodzenia"
+        ]
+      },
+      "automatyka": {
+        "type": "select",
+        "label": "Stan automatyki",
+        "required": true,
+        "options": [
+          "Sprawna",
+          "Niesprawna"
+        ]
+      },
+      "sworznie": {
+        "type": "select",
+        "label": "Stan sworzni",
+        "required": true,
+        "options": [
+          "Brak uszkodzeń",
+          "Uszkodzenia"
+        ]
+      },
+      "ciegna": {
+        "type": "select",
+        "label": "Stan cięgien",
+        "required": true,
+        "options": [
+          "Brak uszkodzeń",
+          "Uszkodzenia"
+        ]
+      },
+      "eksploatacja": {
+        "type": "select",
+        "label": "Warunki eksploatacji",
+        "required": true,
+        "options": [
+          "Zgodne",
+          "Niezgodne"
+        ]
+      }
+    }
+  },
+  "mech_jazdy_suwnicy": {
+    "name": "Mechanizm Jazdy Suwnicy",
+    "description": "Kalkulator resursu dla mechanizmu jazdy suwnicy.",
+    "fields": {
+      "mechanizm_pomocniczy": {
+        "type": "select",
+        "label": "Mechanizm pomocniczy",
+        "required": false,
+        "options": [
+          "Nie",
+          "Mechanizm pomocniczy (I)",
+          "Mechanizm pomocniczy (II)",
+          "Mechanizm pomocniczy (III)",
+          "Mechanizm pomocniczy (IV)"
+        ]
+      },
+      "nr_fabryczny": {
+        "type": "text",
+        "label": "Nr fabryczny",
+        "required": true
+      },
+      "lata_pracy": {
+        "type": "number",
+        "label": "Lata pracy",
+        "required": true
+      },
+      "ilosc_cykli": {
+        "type": "number",
+        "label": "Ilość cykli",
+        "required": true
+      },
+      "czas_cykle": {
+        "type": "number",
+        "label": "Średni czas cyklu",
+        "required": true
+      },
+      "jednostka": {
+        "type": "select",
+        "label": "Jednostka czasu cyklu",
+        "required": true,
+        "options": [
+          "s",
+          "min",
+          "h"
+        ]
+      },
+      "sposob_rejestracji": {
+        "type": "select",
+        "label": "Sposób rejestracji",
+        "required": true,
+        "options": [
+          "Rejestrowanie przyrządami",
+          "Rejestrowanie w dzienniku, łącznie ze stosowaniem licznika",
+          "Rejestrowanie na podstawie procesu technologicznego",
+          "Rejestrowanie na podstawie informacji o produkcji",
+          "Informacja o warunkach eksploatacji jest niekompletna",
+          "Brak informacji o historii urządzenia"
+        ]
+      },
+      "gnp": {
+        "type": "select",
+        "label": "Grupa natężenia pracy (mechanizmu)",
+        "required": true,
+        "options": [
+          "M1",
+          "M2",
+          "M3",
+          "M4",
+          "M5",
+          "M6",
+          "M7",
+          "M8"
+        ]
+      },
+      "q_max": {
+        "type": "number",
+        "label": "Qmax (Maksymalny udźwig)",
+        "required": true,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "q_1": {
+        "type": "number",
+        "label": "Q1",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_1": {
+        "type": "number",
+        "label": "C1 (%)",
+        "required": false
+      },
+      "q_2": {
+        "type": "number",
+        "label": "Q2",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_2": {
+        "type": "number",
+        "label": "C2 (%)",
+        "required": false
+      },
+      "q_3": {
+        "type": "number",
+        "label": "Q3",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_3": {
+        "type": "number",
+        "label": "C3 (%)",
+        "required": false
+      },
+      "q_4": {
+        "type": "number",
+        "label": "Q4",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_4": {
+        "type": "number",
+        "label": "C4 (%)",
+        "required": false
+      },
+      "q_5": {
+        "type": "number",
+        "label": "Q5",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_5": {
+        "type": "number",
+        "label": "C5 (%)",
+        "required": false
+      },
+      "spec": {
+        "type": "select",
+        "label": "Praca w warunkach specjalnych",
+        "required": true,
+        "options": [
+          "Nie",
+          "Tak"
+        ]
+      },
+      "ponowny_resurs": {
+        "type": "select",
+        "label": "Ponowny resurs",
+        "required": true,
+        "options": [
+          "Nie",
+          "Tak"
+        ]
+      },
+      "ostatni_resurs": {
+        "type": "number",
+        "label": "Ostatni resurs",
+        "required": false,
+        "show_if": {
+          "field": "ponowny_resurs",
+          "value": "Tak"
+        }
+      },
+      "data_resurs": {
+        "type": "date",
+        "label": "Data poprzedniego resursu",
+        "required": false,
+        "show_if": {
+          "field": "ponowny_resurs",
+          "value": "Tak"
+        }
+      }
+    }
+  },
+  "mech_jazdy_wciagarki": {
+    "name": "Mechanizm Jazdy Wciągarki",
+    "description": "Kalkulator resursu dla mechanizmu jazdy wciągarki.",
+    "fields": {
+      "mechanizm_pomocniczy": {
+        "type": "select",
+        "label": "Mechanizm pomocniczy",
+        "required": false,
+        "options": [
+          "Nie",
+          "Mechanizm pomocniczy (I)",
+          "Mechanizm pomocniczy (II)",
+          "Mechanizm pomocniczy (III)",
+          "Mechanizm pomocniczy (IV)"
+        ]
+      },
+      "nr_fabryczny": {
+        "type": "text",
+        "label": "Nr fabryczny",
+        "required": true
+      },
+      "lata_pracy": {
+        "type": "number",
+        "label": "Lata pracy",
+        "required": true
+      },
+      "ilosc_cykli": {
+        "type": "number",
+        "label": "Ilość cykli",
+        "required": true
+      },
+      "czas_cykle": {
+        "type": "number",
+        "label": "Średni czas cyklu",
+        "required": true
+      },
+      "jednostka": {
+        "type": "select",
+        "label": "Jednostka czasu cyklu",
+        "required": true,
+        "options": [
+          "s",
+          "min",
+          "h"
+        ]
+      },
+      "sposob_rejestracji": {
+        "type": "select",
+        "label": "Sposób rejestracji",
+        "required": true,
+        "options": [
+          "Rejestrowanie przyrządami",
+          "Rejestrowanie w dzienniku, łącznie ze stosowaniem licznika",
+          "Rejestrowanie na podstawie procesu technologicznego",
+          "Rejestrowanie na podstawie informacji o produkcji",
+          "Informacja o warunkach eksploatacji jest niekompletna",
+          "Brak informacji o historii urządzenia"
+        ]
+      },
+      "gnp": {
+        "type": "select",
+        "label": "Grupa natężenia pracy (mechanizmu)",
+        "required": true,
+        "options": [
+          "M1",
+          "M2",
+          "M3",
+          "M4",
+          "M5",
+          "M6",
+          "M7",
+          "M8"
+        ]
+      },
+      "q_max": {
+        "type": "number",
+        "label": "Qmax (Maksymalny udźwig)",
+        "required": true,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "q_1": {
+        "type": "number",
+        "label": "Q1",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_1": {
+        "type": "number",
+        "label": "C1 (%)",
+        "required": false
+      },
+      "q_2": {
+        "type": "number",
+        "label": "Q2",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_2": {
+        "type": "number",
+        "label": "C2 (%)",
+        "required": false
+      },
+      "q_3": {
+        "type": "number",
+        "label": "Q3",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_3": {
+        "type": "number",
+        "label": "C3 (%)",
+        "required": false
+      },
+      "q_4": {
+        "type": "number",
+        "label": "Q4",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_4": {
+        "type": "number",
+        "label": "C4 (%)",
+        "required": false
+      },
+      "q_5": {
+        "type": "number",
+        "label": "Q5",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_5": {
+        "type": "number",
+        "label": "C5 (%)",
+        "required": false
+      },
+      "spec": {
+        "type": "select",
+        "label": "Praca w warunkach specjalnych",
+        "required": true,
+        "options": [
+          "Nie",
+          "Tak"
+        ]
+      },
+      "ponowny_resurs": {
+        "type": "select",
+        "label": "Ponowny resurs",
+        "required": true,
+        "options": [
+          "Nie",
+          "Tak"
+        ]
+      },
+      "ostatni_resurs": {
+        "type": "number",
+        "label": "Ostatni resurs",
+        "required": false,
+        "show_if": {
+          "field": "ponowny_resurs",
+          "value": "Tak"
+        }
+      },
+      "data_resurs": {
+        "type": "date",
+        "label": "Data poprzedniego resursu",
+        "required": false,
+        "show_if": {
+          "field": "ponowny_resurs",
+          "value": "Tak"
+        }
+      }
+    }
+  },
+  "mech_jazdy_zurawia": {
+    "name": "Mechanizm Jazdy Żurawia",
+    "description": "Kalkulator resursu dla mechanizmu jazdy żurawia.",
+    "fields": {
+      "mechanizm_pomocniczy": {
+        "type": "select",
+        "label": "Mechanizm pomocniczy",
+        "required": false,
+        "options": [
+          "Nie",
+          "Mechanizm pomocniczy (I)",
+          "Mechanizm pomocniczy (II)",
+          "Mechanizm pomocniczy (III)",
+          "Mechanizm pomocniczy (IV)"
+        ]
+      },
+      "nr_fabryczny": {
+        "type": "text",
+        "label": "Nr fabryczny",
+        "required": true
+      },
+      "lata_pracy": {
+        "type": "number",
+        "label": "Lata pracy",
+        "required": true
+      },
+      "ilosc_cykli": {
+        "type": "number",
+        "label": "Ilość cykli",
+        "required": true
+      },
+      "czas_cykle": {
+        "type": "number",
+        "label": "Średni czas cyklu",
+        "required": true
+      },
+      "jednostka": {
+        "type": "select",
+        "label": "Jednostka czasu cyklu",
+        "required": true,
+        "options": [
+          "s",
+          "min",
+          "h"
+        ]
+      },
+      "sposob_rejestracji": {
+        "type": "select",
+        "label": "Sposób rejestracji",
+        "required": true,
+        "options": [
+          "Rejestrowanie przyrządami",
+          "Rejestrowanie w dzienniku, łącznie ze stosowaniem licznika",
+          "Rejestrowanie na podstawie procesu technologicznego",
+          "Rejestrowanie na podstawie informacji o produkcji",
+          "Informacja o warunkach eksploatacji jest niekompletna",
+          "Brak informacji o historii urządzenia"
+        ]
+      },
+      "gnp": {
+        "type": "select",
+        "label": "Grupa natężenia pracy (mechanizmu)",
+        "required": true,
+        "options": [
+          "M1",
+          "M2",
+          "M3",
+          "M4",
+          "M5",
+          "M6",
+          "M7",
+          "M8"
+        ]
+      },
+      "q_max": {
+        "type": "number",
+        "label": "Qmax (Maksymalny udźwig)",
+        "required": true,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "q_1": {
+        "type": "number",
+        "label": "Q1",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_1": {
+        "type": "number",
+        "label": "C1 (%)",
+        "required": false
+      },
+      "q_2": {
+        "type": "number",
+        "label": "Q2",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_2": {
+        "type": "number",
+        "label": "C2 (%)",
+        "required": false
+      },
+      "q_3": {
+        "type": "number",
+        "label": "Q3",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_3": {
+        "type": "number",
+        "label": "C3 (%)",
+        "required": false
+      },
+      "q_4": {
+        "type": "number",
+        "label": "Q4",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_4": {
+        "type": "number",
+        "label": "C4 (%)",
+        "required": false
+      },
+      "q_5": {
+        "type": "number",
+        "label": "Q5",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_5": {
+        "type": "number",
+        "label": "C5 (%)",
+        "required": false
+      },
+      "spec": {
+        "type": "select",
+        "label": "Praca w warunkach specjalnych",
+        "required": true,
+        "options": [
+          "Nie",
+          "Tak"
+        ]
+      },
+      "ponowny_resurs": {
+        "type": "select",
+        "label": "Ponowny resurs",
+        "required": true,
+        "options": [
+          "Nie",
+          "Tak"
+        ]
+      },
+      "ostatni_resurs": {
+        "type": "number",
+        "label": "Ostatni resurs",
+        "required": false,
+        "show_if": {
+          "field": "ponowny_resurs",
+          "value": "Tak"
+        }
+      },
+      "data_resurs": {
+        "type": "date",
+        "label": "Data poprzedniego resursu",
+        "required": false,
+        "show_if": {
+          "field": "ponowny_resurs",
+          "value": "Tak"
+        }
+      }
+    }
+  },
+  "mech_podnoszenia": {
+    "name": "Mechanizm Podnoszenia",
+    "description": "Kalkulator resursu dla mechanizmu podnoszenia.",
+    "fields": {
+      "mechanizm_pomocniczy": {
+        "type": "select",
+        "label": "Mechanizm pomocniczy",
+        "required": false,
+        "options": [
+          "Nie",
+          "Mechanizm pomocniczy (I)",
+          "Mechanizm pomocniczy (II)",
+          "Mechanizm pomocniczy (III)",
+          "Mechanizm pomocniczy (IV)"
+        ]
+      },
+      "nr_fabryczny": {
+        "type": "text",
+        "label": "Nr fabryczny",
+        "required": true
+      },
+      "lata_pracy": {
+        "type": "number",
+        "label": "Lata pracy",
+        "required": true
+      },
+      "ilosc_cykli": {
+        "type": "number",
+        "label": "Ilość cykli",
+        "required": true
+      },
+      "czas_cykle": {
+        "type": "number",
+        "label": "Średni czas cyklu",
+        "required": true
+      },
+      "jednostka": {
+        "type": "select",
+        "label": "Jednostka czasu cyklu",
+        "required": true,
+        "options": [
+          "s",
+          "min",
+          "h"
+        ]
+      },
+      "sposob_rejestracji": {
+        "type": "select",
+        "label": "Sposób rejestracji",
+        "required": true,
+        "options": [
+          "Rejestrowanie przyrządami",
+          "Rejestrowanie w dzienniku, łącznie ze stosowaniem licznika",
+          "Rejestrowanie na podstawie procesu technologicznego",
+          "Rejestrowanie na podstawie informacji o produkcji",
+          "Informacja o warunkach eksploatacji jest niekompletna",
+          "Brak informacji o historii urządzenia"
+        ]
+      },
+      "gnp": {
+        "type": "select",
+        "label": "Grupa natężenia pracy (mechanizmu)",
+        "required": true,
+        "options": [
+          "M1",
+          "M2",
+          "M3",
+          "M4",
+          "M5",
+          "M6",
+          "M7",
+          "M8"
+        ]
+      },
+      "q_max": {
+        "type": "number",
+        "label": "Qmax (Maksymalny udźwig)",
+        "required": true,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "q_1": {
+        "type": "number",
+        "label": "Q1",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_1": {
+        "type": "number",
+        "label": "C1 (%)",
+        "required": false
+      },
+      "q_2": {
+        "type": "number",
+        "label": "Q2",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_2": {
+        "type": "number",
+        "label": "C2 (%)",
+        "required": false
+      },
+      "q_3": {
+        "type": "number",
+        "label": "Q3",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_3": {
+        "type": "number",
+        "label": "C3 (%)",
+        "required": false
+      },
+      "q_4": {
+        "type": "number",
+        "label": "Q4",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_4": {
+        "type": "number",
+        "label": "C4 (%)",
+        "required": false
+      },
+      "q_5": {
+        "type": "number",
+        "label": "Q5",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_5": {
+        "type": "number",
+        "label": "C5 (%)",
+        "required": false
+      },
+      "spec": {
+        "type": "select",
+        "label": "Praca w warunkach specjalnych",
+        "required": true,
+        "options": [
+          "Nie",
+          "Tak"
+        ]
+      },
+      "ponowny_resurs": {
+        "type": "select",
+        "label": "Ponowny resurs",
+        "required": true,
+        "options": [
+          "Nie",
+          "Tak"
+        ]
+      },
+      "ostatni_resurs": {
+        "type": "number",
+        "label": "Ostatni resurs",
+        "required": false,
+        "show_if": {
+          "field": "ponowny_resurs",
+          "value": "Tak"
+        }
+      },
+      "data_resurs": {
+        "type": "date",
+        "label": "Data poprzedniego resursu",
+        "required": false,
+        "show_if": {
+          "field": "ponowny_resurs",
+          "value": "Tak"
+        }
+      }
+    }
+  },
+  "mech_zmiany_obrotu": {
+    "name": "Mechanizm Zmiany Obrotu",
+    "description": "Kalkulator resursu dla mechanizmu zmiany obrotu.",
+    "fields": {
+      "mechanizm_pomocniczy": {
+        "type": "select",
+        "label": "Mechanizm pomocniczy",
+        "required": false,
+        "options": [
+          "Nie",
+          "Mechanizm pomocniczy (I)",
+          "Mechanizm pomocniczy (II)",
+          "Mechanizm pomocniczy (III)",
+          "Mechanizm pomocniczy (IV)"
+        ]
+      },
+      "nr_fabryczny": {
+        "type": "text",
+        "label": "Nr fabryczny",
+        "required": true
+      },
+      "lata_pracy": {
+        "type": "number",
+        "label": "Lata pracy",
+        "required": true
+      },
+      "ilosc_cykli": {
+        "type": "number",
+        "label": "Ilość cykli",
+        "required": true
+      },
+      "czas_cykle": {
+        "type": "number",
+        "label": "Średni czas cyklu",
+        "required": true
+      },
+      "jednostka": {
+        "type": "select",
+        "label": "Jednostka czasu cyklu",
+        "required": true,
+        "options": [
+          "s",
+          "min",
+          "h"
+        ]
+      },
+      "sposob_rejestracji": {
+        "type": "select",
+        "label": "Sposób rejestracji",
+        "required": true,
+        "options": [
+          "Rejestrowanie przyrządami",
+          "Rejestrowanie w dzienniku, łącznie ze stosowaniem licznika",
+          "Rejestrowanie na podstawie procesu technologicznego",
+          "Rejestrowanie na podstawie informacji o produkcji",
+          "Informacja o warunkach eksploatacji jest niekompletna",
+          "Brak informacji o historii urządzenia"
+        ]
+      },
+      "gnp": {
+        "type": "select",
+        "label": "Grupa natężenia pracy (mechanizmu)",
+        "required": true,
+        "options": [
+          "M1",
+          "M2",
+          "M3",
+          "M4",
+          "M5",
+          "M6",
+          "M7",
+          "M8"
+        ]
+      },
+      "q_max": {
+        "type": "number",
+        "label": "Qmax (Maksymalny udźwig)",
+        "required": true,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "q_1": {
+        "type": "number",
+        "label": "Q1",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_1": {
+        "type": "number",
+        "label": "C1 (%)",
+        "required": false
+      },
+      "q_2": {
+        "type": "number",
+        "label": "Q2",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_2": {
+        "type": "number",
+        "label": "C2 (%)",
+        "required": false
+      },
+      "q_3": {
+        "type": "number",
+        "label": "Q3",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_3": {
+        "type": "number",
+        "label": "C3 (%)",
+        "required": false
+      },
+      "q_4": {
+        "type": "number",
+        "label": "Q4",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_4": {
+        "type": "number",
+        "label": "C4 (%)",
+        "required": false
+      },
+      "q_5": {
+        "type": "number",
+        "label": "Q5",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_5": {
+        "type": "number",
+        "label": "C5 (%)",
+        "required": false
+      },
+      "spec": {
+        "type": "select",
+        "label": "Praca w warunkach specjalnych",
+        "required": true,
+        "options": [
+          "Nie",
+          "Tak"
+        ]
+      },
+      "ponowny_resurs": {
+        "type": "select",
+        "label": "Ponowny resurs",
+        "required": true,
+        "options": [
+          "Nie",
+          "Tak"
+        ]
+      },
+      "ostatni_resurs": {
+        "type": "number",
+        "label": "Ostatni resurs",
+        "required": false,
+        "show_if": {
+          "field": "ponowny_resurs",
+          "value": "Tak"
+        }
+      },
+      "data_resurs": {
+        "type": "date",
+        "label": "Data poprzedniego resursu",
+        "required": false,
+        "show_if": {
+          "field": "ponowny_resurs",
+          "value": "Tak"
+        }
+      }
+    }
+  },
+  "mech_zmiany_wysiegu": {
+    "name": "Mechanizm Zmiany Wysięgu",
+    "description": "Kalkulator resursu dla mechanizmu zmiany wysięgu.",
+    "fields": {
+      "mechanizm_pomocniczy": {
+        "type": "select",
+        "label": "Mechanizm pomocniczy",
+        "required": false,
+        "options": [
+          "Nie",
+          "Mechanizm pomocniczy (I)",
+          "Mechanizm pomocniczy (II)",
+          "Mechanizm pomocniczy (III)",
+          "Mechanizm pomocniczy (IV)"
+        ]
+      },
+      "nr_fabryczny": {
+        "type": "text",
+        "label": "Nr fabryczny",
+        "required": true
+      },
+      "lata_pracy": {
+        "type": "number",
+        "label": "Lata pracy",
+        "required": true
+      },
+      "ilosc_cykli": {
+        "type": "number",
+        "label": "Ilość cykli",
+        "required": true
+      },
+      "czas_cykle": {
+        "type": "number",
+        "label": "Średni czas cyklu",
+        "required": true
+      },
+      "jednostka": {
+        "type": "select",
+        "label": "Jednostka czasu cyklu",
+        "required": true,
+        "options": [
+          "s",
+          "min",
+          "h"
+        ]
+      },
+      "sposob_rejestracji": {
+        "type": "select",
+        "label": "Sposób rejestracji",
+        "required": true,
+        "options": [
+          "Rejestrowanie przyrządami",
+          "Rejestrowanie w dzienniku, łącznie ze stosowaniem licznika",
+          "Rejestrowanie na podstawie procesu technologicznego",
+          "Rejestrowanie na podstawie informacji o produkcji",
+          "Informacja o warunkach eksploatacji jest niekompletna",
+          "Brak informacji o historii urządzenia"
+        ]
+      },
+      "gnp": {
+        "type": "select",
+        "label": "Grupa natężenia pracy (mechanizmu)",
+        "required": true,
+        "options": [
+          "M1",
+          "M2",
+          "M3",
+          "M4",
+          "M5",
+          "M6",
+          "M7",
+          "M8"
+        ]
+      },
+      "q_max": {
+        "type": "number",
+        "label": "Qmax (Maksymalny udźwig)",
+        "required": true,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "q_1": {
+        "type": "number",
+        "label": "Q1",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_1": {
+        "type": "number",
+        "label": "C1 (%)",
+        "required": false
+      },
+      "q_2": {
+        "type": "number",
+        "label": "Q2",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_2": {
+        "type": "number",
+        "label": "C2 (%)",
+        "required": false
+      },
+      "q_3": {
+        "type": "number",
+        "label": "Q3",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_3": {
+        "type": "number",
+        "label": "C3 (%)",
+        "required": false
+      },
+      "q_4": {
+        "type": "number",
+        "label": "Q4",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_4": {
+        "type": "number",
+        "label": "C4 (%)",
+        "required": false
+      },
+      "q_5": {
+        "type": "number",
+        "label": "Q5",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_5": {
+        "type": "number",
+        "label": "C5 (%)",
+        "required": false
+      },
+      "spec": {
+        "type": "select",
+        "label": "Praca w warunkach specjalnych",
+        "required": true,
+        "options": [
+          "Nie",
+          "Tak"
+        ]
+      },
+      "ponowny_resurs": {
+        "type": "select",
+        "label": "Ponowny resurs",
+        "required": true,
+        "options": [
+          "Nie",
+          "Tak"
+        ]
+      },
+      "ostatni_resurs": {
+        "type": "number",
+        "label": "Ostatni resurs",
+        "required": false,
+        "show_if": {
+          "field": "ponowny_resurs",
+          "value": "Tak"
+        }
+      },
+      "data_resurs": {
+        "type": "date",
+        "label": "Data poprzedniego resursu",
+        "required": false,
+        "show_if": {
+          "field": "ponowny_resurs",
+          "value": "Tak"
+        }
+      }
+    }
+  },
+  "podest_ruchomy": {
+    "name": "Podest Ruchomy",
+    "description": "Kalkulator resursu dla podestu ruchomego.",
+    "fields": {
+      "nr_fabryczny": {
+        "type": "text",
+        "label": "Nr fabryczny",
+        "required": true
+      },
+      "typ": {
+        "type": "select",
+        "label": "Typ podestu",
+        "required": true,
+        "options": [
+          "nożycowy samobieżny",
+          "masztowy samobieżny",
+          "masztowy stacjonarny",
+          "przegubowy",
+          "teleskopowy",
+          "przegubowo-teleskopowy",
+          "składany na pojeździe BUMAR"
+        ]
+      },
+      "lata_pracy": {
+        "type": "number",
+        "label": "Lata pracy",
+        "required": true
+      },
+      "tryb_pracy": {
+        "label": "Tryb pracy",
+        "type": "select",
+        "required": true,
+        "options": [
+          "jednozmianowy",
+          "dwuzmianowy",
+          "trzyzmianowy"
+        ]
+      },
+      "cykle_zmiana": {
+        "label": "Cykli na zmianę",
+        "type": "number",
+        "required": true
+      },
+      "dni_robocze": {
+        "label": "Dni roboczych w roku",
+        "type": "number",
+        "required": true,
+        "default_value": 250
+      },
+      "ilosc_cykli": {
+        "type": "number",
+        "label": "Ilość cykli",
+        "required": true
+      },
+      "sposob_rejestracji": {
+        "type": "select",
+        "label": "Sposób rejestracji",
+        "required": true,
+        "options": [
+          "Rejestrowanie przyrządami",
+          "Rejestrowanie w dzienniku, łącznie ze stosowaniem licznika",
+          "Rejestrowanie na podstawie procesu technologicznego",
+          "Rejestrowanie na podstawie informacji o produkcji",
+          "Informacja o warunkach eksploatacji jest niekompletna",
+          "Brak informacji o historii urządzenia"
+        ]
+      },
+      "max_cykle_prod": {
+        "type": "number",
+        "label": "Maks. cykle (producent)",
+        "required": false
+      },
+      "max_moto_prod": {
+        "type": "number",
+        "label": "Maks. motogodziny (producent)",
+        "required": false,
+        "show_if": {
+          "field": "typ",
+          "value": [
+            "BUMAR"
+          ]
+        }
+      },
+      "moto_podest_ruchomy": {
+        "type": "number",
+        "label": "Ilość motogodzin",
+        "required": false,
+        "show_if": {
+          "field": "typ",
+          "value": [
+            "BUMAR"
+          ]
+        }
+      },
+      "procent_bumar": {
+        "type": "number",
+        "label": "Procent wykorzystania (BUMAR)",
+        "required": false,
+        "show_if": {
+          "field": "typ",
+          "value": [
+            "BUMAR"
+          ]
+        }
+      },
+      "q_max": {
+        "type": "number",
+        "label": "Qmax (Maksymalny udźwig)",
+        "required": true,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "h_max": {
+        "type": "number",
+        "label": "Hmax (Maks. wysokość)",
+        "required": false,
+        "unit_type": "length",
+        "default_unit": "m"
+      },
+      "spec": {
+        "type": "select",
+        "label": "Praca w warunkach specjalnych",
+        "required": true,
+        "options": [
+          "Nie",
+          "Tak"
+        ]
+      },
+      "ponowny_resurs": {
+        "type": "select",
+        "label": "Ponowny resurs",
+        "required": true,
+        "options": [
+          "Nie",
+          "Tak"
+        ]
+      },
+      "ostatni_resurs": {
+        "type": "number",
+        "label": "Ostatni resurs",
+        "required": false,
+        "show_if": {
+          "field": "ponowny_resurs",
+          "value": "Tak"
+        }
+      },
+      "data_resurs": {
+        "type": "date",
+        "label": "Data poprzedniego resursu",
+        "required": false,
+        "show_if": {
+          "field": "ponowny_resurs",
+          "value": "Tak"
+        }
+      },
+      "s_factor": {
+        "type": "select",
+        "label": "Klasa obciążenia (S)",
+        "required": false,
+        "options": [
+          "nieznana",
+          "S02",
+          "S01",
+          "S0",
+          "S1",
+          "S2",
+          "S3",
+          "S4",
+          "S5",
+          "S6",
+          "S7"
+        ]
+      },
+      "q_1": {
+        "type": "number",
+        "label": "Q1",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_1": {
+        "type": "number",
+        "label": "C1 (%)"
+      },
+      "q_2": {
+        "type": "number",
+        "label": "Q2",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_2": {
+        "type": "number",
+        "label": "C2 (%)"
+      },
+      "q_3": {
+        "type": "number",
+        "label": "Q3",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_3": {
+        "type": "number",
+        "label": "C3 (%)"
+      },
+      "q_4": {
+        "type": "number",
+        "label": "Q4",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_4": {
+        "type": "number",
+        "label": "C4 (%)"
+      },
+      "q_5": {
+        "type": "number",
+        "label": "Q5",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_5": {
+        "type": "number",
+        "label": "C5 (%)"
+      },
+      "h_1": {
+        "type": "number",
+        "label": "H1",
+        "required": false,
+        "unit_type": "length",
+        "default_unit": "m"
+      },
+      "cc_1": {
+        "type": "number",
+        "label": "CC1 (%)"
+      },
+      "h_2": {
+        "type": "number",
+        "label": "H2",
+        "required": false,
+        "unit_type": "length",
+        "default_unit": "m"
+      },
+      "cc_2": {
+        "type": "number",
+        "label": "CC2 (%)"
+      },
+      "h_3": {
+        "type": "number",
+        "label": "H3",
+        "required": false,
+        "unit_type": "length",
+        "default_unit": "m"
+      },
+      "cc_3": {
+        "type": "number",
+        "label": "CC3 (%)"
+      },
+      "h_4": {
+        "type": "number",
+        "label": "H4",
+        "required": false,
+        "unit_type": "length",
+        "default_unit": "m"
+      },
+      "cc_4": {
+        "type": "number",
+        "label": "CC4 (%)"
+      },
+      "h_5": {
+        "type": "number",
+        "label": "H5",
+        "required": false,
+        "unit_type": "length",
+        "default_unit": "m"
+      },
+      "cc_5": {
+        "type": "number",
+        "label": "CC5 (%)"
+      },
+      "p_1": {
+        "type": "number",
+        "label": "P1 (%)"
+      },
+      "p_2": {
+        "type": "number",
+        "label": "P2 (%)"
+      },
+      "p_3": {
+        "type": "number",
+        "label": "P3 (%)"
+      },
+      "p_4": {
+        "type": "number",
+        "label": "P4 (%)"
+      },
+      "p_5": {
+        "type": "number",
+        "label": "P5 (%)"
+      },
+      "p_6": {
+        "type": "number",
+        "label": "P6 (%)"
+      },
+      "p_7": {
+        "type": "number",
+        "label": "P7 (%)"
+      },
+      "p_8": {
+        "type": "number",
+        "label": "P8 (%)"
+      },
+      "p_9": {
+        "type": "number",
+        "label": "P9 (%)"
+      },
+      "p_10": {
+        "type": "number",
+        "label": "P10 (%)"
+      },
+      "p_11": {
+        "type": "number",
+        "label": "P11 (%)"
+      },
+      "p_12": {
+        "type": "number",
+        "label": "P12 (%)"
+      },
+      "p_13": {
+        "type": "number",
+        "label": "P13 (%)"
+      },
+      "p_14": {
+        "type": "number",
+        "label": "P14 (%)"
+      },
+      "p_15": {
+        "type": "number",
+        "label": "P15 (%)"
+      },
+      "p_16": {
+        "type": "number",
+        "label": "P16 (%)"
+      },
+      "p_17": {
+        "type": "number",
+        "label": "P17 (%)"
+      },
+      "p_18": {
+        "type": "number",
+        "label": "P18 (%)"
+      },
+      "p_19": {
+        "type": "number",
+        "label": "P19 (%)"
+      },
+      "p_20": {
+        "type": "number",
+        "label": "P20 (%)"
+      },
+      "p_21": {
+        "type": "number",
+        "label": "P21 (%)"
+      },
+      "p_22": {
+        "type": "number",
+        "label": "P22 (%)"
+      },
+      "p_23": {
+        "type": "number",
+        "label": "P23 (%)"
+      },
+      "p_24": {
+        "type": "number",
+        "label": "P24 (%)"
+      },
+      "p_25": {
+        "type": "number",
+        "label": "P25 (%)"
+      },
+      "konstrukcja": {
+        "type": "select",
+        "label": "Stan konstrukcji",
+        "options": [
+          "Brak uszkodzeń",
+          "Uszkodzenia"
+        ]
+      },
+      "automatyka": {
+        "type": "select",
+        "label": "Stan automatyki",
+        "options": [
+          "Sprawna",
+          "Niesprawna"
+        ]
+      },
+      "sworznie": {
+        "type": "select",
+        "label": "Stan sworzni",
+        "options": [
+          "Brak uszkodzeń",
+          "Uszkodzenia"
+        ]
+      },
+      "ciegna": {
+        "type": "select",
+        "label": "Stan cięgien",
+        "options": [
+          "Brak uszkodzeń",
+          "Uszkodzenia"
+        ]
+      },
+      "eksploatacja": {
+        "type": "select",
+        "label": "Warunki eksploatacji",
+        "options": [
+          "Zgodne",
+          "Niezgodne"
+        ]
+      },
+      "szczelnosc": {
+        "type": "select",
+        "label": "Szczelność",
+        "options": [
+          "Szczelny",
+          "Nieszczelny"
+        ]
+      },
+      "hamulce": {
+        "type": "select",
+        "label": "Hamulce",
+        "options": [
+          "Sprawne",
+          "Niesprawne"
+        ]
+      }
+    }
+  },
+  "podest_zaladowczy": {
+    "name": "Podest Załadowczy",
+    "description": "Kalkulator resursu dla podestu załadowczego.",
+    "fields": {
+      "typ": {
+        "type": "select",
+        "label": "Typ podestu",
+        "required": true,
+        "options": [
+          "hydrauliczny (napęd prostowodowy)",
+          "cięgnowy (napęd cięgnowy kolumnowy)"
+        ]
+      },
+      "nr_fabryczny": {
+        "type": "text",
+        "label": "Nr fabryczny",
+        "required": true
+      },
+      "lata_pracy": {
+        "type": "number",
+        "label": "Lata pracy",
+        "required": true
+      },
+      "tryb_pracy": {
+        "label": "Tryb pracy",
+        "type": "select",
+        "required": true,
+        "options": [
+          "jednozmianowy",
+          "dwuzmianowy",
+          "trzyzmianowy"
+        ]
+      },
+      "cykle_zmiana": {
+        "label": "Cykli na zmianę",
+        "type": "number",
+        "required": true
+      },
+      "dni_robocze": {
+        "label": "Dni roboczych w roku",
+        "type": "number",
+        "required": true,
+        "default_value": 250
+      },
+      "ilosc_cykli": {
+        "type": "number",
+        "label": "Ilość cykli",
+        "required": true
+      },
+      "sposob_rejestracji": {
+        "type": "select",
+        "label": "Sposób rejestracji",
+        "required": true,
+        "options": [
+          "Rejestrowanie przyrządami",
+          "Rejestrowanie w dzienniku, łącznie ze stosowaniem licznika",
+          "Rejestrowanie na podstawie procesu technologicznego",
+          "Rejestrowanie na podstawie informacji o produkcji",
+          "Informacja o warunkach eksploatacji jest niekompletna",
+          "Brak informacji o historii urządzenia"
+        ]
+      },
+      "max_cykle_prod": {
+        "type": "number",
+        "label": "Maks. cykle (producent)",
+        "required": false
+      },
+      "q_max": {
+        "type": "number",
+        "label": "Qmax (Maksymalny udźwig)",
+        "required": true,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "q_1": {
+        "type": "number",
+        "label": "Q1",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_1": {
+        "type": "number",
+        "label": "C1 (%)"
+      },
+      "q_2": {
+        "type": "number",
+        "label": "Q2",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_2": {
+        "type": "number",
+        "label": "C2 (%)"
+      },
+      "q_3": {
+        "type": "number",
+        "label": "Q3",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_3": {
+        "type": "number",
+        "label": "C3 (%)"
+      },
+      "q_4": {
+        "type": "number",
+        "label": "Q4",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_4": {
+        "type": "number",
+        "label": "C4 (%)"
+      },
+      "q_5": {
+        "type": "number",
+        "label": "Q5",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_5": {
+        "type": "number",
+        "label": "C5 (%)"
+      },
+      "ponowny_resurs": {
+        "type": "select",
+        "label": "Ponowny resurs",
+        "required": true,
+        "options": [
+          "Nie",
+          "Tak"
+        ]
+      },
+      "ostatni_resurs": {
+        "type": "number",
+        "label": "Ostatni resurs",
+        "required": false,
+        "show_if": {
+          "field": "ponowny_resurs",
+          "value": "Tak"
+        }
+      },
+      "data_resurs": {
+        "type": "date",
+        "label": "Data poprzedniego resursu",
+        "required": false,
+        "show_if": {
+          "field": "ponowny_resurs",
+          "value": "Tak"
+        }
+      },
+      "konstrukcja": {
+        "type": "select",
+        "label": "Stan konstrukcji",
+        "options": [
+          "Brak uszkodzeń",
+          "Uszkodzenia"
+        ]
+      },
+      "automatyka": {
+        "type": "select",
+        "label": "Stan automatyki",
+        "options": [
+          "Sprawna",
+          "Niesprawna"
+        ]
+      },
+      "sworznie": {
+        "type": "select",
+        "label": "Stan sworzni",
+        "options": [
+          "Brak uszkodzeń",
+          "Uszkodzenia"
+        ]
+      },
+      "ciegna": {
+        "type": "select",
+        "label": "Stan cięgien",
+        "options": [
+          "Brak uszkodzeń",
+          "Uszkodzenia"
+        ]
+      },
+      "eksploatacja": {
+        "type": "select",
+        "label": "Warunki eksploatacji",
+        "options": [
+          "Zgodne",
+          "Niezgodne"
+        ]
+      },
+      "szczelnosc": {
+        "type": "select",
+        "label": "Szczelność",
+        "options": [
+          "Szczelny",
+          "Nieszczelny"
+        ]
+      },
+      "hamulce": {
+        "type": "select",
+        "label": "Hamulce",
+        "options": [
+          "Sprawne",
+          "Niesprawne"
+        ]
+      }
+    }
+  },
+  "podnosnik_samochodowy": {
+    "name": "Podnośnik Samochodowy",
+    "description": "Kalkulator resursu dla podnośnika samochodowego.",
+    "fields": {
+      "typ": {
+        "type": "select",
+        "label": "Typ podnośnika samochodowego",
+        "required": false,
+        "options": [
+          "Podnośnik samochodowy dwukolumnowy",
+          "Podnośnik samochodowy czterokolumnowy",
+          "Podnośnik samochodowy nożycowy"
+        ]
+      },
+      "nr_fabryczny": {
+        "type": "text",
+        "label": "Nr fabryczny",
+        "required": true
+      },
+      "lata_pracy": {
+        "type": "number",
+        "label": "Lata pracy",
+        "required": true
+      },
+      "tryb_pracy": {
+        "label": "Tryb pracy",
+        "type": "select",
+        "required": true,
+        "options": [
+          "jednozmianowy",
+          "dwuzmianowy",
+          "trzyzmianowy"
+        ]
+      },
+      "cykle_zmiana": {
+        "label": "Cykli na zmianę",
+        "type": "number",
+        "required": true
+      },
+      "dni_robocze": {
+        "label": "Dni roboczych w roku",
+        "type": "number",
+        "required": true,
+        "default_value": 250
+      },
+      "ilosc_cykli": {
+        "type": "number",
+        "label": "Ilość cykli",
+        "required": true
+      },
+      "sposob_rejestracji": {
+        "type": "select",
+        "label": "Sposób rejestracji",
+        "required": true,
+        "options": [
+          "Rejestrowanie przyrządami",
+          "Rejestrowanie w dzienniku, łącznie ze stosowaniem licznika",
+          "Rejestrowanie na podstawie procesu technologicznego",
+          "Rejestrowanie na podstawie informacji o produkcji",
+          "Informacja o warunkach eksploatacji jest niekompletna",
+          "Brak informacji o historii urządzenia"
+        ]
+      },
+      "max_cykle_prod": {
+        "type": "number",
+        "label": "Maks. cykle (producent)",
+        "required": false
+      },
+      "q_max": {
+        "type": "number",
+        "label": "Qmax (Maksymalny udźwig)",
+        "required": true,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "q_1": {
+        "type": "number",
+        "label": "Q1",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_1": {
+        "type": "number",
+        "label": "C1 (%)"
+      },
+      "q_2": {
+        "type": "number",
+        "label": "Q2",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_2": {
+        "type": "number",
+        "label": "C2 (%)"
+      },
+      "q_3": {
+        "type": "number",
+        "label": "Q3",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_3": {
+        "type": "number",
+        "label": "C3 (%)"
+      },
+      "q_4": {
+        "type": "number",
+        "label": "Q4",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_4": {
+        "type": "number",
+        "label": "C4 (%)"
+      },
+      "q_5": {
+        "type": "number",
+        "label": "Q5",
+        "required": false,
+        "unit_type": "mass",
+        "default_unit": "t"
+      },
+      "c_5": {
+        "type": "number",
+        "label": "C5 (%)"
+      },
+      "ponowny_resurs": {
+        "type": "select",
+        "label": "Ponowny resurs",
+        "required": true,
+        "options": [
+          "Nie",
+          "Tak"
+        ]
+      },
+      "ostatni_resurs": {
+        "type": "number",
+        "label": "Ostatni resurs",
+        "required": false,
+        "show_if": {
+          "field": "ponowny_resurs",
+          "value": "Tak"
+        }
+      },
+      "data_resurs": {
+        "type": "date",
+        "label": "Data poprzedniego resursu",
+        "required": false,
+        "show_if": {
+          "field": "ponowny_resurs",
+          "value": "Tak"
+        }
+      },
+      "konstrukcja": {
+        "type": "select",
+        "label": "Stan konstrukcji",
+        "options": [
+          "Brak uszkodzeń",
+          "Uszkodzenia"
+        ]
+      },
+      "automatyka": {
+        "type": "select",
+        "label": "Stan automatyki",
+        "options": [
+          "Sprawna",
+          "Niesprawna"
+        ]
+      },
+      "sworznie": {
+        "type": "select",
+        "label": "Stan sworzni",
+        "options": [
+          "Brak uszkodzeń",
+          "Uszkodzenia"
+        ]
+      },
+      "ciegna": {
+        "type": "select",
+        "label": "Stan cięgien",
+        "options": [
+          "Brak uszkodzeń",
+          "Uszkodzenia"
+        ]
+      },
+      "eksploatacja": {
+        "type": "select",
+        "label": "Warunki eksploatacji",
+        "options": [
+          "Zgodne",
+          "Niezgodne"
+        ]
+      },
+      "szczelnosc": {
+        "type": "select",
+        "label": "Szczelność",
+        "options": [
+          "Szczelny",
+          "Nieszczelny"
+        ]
+      },
+      "nakretka": {
+        "type": "select",
+        "label": "Nakrętka bezpieczeństwa",
+        "options": [
+          "Sprawna",
+          "Niesprawna"
+        ]
+      }
+    }
+  }
+}
