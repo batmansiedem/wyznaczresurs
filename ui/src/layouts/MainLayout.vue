@@ -34,6 +34,13 @@
                 <q-item-section avatar><q-icon name="lock" color="primary" /></q-item-section>
                 <q-item-section>Zmień hasło</q-item-section>
               </q-item>
+              <template v-if="userStore.user?.is_superuser">
+                <q-separator />
+                <q-item clickable v-close-popup to="/admin">
+                  <q-item-section avatar><q-icon name="admin_panel_settings" color="red-7" /></q-item-section>
+                  <q-item-section class="text-weight-bold text-red-7">Panel Admina</q-item-section>
+                </q-item>
+              </template>
               <q-separator />
               <q-item clickable v-close-popup @click="handleLogout" class="text-negative">
                 <q-item-section avatar><q-icon name="logout" color="negative" /></q-item-section>
@@ -84,6 +91,16 @@
           <q-item-section class="text-weight-medium">Cennik i punkty</q-item-section>
         </q-item>
 
+        <!-- Panel admina — tylko dla superusera -->
+        <template v-if="userStore.user?.is_superuser">
+          <q-separator class="q-my-sm" />
+          <q-item-label header class="text-overline text-red-7">Administrator</q-item-label>
+          <q-item clickable to="/admin" active-class="text-red-7 bg-red-opacity" class="rounded-borders">
+            <q-item-section avatar><q-icon name="admin_panel_settings" color="red-7" /></q-item-section>
+            <q-item-section class="text-weight-bold text-red-7">Panel administratora</q-item-section>
+          </q-item>
+        </template>
+
         <q-separator class="q-my-md" />
 
         <q-item clickable to="/contact" active-class="text-primary bg-primary-opacity" class="rounded-borders">
@@ -95,11 +112,24 @@
           <q-item-section avatar><q-icon name="help_outline" /></q-item-section>
           <q-item-section class="text-weight-medium">Pomoc / FAQ</q-item-section>
         </q-item>
+
+        <!-- Linki prawne na dole -->
+        <div class="q-mt-xl q-mb-sm q-px-sm legal-footer">
+          <div class="text-caption text-grey-5 q-mb-xs">Informacje prawne</div>
+          <div class="row q-gutter-xs">
+            <router-link to="/regulamin" class="legal-link text-caption">Regulamin</router-link>
+            <span class="text-grey-5 text-caption">·</span>
+            <router-link to="/rodo" class="legal-link text-caption">RODO</router-link>
+            <span class="text-grey-5 text-caption">·</span>
+            <router-link to="/cookies" class="legal-link text-caption">Cookies</router-link>
+          </div>
+          <div class="text-caption text-grey-5 q-mt-xs">&copy; {{ new Date().getFullYear() }} wyznaczresurs.com</div>
+        </div>
       </q-list>
     </q-drawer>
 
     <q-page-container>
-      
+
       <!-- Breadcrumbs -->
       <q-toolbar v-if="breadcrumbs.length" dense class="q-px-md q-mt-md" style="min-height: 28px; padding-bottom: 6px">
         <q-breadcrumbs separator="›" :class="$q.dark.isActive ? 'text-grey-5' : 'text-grey-6'" active-color="primary">
@@ -159,5 +189,17 @@ const handleLogout = async () => {
 <style lang="scss">
 .bg-primary-opacity {
   background-color: rgba(var(--q-primary-rgb), 0.08);
+}
+.bg-red-opacity {
+  background-color: rgba(211, 47, 47, 0.08);
+}
+.legal-footer {
+  border-top: 1px solid rgba(0,0,0,0.06);
+  padding-top: 8px;
+}
+.legal-link {
+  color: #9e9e9e;
+  text-decoration: none;
+  &:hover { color: #1565C0; text-decoration: underline; }
 }
 </style>

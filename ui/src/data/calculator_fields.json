@@ -2660,6 +2660,11 @@
           "S7"
         ]
       },
+      "diagram_ldr": {
+        "type": "diagram",
+        "label": "Schemat stref zasięgu i wysokości (L_dr)",
+        "svg": "schemat_ldr"
+      },
       "p_1": {
         "type": "number",
         "label": "Procent cykli (P1)",
@@ -5067,9 +5072,10 @@
           "nożycowy samobieżny",
           "masztowy samobieżny",
           "masztowy stacjonarny",
-          "przegubowy",
-          "teleskopowy",
-          "przegubowo-teleskopowy",
+          "składany przenośny",
+          "teleskopowy samobieżny",
+          "teleskopowy na pojeździe",
+          "składany na pojeździe",
           "składany na pojeździe BUMAR"
         ]
       },
@@ -5168,6 +5174,24 @@
         "required": false,
         "unit_type": "length",
         "default_unit": "m"
+      },
+      "L_b_max": {
+        "type": "number",
+        "label": "Maksymalny zasięg boczny L_b_max",
+        "required": false,
+        "unit_type": "length",
+        "default_unit": "m",
+        "show_if": {
+          "field": "typ",
+          "negate": true,
+          "value": [
+            "nożycowy",
+            "masztowy",
+            "przenośny",
+            "BUMAR",
+            ""
+          ]
+        }
       },
       "spec": {
         "type": "select",
@@ -5278,160 +5302,544 @@
         "type": "number",
         "label": "C5 (%)"
       },
+      "diagram_hdr": {
+        "type": "diagram",
+        "label": "Schemat stref wysokości (H_dr)",
+        "svg": "schemat_hdr",
+        "show_if": {
+          "field": "typ",
+          "value": [
+            "nożycowy",
+            "masztowy",
+            "przenośny"
+          ]
+        }
+      },
       "h_1": {
         "type": "number",
-        "label": "H1",
+        "label": "Wysokość H1",
         "required": false,
         "unit_type": "length",
-        "default_unit": "m"
+        "default_unit": "m",
+        "show_if": {
+          "field": "typ",
+          "value": [
+            "nożycowy",
+            "masztowy",
+            "przenośny"
+          ]
+        }
       },
       "cc_1": {
         "type": "number",
-        "label": "CC1 (%)"
+        "label": "Udział cc1 (%)",
+        "show_if": {
+          "field": "typ",
+          "value": [
+            "nożycowy",
+            "masztowy",
+            "przenośny"
+          ]
+        }
       },
       "h_2": {
         "type": "number",
-        "label": "H2",
+        "label": "Wysokość H2",
         "required": false,
         "unit_type": "length",
-        "default_unit": "m"
+        "default_unit": "m",
+        "show_if": {
+          "field": "typ",
+          "value": [
+            "nożycowy",
+            "masztowy",
+            "przenośny"
+          ]
+        }
       },
       "cc_2": {
         "type": "number",
-        "label": "CC2 (%)"
+        "label": "Udział cc2 (%)",
+        "show_if": {
+          "field": "typ",
+          "value": [
+            "nożycowy",
+            "masztowy",
+            "przenośny"
+          ]
+        }
       },
       "h_3": {
         "type": "number",
-        "label": "H3",
+        "label": "Wysokość H3",
         "required": false,
         "unit_type": "length",
-        "default_unit": "m"
+        "default_unit": "m",
+        "show_if": {
+          "field": "typ",
+          "value": [
+            "nożycowy",
+            "masztowy",
+            "przenośny"
+          ]
+        }
       },
       "cc_3": {
         "type": "number",
-        "label": "CC3 (%)"
+        "label": "Udział cc3 (%)",
+        "show_if": {
+          "field": "typ",
+          "value": [
+            "nożycowy",
+            "masztowy",
+            "przenośny"
+          ]
+        }
       },
       "h_4": {
         "type": "number",
-        "label": "H4",
+        "label": "Wysokość H4",
         "required": false,
         "unit_type": "length",
-        "default_unit": "m"
+        "default_unit": "m",
+        "show_if": {
+          "field": "typ",
+          "value": [
+            "nożycowy",
+            "masztowy",
+            "przenośny"
+          ]
+        }
       },
       "cc_4": {
         "type": "number",
-        "label": "CC4 (%)"
+        "label": "Udział cc4 (%)",
+        "show_if": {
+          "field": "typ",
+          "value": [
+            "nożycowy",
+            "masztowy",
+            "przenośny"
+          ]
+        }
       },
       "h_5": {
         "type": "number",
-        "label": "H5",
+        "label": "Wysokość H5",
         "required": false,
         "unit_type": "length",
-        "default_unit": "m"
+        "default_unit": "m",
+        "show_if": {
+          "field": "typ",
+          "value": [
+            "nożycowy",
+            "masztowy",
+            "przenośny"
+          ]
+        }
       },
       "cc_5": {
         "type": "number",
-        "label": "CC5 (%)"
+        "label": "Udział cc5 (%)",
+        "show_if": {
+          "field": "typ",
+          "value": [
+            "nożycowy",
+            "masztowy",
+            "przenośny"
+          ]
+        }
+      },
+      "diagram_ldr": {
+        "type": "diagram",
+        "label": "Schemat stref zasięgu i wysokości (L_dr)",
+        "svg": "schemat_ldr",
+        "show_if": {
+          "field": "typ",
+          "negate": true,
+          "value": [
+            "nożycowy",
+            "masztowy",
+            "przenośny",
+            "BUMAR",
+            ""
+          ]
+        }
       },
       "p_1": {
         "type": "number",
-        "label": "P1 (%)"
+        "label": "p1 — strefa R1/H5 (%)",
+        "show_if": {
+          "field": "typ",
+          "negate": true,
+          "value": [
+            "nożycowy",
+            "masztowy",
+            "przenośny",
+            "BUMAR",
+            ""
+          ]
+        }
       },
       "p_2": {
         "type": "number",
-        "label": "P2 (%)"
+        "label": "p2 — strefa R2/H5 (%)",
+        "show_if": {
+          "field": "typ",
+          "negate": true,
+          "value": [
+            "nożycowy",
+            "masztowy",
+            "przenośny",
+            "BUMAR",
+            ""
+          ]
+        }
       },
       "p_3": {
         "type": "number",
-        "label": "P3 (%)"
+        "label": "p3 — strefa R3/H5 (%)",
+        "show_if": {
+          "field": "typ",
+          "negate": true,
+          "value": [
+            "nożycowy",
+            "masztowy",
+            "przenośny",
+            "BUMAR",
+            ""
+          ]
+        }
       },
       "p_4": {
         "type": "number",
-        "label": "P4 (%)"
+        "label": "p4 — strefa R4/H5 (%)",
+        "show_if": {
+          "field": "typ",
+          "negate": true,
+          "value": [
+            "nożycowy",
+            "masztowy",
+            "przenośny",
+            "BUMAR",
+            ""
+          ]
+        }
       },
       "p_5": {
         "type": "number",
-        "label": "P5 (%)"
+        "label": "p5 — strefa R5/H5 (%)",
+        "show_if": {
+          "field": "typ",
+          "negate": true,
+          "value": [
+            "nożycowy",
+            "masztowy",
+            "przenośny",
+            "BUMAR",
+            ""
+          ]
+        }
       },
       "p_6": {
         "type": "number",
-        "label": "P6 (%)"
+        "label": "p6 — strefa R1/H4 (%)",
+        "show_if": {
+          "field": "typ",
+          "negate": true,
+          "value": [
+            "nożycowy",
+            "masztowy",
+            "przenośny",
+            "BUMAR",
+            ""
+          ]
+        }
       },
       "p_7": {
         "type": "number",
-        "label": "P7 (%)"
+        "label": "p7 — strefa R2/H4 (%)",
+        "show_if": {
+          "field": "typ",
+          "negate": true,
+          "value": [
+            "nożycowy",
+            "masztowy",
+            "przenośny",
+            "BUMAR",
+            ""
+          ]
+        }
       },
       "p_8": {
         "type": "number",
-        "label": "P8 (%)"
+        "label": "p8 — strefa R3/H4 (%)",
+        "show_if": {
+          "field": "typ",
+          "negate": true,
+          "value": [
+            "nożycowy",
+            "masztowy",
+            "przenośny",
+            "BUMAR",
+            ""
+          ]
+        }
       },
       "p_9": {
         "type": "number",
-        "label": "P9 (%)"
+        "label": "p9 — strefa R4/H4 (%)",
+        "show_if": {
+          "field": "typ",
+          "negate": true,
+          "value": [
+            "nożycowy",
+            "masztowy",
+            "przenośny",
+            "BUMAR",
+            ""
+          ]
+        }
       },
       "p_10": {
         "type": "number",
-        "label": "P10 (%)"
+        "label": "p10 — strefa R5/H4 (%)",
+        "show_if": {
+          "field": "typ",
+          "negate": true,
+          "value": [
+            "nożycowy",
+            "masztowy",
+            "przenośny",
+            "BUMAR",
+            ""
+          ]
+        }
       },
       "p_11": {
         "type": "number",
-        "label": "P11 (%)"
+        "label": "p11 — strefa R1/H3 (%)",
+        "show_if": {
+          "field": "typ",
+          "negate": true,
+          "value": [
+            "nożycowy",
+            "masztowy",
+            "przenośny",
+            "BUMAR",
+            ""
+          ]
+        }
       },
       "p_12": {
         "type": "number",
-        "label": "P12 (%)"
+        "label": "p12 — strefa R2/H3 (%)",
+        "show_if": {
+          "field": "typ",
+          "negate": true,
+          "value": [
+            "nożycowy",
+            "masztowy",
+            "przenośny",
+            "BUMAR",
+            ""
+          ]
+        }
       },
       "p_13": {
         "type": "number",
-        "label": "P13 (%)"
+        "label": "p13 — strefa R3/H3 (%)",
+        "show_if": {
+          "field": "typ",
+          "negate": true,
+          "value": [
+            "nożycowy",
+            "masztowy",
+            "przenośny",
+            "BUMAR",
+            ""
+          ]
+        }
       },
       "p_14": {
         "type": "number",
-        "label": "P14 (%)"
+        "label": "p14 — strefa R4/H3 (%)",
+        "show_if": {
+          "field": "typ",
+          "negate": true,
+          "value": [
+            "nożycowy",
+            "masztowy",
+            "przenośny",
+            "BUMAR",
+            ""
+          ]
+        }
       },
       "p_15": {
         "type": "number",
-        "label": "P15 (%)"
+        "label": "p15 — strefa R5/H3 (%)",
+        "show_if": {
+          "field": "typ",
+          "negate": true,
+          "value": [
+            "nożycowy",
+            "masztowy",
+            "przenośny",
+            "BUMAR",
+            ""
+          ]
+        }
       },
       "p_16": {
         "type": "number",
-        "label": "P16 (%)"
+        "label": "p16 — strefa R1/H2 (%)",
+        "show_if": {
+          "field": "typ",
+          "negate": true,
+          "value": [
+            "nożycowy",
+            "masztowy",
+            "przenośny",
+            "BUMAR",
+            ""
+          ]
+        }
       },
       "p_17": {
         "type": "number",
-        "label": "P17 (%)"
+        "label": "p17 — strefa R2/H2 (%)",
+        "show_if": {
+          "field": "typ",
+          "negate": true,
+          "value": [
+            "nożycowy",
+            "masztowy",
+            "przenośny",
+            "BUMAR",
+            ""
+          ]
+        }
       },
       "p_18": {
         "type": "number",
-        "label": "P18 (%)"
+        "label": "p18 — strefa R3/H2 (%)",
+        "show_if": {
+          "field": "typ",
+          "negate": true,
+          "value": [
+            "nożycowy",
+            "masztowy",
+            "przenośny",
+            "BUMAR",
+            ""
+          ]
+        }
       },
       "p_19": {
         "type": "number",
-        "label": "P19 (%)"
+        "label": "p19 — strefa R4/H2 (%)",
+        "show_if": {
+          "field": "typ",
+          "negate": true,
+          "value": [
+            "nożycowy",
+            "masztowy",
+            "przenośny",
+            "BUMAR",
+            ""
+          ]
+        }
       },
       "p_20": {
         "type": "number",
-        "label": "P20 (%)"
+        "label": "p20 — strefa R5/H2 (%)",
+        "show_if": {
+          "field": "typ",
+          "negate": true,
+          "value": [
+            "nożycowy",
+            "masztowy",
+            "przenośny",
+            "BUMAR",
+            ""
+          ]
+        }
       },
       "p_21": {
         "type": "number",
-        "label": "P21 (%)"
+        "label": "p21 — strefa R1/H1 (%)",
+        "show_if": {
+          "field": "typ",
+          "negate": true,
+          "value": [
+            "nożycowy",
+            "masztowy",
+            "przenośny",
+            "BUMAR",
+            ""
+          ]
+        }
       },
       "p_22": {
         "type": "number",
-        "label": "P22 (%)"
+        "label": "p22 — strefa R2/H1 (%)",
+        "show_if": {
+          "field": "typ",
+          "negate": true,
+          "value": [
+            "nożycowy",
+            "masztowy",
+            "przenośny",
+            "BUMAR",
+            ""
+          ]
+        }
       },
       "p_23": {
         "type": "number",
-        "label": "P23 (%)"
+        "label": "p23 — strefa R3/H1 (%)",
+        "show_if": {
+          "field": "typ",
+          "negate": true,
+          "value": [
+            "nożycowy",
+            "masztowy",
+            "przenośny",
+            "BUMAR",
+            ""
+          ]
+        }
       },
       "p_24": {
         "type": "number",
-        "label": "P24 (%)"
+        "label": "p24 — strefa R4/H1 (%)",
+        "show_if": {
+          "field": "typ",
+          "negate": true,
+          "value": [
+            "nożycowy",
+            "masztowy",
+            "przenośny",
+            "BUMAR",
+            ""
+          ]
+        }
       },
       "p_25": {
         "type": "number",
-        "label": "P25 (%)"
+        "label": "p25 — strefa R5/H1 (%)",
+        "show_if": {
+          "field": "typ",
+          "negate": true,
+          "value": [
+            "nożycowy",
+            "masztowy",
+            "przenośny",
+            "BUMAR",
+            ""
+          ]
+        }
       },
       "konstrukcja": {
         "type": "select",

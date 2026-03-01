@@ -1,21 +1,19 @@
 <template>
-  <q-page padding class="container q-mx-auto">
+  <q-page padding class="container">
     <div class="row items-center q-mb-lg">
-      <div class="col">
-        <h1 class="text-h4 text-weight-bolder q-my-none">
-          <q-icon name="receipt_long" color="primary" class="q-mr-sm" />
-          Faktury i rozliczenia
-        </h1>
-        <p class="text-grey-7 q-mt-sm">
+      <div class="col calc-page-header" style="margin-bottom:0">
+        <h1 class="text-h4 text-weight-bolder text-primary q-my-none">Faktury i rozliczenia</h1>
+        <p class="text-subtitle1 text-grey-7 q-mb-none">
           {{ isAdmin ? 'Zarządzanie fakturami wszystkich użytkowników i doładowywanie punktów.' : 'Twoja historia faktur i zakupionych punktów premium.' }}
         </p>
       </div>
-      <div class="col-auto" v-if="isAdmin">
+      <div class="col-auto q-pl-md" v-if="isAdmin">
         <q-btn
           color="primary"
           icon="add"
-          label="Wystaw fakturę (KSeF)"
+          label="Wystaw fakturę"
           unelevated
+          no-caps
           class="rounded-borders q-px-md shadow-2"
           @click="showInvoiceDialog = true"
         />
@@ -74,96 +72,75 @@
     <!-- Dialog wystawiania faktury (ADMIN ONLY) -->
     <q-dialog v-model="showInvoiceDialog" persistent>
       <q-card style="min-width: 500px" class="rounded-borders">
-        <q-card-section class="row items-center q-pb-none">
+        <q-card-section class="bg-primary text-white row items-center q-pb-none">
           <div class="text-h6 text-weight-bold">Wystaw nową fakturę</div>
           <q-space />
           <q-btn icon="close" flat round dense v-close-popup />
         </q-card-section>
 
         <q-card-section class="q-pt-md">
-          <q-form @submit="onSubmitInvoice" class="q-gutter-md">
-            <!-- Wybór użytkownika -->
-            <q-select
-              v-model="newInvoice.user"
-              :options="userOptions"
-              option-label="email"
-              label="Wybierz użytkownika *"
-              outlined
-              dense
-              use-input
-              input-debounce="300"
-              @filter="filterUsers"
-              hint="Wpisz email, aby wyszukać"
-              :rules="[val => !!val || 'Użytkownik jest wymagany']"
-            >
-              <template v-slot:option="scope">
-                <q-item v-bind="scope.itemProps">
-                  <q-item-section>
-                    <q-item-label>{{ scope.opt.email }}</q-item-label>
-                    <q-item-label caption>
-                      {{ scope.opt.is_company ? scope.opt.company_name : scope.opt.first_name + ' ' + scope.opt.last_name }}
-                    </q-item-label>
-                  </q-item-section>
-                  <q-item-section side>
-                    <q-chip size="xs" color="blue-1" text-color="primary">{{ scope.opt.premium }} pkt</q-chip>
-                  </q-item-section>
-                </q-item>
-              </template>
-            </q-select>
-
+          <q-form @submit="onSubmitInvoice">
             <div class="row q-col-gutter-md">
-              <div class="col-12 col-sm-6">
-                <q-input
-                  v-model.number="newInvoice.net_amount"
-                  type="number"
-                  label="Kwota netto (PLN) *"
-                  outlined
-                  dense
-                  step="0.01"
-                  suffix="PLN"
-                  :rules="[val => val > 0 || 'Kwota musi być większa od 0']"
-                />
+              <div class="col-12">
+                <q-select
+                  v-model="newInvoice.user"
+                  :options="userOptions"
+                  option-label="email"
+                  label="Wybierz użytkownika *"
+                  outlined dense use-input input-debounce="300"
+                  @filter="filterUsers"
+                  hint="Wpisz email, aby wyszukać"
+                  :rules="[val => !!val || 'Użytkownik jest wymagany']"
+                >
+                  <template v-slot:option="scope">
+                    <q-item v-bind="scope.itemProps">
+                      <q-item-section>
+                        <q-item-label>{{ scope.opt.email }}</q-item-label>
+                        <q-item-label caption>
+                          {{ scope.opt.is_company ? scope.opt.company_name : scope.opt.first_name + ' ' + scope.opt.last_name }}
+                        </q-item-label>
+                      </q-item-section>
+                      <q-item-section side>
+                        <q-chip size="xs" color="blue-1" text-color="primary">{{ scope.opt.premium }} pkt</q-chip>
+                      </q-item-section>
+                    </q-item>
+                  </template>
+                </q-select>
               </div>
               <div class="col-12 col-sm-6">
-                <q-input
-                  v-model.number="newInvoice.points_to_add"
-                  type="number"
-                  label="Punkty do doładowania *"
-                  outlined
-                  dense
-                  suffix="pkt"
-                  :rules="[val => val >= 0 || 'Punkty nie mogą być ujemne']"
-                />
+                <q-input v-model.number="newInvoice.net_amount" type="number" label="Kwota netto (PLN) *"
+                  outlined dense step="0.01" suffix="PLN"
+                  :rules="[val => val > 0 || 'Kwota musi być większa od 0']" />
               </div>
-            </div>
-
-            <div class="bg-grey-2 q-pa-sm rounded-borders text-caption text-grey-8">
-              <div class="row justify-between">
-                <span>VAT (23%):</span>
-                <span>{{ (newInvoice.net_amount * 0.23).toFixed(2) }} PLN</span>
+              <div class="col-12 col-sm-6">
+                <q-input v-model.number="newInvoice.points_to_add" type="number" label="Punkty do doładowania *"
+                  outlined dense suffix="pkt"
+                  :rules="[val => val >= 0 || 'Punkty nie mogą być ujemne']" />
               </div>
-              <div class="row justify-between text-weight-bold text-dark q-mt-xs">
-                <span>Łącznie brutto:</span>
-                <span>{{ (newInvoice.net_amount * 1.23).toFixed(2) }} PLN</span>
+              <div class="col-12">
+                <div class="bg-grey-2 q-pa-sm rounded-borders text-caption text-grey-8">
+                  <div class="row justify-between">
+                    <span>VAT (23%):</span>
+                    <span>{{ (newInvoice.net_amount * 0.23).toFixed(2) }} PLN</span>
+                  </div>
+                  <div class="row justify-between text-weight-bold text-dark q-mt-xs">
+                    <span>Łącznie brutto:</span>
+                    <span>{{ (newInvoice.net_amount * 1.23).toFixed(2) }} PLN</span>
+                  </div>
+                </div>
               </div>
-            </div>
-
-            <q-banner dense class="bg-blue-1 text-primary rounded-borders q-mt-md">
-              <template v-slot:avatar>
-                <q-icon name="info" color="primary" />
-              </template>
-              Faktura zostanie automatycznie wysłana do środowiska testowego <strong>KSeF</strong>.
-            </q-banner>
-
-            <div class="row justify-end q-mt-lg">
-              <q-btn label="Anuluj" flat v-close-popup class="q-mr-sm" />
-              <q-btn
-                label="Wystaw i doładuj punkty"
-                color="primary"
-                unelevated
-                type="submit"
-                :loading="submitting"
-              />
+              <div class="col-12">
+                <q-banner dense class="bg-blue-1 text-primary rounded-borders">
+                  <template v-slot:avatar><q-icon name="info" color="primary" /></template>
+                  Faktura zostanie automatycznie wysłana do środowiska testowego <strong>KSeF</strong>.
+                </q-banner>
+              </div>
+              <div class="col-12">
+                <div class="row justify-end q-gutter-sm">
+                  <q-btn label="Anuluj" flat v-close-popup />
+                  <q-btn label="Wystaw i doładuj punkty" color="primary" unelevated type="submit" :loading="submitting" />
+                </div>
+              </div>
             </div>
           </q-form>
         </q-card-section>

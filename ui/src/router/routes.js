@@ -12,6 +12,17 @@ const routes = [
     ]
   },
 
+  // Strony prawne — DualLayout (dostępne dla wszystkich)
+  {
+    path: '/',
+    component: () => import('layouts/DualLayout.vue'),
+    children: [
+      { path: 'regulamin', meta: { breadcrumbs: [{ label: 'Regulamin' }] }, component: () => import('pages/legal/TermsPage.vue') },
+      { path: 'rodo', meta: { breadcrumbs: [{ label: 'Polityka prywatności' }] }, component: () => import('pages/legal/RodoPage.vue') },
+      { path: 'cookies', meta: { breadcrumbs: [{ label: 'Polityka cookies' }] }, component: () => import('pages/legal/CookiesPage.vue') }
+    ]
+  },
+
   // App — chronione (wymagają logowania)
   {
     path: '/',
@@ -54,6 +65,11 @@ const routes = [
         path: 'invoices',
         meta: { breadcrumbs: [{ label: 'Faktury' }] },
         component: () => import('pages/InvoicesPage.vue')
+      },
+      {
+        path: 'admin',
+        meta: { breadcrumbs: [{ label: 'Panel administratora' }], requiresSuperuser: true },
+        component: () => import('pages/AdminPage.vue')
       }
     ]
   },

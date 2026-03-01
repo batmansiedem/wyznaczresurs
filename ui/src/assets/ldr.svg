@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 600" width="100%" height="100%">
+  <defs>
+    <style>
+      /* Nowoczesny styl inżynierski - czystość i czytelność */
+      .main { stroke: #000080; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+      
+      /* Wyraźny, gruby kontur maszyn - grubość zoptymalizowana z 8 do 5 */
+      .thick { stroke-width: 5; } 
+      
+      /* Cienka, techniczna siatka tła (jak w nowoczesnym CAD) */
+      .grid { stroke-width: 1.5; stroke-opacity: 0.35; } 
+      
+      /* Wyraźne osie współrzędnych */
+      .axis { stroke-width: 2.5; } 
+      
+      /* Czysta, nowoczesna typografia */
+      .txt-bold { fill: #000080; font-family: 'Segoe UI', Roboto, Helvetica, sans-serif; }
+      .txt-title { font-size: 26px; font-weight: 700; letter-spacing: 0.5px; }
+      .txt-label { font-size: 15px; font-weight: 600; dominant-baseline: middle; }
+    </style>
+  </defs>
+
+  <rect width="100%" height="100%" fill="#ffffff"/>
+
+  <g id="grid">
+    <line x1="80" y1="380" x2="820" y2="380" class="main grid"/>
+    <line x1="80" y1="320" x2="820" y2="320" class="main grid"/>
+    <line x1="80" y1="260" x2="820" y2="260" class="main grid"/>
+    <line x1="80" y1="200" x2="820" y2="200" class="main grid"/>
+    <line x1="80" y1="140" x2="820" y2="140" class="main grid"/>
+    <line x1="80" y1="80" x2="820" y2="80" class="main grid"/>
+
+    <line x1="500" y1="80" x2="500" y2="520" class="main grid"/>
+    <line x1="560" y1="80" x2="560" y2="520" class="main grid"/>
+    <line x1="620" y1="80" x2="620" y2="520" class="main grid"/>
+    <line x1="680" y1="80" x2="680" y2="520" class="main grid"/>
+    <line x1="740" y1="80" x2="740" y2="520" class="main grid"/>
+    <line x1="800" y1="80" x2="800" y2="520" class="main grid"/>
+  </g>
+
+  <g id="axes">
+    <line x1="100" y1="500" x2="100" y2="35" class="main axis"/>
+    <polygon points="93,45 100,15 107,45" fill="#000080" stroke="none"/> <line x1="100" y1="500" x2="865" y2="500" class="main axis"/>
+    <polygon points="855,493 885,500 855,507" fill="#000080" stroke="none"/> </g>
+
+  <g id="vehicle">
+    <circle cx="260" cy="460" r="40" class="main thick"/>
+    <circle cx="500" cy="460" r="40" class="main thick"/>
+
+    <line x1="140" y1="440" x2="220" y2="440" class="main thick"/>
+    <line x1="300" y1="440" x2="460" y2="440" class="main thick"/>
+    <line x1="540" y1="440" x2="580" y2="440" class="main thick"/>
+
+    <line x1="140" y1="440" x2="140" y2="380" class="main thick"/>
+    <line x1="140" y1="380" x2="200" y2="320" class="main thick"/>
+    <line x1="200" y1="320" x2="300" y2="320" class="main thick"/>
+    <line x1="300" y1="320" x2="300" y2="440" class="main thick"/>
+    <line x1="140" y1="380" x2="300" y2="380" class="main thick"/>
+
+    <line x1="580" y1="380" x2="580" y2="440" class="main thick"/>
+    <line x1="300" y1="380" x2="580" y2="380" class="main thick"/>
+
+    <line x1="460" y1="380" x2="380" y2="260" class="main thick"/>
+    <line x1="380" y1="260" x2="630" y2="190" class="main thick"/>
+    
+    <rect x="630" y="155" width="45" height="35" fill="#000080" rx="3" /> </g>
+
+  <g id="labels">
+    <text x="45" y="270" class="txt-bold txt-title" transform="rotate(-90 45 270)" text-anchor="middle">hpod/hmax[%]</text>
+
+    <g class="txt-bold txt-label" text-anchor="middle">
+      <text x="70" y="380" transform="rotate(-90 70 380)">0%</text>
+      <text x="70" y="320" transform="rotate(-90 70 320)">20%</text>
+      <text x="70" y="260" transform="rotate(-90 70 260)">40%</text>
+      <text x="70" y="200" transform="rotate(-90 70 200)">60%</text>
+      <text x="70" y="140" transform="rotate(-90 70 140)">80%</text>
+      <text x="70" y="80" transform="rotate(-90 70 80)">100%</text>
+    </g>
+
+    <text x="250" y="555" class="txt-bold txt-title">Lb/Lmax[%]</text>
+
+    <g class="txt-bold txt-label" text-anchor="middle">
+      <text x="500" y="530">0%</text>
+      <text x="560" y="530">20%</text>
+      <text x="620" y="530">40%</text>
+      <text x="680" y="530">60%</text>
+      <text x="740" y="530">80%</text>
+      <text x="800" y="530">100%</text>
+    </g>
+  </g>
+</svg>

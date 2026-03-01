@@ -827,7 +827,7 @@ class PodestRuchomyCalculator(BaseCalculator):
 
         if typ == 'składany na pojeździe BUMAR':
             U_WSK, extra_data = self._calculate_bumar_type(common_inputs, kss)
-        elif typ in ['nożycowy samobieżny', 'masztowy samobieżny', 'masztowy stacjonarny']:
+        elif typ in ['nożycowy samobieżny', 'masztowy samobieżny', 'masztowy stacjonarny', 'składany przenośny']:
             U_WSK, extra_data = self._calculate_hdr_type(common_inputs, kss)
         else: # Default to LDR type for all others
             U_WSK, extra_data = self._calculate_ldr_type(common_inputs, kss)

@@ -59,7 +59,11 @@
                   <div class="row q-col-gutter-lg items-start">
                     <template v-for="key in section.fieldKeys" :key="key">
                       <div v-if="currentCalculatorDefinition.fields[key] && isFieldVisible(key)" :class="fieldColClass(currentCalculatorDefinition.fields[key])">
-                        <CalculatorField :field="currentCalculatorDefinition.fields[key]" v-model="formData[key]" :units="units" />
+                        <template v-if="currentCalculatorDefinition.fields[key].type === 'diagram'">
+                          <SchemLdr v-if="currentCalculatorDefinition.fields[key].svg === 'schemat_ldr'" :data="formData" />
+                          <SchemHdr v-else-if="currentCalculatorDefinition.fields[key].svg === 'schemat_hdr'" :data="formData" />
+                        </template>
+                        <CalculatorField v-else :field="currentCalculatorDefinition.fields[key]" v-model="formData[key]" :units="units" />
                       </div>
                     </template>
                   </div>
@@ -228,6 +232,8 @@ import { api } from 'boot/axios'
 import { useQuasar, Notify, Dialog } from 'quasar'
 import VueApexCharts from 'vue3-apexcharts'
 import CalculatorField from 'components/CalculatorField.vue'
+import SchemLdr from 'components/SchemLdr.vue'
+import SchemHdr from 'components/SchemHdr.vue'
 import calculatorFields from 'src/data/calculator_fields.json'
 import calculatorOutputFields from 'src/data/calculator_output_fields.json'
 import { useUserStore } from 'stores/user-store'
@@ -282,7 +288,8 @@ const FIELD_SECTIONS = [
     icon: 'replay',
     keys: new Set(['lata_pracy','tryb_pracy','cykle_zmiana','dni_robocze','ilosc_cykli',
                    'licznik_pracy','licznik_pracy_pod','licznik_pracy_jaz','licznik_pracy_prz',
-                   'pyt_motogodzin','zakres_godzin_min','zakres_godzin_max'])
+                   'pyt_motogodzin','zakres_godzin_min','zakres_godzin_max',
+                   'max_cykle_prod','max_moto_prod','moto_podest_ruchomy','procent_bumar'])
   },
   {
     key: 'obciazenie',
@@ -291,13 +298,33 @@ const FIELD_SECTIONS = [
     keys: new Set(['q_max','q_o','q_1','c_1','q_2','c_2','q_3','c_3','q_4','c_4','q_5','c_5'])
   },
   {
+    key: 'widmo',
+    label: 'Widmo wysokości pracy / zasięgu',
+    icon: 'bar_chart',
+    keys: new Set(['s_factor', 'diagram_hdr', 'diagram_ldr'])
+  },
+  {
     key: 'stan',
     label: 'Stan techniczny / Warunki pracy',
     icon: 'engineering',
     keys: new Set(['ponowny_resurs','data_resurs','ostatni_resurs','spec',
                    'sposob_rejestracji','gnp_check','gnp_czas','ster'])
+  },
+  {
+    key: 'inspekcja',
+    label: 'Inspekcja techniczna',
+    icon: 'fact_check',
+    keys: new Set(['konstrukcja','automatyka','sworznie','ciegna','eksploatacja','szczelnosc','hamulce'])
   }
 ]
+
+// Pola obsługiwane wewnętrznie przez komponenty diagramów (nie renderowane jako osobne pola)
+const HIDDEN_FIELD_KEYS = new Set([
+  'h_1','cc_1','h_2','cc_2','h_3','cc_3','h_4','cc_4','h_5','cc_5',
+  'p_1','p_2','p_3','p_4','p_5','p_6','p_7','p_8','p_9','p_10',
+  'p_11','p_12','p_13','p_14','p_15','p_16','p_17','p_18','p_19','p_20',
+  'p_21','p_22','p_23','p_24','p_25',
+])
 
 const activeSections = computed(() => {
   const fields = currentCalculatorDefinition.value?.fields
@@ -305,8 +332,8 @@ const activeSections = computed(() => {
   const fieldKeys = Object.keys(fields)
   // Pola przypisane do jakiejś sekcji
   const assignedKeys = new Set(FIELD_SECTIONS.flatMap(s => [...s.keys]))
-  // Pola niezidentyfikowane → sekcja 'ogolne'
-  const unassigned = fieldKeys.filter(k => !assignedKeys.has(k))
+  // Pola niezidentyfikowane → sekcja 'ogolne' (z pominięciem ukrytych)
+  const unassigned = fieldKeys.filter(k => !assignedKeys.has(k) && !HIDDEN_FIELD_KEYS.has(k))
   return FIELD_SECTIONS.map((section, idx) => {
     const sectionFieldKeys = idx === 0
       ? [...unassigned, ...fieldKeys.filter(k => section.keys.has(k))]
@@ -322,7 +349,7 @@ const savedResultsColumns = [
 ]
 
 function fieldColClass(field) {
-  if (field.type === 'textarea' || field.type === 'radio') return 'col-12'
+  if (field.type === 'textarea' || field.type === 'radio' || field.type === 'diagram') return 'col-12'
   return 'col-12 col-sm-6'
 }
 
@@ -394,6 +421,7 @@ function initializeFormData() {
   const data = {}
   for (const key in currentCalculatorDefinition.value.fields) {
     const f = currentCalculatorDefinition.value.fields[key]
+    if (f.type === 'diagram') continue
     data[key] = f.type === 'number' ? { value: f.default_value ?? null, unit: f.default_unit || units.value[f.unit_type]?.[0]?.symbol || null } : f.default_value ?? null
   }
   formData.value = data
@@ -403,7 +431,10 @@ function isFieldVisible(key) {
   const f = currentCalculatorDefinition.value?.fields[key]
   if (!f?.show_if) return true
   const cur = formData.value[f.show_if.field]
-  return Array.isArray(f.show_if.value) ? f.show_if.value.some(v => String(cur ?? '').includes(v)) : cur === f.show_if.value
+  const matched = Array.isArray(f.show_if.value)
+    ? f.show_if.value.some(v => String(cur ?? '').includes(v))
+    : cur === f.show_if.value
+  return f.show_if.negate ? !matched : matched
 }
 
 async function fetchSavedResults() {

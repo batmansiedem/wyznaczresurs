@@ -60,15 +60,15 @@
           <div class="col-12 col-md-8">
             <div class="eyebrow q-mb-md">Formularz kontaktowy</div>
             <div class="contact-form-wrap">
-              <q-form @submit="onSubmit" class="q-gutter-md">
+              <q-form @submit="onSubmit">
                 <div class="row q-col-gutter-md">
-                  <q-input v-model="form.name" label="Imię i nazwisko / Nazwa firmy" outlined class="col-12 col-sm-7" :rules="[v => !!v || 'Wymagane']" />
-                  <q-input v-model="form.phone" label="Telefon" outlined class="col-12 col-sm-5" />
+                  <div class="col-12 col-sm-7"><q-input v-model="form.name" label="Imię i nazwisko / Nazwa firmy" outlined :rules="[v => !!v || 'Wymagane']" /></div>
+                  <div class="col-12 col-sm-5"><q-input v-model="form.phone" label="Telefon" outlined /></div>
+                  <div class="col-12"><q-input v-model="form.email" label="Adres e-mail" type="email" outlined :rules="[v => !!v || 'Wymagane']" /></div>
+                  <div class="col-12"><q-select v-model="form.subject" :options="subjects" label="Temat" outlined /></div>
+                  <div class="col-12"><q-input v-model="form.message" label="Treść wiadomości" type="textarea" outlined rows="6" :rules="[v => !!v || 'Wymagane']" /></div>
+                  <div class="col-12"><q-btn type="submit" color="primary" label="Wyślij wiadomość" icon-right="send" size="lg" unelevated :loading="loading" class="text-weight-bold" /></div>
                 </div>
-                <q-input v-model="form.email" label="Adres e-mail" type="email" outlined :rules="[v => !!v || 'Wymagane']" />
-                <q-select v-model="form.subject" :options="subjects" label="Temat" outlined />
-                <q-input v-model="form.message" label="Treść wiadomości" type="textarea" outlined rows="6" :rules="[v => !!v || 'Wymagane']" />
-                <q-btn type="submit" color="primary" label="Wyślij wiadomość" icon-right="send" size="lg" unelevated :loading="loading" class="text-weight-bold" />
               </q-form>
             </div>
           </div>
@@ -88,15 +88,15 @@
       <div class="col-12 col-md-8">
         <div class="section-label q-mb-md">Formularz kontaktowy</div>
         <q-card flat bordered class="q-pa-lg">
-          <q-form @submit="onSubmit" class="q-gutter-md">
-            <q-input v-model="form.name" label="Imię i nazwisko / Nazwa firmy" outlined :rules="[v => !!v || 'Wymagane']" />
+          <q-form @submit="onSubmit">
             <div class="row q-col-gutter-md">
-              <q-input v-model="form.email" label="Adres e-mail" type="email" outlined class="col-12 col-sm-6" :rules="[v => !!v || 'Wymagane']" />
-              <q-input v-model="form.phone" label="Telefon" outlined class="col-12 col-sm-6" />
+              <div class="col-12"><q-input v-model="form.name" label="Imię i nazwisko / Nazwa firmy" outlined :rules="[v => !!v || 'Wymagane']" /></div>
+              <div class="col-12 col-sm-6"><q-input v-model="form.email" label="Adres e-mail" type="email" outlined :rules="[v => !!v || 'Wymagane']" /></div>
+              <div class="col-12 col-sm-6"><q-input v-model="form.phone" label="Telefon" outlined /></div>
+              <div class="col-12"><q-select v-model="form.subject" :options="subjects" label="Temat wiadomości" outlined /></div>
+              <div class="col-12"><q-input v-model="form.message" label="Treść wiadomości" type="textarea" outlined rows="6" :rules="[v => !!v || 'Wymagane']" /></div>
+              <div class="col-12"><q-btn type="submit" color="primary" label="Wyślij wiadomość" icon-right="send" size="lg" unelevated :loading="loading" /></div>
             </div>
-            <q-select v-model="form.subject" :options="subjects" label="Temat wiadomości" outlined />
-            <q-input v-model="form.message" label="Treść wiadomości" type="textarea" outlined rows="6" :rules="[v => !!v || 'Wymagane']" />
-            <q-btn type="submit" color="primary" label="Wyślij wiadomość" icon-right="send" size="lg" unelevated :loading="loading" />
           </q-form>
         </q-card>
       </div>

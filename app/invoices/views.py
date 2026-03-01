@@ -21,7 +21,12 @@ class InvoiceViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         if self.request.user.is_staff:
-            return Invoice.objects.all()
+            qs = Invoice.objects.all()
+            # Admin może filtrować po konkretnym użytkowniku
+            user_id = self.request.query_params.get('user_id')
+            if user_id:
+                qs = qs.filter(user_id=user_id)
+            return qs
         return Invoice.objects.filter(user=self.request.user)
 
     @action(detail=True, methods=['get'])
@@ -81,8 +86,63 @@ class InvoiceViewSet(viewsets.ModelViewSet):
 class AdminUserListView(views.APIView):
     """Widok dla admina do pobrania listy użytkowników do selecta"""
     permission_classes = [permissions.IsAdminUser]
-    
+
     def get(self, request):
         users = User.objects.all().order_by('email')
         serializer = UserSimpleSerializer(users, many=True)
         return Response(serializer.data)
+
+
+class AdminInvoiceReportView(views.APIView):
+    """
+    Zestawienie faktur z wybranego okresu dla admina.
+    GET /api/billing/admin/report/?year=2026&month=02
+    Zwraca JSON z listą faktur + podsumowanie (do druku lub eksportu).
+    """
+    permission_classes = [permissions.IsAdminUser]
+
+    def get(self, request):
+        from django.db.models import Sum, Count
+
+        qs = Invoice.objects.select_related('user').all()
+
+        year = request.query_params.get('year')
+        month = request.query_params.get('month')
+        user_id = request.query_params.get('user_id')
+        ksef_status = request.query_params.get('ksef_status')
+
+        if year:
+            qs = qs.filter(issue_date__year=year)
+        if month:
+            qs = qs.filter(issue_date__month=month)
+        if user_id:
+            qs = qs.filter(user_id=user_id)
+        if ksef_status:
+            qs = qs.filter(ksef_status=ksef_status)
+
+        totals = qs.aggregate(
+            total_net=Sum('net_amount'),
+            total_vat=Sum('vat_amount'),
+            total_gross=Sum('gross_amount'),
+            total_points=Sum('points_added'),
+            count=Count('id'),
+        )
+
+        invoices_data = InvoiceSerializer(qs.order_by('issue_date'), many=True).data
+
+        return Response({
+            'invoices': invoices_data,
+            'summary': {
+                'count': totals['count'] or 0,
+                'total_net': float(totals['total_net'] or 0),
+                'total_vat': float(totals['total_vat'] or 0),
+                'total_gross': float(totals['total_gross'] or 0),
+                'total_points': totals['total_points'] or 0,
+            },
+            'filters': {
+                'year': year,
+                'month': month,
+                'user_id': user_id,
+                'ksef_status': ksef_status,
+            },
+        })

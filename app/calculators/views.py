@@ -1,5 +1,5 @@
 from decimal import Decimal
-from rest_framework import viewsets, mixins
+from rest_framework import viewsets, mixins, status
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
@@ -142,6 +142,37 @@ class CalculatorResultViewSet(
             "remaining_premium": float(user.premium),
             "is_locked": False,
         })
+
+    @action(detail=True, methods=['post'], url_path='copy_to')
+    def copy_to(self, request, pk=None):
+        """Admin kopiuje wynik obliczeń do innego użytkownika (lub do siebie)."""
+        if not request.user.is_staff:
+            raise PermissionDenied("Tylko administrator może kopiować obliczenia.")
+
+        try:
+            source = CalculatorResult.objects.get(pk=pk)
+        except CalculatorResult.DoesNotExist:
+            return Response({'detail': 'Nie znaleziono obliczenia.'}, status=status.HTTP_404_NOT_FOUND)
+
+        target_user_id = request.data.get('target_user_id')
+        if target_user_id:
+            from django.contrib.auth import get_user_model
+            User = get_user_model()
+            try:
+                target_user = User.objects.get(id=target_user_id)
+            except User.DoesNotExist:
+                return Response({'detail': 'Nie znaleziono użytkownika.'}, status=status.HTTP_404_NOT_FOUND)
+        else:
+            target_user = request.user
+
+        new_result = CalculatorResult.objects.create(
+            calculator_definition=source.calculator_definition,
+            user=target_user,
+            input_data=source.input_data,
+            output_data=source.output_data,
+            is_locked=False,
+        )
+        return Response(CalculatorResultSerializer(new_result).data, status=status.HTTP_201_CREATED)
 
     @action(detail=True, methods=['get'], url_path='pdf')
     def pdf_report(self, request, pk=None):

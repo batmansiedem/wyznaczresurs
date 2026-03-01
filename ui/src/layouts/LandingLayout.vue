@@ -85,7 +85,9 @@
           <q-list dense dark>
             <q-item clickable to="/help"><q-item-section class="text-grey-5">Instrukcje</q-item-section></q-item>
             <q-item clickable to="/contact"><q-item-section class="text-grey-5">Kontakt</q-item-section></q-item>
-            <q-item clickable><q-item-section class="text-grey-5">Regulamin</q-item-section></q-item>
+            <q-item clickable to="/regulamin"><q-item-section class="text-grey-5">Regulamin</q-item-section></q-item>
+            <q-item clickable to="/rodo"><q-item-section class="text-grey-5">Polityka prywatności</q-item-section></q-item>
+            <q-item clickable to="/cookies"><q-item-section class="text-grey-5">Cookies</q-item-section></q-item>
           </q-list>
         </div>
         <div class="col-12 col-md-4">
@@ -100,6 +102,13 @@
       <q-separator dark class="q-my-xl" style="opacity: 0.2" />
       <div class="text-center text-grey-7 text-caption">
         wyznaczresurs.com &copy; {{ new Date().getFullYear() }} &bull; Profesjonalne Kalkulatory Resursu UTB
+      </div>
+      <div class="text-center q-mt-sm">
+        <router-link to="/regulamin" class="legal-link text-caption">Regulamin</router-link>
+        <span class="text-grey-6 q-mx-xs">&bull;</span>
+        <router-link to="/rodo" class="legal-link text-caption">RODO</router-link>
+        <span class="text-grey-6 q-mx-xs">&bull;</span>
+        <router-link to="/cookies" class="legal-link text-caption">Cookies</router-link>
       </div>
     </footer>
   </q-layout>
