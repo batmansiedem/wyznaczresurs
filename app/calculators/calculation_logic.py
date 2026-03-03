@@ -28,7 +28,12 @@ def calculate_wsp_kdr(ilosc_cykli, q_max, q_vals, c_vals):
 _YES_NO_MAP = {'Tak': Decimal(1), 'Nie': Decimal(0), 'tak': Decimal(1), 'nie': Decimal(0)}
 
 # Stringi oznaczające problem z komponentem (pola select stanu komponentów)
-_PROBLEM_STRINGS = frozenset({'Uszkodzenia', 'Niezgodne', 'Nieszczelny', 'Niesprawna', 'Niesprawne'})
+_PROBLEM_STRINGS = frozenset({
+    'Uszkodzenia', 'Niezgodne', 'Nieszczelny', 'Niesprawna', 'Niesprawne',
+    'Nieprawidłowy', 'Niezgodne z instrukcją',
+    'uszkodzenia', 'niezgodne', 'nieszczelny', 'niesprawna', 'niesprawne',
+    'nieprawidłowy', 'niezgodne z instrukcją'
+})
 
 # Współczynnik niepewności rejestracji — wersja standardowa (żurawie, suwnicy, wciągarki itp.)
 _FX_STANDARD = {

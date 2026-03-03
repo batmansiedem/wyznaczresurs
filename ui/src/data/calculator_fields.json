@@ -3,6 +3,16 @@
     "name": "Autotransporter",
     "description": "Kalkulator resursu dla autotransportera.",
     "fields": {
+      "wykonawca": {
+        "type": "text",
+        "label": "Wykonawca badania",
+        "required": false
+      },
+      "uwagi": {
+        "type": "textarea",
+        "label": "Uwagi",
+        "required": false
+      },
       "typ": {
         "type": "select",
         "label": "Typ autotransportera",
@@ -18,6 +28,11 @@
         "type": "text",
         "label": "Nr fabryczny",
         "required": true
+      },
+      "nr_ewidencyjny": {
+        "type": "text",
+        "label": "Nr ewidencyjny UDT",
+        "required": false
       },
       "lata_pracy": {
         "type": "number",
@@ -156,7 +171,7 @@
         "default_unit": "cycle"
       },
       "konstrukcja": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Stan konstrukcji",
         "required": true,
         "options": [
@@ -166,7 +181,7 @@
         ]
       },
       "automatyka": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Stan automatyki",
         "required": true,
         "options": [
@@ -176,37 +191,36 @@
         ]
       },
       "sworznie": {
-        "type": "select",
-        "label": "Stan sworzni",
+        "type": "inspection_status",
+        "label": "Stan sworzni i połączeń",
         "required": true,
         "options": [
-          "Brak uszkodzeń",
-          "Uszkodzenia",
-          "Nie dotyczy"
+          "Prawidłowy",
+          "Nieprawidłowy"
         ]
       },
       "ciegna": {
-        "type": "select",
-        "label": "Stan cięgien",
+        "type": "inspection_status",
+        "label": "Stan cięgien (liny, łańcuchy)",
         "required": true,
         "options": [
-          "Brak uszkodzeń",
-          "Uszkodzenia",
+          "Prawidłowy",
+          "Nieprawidłowy",
           "Nie dotyczy"
         ]
       },
       "eksploatacja": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Warunki eksploatacji",
         "required": true,
         "options": [
-          "Zgodne",
-          "Niezgodne",
+          "Zgodne z instrukcją",
+          "Niezgodne z instrukcją",
           "Nie dotyczy"
         ]
       },
       "szczelnosc": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Szczelność układu hydraulicznego",
         "required": true,
         "options": [
@@ -216,8 +230,8 @@
         ]
       },
       "nakretka": {
-        "type": "select",
-        "label": "Nakrętka bezpieczeństwa (jeśli występuje)",
+        "type": "inspection_status",
+        "label": "Nakrętka bezpieczeństwa",
         "required": true,
         "options": [
           "Sprawna",
@@ -225,16 +239,93 @@
           "Nie dotyczy"
         ]
       }
-    }
+    },
+    "sections": [
+      {
+        "id": "dane",
+        "title": "Określ dane dla autotransportera",
+        "icon": "settings",
+        "fields": [
+          "wykonawca",
+          "uwagi",
+          "typ",
+          "nr_fabryczny",
+          "nr_ewidencyjny",
+          "h_max",
+          "v_pod",
+          "q_max",
+          "lata_pracy",
+          "max_cykle_prod",
+          "ilosc_cykli",
+          "tryb_pracy",
+          "cykle_zmiana",
+          "dni_robocze"
+        ]
+      },
+      {
+        "id": "rejestracja",
+        "title": "Określ sposób rejestracji, wybierając odpowiednią opcję z tabeli",
+        "icon": "assignment",
+        "fields": [
+          "sposob_rejestracji"
+        ]
+      },
+      {
+        "id": "kd",
+        "title": "Za pomocą kalkulatora wyznacz współczynnik Kd",
+        "icon": "balance",
+        "fields": [
+          "q_1",
+          "c_1",
+          "q_2",
+          "c_2",
+          "q_3",
+          "c_3",
+          "q_4",
+          "c_4",
+          "q_5",
+          "c_5"
+        ]
+      },
+      {
+        "id": "inspekcja",
+        "title": "Ocena stanu technicznego",
+        "icon": "fact_check",
+        "fields": [
+          "konstrukcja",
+          "automatyka",
+          "sworznie",
+          "ciegna",
+          "eksploatacja",
+          "szczelnosc",
+          "nakretka"
+        ]
+      }
+    ]
   },
   "dzwignik": {
     "name": "Dzwignik",
     "description": "Kalkulator resursu dla dzwignika.",
     "fields": {
+      "wykonawca": {
+        "type": "text",
+        "label": "Wykonawca badania",
+        "required": false
+      },
+      "uwagi": {
+        "type": "textarea",
+        "label": "Uwagi",
+        "required": false
+      },
       "nr_fabryczny": {
         "type": "text",
         "label": "Nr fabryczny",
         "required": true
+      },
+      "nr_ewidencyjny": {
+        "type": "text",
+        "label": "Nr ewidencyjny UDT",
+        "required": false
       },
       "lata_pracy": {
         "type": "number",
@@ -483,7 +574,7 @@
         "required": false
       },
       "konstrukcja": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Stan konstrukcji",
         "required": true,
         "options": [
@@ -493,7 +584,7 @@
         ]
       },
       "automatyka": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Stan automatyki",
         "required": true,
         "options": [
@@ -503,17 +594,16 @@
         ]
       },
       "sworznie": {
-        "type": "select",
-        "label": "Stan sworzni",
+        "type": "inspection_status",
+        "label": "Stan sworzni i połączeń",
         "required": true,
         "options": [
-          "Brak uszkodzeń",
-          "Uszkodzenia",
-          "Nie dotyczy"
+          "Prawidłowy",
+          "Nieprawidłowy"
         ]
       },
       "ciegna": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Stan cięgien",
         "required": true,
         "options": [
@@ -523,7 +613,7 @@
         ]
       },
       "eksploatacja": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Warunki eksploatacji",
         "required": true,
         "options": [
@@ -533,7 +623,7 @@
         ]
       },
       "szczelnosc": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Szczelność układu hydraulicznego",
         "required": true,
         "options": [
@@ -543,7 +633,7 @@
         ]
       },
       "hamulce": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Hamulce",
         "required": true,
         "options": [
@@ -552,12 +642,104 @@
           "Nie dotyczy"
         ]
       }
-    }
+    },
+    "sections": [
+      {
+        "id": "informacje",
+        "title": "Informacja na temat resursu",
+        "icon": "info",
+        "fields": [
+          "spec",
+          "ponowny_resurs",
+          "data_resurs",
+          "ostatni_resurs"
+        ]
+      },
+      {
+        "id": "dane",
+        "title": "Określ dane dla dźwignika",
+        "icon": "settings",
+        "fields": [
+          "wykonawca",
+          "uwagi",
+          "typ",
+          "nr_fabryczny",
+          "nr_ewidencyjny",
+          "h_max",
+          "q_max",
+          "lata_pracy",
+          "max_cykle_prod",
+          "ilosc_cykli",
+          "tryb_pracy",
+          "cykle_zmiana",
+          "dni_robocze"
+        ]
+      },
+      {
+        "id": "rejestracja",
+        "title": "Określ sposób rejestracji, wybierając odpowiednią opcję z tabeli",
+        "icon": "assignment",
+        "fields": [
+          "sposob_rejestracji"
+        ]
+      },
+      {
+        "id": "kd",
+        "title": "Za pomocą kalkulatora wyznacz współczynnik Kd",
+        "icon": "balance",
+        "fields": [
+          "q_1",
+          "c_1",
+          "q_2",
+          "c_2",
+          "q_3",
+          "c_3",
+          "q_4",
+          "c_4",
+          "q_5",
+          "c_5",
+          "cc_1",
+          "h_1",
+          "cc_2",
+          "h_2",
+          "cc_3",
+          "h_3",
+          "cc_4",
+          "h_4",
+          "cc_5",
+          "h_5"
+        ]
+      },
+      {
+        "id": "inspekcja",
+        "title": "Ocena stanu technicznego",
+        "icon": "fact_check",
+        "fields": [
+          "konstrukcja",
+          "automatyka",
+          "sworznie",
+          "ciegna",
+          "eksploatacja",
+          "szczelnosc",
+          "hamulce"
+        ]
+      }
+    ]
   },
   "hakowiec": {
     "name": "Hakowiec",
     "description": "Kalkulator resursu dla hakowca.",
     "fields": {
+      "wykonawca": {
+        "type": "text",
+        "label": "Wykonawca badania",
+        "required": false
+      },
+      "uwagi": {
+        "type": "textarea",
+        "label": "Uwagi",
+        "required": false
+      },
       "typ": {
         "type": "select",
         "label": "Typ hakowca",
@@ -571,6 +753,11 @@
         "type": "text",
         "label": "Nr fabryczny",
         "required": true
+      },
+      "nr_ewidencyjny": {
+        "type": "text",
+        "label": "Nr ewidencyjny UDT",
+        "required": false
       },
       "lata_pracy": {
         "type": "number",
@@ -731,7 +918,7 @@
         "required": false
       },
       "konstrukcja": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Stan konstrukcji",
         "required": true,
         "options": [
@@ -741,7 +928,7 @@
         ]
       },
       "automatyka": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Stan automatyki",
         "required": true,
         "options": [
@@ -751,17 +938,16 @@
         ]
       },
       "sworznie": {
-        "type": "select",
-        "label": "Stan sworzni",
+        "type": "inspection_status",
+        "label": "Stan sworzni i połączeń",
         "required": true,
         "options": [
-          "Brak uszkodzeń",
-          "Uszkodzenia",
-          "Nie dotyczy"
+          "Prawidłowy",
+          "Nieprawidłowy"
         ]
       },
       "ciegna": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Stan cięgien",
         "required": true,
         "options": [
@@ -771,7 +957,7 @@
         ]
       },
       "eksploatacja": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Warunki eksploatacji",
         "required": true,
         "options": [
@@ -781,7 +967,7 @@
         ]
       },
       "szczelnosc": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Szczelność układu hydraulicznego",
         "required": true,
         "options": [
@@ -790,16 +976,101 @@
           "Nie dotyczy"
         ]
       }
-    }
+    },
+    "sections": [
+      {
+        "id": "informacje",
+        "title": "Informacja na temat resursu",
+        "icon": "info",
+        "fields": [
+          "spec",
+          "ponowny_resurs",
+          "data_resurs",
+          "ostatni_resurs"
+        ]
+      },
+      {
+        "id": "dane",
+        "title": "Określ dane dla hakowca (bramowca)",
+        "icon": "settings",
+        "fields": [
+          "wykonawca",
+          "uwagi",
+          "typ",
+          "nr_fabryczny",
+          "nr_ewidencyjny",
+          "q_max",
+          "lata_pracy",
+          "max_cykle_prod",
+          "ilosc_cykli",
+          "tryb_pracy",
+          "cykle_zmiana",
+          "dni_robocze"
+        ]
+      },
+      {
+        "id": "rejestracja",
+        "title": "Określ sposób rejestracji, wybierając odpowiednią opcję z tabeli",
+        "icon": "assignment",
+        "fields": [
+          "sposob_rejestracji"
+        ]
+      },
+      {
+        "id": "kd",
+        "title": "Za pomocą kalkulatora wyznacz współczynnik Kd",
+        "icon": "balance",
+        "fields": [
+          "q_1",
+          "c_1",
+          "q_2",
+          "c_2",
+          "q_3",
+          "c_3",
+          "q_4",
+          "c_4",
+          "q_5",
+          "c_5"
+        ]
+      },
+      {
+        "id": "inspekcja",
+        "title": "Ocena stanu technicznego",
+        "icon": "fact_check",
+        "fields": [
+          "konstrukcja",
+          "automatyka",
+          "sworznie",
+          "ciegna",
+          "eksploatacja",
+          "szczelnosc"
+        ]
+      }
+    ]
   },
   "dzwig": {
     "name": "Dźwig",
     "description": "Kalkulator resursu dla dźwigu.",
     "fields": {
+      "wykonawca": {
+        "type": "text",
+        "label": "Wykonawca badania",
+        "required": false
+      },
+      "uwagi": {
+        "type": "textarea",
+        "label": "Uwagi",
+        "required": false
+      },
       "nr_fabryczny": {
         "type": "text",
         "label": "Nr fabryczny",
         "required": true
+      },
+      "nr_ewidencyjny": {
+        "type": "text",
+        "label": "Nr ewidencyjny UDT",
+        "required": false
       },
       "rok_budowy": {
         "type": "number",
@@ -837,7 +1108,7 @@
         "required": false,
         "show_if": {
           "field": "pyt_motogodzin",
-          "value": "Tak"
+          "value": "1"
         }
       },
       "dni_robocze": {
@@ -851,7 +1122,7 @@
         "required": false,
         "show_if": {
           "field": "pyt_motogodzin",
-          "value": "Nie"
+          "value": "0"
         }
       },
       "zakres_godzin_2": {
@@ -860,7 +1131,7 @@
         "required": false,
         "show_if": {
           "field": "pyt_motogodzin",
-          "value": "Nie"
+          "value": "0"
         }
       },
       "zakres_godzin_3": {
@@ -869,7 +1140,7 @@
         "required": false,
         "show_if": {
           "field": "pyt_motogodzin",
-          "value": "Nie"
+          "value": "0"
         }
       },
       "zakres_godzin_4": {
@@ -878,7 +1149,7 @@
         "required": false,
         "show_if": {
           "field": "pyt_motogodzin",
-          "value": "Nie"
+          "value": "0"
         }
       },
       "zakres_godzin_5": {
@@ -887,7 +1158,7 @@
         "required": false,
         "show_if": {
           "field": "pyt_motogodzin",
-          "value": "Nie"
+          "value": "0"
         }
       },
       "zakres_godzin_6": {
@@ -896,7 +1167,7 @@
         "required": false,
         "show_if": {
           "field": "pyt_motogodzin",
-          "value": "Nie"
+          "value": "0"
         }
       },
       "v_jaz": {
@@ -1026,7 +1297,7 @@
         "required": false
       },
       "liny_nosne": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Liny nośne",
         "required": true,
         "options": [
@@ -1045,7 +1316,7 @@
         ]
       },
       "wciagarka": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Wciągarka",
         "required": true,
         "options": [
@@ -1064,7 +1335,7 @@
         ]
       },
       "konstrukcja_nosna": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Konstrukcja nośna",
         "required": true,
         "options": [
@@ -1083,7 +1354,7 @@
         ]
       },
       "mocowanie_lin": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Mocowanie lin",
         "required": true,
         "options": [
@@ -1102,7 +1373,7 @@
         ]
       },
       "ogranicznik_predkosci": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Ogranicznik prędkości",
         "required": true,
         "options": [
@@ -1121,7 +1392,7 @@
         ]
       },
       "chwytacze_kabiny": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Chwytacze kabiny",
         "required": true,
         "options": [
@@ -1140,7 +1411,7 @@
         ]
       },
       "kola_kabiny": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Koła kabiny",
         "required": true,
         "options": [
@@ -1159,7 +1430,7 @@
         ]
       },
       "kola_przeciwwagi": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Koła przeciwwagi",
         "required": true,
         "options": [
@@ -1178,7 +1449,7 @@
         ]
       },
       "prowadnice_kabiny": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Prowadnice kabiny",
         "required": true,
         "options": [
@@ -1197,7 +1468,7 @@
         ]
       },
       "prowadnice_przeciwwagi": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Prowadnice przeciwwagi",
         "required": true,
         "options": [
@@ -1216,7 +1487,7 @@
         ]
       },
       "zderzak_kabiny": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Zderzak kabiny",
         "required": true,
         "options": [
@@ -1235,7 +1506,7 @@
         ]
       },
       "zderzak_przeciwwagi": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Zderzak przeciwwagi",
         "required": true,
         "options": [
@@ -1254,7 +1525,7 @@
         ]
       },
       "automatyka": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Automatyka",
         "required": true,
         "options": [
@@ -1273,7 +1544,7 @@
         ]
       },
       "drzwi": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Drzwi",
         "required": true,
         "options": [
@@ -1292,7 +1563,7 @@
         ]
       },
       "silownik": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Siłownik",
         "required": true,
         "options": [
@@ -1311,7 +1582,7 @@
         ]
       },
       "zawor_blokowy": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Zawór blokowy",
         "required": true,
         "options": [
@@ -1330,7 +1601,7 @@
         ]
       },
       "zawor_zwrotny": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Zawór zwrotny",
         "required": true,
         "options": [
@@ -1349,7 +1620,7 @@
         ]
       },
       "przewody_hydrauliczne": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Przewody hydrauliczne",
         "required": true,
         "options": [
@@ -1368,7 +1639,7 @@
         ]
       },
       "przekladnia": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Przekładnia",
         "required": true,
         "options": [
@@ -1387,7 +1658,7 @@
         ]
       },
       "mechanizm_zebatkowy": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Mechanizm zębatkowy",
         "required": true,
         "options": [
@@ -1406,7 +1677,7 @@
         ]
       },
       "mechanizm_srubowy": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Mechanizm śrubowy",
         "required": true,
         "options": [
@@ -1425,7 +1696,7 @@
         ]
       },
       "mocowanie_napedu": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Mocowanie napędu",
         "required": true,
         "options": [
@@ -1443,12 +1714,101 @@
           }
         ]
       }
-    }
+    },
+    "sections": [
+      {
+        "id": "dane",
+        "title": "Określ dane dla dźwigu podnośnikowego",
+        "icon": "settings",
+        "fields": [
+          "wykonawca",
+          "uwagi",
+          "przeznaczenie",
+          "operator",
+          "budynek",
+          "nr_fabryczny",
+          "nr_ewidencyjny",
+          "rok_budowy",
+          "lata_pracy",
+          "q_max",
+          "przystanki",
+          "liczba_dzwigow",
+          "h_pod",
+          "v_jaz",
+          "dni_robocze",
+          "cykle_dzwig",
+          "pyt_motogodzin",
+          "licznik_pracy",
+          "zakres_godzin_1",
+          "zakres_godzin_2",
+          "zakres_godzin_3",
+          "zakres_godzin_4",
+          "zakres_godzin_5",
+          "zakres_godzin_6"
+        ]
+      },
+      {
+        "id": "kd",
+        "title": "Za pomocą kalkulatora wyznacz współczynnik Kd",
+        "icon": "balance",
+        "fields": [
+          "q_1",
+          "c_1",
+          "q_2",
+          "c_2",
+          "q_3",
+          "c_3",
+          "q_4",
+          "c_4",
+          "q_5",
+          "c_5"
+        ]
+      },
+      {
+        "id": "inspekcja",
+        "title": "Ocena stanu technicznego",
+        "icon": "fact_check",
+        "fields": [
+          "liny_nosne",
+          "wciagarka",
+          "konstrukcja_nosna",
+          "mocowanie_lin",
+          "ogranicznik_predkosci",
+          "chwytacze_kabiny",
+          "kola_kabiny",
+          "kola_przeciwwagi",
+          "prowadnice_kabiny",
+          "prowadnice_przeciwwagi",
+          "zderzak_kabiny",
+          "zderzak_przeciwwagi",
+          "automatyka",
+          "drzwi",
+          "silownik",
+          "zawor_blokowy",
+          "zawor_zwrotny",
+          "przewody_hydrauliczne",
+          "przekladnia",
+          "mechanizm_zebatkowy",
+          "mechanizm_srubowy",
+          "mocowanie_napedu"
+        ]
+      }
+    ]
   },
   "suwnica": {
     "name": "Suwnica",
     "description": "Kalkulator resursu dla suwnicy.",
     "fields": {
+      "wykonawca": {
+        "type": "text",
+        "label": "Wykonawca badania",
+        "required": false
+      },
+      "uwagi": {
+        "type": "textarea",
+        "label": "Uwagi",
+        "required": false
+      },
       "typ": {
         "type": "select",
         "label": "Typ suwnicy",
@@ -1482,6 +1842,11 @@
         "label": "Nr fabryczny",
         "required": true
       },
+      "nr_ewidencyjny": {
+        "type": "text",
+        "label": "Nr ewidencyjny UDT",
+        "required": false
+      },
       "lata_pracy": {
         "type": "number",
         "label": "Lata pracy",
@@ -1531,7 +1896,7 @@
         ]
       },
       "gnp": {
-        "type": "select",
+        "type": "gnp_selector",
         "label": "Grupa natężenia pracy",
         "required": true,
         "options": [
@@ -1649,7 +2014,7 @@
         }
       },
       "konstrukcja": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Stan konstrukcji",
         "required": true,
         "options": [
@@ -1658,7 +2023,7 @@
         ]
       },
       "automatyka": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Stan automatyki",
         "required": true,
         "options": [
@@ -1667,16 +2032,16 @@
         ]
       },
       "sworznie": {
-        "type": "select",
-        "label": "Stan sworzni",
+        "type": "inspection_status",
+        "label": "Stan sworzni i połączeń",
         "required": true,
         "options": [
-          "Brak uszkodzeń",
-          "Uszkodzenia"
+          "Prawidłowy",
+          "Nieprawidłowy"
         ]
       },
       "ciegna": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Stan cięgien",
         "required": true,
         "options": [
@@ -1685,7 +2050,7 @@
         ]
       },
       "eksploatacja": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Warunki eksploatacji",
         "required": true,
         "options": [
@@ -1693,12 +2058,98 @@
           "Niezgodne"
         ]
       }
-    }
+    },
+    "sections": [
+      {
+        "id": "informacje",
+        "title": "Informacja na temat resursu",
+        "icon": "info",
+        "fields": [
+          "spec",
+          "ponowny_resurs",
+          "data_resurs",
+          "ostatni_resurs"
+        ]
+      },
+      {
+        "id": "dane",
+        "title": "Określ dane dla suwnicy",
+        "icon": "settings",
+        "fields": [
+          "wykonawca",
+          "uwagi",
+          "typ",
+          "nr_fabryczny",
+          "nr_ewidencyjny",
+          "q_max",
+          "lata_pracy",
+          "ilosc_cykli",
+          "tryb_pracy",
+          "cykle_zmiana",
+          "dni_robocze"
+        ]
+      },
+      {
+        "id": "rejestracja",
+        "title": "Określ sposób rejestracji, wybierając odpowiednią opcję z tabeli",
+        "icon": "assignment",
+        "fields": [
+          "sposob_rejestracji"
+        ]
+      },
+      {
+        "id": "gnp",
+        "title": "Określ grupę natężenia pracy suwnicy, wybierając opcję z tabeli",
+        "icon": "speed",
+        "fields": [
+          "gnp"
+        ]
+      },
+      {
+        "id": "kd",
+        "title": "Na podstawie kalkulatora współczynnika Kd, wybierz odpowiedni stan obciążenia",
+        "icon": "balance",
+        "fields": [
+          "q_1",
+          "c_1",
+          "q_2",
+          "c_2",
+          "q_3",
+          "c_3",
+          "q_4",
+          "c_4",
+          "q_5",
+          "c_5"
+        ]
+      },
+      {
+        "id": "inspekcja",
+        "title": "Ocena stanu technicznego",
+        "icon": "fact_check",
+        "fields": [
+          "konstrukcja",
+          "automatyka",
+          "sworznie",
+          "ciegna",
+          "eksploatacja"
+        ]
+      }
+    ]
   },
   "wciagarka": {
     "name": "Wciągarka",
     "description": "Kalkulator resursu dla wciągarki.",
     "fields": {
+      "wykonawca": {
+        "type": "text",
+        "label": "Wykonawca badania",
+        "required": false
+      },
+      "uwagi": {
+        "type": "textarea",
+        "label": "Uwagi",
+        "required": false
+      },
       "typ": {
         "type": "select",
         "label": "Typ wciągarki",
@@ -1720,6 +2171,11 @@
         "label": "Nr fabryczny",
         "required": true
       },
+      "nr_ewidencyjny": {
+        "type": "text",
+        "label": "Nr ewidencyjny UDT",
+        "required": false
+      },
       "lata_pracy": {
         "type": "number",
         "label": "Lata pracy",
@@ -1769,7 +2225,7 @@
         ]
       },
       "gnp": {
-        "type": "select",
+        "type": "gnp_selector",
         "label": "Grupa natężenia pracy",
         "required": true,
         "options": [
@@ -1887,7 +2343,7 @@
         }
       },
       "konstrukcja": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Stan konstrukcji",
         "required": true,
         "options": [
@@ -1896,7 +2352,7 @@
         ]
       },
       "automatyka": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Stan automatyki",
         "required": true,
         "options": [
@@ -1905,16 +2361,16 @@
         ]
       },
       "sworznie": {
-        "type": "select",
-        "label": "Stan sworzni",
+        "type": "inspection_status",
+        "label": "Stan sworzni i połączeń",
         "required": true,
         "options": [
-          "Brak uszkodzeń",
-          "Uszkodzenia"
+          "Prawidłowy",
+          "Nieprawidłowy"
         ]
       },
       "ciegna": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Stan cięgien",
         "required": true,
         "options": [
@@ -1923,7 +2379,7 @@
         ]
       },
       "eksploatacja": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Warunki eksploatacji",
         "required": true,
         "options": [
@@ -1931,12 +2387,98 @@
           "Niezgodne"
         ]
       }
-    }
+    },
+    "sections": [
+      {
+        "id": "informacje",
+        "title": "Informacja na temat resursu",
+        "icon": "info",
+        "fields": [
+          "spec",
+          "ponowny_resurs",
+          "data_resurs",
+          "ostatni_resurs"
+        ]
+      },
+      {
+        "id": "dane",
+        "title": "Określ dane dla wciągarki",
+        "icon": "settings",
+        "fields": [
+          "wykonawca",
+          "uwagi",
+          "typ",
+          "nr_fabryczny",
+          "nr_ewidencyjny",
+          "q_max",
+          "lata_pracy",
+          "ilosc_cykli",
+          "tryb_pracy",
+          "cykle_zmiana",
+          "dni_robocze"
+        ]
+      },
+      {
+        "id": "rejestracja",
+        "title": "Określ sposób rejestracji, wybierając odpowiednią opcję z tabeli",
+        "icon": "assignment",
+        "fields": [
+          "sposob_rejestracji"
+        ]
+      },
+      {
+        "id": "gnp",
+        "title": "Określ grupę natężenia pracy wciągarki, wybierając opcję z tabeli",
+        "icon": "speed",
+        "fields": [
+          "gnp"
+        ]
+      },
+      {
+        "id": "kd",
+        "title": "Na podstawie kalkulatora współczynnika Kd, wybierz odpowiedni stan obciążenia",
+        "icon": "balance",
+        "fields": [
+          "q_1",
+          "c_1",
+          "q_2",
+          "c_2",
+          "q_3",
+          "c_3",
+          "q_4",
+          "c_4",
+          "q_5",
+          "c_5"
+        ]
+      },
+      {
+        "id": "inspekcja",
+        "title": "Ocena stanu technicznego",
+        "icon": "fact_check",
+        "fields": [
+          "konstrukcja",
+          "automatyka",
+          "sworznie",
+          "ciegna",
+          "eksploatacja"
+        ]
+      }
+    ]
   },
   "wciagnik": {
     "name": "Wciągnik",
     "description": "Kalkulator resursu dla wciągnika.",
     "fields": {
+      "wykonawca": {
+        "type": "text",
+        "label": "Wykonawca badania",
+        "required": false
+      },
+      "uwagi": {
+        "type": "textarea",
+        "label": "Uwagi",
+        "required": false
+      },
       "typ": {
         "type": "select",
         "label": "Typ wciągnika",
@@ -1954,6 +2496,11 @@
         "label": "Nr fabryczny",
         "required": true
       },
+      "nr_ewidencyjny": {
+        "type": "text",
+        "label": "Nr ewidencyjny UDT",
+        "required": false
+      },
       "lata_pracy": {
         "type": "number",
         "label": "Lata pracy",
@@ -2003,7 +2550,7 @@
         ]
       },
       "gnp": {
-        "type": "select",
+        "type": "gnp_selector",
         "label": "Grupa natężenia pracy",
         "required": true,
         "options": [
@@ -2121,7 +2668,7 @@
         }
       },
       "konstrukcja": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Stan konstrukcji",
         "required": true,
         "options": [
@@ -2130,7 +2677,7 @@
         ]
       },
       "automatyka": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Stan automatyki",
         "required": true,
         "options": [
@@ -2139,16 +2686,16 @@
         ]
       },
       "sworznie": {
-        "type": "select",
-        "label": "Stan sworzni",
+        "type": "inspection_status",
+        "label": "Stan sworzni i połączeń",
         "required": true,
         "options": [
-          "Brak uszkodzeń",
-          "Uszkodzenia"
+          "Prawidłowy",
+          "Nieprawidłowy"
         ]
       },
       "ciegna": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Stan cięgien",
         "required": true,
         "options": [
@@ -2157,7 +2704,7 @@
         ]
       },
       "eksploatacja": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Warunki eksploatacji",
         "required": true,
         "options": [
@@ -2165,12 +2712,98 @@
           "Niezgodne"
         ]
       }
-    }
+    },
+    "sections": [
+      {
+        "id": "informacje",
+        "title": "Informacja na temat resursu",
+        "icon": "info",
+        "fields": [
+          "spec",
+          "ponowny_resurs",
+          "data_resurs",
+          "ostatni_resurs"
+        ]
+      },
+      {
+        "id": "dane",
+        "title": "Określ dane dla wciągnika",
+        "icon": "settings",
+        "fields": [
+          "wykonawca",
+          "uwagi",
+          "typ",
+          "nr_fabryczny",
+          "nr_ewidencyjny",
+          "q_max",
+          "lata_pracy",
+          "ilosc_cykli",
+          "tryb_pracy",
+          "cykle_zmiana",
+          "dni_robocze"
+        ]
+      },
+      {
+        "id": "rejestracja",
+        "title": "Określ sposób rejestracji, wybierając odpowiednią opcję z tabeli",
+        "icon": "assignment",
+        "fields": [
+          "sposob_rejestracji"
+        ]
+      },
+      {
+        "id": "gnp",
+        "title": "Określ grupę natężenia pracy wciągnika, wybierając opcję z tabeli",
+        "icon": "speed",
+        "fields": [
+          "gnp"
+        ]
+      },
+      {
+        "id": "kd",
+        "title": "Na podstawie kalkulatora współczynnika Kd, wybierz odpowiedni stan obciążenia",
+        "icon": "balance",
+        "fields": [
+          "q_1",
+          "c_1",
+          "q_2",
+          "c_2",
+          "q_3",
+          "c_3",
+          "q_4",
+          "c_4",
+          "q_5",
+          "c_5"
+        ]
+      },
+      {
+        "id": "inspekcja",
+        "title": "Ocena stanu technicznego",
+        "icon": "fact_check",
+        "fields": [
+          "konstrukcja",
+          "automatyka",
+          "sworznie",
+          "ciegna",
+          "eksploatacja"
+        ]
+      }
+    ]
   },
   "zuraw": {
     "name": "Żuraw",
     "description": "Kalkulator resursu dla żurawia.",
     "fields": {
+      "wykonawca": {
+        "type": "text",
+        "label": "Wykonawca badania",
+        "required": false
+      },
+      "uwagi": {
+        "type": "textarea",
+        "label": "Uwagi",
+        "required": false
+      },
       "typ": {
         "type": "select",
         "label": "Typ żurawia",
@@ -2214,6 +2847,11 @@
         "label": "Nr fabryczny",
         "required": true
       },
+      "nr_ewidencyjny": {
+        "type": "text",
+        "label": "Nr ewidencyjny UDT",
+        "required": false
+      },
       "lata_pracy": {
         "type": "number",
         "label": "Lata pracy",
@@ -2263,7 +2901,7 @@
         ]
       },
       "gnp": {
-        "type": "select",
+        "type": "gnp_selector",
         "label": "Grupa natężenia pracy",
         "required": true,
         "options": [
@@ -2408,7 +3046,7 @@
         }
       },
       "konstrukcja": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Stan konstrukcji",
         "required": true,
         "options": [
@@ -2417,7 +3055,7 @@
         ]
       },
       "automatyka": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Stan automatyki",
         "required": true,
         "options": [
@@ -2426,16 +3064,16 @@
         ]
       },
       "sworznie": {
-        "type": "select",
-        "label": "Stan sworzni",
+        "type": "inspection_status",
+        "label": "Stan sworzni i połączeń",
         "required": true,
         "options": [
-          "Brak uszkodzeń",
-          "Uszkodzenia"
+          "Prawidłowy",
+          "Nieprawidłowy"
         ]
       },
       "ciegna": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Stan cięgien",
         "required": true,
         "options": [
@@ -2444,7 +3082,7 @@
         ]
       },
       "eksploatacja": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Warunki eksploatacji",
         "required": true,
         "options": [
@@ -2452,16 +3090,110 @@
           "Niezgodne"
         ]
       }
-    }
+    },
+    "sections": [
+      {
+        "id": "informacje",
+        "title": "Informacja na temat resursu",
+        "icon": "info",
+        "fields": [
+          "spec",
+          "ponowny_resurs",
+          "data_resurs",
+          "ostatni_resurs"
+        ]
+      },
+      {
+        "id": "dane",
+        "title": "Określ dane dla żurawia",
+        "icon": "settings",
+        "fields": [
+          "wykonawca",
+          "uwagi",
+          "typ",
+          "nr_fabryczny",
+          "nr_ewidencyjny",
+          "q_max",
+          "q_o",
+          "lata_pracy",
+          "ilosc_cykli",
+          "tryb_pracy",
+          "cykle_zmiana",
+          "dni_robocze"
+        ]
+      },
+      {
+        "id": "rejestracja",
+        "title": "Określ sposób rejestracji, wybierając odpowiednią opcję z tabeli",
+        "icon": "assignment",
+        "fields": [
+          "sposob_rejestracji"
+        ]
+      },
+      {
+        "id": "gnp",
+        "title": "Określ grupę natężenia pracy żurawia, wybierając opcję z tabeli",
+        "icon": "speed",
+        "fields": [
+          "gnp_check",
+          "gnp_czas",
+          "gnp"
+        ]
+      },
+      {
+        "id": "kd",
+        "title": "Na podstawie kalkulatora współczynnika Kd, wybierz odpowiedni stan obciążenia",
+        "icon": "balance",
+        "fields": [
+          "q_1",
+          "c_1",
+          "q_2",
+          "c_2",
+          "q_3",
+          "c_3",
+          "q_4",
+          "c_4",
+          "q_5",
+          "c_5"
+        ]
+      },
+      {
+        "id": "inspekcja",
+        "title": "Ocena stanu technicznego",
+        "icon": "fact_check",
+        "fields": [
+          "konstrukcja",
+          "automatyka",
+          "sworznie",
+          "ciegna",
+          "eksploatacja"
+        ]
+      }
+    ]
   },
   "zuraw_przeladunkowy": {
     "name": "Żuraw przeładunkowy",
     "description": "Kalkulator resursu dla żurawia przeładunkowego.",
     "fields": {
+      "wykonawca": {
+        "type": "text",
+        "label": "Wykonawca badania",
+        "required": false
+      },
+      "uwagi": {
+        "type": "textarea",
+        "label": "Uwagi",
+        "required": false
+      },
       "nr_fabryczny": {
         "type": "text",
         "label": "Nr fabryczny",
         "required": true
+      },
+      "nr_ewidencyjny": {
+        "type": "text",
+        "label": "Nr ewidencyjny UDT",
+        "required": false
       },
       "h_max": {
         "type": "number",
@@ -2791,7 +3523,7 @@
         "required": false
       },
       "konstrukcja": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Stan konstrukcji",
         "required": true,
         "options": [
@@ -2800,7 +3532,7 @@
         ]
       },
       "automatyka": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Stan automatyki",
         "required": true,
         "options": [
@@ -2809,16 +3541,16 @@
         ]
       },
       "sworznie": {
-        "type": "select",
-        "label": "Stan sworzni",
+        "type": "inspection_status",
+        "label": "Stan sworzni i połączeń",
         "required": true,
         "options": [
-          "Brak uszkodzeń",
-          "Uszkodzenia"
+          "Prawidłowy",
+          "Nieprawidłowy"
         ]
       },
       "ciegna": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Stan cięgien",
         "required": true,
         "options": [
@@ -2827,7 +3559,7 @@
         ]
       },
       "eksploatacja": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Warunki eksploatacji",
         "required": true,
         "options": [
@@ -2836,7 +3568,7 @@
         ]
       },
       "szczelnosc": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Szczelność układu hydraulicznego",
         "required": true,
         "options": [
@@ -2845,7 +3577,7 @@
         ]
       },
       "hamulce": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Hamulce",
         "required": true,
         "options": [
@@ -2853,16 +3585,145 @@
           "Niesprawne"
         ]
       }
-    }
+    },
+    "sections": [
+      {
+        "id": "informacje",
+        "title": "Informacja na temat resursu",
+        "icon": "info",
+        "fields": [
+          "spec",
+          "ponowny_resurs",
+          "data_resurs",
+          "ostatni_resurs"
+        ]
+      },
+      {
+        "id": "dane",
+        "title": "Określ dane dla żurawia przeładunkowego",
+        "icon": "settings",
+        "fields": [
+          "wykonawca",
+          "uwagi",
+          "nr_fabryczny",
+          "nr_ewidencyjny",
+          "h_max",
+          "L_b_max",
+          "v_pod",
+          "q_max",
+          "q_o",
+          "lata_pracy",
+          "ilosc_cykli",
+          "tryb_pracy",
+          "cykle_zmiana",
+          "dni_robocze"
+        ]
+      },
+      {
+        "id": "rejestracja",
+        "title": "Określ sposób rejestracji, wybierając odpowiednią opcję z tabeli",
+        "icon": "assignment",
+        "fields": [
+          "sposob_rejestracji"
+        ]
+      },
+      {
+        "id": "kd",
+        "title": "Za pomocą kalkulatora wyznacz współczynnik Kd",
+        "icon": "balance",
+        "fields": [
+          "q_1",
+          "c_1",
+          "q_2",
+          "c_2",
+          "q_3",
+          "c_3",
+          "q_4",
+          "c_4",
+          "q_5",
+          "c_5"
+        ]
+      },
+      {
+        "id": "s_factor",
+        "title": "Określ współczynnik przebiegu naprężeń S",
+        "icon": "analytics",
+        "fields": [
+          "s_factor"
+        ]
+      },
+      {
+        "id": "ldr",
+        "title": "Za pomocą kalkulatora wyznacz współczynnik wykorzystania wysięgu",
+        "icon": "bar_chart",
+        "fields": [
+          "diagram_ldr",
+          "p_1",
+          "p_2",
+          "p_3",
+          "p_4",
+          "p_5",
+          "p_6",
+          "p_7",
+          "p_8",
+          "p_9",
+          "p_10",
+          "p_11",
+          "p_12",
+          "p_13",
+          "p_14",
+          "p_15",
+          "p_16",
+          "p_17",
+          "p_18",
+          "p_19",
+          "p_20",
+          "p_21",
+          "p_22",
+          "p_23",
+          "p_24",
+          "p_25"
+        ]
+      },
+      {
+        "id": "inspekcja",
+        "title": "Ocena stanu technicznego",
+        "icon": "fact_check",
+        "fields": [
+          "konstrukcja",
+          "automatyka",
+          "sworznie",
+          "ciegna",
+          "eksploatacja",
+          "szczelnosc",
+          "hamulce"
+        ]
+      }
+    ]
   },
   "wozek_jezdniowy": {
     "name": "Wózek jezdniowy",
     "description": "Kalkulator resursu dla wózka jezdniowego.",
     "fields": {
+      "wykonawca": {
+        "type": "text",
+        "label": "Wykonawca badania",
+        "required": false
+      },
+      "uwagi": {
+        "type": "textarea",
+        "label": "Uwagi",
+        "required": false
+      },
       "nr_fabryczny": {
         "type": "text",
         "label": "Nr fabryczny",
         "required": true
+      },
+      "nr_ewidencyjny": {
+        "type": "text",
+        "label": "Nr ewidencyjny UDT",
+        "required": false
       },
       "lata_pracy": {
         "type": "number",
@@ -3195,7 +4056,7 @@
         "default_unit": "lata"
       },
       "konstrukcja": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Stan konstrukcji",
         "required": true,
         "options": [
@@ -3204,7 +4065,7 @@
         ]
       },
       "automatyka": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Stan automatyki",
         "required": true,
         "options": [
@@ -3213,16 +4074,16 @@
         ]
       },
       "sworznie": {
-        "type": "select",
-        "label": "Stan sworzni",
+        "type": "inspection_status",
+        "label": "Stan sworzni i połączeń",
         "required": true,
         "options": [
-          "Brak uszkodzeń",
-          "Uszkodzenia"
+          "Prawidłowy",
+          "Nieprawidłowy"
         ]
       },
       "ciegna": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Stan cięgien",
         "required": true,
         "options": [
@@ -3231,7 +4092,7 @@
         ]
       },
       "eksploatacja": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Warunki eksploatacji",
         "required": true,
         "options": [
@@ -3239,12 +4100,109 @@
           "Niezgodne"
         ]
       }
-    }
+    },
+    "sections": [
+      {
+        "id": "informacje",
+        "title": "Informacja na temat resursu",
+        "icon": "info",
+        "fields": [
+          "spec",
+          "ponowny_resurs",
+          "data_resurs",
+          "ostatni_licznik",
+          "ostatni_resurs",
+          "ostatni_resurs_mech_pod",
+          "ostatni_resurs_mech_jaz",
+          "ostatni_resurs_mech_prz",
+          "ostatni_resurs_mech_mas"
+        ]
+      },
+      {
+        "id": "dane",
+        "title": "Określ dane dla wózka jezdniowego podnośnikowego",
+        "icon": "settings",
+        "fields": [
+          "wykonawca",
+          "uwagi",
+          "naped",
+          "operator",
+          "powierzchnia",
+          "serwis",
+          "temperatura",
+          "srodowisko",
+          "nr_fabryczny",
+          "nr_ewidencyjny",
+          "widly_check",
+          "dlugosc_widel",
+          "h_max",
+          "v_pod",
+          "alfa",
+          "beta",
+          "q_max",
+          "q_o",
+          "licznik_pracy",
+          "lata_pracy",
+          "max_czas",
+          "ilosc_cykli",
+          "tryb_pracy",
+          "cykle_zmiana",
+          "dni_robocze"
+        ]
+      },
+      {
+        "id": "rejestracja",
+        "title": "Określ sposób rejestracji, wybierając odpowiednią opcję z tabeli",
+        "icon": "assignment",
+        "fields": [
+          "sposob_rejestracji"
+        ]
+      },
+      {
+        "id": "kd",
+        "title": "Za pomocą kalkulatora wyznacz współczynnik Kd",
+        "icon": "balance",
+        "fields": [
+          "q_1",
+          "c_1",
+          "q_2",
+          "c_2",
+          "q_3",
+          "c_3",
+          "q_4",
+          "c_4",
+          "q_5",
+          "c_5"
+        ]
+      },
+      {
+        "id": "inspekcja",
+        "title": "Ocena stanu technicznego",
+        "icon": "fact_check",
+        "fields": [
+          "konstrukcja",
+          "automatyka",
+          "sworznie",
+          "ciegna",
+          "eksploatacja"
+        ]
+      }
+    ]
   },
   "ukladnica_magazynowa": {
     "name": "Układnica magazynowa",
     "description": "Kalkulator resursu dla układnicy magazynowej.",
     "fields": {
+      "wykonawca": {
+        "type": "text",
+        "label": "Wykonawca badania",
+        "required": false
+      },
+      "uwagi": {
+        "type": "textarea",
+        "label": "Uwagi",
+        "required": false
+      },
       "typ": {
         "type": "select",
         "label": "Typ układnicy magazynowej",
@@ -3269,6 +4227,11 @@
         "type": "text",
         "label": "Nr fabryczny",
         "required": true
+      },
+      "nr_ewidencyjny": {
+        "type": "text",
+        "label": "Nr ewidencyjny UDT",
+        "required": false
       },
       "h_max": {
         "type": "number",
@@ -3478,7 +4441,7 @@
         }
       },
       "konstrukcja": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Stan konstrukcji",
         "required": true,
         "options": [
@@ -3487,7 +4450,7 @@
         ]
       },
       "automatyka": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Stan automatyki",
         "required": true,
         "options": [
@@ -3496,16 +4459,16 @@
         ]
       },
       "sworznie": {
-        "type": "select",
-        "label": "Stan sworzni",
+        "type": "inspection_status",
+        "label": "Stan sworzni i połączeń",
         "required": true,
         "options": [
-          "Brak uszkodzeń",
-          "Uszkodzenia"
+          "Prawidłowy",
+          "Nieprawidłowy"
         ]
       },
       "ciegna": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Stan cięgien",
         "required": true,
         "options": [
@@ -3514,7 +4477,7 @@
         ]
       },
       "eksploatacja": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Warunki eksploatacji",
         "required": true,
         "options": [
@@ -3522,12 +4485,99 @@
           "Niezgodne"
         ]
       }
-    }
+    },
+    "sections": [
+      {
+        "id": "informacje",
+        "title": "Informacja na temat resursu",
+        "icon": "info",
+        "fields": [
+          "spec",
+          "ponowny_resurs",
+          "data_resurs",
+          "ostatni_resurs"
+        ]
+      },
+      {
+        "id": "dane",
+        "title": "Określ dane dla układnicy magazynowej",
+        "icon": "settings",
+        "fields": [
+          "wykonawca",
+          "uwagi",
+          "typ",
+          "ster",
+          "nr_fabryczny",
+          "nr_ewidencyjny",
+          "h_max",
+          "v_pod",
+          "s_sz",
+          "v_jaz",
+          "v_prz",
+          "q_max",
+          "licznik_pracy_pod",
+          "licznik_pracy_jaz",
+          "licznik_pracy_prz",
+          "lata_pracy",
+          "ilosc_cykli",
+          "tryb_pracy",
+          "cykle_zmiana",
+          "dni_robocze"
+        ]
+      },
+      {
+        "id": "rejestracja",
+        "title": "Określ sposób rejestracji, wybierając odpowiednią opcję z tabeli",
+        "icon": "assignment",
+        "fields": [
+          "sposob_rejestracji"
+        ]
+      },
+      {
+        "id": "kd",
+        "title": "Za pomocą kalkulatora wyznacz współczynnik Kd",
+        "icon": "balance",
+        "fields": [
+          "q_1",
+          "c_1",
+          "q_2",
+          "c_2",
+          "q_3",
+          "c_3",
+          "q_4",
+          "c_4",
+          "q_5",
+          "c_5"
+        ]
+      },
+      {
+        "id": "inspekcja",
+        "title": "Ocena stanu technicznego",
+        "icon": "fact_check",
+        "fields": [
+          "konstrukcja",
+          "automatyka",
+          "sworznie",
+          "ciegna",
+          "eksploatacja"
+        ]
+      }
+    ]
   },
   "winda_dekarska": {
     "name": "Winda Dekarska",
     "description": "Kalkulator resursu dla windy dekarskiej.",
     "fields": {
+      "wykonawca": {
+        "type": "text",
+        "label": "Wykonawca badania",
+        "required": false
+      },
+      "uwagi": {
+        "type": "textarea",
+        "label": "Uwagi",
+        "required": false
+      },
       "producent": {
         "type": "text",
         "label": "Producent",
@@ -3537,6 +4587,11 @@
         "type": "text",
         "label": "Nr fabryczny",
         "required": true
+      },
+      "nr_ewidencyjny": {
+        "type": "text",
+        "label": "Nr ewidencyjny UDT",
+        "required": false
       },
       "nr_udt": {
         "type": "text",
@@ -3700,7 +4755,7 @@
         "label": "C5 (%)"
       },
       "konstrukcja": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Stan konstrukcji",
         "options": [
           "Brak uszkodzeń",
@@ -3708,7 +4763,7 @@
         ]
       },
       "automatyka": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Stan automatyki",
         "options": [
           "Sprawna",
@@ -3716,7 +4771,7 @@
         ]
       },
       "sworznie": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Stan sworzni",
         "options": [
           "Brak uszkodzeń",
@@ -3724,7 +4779,7 @@
         ]
       },
       "eksploatacja": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Warunki eksploatacji",
         "options": [
           "Zgodne",
@@ -3732,7 +4787,7 @@
         ]
       },
       "szczelnosc": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Szczelność",
         "options": [
           "Szczelny",
@@ -3740,19 +4795,96 @@
         ]
       },
       "hamulce": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Hamulce",
         "options": [
           "Sprawne",
           "Niesprawne"
         ]
       }
-    }
+    },
+    "sections": [
+      {
+        "id": "dane",
+        "title": "Określ dane dla windy dekarskiej",
+        "icon": "settings",
+        "fields": [
+          "wykonawca",
+          "uwagi",
+          "producent",
+          "nr_fabryczny",
+          "nr_ewidencyjny",
+          "nr_udt",
+          "typ",
+          "h_max",
+          "v_pod",
+          "jednostka",
+          "q_max",
+          "lata_pracy",
+          "max_cykle",
+          "ilosc_cykli",
+          "tryb_pracy",
+          "cykle_zmiana",
+          "dni_robocze"
+        ]
+      },
+      {
+        "id": "rejestracja",
+        "title": "Określ sposób rejestracji, wybierając odpowiednią opcję z tabeli",
+        "icon": "assignment",
+        "fields": [
+          "sposob_rejestracji"
+        ]
+      },
+      {
+        "id": "kd",
+        "title": "Za pomocą kalkulatora wyznacz współczynnik Kd",
+        "icon": "balance",
+        "fields": [
+          "q_1",
+          "c_1",
+          "q_2",
+          "c_2",
+          "q_3",
+          "c_3",
+          "q_4",
+          "c_4",
+          "q_5",
+          "c_5",
+          "a_1",
+          "a_2",
+          "a_3"
+        ]
+      },
+      {
+        "id": "inspekcja",
+        "title": "Ocena stanu technicznego",
+        "icon": "fact_check",
+        "fields": [
+          "konstrukcja",
+          "automatyka",
+          "sworznie",
+          "eksploatacja",
+          "szczelnosc",
+          "hamulce"
+        ]
+      }
+    ]
   },
   "wozek_specjalizowany": {
     "name": "Wózek specjalizowany",
     "description": "Kalkulator resursu dla wózka specjalizowanego.",
     "fields": {
+      "wykonawca": {
+        "type": "text",
+        "label": "Wykonawca badania",
+        "required": false
+      },
+      "uwagi": {
+        "type": "textarea",
+        "label": "Uwagi",
+        "required": false
+      },
       "typ": {
         "type": "select",
         "label": "Typ wózka specjalizowanego",
@@ -3767,6 +4899,11 @@
         "type": "text",
         "label": "Nr fabryczny",
         "required": true
+      },
+      "nr_ewidencyjny": {
+        "type": "text",
+        "label": "Nr ewidencyjny UDT",
+        "required": false
       },
       "lata_pracy": {
         "type": "number",
@@ -3817,7 +4954,7 @@
         ]
       },
       "gnp": {
-        "type": "select",
+        "type": "gnp_selector",
         "label": "Grupa natężenia pracy",
         "required": true,
         "options": [
@@ -3935,7 +5072,7 @@
         }
       },
       "konstrukcja": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Stan konstrukcji",
         "required": true,
         "options": [
@@ -3944,7 +5081,7 @@
         ]
       },
       "automatyka": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Stan automatyki",
         "required": true,
         "options": [
@@ -3953,16 +5090,16 @@
         ]
       },
       "sworznie": {
-        "type": "select",
-        "label": "Stan sworzni",
+        "type": "inspection_status",
+        "label": "Stan sworzni i połączeń",
         "required": true,
         "options": [
-          "Brak uszkodzeń",
-          "Uszkodzenia"
+          "Prawidłowy",
+          "Nieprawidłowy"
         ]
       },
       "ciegna": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Stan cięgien",
         "required": true,
         "options": [
@@ -3971,7 +5108,7 @@
         ]
       },
       "eksploatacja": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Warunki eksploatacji",
         "required": true,
         "options": [
@@ -3979,12 +5116,99 @@
           "Niezgodne"
         ]
       }
-    }
+    },
+    "sections": [
+      {
+        "id": "informacje",
+        "title": "Informacja na temat resursu",
+        "icon": "info",
+        "fields": [
+          "spec",
+          "ponowny_resurs",
+          "data_resurs",
+          "ostatni_resurs"
+        ]
+      },
+      {
+        "id": "dane",
+        "title": "Określ dane dla wózka specjalizowanego",
+        "icon": "settings",
+        "fields": [
+          "wykonawca",
+          "uwagi",
+          "typ",
+          "nr_fabryczny",
+          "nr_ewidencyjny",
+          "q_max",
+          "lata_pracy",
+          "ilosc_cykli",
+          "tryb_pracy",
+          "cykle_zmiana",
+          "dni_robocze"
+        ]
+      },
+      {
+        "id": "rejestracja",
+        "title": "Określ sposób rejestracji, wybierając odpowiednią opcję z tabeli",
+        "icon": "assignment",
+        "fields": [
+          "sposob_rejestracji"
+        ]
+      },
+      {
+        "id": "gnp",
+        "title": "Określ grupę natężenia pracy wózka specjalizowanego, wybierając opcję z tabeli",
+        "icon": "speed",
+        "fields": [
+          "gnp"
+        ]
+      },
+      {
+        "id": "kd",
+        "title": "Na podstawie kalkulatora współczynnika Kd, wybierz odpowiedni stan obciążenia",
+        "icon": "balance",
+        "fields": [
+          "q_1",
+          "c_1",
+          "q_2",
+          "c_2",
+          "q_3",
+          "c_3",
+          "q_4",
+          "c_4",
+          "q_5",
+          "c_5"
+        ]
+      },
+      {
+        "id": "inspekcja",
+        "title": "Ocena stanu technicznego",
+        "icon": "fact_check",
+        "fields": [
+          "konstrukcja",
+          "automatyka",
+          "sworznie",
+          "ciegna",
+          "eksploatacja"
+        ]
+      }
+    ]
   },
   "mech_jazdy_suwnicy": {
     "name": "Mechanizm Jazdy Suwnicy",
     "description": "Kalkulator resursu dla mechanizmu jazdy suwnicy.",
+    "parent_devices": ["suwnica"],
     "fields": {
+      "wykonawca": {
+        "type": "text",
+        "label": "Wykonawca badania",
+        "required": false
+      },
+      "uwagi": {
+        "type": "textarea",
+        "label": "Uwagi",
+        "required": false
+      },
       "mechanizm_pomocniczy": {
         "type": "select",
         "label": "Mechanizm pomocniczy",
@@ -4001,6 +5225,11 @@
         "type": "text",
         "label": "Nr fabryczny",
         "required": true
+      },
+      "nr_ewidencyjny": {
+        "type": "text",
+        "label": "Nr ewidencyjny UDT",
+        "required": false
       },
       "lata_pracy": {
         "type": "number",
@@ -4041,7 +5270,7 @@
         ]
       },
       "gnp": {
-        "type": "select",
+        "type": "gnp_selector",
         "label": "Grupa natężenia pracy (mechanizmu)",
         "required": true,
         "options": [
@@ -4158,12 +5387,86 @@
           "value": "Tak"
         }
       }
-    }
+    },
+    "sections": [
+      {
+        "id": "informacje",
+        "title": "Informacja na temat resursu",
+        "icon": "info",
+        "fields": [
+          "spec",
+          "ponowny_resurs",
+          "data_resurs",
+          "ostatni_resurs"
+        ]
+      },
+      {
+        "id": "dane",
+        "title": "Określ dane dla mechanizmu jazdy suwnicy",
+        "icon": "settings",
+        "fields": [
+          "wykonawca",
+          "uwagi",
+          "mechanizm_pomocniczy",
+          "nr_fabryczny",
+          "nr_ewidencyjny",
+          "q_max",
+          "lata_pracy",
+          "czas_cykle",
+          "jednostka",
+          "ilosc_cykli"
+        ]
+      },
+      {
+        "id": "rejestracja",
+        "title": "Określ sposób rejestracji, wybierając odpowiednią opcję z tabeli",
+        "icon": "assignment",
+        "fields": [
+          "sposob_rejestracji"
+        ]
+      },
+      {
+        "id": "gnp",
+        "title": "Określ grupę natężenia pracy mechanizmu jazdy suwnicy, wybierając opcję z tabeli",
+        "icon": "speed",
+        "fields": [
+          "gnp"
+        ]
+      },
+      {
+        "id": "kd",
+        "title": "Na podstawie kalkulatora współczynnika Kd, wybierz odpowiedni stan obciążenia",
+        "icon": "balance",
+        "fields": [
+          "q_1",
+          "c_1",
+          "q_2",
+          "c_2",
+          "q_3",
+          "c_3",
+          "q_4",
+          "c_4",
+          "q_5",
+          "c_5"
+        ]
+      }
+    ]
   },
   "mech_jazdy_wciagarki": {
     "name": "Mechanizm Jazdy Wciągarki",
     "description": "Kalkulator resursu dla mechanizmu jazdy wciągarki.",
+    "parent_devices": ["wciagarka"],
     "fields": {
+      "wykonawca": {
+        "type": "text",
+        "label": "Wykonawca badania",
+        "required": false
+      },
+      "uwagi": {
+        "type": "textarea",
+        "label": "Uwagi",
+        "required": false
+      },
       "mechanizm_pomocniczy": {
         "type": "select",
         "label": "Mechanizm pomocniczy",
@@ -4180,6 +5483,11 @@
         "type": "text",
         "label": "Nr fabryczny",
         "required": true
+      },
+      "nr_ewidencyjny": {
+        "type": "text",
+        "label": "Nr ewidencyjny UDT",
+        "required": false
       },
       "lata_pracy": {
         "type": "number",
@@ -4220,7 +5528,7 @@
         ]
       },
       "gnp": {
-        "type": "select",
+        "type": "gnp_selector",
         "label": "Grupa natężenia pracy (mechanizmu)",
         "required": true,
         "options": [
@@ -4337,12 +5645,86 @@
           "value": "Tak"
         }
       }
-    }
+    },
+    "sections": [
+      {
+        "id": "informacje",
+        "title": "Informacja na temat resursu",
+        "icon": "info",
+        "fields": [
+          "spec",
+          "ponowny_resurs",
+          "data_resurs",
+          "ostatni_resurs"
+        ]
+      },
+      {
+        "id": "dane",
+        "title": "Określ dane dla mechanizmu jazdy wciągarki",
+        "icon": "settings",
+        "fields": [
+          "wykonawca",
+          "uwagi",
+          "mechanizm_pomocniczy",
+          "nr_fabryczny",
+          "nr_ewidencyjny",
+          "q_max",
+          "lata_pracy",
+          "czas_cykle",
+          "jednostka",
+          "ilosc_cykli"
+        ]
+      },
+      {
+        "id": "rejestracja",
+        "title": "Określ sposób rejestracji, wybierając odpowiednią opcję z tabeli",
+        "icon": "assignment",
+        "fields": [
+          "sposob_rejestracji"
+        ]
+      },
+      {
+        "id": "gnp",
+        "title": "Określ grupę natężenia pracy mechanizmu jazdy wciągarki, wybierając opcję z tabeli",
+        "icon": "speed",
+        "fields": [
+          "gnp"
+        ]
+      },
+      {
+        "id": "kd",
+        "title": "Na podstawie kalkulatora współczynnika Kd, wybierz odpowiedni stan obciążenia",
+        "icon": "balance",
+        "fields": [
+          "q_1",
+          "c_1",
+          "q_2",
+          "c_2",
+          "q_3",
+          "c_3",
+          "q_4",
+          "c_4",
+          "q_5",
+          "c_5"
+        ]
+      }
+    ]
   },
   "mech_jazdy_zurawia": {
     "name": "Mechanizm Jazdy Żurawia",
     "description": "Kalkulator resursu dla mechanizmu jazdy żurawia.",
+    "parent_devices": ["zuraw"],
     "fields": {
+      "wykonawca": {
+        "type": "text",
+        "label": "Wykonawca badania",
+        "required": false
+      },
+      "uwagi": {
+        "type": "textarea",
+        "label": "Uwagi",
+        "required": false
+      },
       "mechanizm_pomocniczy": {
         "type": "select",
         "label": "Mechanizm pomocniczy",
@@ -4359,6 +5741,11 @@
         "type": "text",
         "label": "Nr fabryczny",
         "required": true
+      },
+      "nr_ewidencyjny": {
+        "type": "text",
+        "label": "Nr ewidencyjny UDT",
+        "required": false
       },
       "lata_pracy": {
         "type": "number",
@@ -4399,7 +5786,7 @@
         ]
       },
       "gnp": {
-        "type": "select",
+        "type": "gnp_selector",
         "label": "Grupa natężenia pracy (mechanizmu)",
         "required": true,
         "options": [
@@ -4516,12 +5903,86 @@
           "value": "Tak"
         }
       }
-    }
+    },
+    "sections": [
+      {
+        "id": "informacje",
+        "title": "Informacja na temat resursu",
+        "icon": "info",
+        "fields": [
+          "spec",
+          "ponowny_resurs",
+          "data_resurs",
+          "ostatni_resurs"
+        ]
+      },
+      {
+        "id": "dane",
+        "title": "Określ dane dla mechanizmu jazdy żurawia",
+        "icon": "settings",
+        "fields": [
+          "wykonawca",
+          "uwagi",
+          "mechanizm_pomocniczy",
+          "nr_fabryczny",
+          "nr_ewidencyjny",
+          "q_max",
+          "lata_pracy",
+          "czas_cykle",
+          "jednostka",
+          "ilosc_cykli"
+        ]
+      },
+      {
+        "id": "rejestracja",
+        "title": "Określ sposób rejestracji, wybierając odpowiednią opcję z tabeli",
+        "icon": "assignment",
+        "fields": [
+          "sposob_rejestracji"
+        ]
+      },
+      {
+        "id": "gnp",
+        "title": "Określ grupę natężenia pracy mechanizmu jazdy żurawia, wybierając opcję z tabeli",
+        "icon": "speed",
+        "fields": [
+          "gnp"
+        ]
+      },
+      {
+        "id": "kd",
+        "title": "Na podstawie kalkulatora współczynnika Kd, wybierz odpowiedni stan obciążenia",
+        "icon": "balance",
+        "fields": [
+          "q_1",
+          "c_1",
+          "q_2",
+          "c_2",
+          "q_3",
+          "c_3",
+          "q_4",
+          "c_4",
+          "q_5",
+          "c_5"
+        ]
+      }
+    ]
   },
   "mech_podnoszenia": {
     "name": "Mechanizm Podnoszenia",
     "description": "Kalkulator resursu dla mechanizmu podnoszenia.",
+    "parent_devices": ["suwnica", "wciagarka", "wciagnik", "zuraw"],
     "fields": {
+      "wykonawca": {
+        "type": "text",
+        "label": "Wykonawca badania",
+        "required": false
+      },
+      "uwagi": {
+        "type": "textarea",
+        "label": "Uwagi",
+        "required": false
+      },
       "mechanizm_pomocniczy": {
         "type": "select",
         "label": "Mechanizm pomocniczy",
@@ -4538,6 +5999,11 @@
         "type": "text",
         "label": "Nr fabryczny",
         "required": true
+      },
+      "nr_ewidencyjny": {
+        "type": "text",
+        "label": "Nr ewidencyjny UDT",
+        "required": false
       },
       "lata_pracy": {
         "type": "number",
@@ -4578,7 +6044,7 @@
         ]
       },
       "gnp": {
-        "type": "select",
+        "type": "gnp_selector",
         "label": "Grupa natężenia pracy (mechanizmu)",
         "required": true,
         "options": [
@@ -4695,12 +6161,86 @@
           "value": "Tak"
         }
       }
-    }
+    },
+    "sections": [
+      {
+        "id": "informacje",
+        "title": "Informacja na temat resursu",
+        "icon": "info",
+        "fields": [
+          "spec",
+          "ponowny_resurs",
+          "data_resurs",
+          "ostatni_resurs"
+        ]
+      },
+      {
+        "id": "dane",
+        "title": "Określ dane dla mechanizmu podnoszenia",
+        "icon": "settings",
+        "fields": [
+          "wykonawca",
+          "uwagi",
+          "mechanizm_pomocniczy",
+          "nr_fabryczny",
+          "nr_ewidencyjny",
+          "q_max",
+          "lata_pracy",
+          "czas_cykle",
+          "jednostka",
+          "ilosc_cykli"
+        ]
+      },
+      {
+        "id": "rejestracja",
+        "title": "Określ sposób rejestracji, wybierając odpowiednią opcję z tabeli",
+        "icon": "assignment",
+        "fields": [
+          "sposob_rejestracji"
+        ]
+      },
+      {
+        "id": "gnp",
+        "title": "Określ grupę natężenia pracy mechanizmu podnoszenia, wybierając opcję z tabeli",
+        "icon": "speed",
+        "fields": [
+          "gnp"
+        ]
+      },
+      {
+        "id": "kd",
+        "title": "Na podstawie kalkulatora współczynnika Kd, wybierz odpowiedni stan obciążenia",
+        "icon": "balance",
+        "fields": [
+          "q_1",
+          "c_1",
+          "q_2",
+          "c_2",
+          "q_3",
+          "c_3",
+          "q_4",
+          "c_4",
+          "q_5",
+          "c_5"
+        ]
+      }
+    ]
   },
   "mech_zmiany_obrotu": {
     "name": "Mechanizm Zmiany Obrotu",
     "description": "Kalkulator resursu dla mechanizmu zmiany obrotu.",
+    "parent_devices": ["zuraw"],
     "fields": {
+      "wykonawca": {
+        "type": "text",
+        "label": "Wykonawca badania",
+        "required": false
+      },
+      "uwagi": {
+        "type": "textarea",
+        "label": "Uwagi",
+        "required": false
+      },
       "mechanizm_pomocniczy": {
         "type": "select",
         "label": "Mechanizm pomocniczy",
@@ -4717,6 +6257,11 @@
         "type": "text",
         "label": "Nr fabryczny",
         "required": true
+      },
+      "nr_ewidencyjny": {
+        "type": "text",
+        "label": "Nr ewidencyjny UDT",
+        "required": false
       },
       "lata_pracy": {
         "type": "number",
@@ -4757,7 +6302,7 @@
         ]
       },
       "gnp": {
-        "type": "select",
+        "type": "gnp_selector",
         "label": "Grupa natężenia pracy (mechanizmu)",
         "required": true,
         "options": [
@@ -4874,12 +6419,86 @@
           "value": "Tak"
         }
       }
-    }
+    },
+    "sections": [
+      {
+        "id": "informacje",
+        "title": "Informacja na temat resursu",
+        "icon": "info",
+        "fields": [
+          "spec",
+          "ponowny_resurs",
+          "data_resurs",
+          "ostatni_resurs"
+        ]
+      },
+      {
+        "id": "dane",
+        "title": "Określ dane dla mechanizmu zmiany obrotu",
+        "icon": "settings",
+        "fields": [
+          "wykonawca",
+          "uwagi",
+          "mechanizm_pomocniczy",
+          "nr_fabryczny",
+          "nr_ewidencyjny",
+          "q_max",
+          "lata_pracy",
+          "czas_cykle",
+          "jednostka",
+          "ilosc_cykli"
+        ]
+      },
+      {
+        "id": "rejestracja",
+        "title": "Określ sposób rejestracji, wybierając odpowiednią opcję z tabeli",
+        "icon": "assignment",
+        "fields": [
+          "sposob_rejestracji"
+        ]
+      },
+      {
+        "id": "gnp",
+        "title": "Określ grupę natężenia pracy mechanizmu zmiany obrotu, wybierając opcję z tabeli",
+        "icon": "speed",
+        "fields": [
+          "gnp"
+        ]
+      },
+      {
+        "id": "kd",
+        "title": "Na podstawie kalkulatora współczynnika Kd, wybierz odpowiedni stan obciążenia",
+        "icon": "balance",
+        "fields": [
+          "q_1",
+          "c_1",
+          "q_2",
+          "c_2",
+          "q_3",
+          "c_3",
+          "q_4",
+          "c_4",
+          "q_5",
+          "c_5"
+        ]
+      }
+    ]
   },
   "mech_zmiany_wysiegu": {
     "name": "Mechanizm Zmiany Wysięgu",
     "description": "Kalkulator resursu dla mechanizmu zmiany wysięgu.",
+    "parent_devices": ["zuraw"],
     "fields": {
+      "wykonawca": {
+        "type": "text",
+        "label": "Wykonawca badania",
+        "required": false
+      },
+      "uwagi": {
+        "type": "textarea",
+        "label": "Uwagi",
+        "required": false
+      },
       "mechanizm_pomocniczy": {
         "type": "select",
         "label": "Mechanizm pomocniczy",
@@ -4896,6 +6515,11 @@
         "type": "text",
         "label": "Nr fabryczny",
         "required": true
+      },
+      "nr_ewidencyjny": {
+        "type": "text",
+        "label": "Nr ewidencyjny UDT",
+        "required": false
       },
       "lata_pracy": {
         "type": "number",
@@ -4936,7 +6560,7 @@
         ]
       },
       "gnp": {
-        "type": "select",
+        "type": "gnp_selector",
         "label": "Grupa natężenia pracy (mechanizmu)",
         "required": true,
         "options": [
@@ -5053,16 +6677,94 @@
           "value": "Tak"
         }
       }
-    }
+    },
+    "sections": [
+      {
+        "id": "informacje",
+        "title": "Informacja na temat resursu",
+        "icon": "info",
+        "fields": [
+          "spec",
+          "ponowny_resurs",
+          "data_resurs",
+          "ostatni_resurs"
+        ]
+      },
+      {
+        "id": "dane",
+        "title": "Określ dane dla mechanizmu zmiany wysięgu",
+        "icon": "settings",
+        "fields": [
+          "wykonawca",
+          "uwagi",
+          "mechanizm_pomocniczy",
+          "nr_fabryczny",
+          "nr_ewidencyjny",
+          "q_max",
+          "lata_pracy",
+          "czas_cykle",
+          "jednostka",
+          "ilosc_cykli"
+        ]
+      },
+      {
+        "id": "rejestracja",
+        "title": "Określ sposób rejestracji, wybierając odpowiednią opcję z tabeli",
+        "icon": "assignment",
+        "fields": [
+          "sposob_rejestracji"
+        ]
+      },
+      {
+        "id": "gnp",
+        "title": "Określ grupę natężenia pracy mechanizmu zmiany wysięgu, wybierając opcję z tabeli",
+        "icon": "speed",
+        "fields": [
+          "gnp"
+        ]
+      },
+      {
+        "id": "kd",
+        "title": "Na podstawie kalkulatora współczynnika Kd, wybierz odpowiedni stan obciążenia",
+        "icon": "balance",
+        "fields": [
+          "q_1",
+          "c_1",
+          "q_2",
+          "c_2",
+          "q_3",
+          "c_3",
+          "q_4",
+          "c_4",
+          "q_5",
+          "c_5"
+        ]
+      }
+    ]
   },
   "podest_ruchomy": {
     "name": "Podest Ruchomy",
     "description": "Kalkulator resursu dla podestu ruchomego.",
     "fields": {
+      "wykonawca": {
+        "type": "text",
+        "label": "Wykonawca badania",
+        "required": false
+      },
+      "uwagi": {
+        "type": "textarea",
+        "label": "Uwagi",
+        "required": false
+      },
       "nr_fabryczny": {
         "type": "text",
         "label": "Nr fabryczny",
         "required": true
+      },
+      "nr_ewidencyjny": {
+        "type": "text",
+        "label": "Nr ewidencyjny UDT",
+        "required": false
       },
       "typ": {
         "type": "select",
@@ -5842,7 +7544,7 @@
         }
       },
       "konstrukcja": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Stan konstrukcji",
         "options": [
           "Brak uszkodzeń",
@@ -5850,7 +7552,7 @@
         ]
       },
       "automatyka": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Stan automatyki",
         "options": [
           "Sprawna",
@@ -5858,15 +7560,15 @@
         ]
       },
       "sworznie": {
-        "type": "select",
-        "label": "Stan sworzni",
+        "type": "inspection_status",
+        "label": "Stan sworzni i połączeń",
         "options": [
-          "Brak uszkodzeń",
-          "Uszkodzenia"
+          "Prawidłowy",
+          "Nieprawidłowy"
         ]
       },
       "ciegna": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Stan cięgien",
         "options": [
           "Brak uszkodzeń",
@@ -5874,7 +7576,7 @@
         ]
       },
       "eksploatacja": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Warunki eksploatacji",
         "options": [
           "Zgodne",
@@ -5882,7 +7584,7 @@
         ]
       },
       "szczelnosc": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Szczelność",
         "options": [
           "Szczelny",
@@ -5890,19 +7592,157 @@
         ]
       },
       "hamulce": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Hamulce",
         "options": [
           "Sprawne",
           "Niesprawne"
         ]
       }
-    }
+    },
+    "sections": [
+      {
+        "id": "informacje",
+        "title": "Informacja na temat resursu",
+        "icon": "info",
+        "fields": [
+          "spec",
+          "ponowny_resurs",
+          "data_resurs",
+          "ostatni_resurs"
+        ]
+      },
+      {
+        "id": "dane",
+        "title": "Określ dane dla podestu ruchomego",
+        "icon": "settings",
+        "fields": [
+          "wykonawca",
+          "uwagi",
+          "typ",
+          "nr_fabryczny",
+          "nr_ewidencyjny",
+          "h_max",
+          "L_b_max",
+          "q_max",
+          "lata_pracy",
+          "max_cykle_prod",
+          "ilosc_cykli",
+          "max_moto_prod",
+          "moto_podest_ruchomy",
+          "procent_bumar",
+          "tryb_pracy",
+          "cykle_zmiana",
+          "dni_robocze"
+        ]
+      },
+      {
+        "id": "rejestracja",
+        "title": "Określ sposób rejestracji, wybierając odpowiednią opcję z tabeli",
+        "icon": "assignment",
+        "fields": [
+          "sposob_rejestracji"
+        ]
+      },
+      {
+        "id": "kd",
+        "title": "Za pomocą kalkulatora wyznacz współczynnik Kd",
+        "icon": "balance",
+        "fields": [
+          "q_1",
+          "c_1",
+          "q_2",
+          "c_2",
+          "q_3",
+          "c_3",
+          "q_4",
+          "c_4",
+          "q_5",
+          "c_5",
+          "h_1",
+          "cc_1",
+          "h_2",
+          "cc_2",
+          "h_3",
+          "cc_3",
+          "h_4",
+          "cc_4",
+          "h_5",
+          "cc_5",
+          "diagram_hdr"
+        ]
+      },
+      {
+        "id": "s_factor",
+        "title": "Określ współczynnik przebiegu naprężeń S",
+        "icon": "analytics",
+        "fields": [
+          "s_factor"
+        ]
+      },
+      {
+        "id": "ldr",
+        "title": "Za pomocą kalkulatora wyznacz współczynnik wykorzystania wysięgu",
+        "icon": "bar_chart",
+        "fields": [
+          "diagram_ldr",
+          "p_1",
+          "p_2",
+          "p_3",
+          "p_4",
+          "p_5",
+          "p_6",
+          "p_7",
+          "p_8",
+          "p_9",
+          "p_10",
+          "p_11",
+          "p_12",
+          "p_13",
+          "p_14",
+          "p_15",
+          "p_16",
+          "p_17",
+          "p_18",
+          "p_19",
+          "p_20",
+          "p_21",
+          "p_22",
+          "p_23",
+          "p_24",
+          "p_25"
+        ]
+      },
+      {
+        "id": "inspekcja",
+        "title": "Ocena stanu technicznego",
+        "icon": "fact_check",
+        "fields": [
+          "konstrukcja",
+          "automatyka",
+          "sworznie",
+          "ciegna",
+          "eksploatacja",
+          "szczelnosc",
+          "hamulce"
+        ]
+      }
+    ]
   },
   "podest_zaladowczy": {
     "name": "Podest Załadowczy",
     "description": "Kalkulator resursu dla podestu załadowczego.",
     "fields": {
+      "wykonawca": {
+        "type": "text",
+        "label": "Wykonawca badania",
+        "required": false
+      },
+      "uwagi": {
+        "type": "textarea",
+        "label": "Uwagi",
+        "required": false
+      },
       "typ": {
         "type": "select",
         "label": "Typ podestu",
@@ -5916,6 +7756,11 @@
         "type": "text",
         "label": "Nr fabryczny",
         "required": true
+      },
+      "nr_ewidencyjny": {
+        "type": "text",
+        "label": "Nr ewidencyjny UDT",
+        "required": false
       },
       "lata_pracy": {
         "type": "number",
@@ -6056,7 +7901,7 @@
         }
       },
       "konstrukcja": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Stan konstrukcji",
         "options": [
           "Brak uszkodzeń",
@@ -6064,7 +7909,7 @@
         ]
       },
       "automatyka": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Stan automatyki",
         "options": [
           "Sprawna",
@@ -6072,15 +7917,15 @@
         ]
       },
       "sworznie": {
-        "type": "select",
-        "label": "Stan sworzni",
+        "type": "inspection_status",
+        "label": "Stan sworzni i połączeń",
         "options": [
-          "Brak uszkodzeń",
-          "Uszkodzenia"
+          "Prawidłowy",
+          "Nieprawidłowy"
         ]
       },
       "ciegna": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Stan cięgien",
         "options": [
           "Brak uszkodzeń",
@@ -6088,7 +7933,7 @@
         ]
       },
       "eksploatacja": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Warunki eksploatacji",
         "options": [
           "Zgodne",
@@ -6096,7 +7941,7 @@
         ]
       },
       "szczelnosc": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Szczelność",
         "options": [
           "Szczelny",
@@ -6104,19 +7949,99 @@
         ]
       },
       "hamulce": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Hamulce",
         "options": [
           "Sprawne",
           "Niesprawne"
         ]
       }
-    }
+    },
+    "sections": [
+      {
+        "id": "informacje",
+        "title": "Informacja na temat resursu",
+        "icon": "info",
+        "fields": [
+          "ponowny_resurs",
+          "data_resurs",
+          "ostatni_resurs"
+        ]
+      },
+      {
+        "id": "dane",
+        "title": "Określ dane dla podestu załadowczego",
+        "icon": "settings",
+        "fields": [
+          "wykonawca",
+          "uwagi",
+          "typ",
+          "nr_fabryczny",
+          "nr_ewidencyjny",
+          "q_max",
+          "lata_pracy",
+          "max_cykle_prod",
+          "ilosc_cykli",
+          "tryb_pracy",
+          "cykle_zmiana",
+          "dni_robocze"
+        ]
+      },
+      {
+        "id": "rejestracja",
+        "title": "Określ sposób rejestracji, wybierając odpowiednią opcję z tabeli",
+        "icon": "assignment",
+        "fields": [
+          "sposob_rejestracji"
+        ]
+      },
+      {
+        "id": "kd",
+        "title": "Za pomocą kalkulatora wyznacz współczynnik Kd",
+        "icon": "balance",
+        "fields": [
+          "q_1",
+          "c_1",
+          "q_2",
+          "c_2",
+          "q_3",
+          "c_3",
+          "q_4",
+          "c_4",
+          "q_5",
+          "c_5"
+        ]
+      },
+      {
+        "id": "inspekcja",
+        "title": "Ocena stanu technicznego",
+        "icon": "fact_check",
+        "fields": [
+          "konstrukcja",
+          "automatyka",
+          "sworznie",
+          "ciegna",
+          "eksploatacja",
+          "szczelnosc",
+          "hamulce"
+        ]
+      }
+    ]
   },
   "podnosnik_samochodowy": {
     "name": "Podnośnik Samochodowy",
     "description": "Kalkulator resursu dla podnośnika samochodowego.",
     "fields": {
+      "wykonawca": {
+        "type": "text",
+        "label": "Wykonawca badania",
+        "required": false
+      },
+      "uwagi": {
+        "type": "textarea",
+        "label": "Uwagi",
+        "required": false
+      },
       "typ": {
         "type": "select",
         "label": "Typ podnośnika samochodowego",
@@ -6132,6 +8057,11 @@
         "label": "Nr fabryczny",
         "required": true
       },
+      "nr_ewidencyjny": {
+        "type": "text",
+        "label": "Nr ewidencyjny UDT",
+        "required": false
+      },
       "lata_pracy": {
         "type": "number",
         "label": "Lata pracy",
@@ -6271,7 +8201,7 @@
         }
       },
       "konstrukcja": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Stan konstrukcji",
         "options": [
           "Brak uszkodzeń",
@@ -6279,7 +8209,7 @@
         ]
       },
       "automatyka": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Stan automatyki",
         "options": [
           "Sprawna",
@@ -6287,15 +8217,15 @@
         ]
       },
       "sworznie": {
-        "type": "select",
-        "label": "Stan sworzni",
+        "type": "inspection_status",
+        "label": "Stan sworzni i połączeń",
         "options": [
-          "Brak uszkodzeń",
-          "Uszkodzenia"
+          "Prawidłowy",
+          "Nieprawidłowy"
         ]
       },
       "ciegna": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Stan cięgien",
         "options": [
           "Brak uszkodzeń",
@@ -6303,7 +8233,7 @@
         ]
       },
       "eksploatacja": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Warunki eksploatacji",
         "options": [
           "Zgodne",
@@ -6311,7 +8241,7 @@
         ]
       },
       "szczelnosc": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Szczelność",
         "options": [
           "Szczelny",
@@ -6319,13 +8249,83 @@
         ]
       },
       "nakretka": {
-        "type": "select",
+        "type": "inspection_status",
         "label": "Nakrętka bezpieczeństwa",
         "options": [
           "Sprawna",
           "Niesprawna"
         ]
       }
-    }
+    },
+    "sections": [
+      {
+        "id": "informacje",
+        "title": "Informacja na temat resursu",
+        "icon": "info",
+        "fields": [
+          "ponowny_resurs",
+          "data_resurs",
+          "ostatni_resurs"
+        ]
+      },
+      {
+        "id": "dane",
+        "title": "Określ dane dla podnośnika samochodowego",
+        "icon": "settings",
+        "fields": [
+          "wykonawca",
+          "uwagi",
+          "typ",
+          "nr_fabryczny",
+          "nr_ewidencyjny",
+          "q_max",
+          "lata_pracy",
+          "max_cykle_prod",
+          "ilosc_cykli",
+          "tryb_pracy",
+          "cykle_zmiana",
+          "dni_robocze"
+        ]
+      },
+      {
+        "id": "rejestracja",
+        "title": "Określ sposób rejestracji, wybierając odpowiednią opcję z tabeli",
+        "icon": "assignment",
+        "fields": [
+          "sposob_rejestracji"
+        ]
+      },
+      {
+        "id": "kd",
+        "title": "Za pomocą kalkulatora wyznacz współczynnik Kd",
+        "icon": "balance",
+        "fields": [
+          "q_1",
+          "c_1",
+          "q_2",
+          "c_2",
+          "q_3",
+          "c_3",
+          "q_4",
+          "c_4",
+          "q_5",
+          "c_5"
+        ]
+      },
+      {
+        "id": "inspekcja",
+        "title": "Ocena stanu technicznego",
+        "icon": "fact_check",
+        "fields": [
+          "konstrukcja",
+          "automatyka",
+          "sworznie",
+          "ciegna",
+          "eksploatacja",
+          "szczelnosc",
+          "nakretka"
+        ]
+      }
+    ]
   }
 }

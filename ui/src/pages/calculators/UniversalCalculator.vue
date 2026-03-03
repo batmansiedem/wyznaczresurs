@@ -58,12 +58,84 @@
                 <div class="q-pa-lg">
                   <div class="row q-col-gutter-lg items-start">
                     <template v-for="key in section.fieldKeys" :key="key">
-                      <div v-if="currentCalculatorDefinition.fields[key] && isFieldVisible(key)" :class="fieldColClass(currentCalculatorDefinition.fields[key])">
+                      <!-- Pola kalkulatora pomocniczego nie są renderowane bezpośrednio -->
+                      <template v-if="hasCycleHelper && CYCLE_HELPER_KEYS.includes(key)" />
+                      <div v-else-if="currentCalculatorDefinition.fields[key] && isFieldVisible(key)" :class="fieldColClass(currentCalculatorDefinition.fields[key])">
                         <template v-if="currentCalculatorDefinition.fields[key].type === 'diagram'">
                           <SchemLdr v-if="currentCalculatorDefinition.fields[key].svg === 'schemat_ldr'" :data="formData" />
                           <SchemHdr v-else-if="currentCalculatorDefinition.fields[key].svg === 'schemat_hdr'" :data="formData" />
                         </template>
-                        <CalculatorField v-else :field="currentCalculatorDefinition.fields[key]" v-model="formData[key]" :units="units" />
+                        <template v-else>
+                          <CalculatorField :field="currentCalculatorDefinition.fields[key]" v-model="formData[key]" :units="units" />
+                          <!-- Kalkulator pomocniczy cykli — expansion po polu ilosc_cykli -->
+                          <q-expansion-item
+                            v-if="key === 'ilosc_cykli' && hasCycleHelper"
+                            v-model="cycleHelperOpen"
+                            dense
+                            label="Pomocniczy kalkulator cykli (opcjonalnie)"
+                            icon="auto_awesome"
+                            header-class="text-primary text-weight-bold"
+                            class="cycle-helper-box"
+                          >
+                            <div class="helper-content">
+                              <div class="row q-col-gutter-md">
+                                <div class="col-12 col-sm-4">
+                                  <q-select
+                                    v-model="cycleHelper.tryb_pracy"
+                                    label="System pracy"
+                                    :options="[
+                                      { label: '1-zmianowy', value: 'jednozmianowy' },
+                                      { label: '2-zmianowy', value: 'dwuzmianowy' },
+                                      { label: '3-zmianowy', value: 'trzyzmianowy' }
+                                    ]"
+                                    emit-value map-options
+                                    outlined dense
+                                  />
+                                </div>
+                                <div class="col-6 col-sm-4">
+                                  <q-input
+                                    v-model.number="cycleHelper.cykle_zmiana"
+                                    label="Cykli na zmianę"
+                                    type="number"
+                                    outlined dense
+                                    input-class="eng-value"
+                                    placeholder="np. 50"
+                                  />
+                                </div>
+                                <div class="col-6 col-sm-4">
+                                  <q-input
+                                    v-model.number="cycleHelper.dni_robocze"
+                                    label="Dni rob./rok"
+                                    type="number"
+                                    outlined dense
+                                    input-class="eng-value"
+                                    :rules="[val => !val || val <= 366 || 'Max 366 dni']"
+                                    lazy-rules
+                                  />
+                                </div>
+                                <div class="col-12">
+                                  <div class="preview-banner text-caption q-mb-sm">
+                                    <div class="row items-center justify-between">
+                                      <span>Wynik dla {{ getLataPracy() }} lat:</span>
+                                      <span class="text-h6 text-primary text-weight-bolder eng-value">
+                                        {{ calculatePreviewCycles() }}
+                                      </span>
+                                    </div>
+                                  </div>
+                                  <q-btn
+                                    label="Zastosuj obliczony wynik"
+                                    icon="check"
+                                    color="primary"
+                                    unelevated no-caps
+                                    class="full-width"
+                                    @click="calculateClientCycles"
+                                    :disable="!cycleHelper.cykle_zmiana || cycleHelper.dni_robocze > 366"
+                                  />
+                                </div>
+                              </div>
+                            </div>
+                          </q-expansion-item>
+                        </template>
                       </div>
                     </template>
                   </div>
@@ -226,7 +298,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed, watch, nextTick } from 'vue'
+import { ref, reactive, onMounted, computed, watch, nextTick } from 'vue'
 import { useRoute } from 'vue-router'
 import { api } from 'boot/axios'
 import { useQuasar, Notify, Dialog } from 'quasar'
@@ -274,72 +346,12 @@ const currentCalculatorDefinition = computed(() => calculatorFields[calculatorSl
 const inputFieldDefinitions = computed(() => currentCalculatorDefinition.value?.fields || null)
 const outputFieldDefinitions = computed(() => calculatorOutputFields[calculatorSlug.value]?.fields || null)
 
-const FIELD_SECTIONS = [
-  {
-    key: 'ogolne',
-    label: 'Dane ogólne urządzenia',
-    icon: 'info',
-    keys: new Set(['typ','nr_fabryczny','producent','nr_udt','h_max','L_b_max',
-                   'v_pod','s_sz','v_jaz','v_prz','mechanizm_pomocniczy'])
-  },
-  {
-    key: 'cykle',
-    label: 'Określenie ilości cykli',
-    icon: 'replay',
-    keys: new Set(['lata_pracy','tryb_pracy','cykle_zmiana','dni_robocze','ilosc_cykli',
-                   'licznik_pracy','licznik_pracy_pod','licznik_pracy_jaz','licznik_pracy_prz',
-                   'pyt_motogodzin','zakres_godzin_min','zakres_godzin_max',
-                   'max_cykle_prod','max_moto_prod','moto_podest_ruchomy','procent_bumar'])
-  },
-  {
-    key: 'obciazenie',
-    label: 'Określenie współczynnika K_dr',
-    icon: 'balance',
-    keys: new Set(['q_max','q_o','q_1','c_1','q_2','c_2','q_3','c_3','q_4','c_4','q_5','c_5'])
-  },
-  {
-    key: 'widmo',
-    label: 'Widmo wysokości pracy / zasięgu',
-    icon: 'bar_chart',
-    keys: new Set(['s_factor', 'diagram_hdr', 'diagram_ldr'])
-  },
-  {
-    key: 'stan',
-    label: 'Stan techniczny / Warunki pracy',
-    icon: 'engineering',
-    keys: new Set(['ponowny_resurs','data_resurs','ostatni_resurs','spec',
-                   'sposob_rejestracji','gnp_check','gnp_czas','ster'])
-  },
-  {
-    key: 'inspekcja',
-    label: 'Inspekcja techniczna',
-    icon: 'fact_check',
-    keys: new Set(['konstrukcja','automatyka','sworznie','ciegna','eksploatacja','szczelnosc','hamulce'])
-  }
-]
-
-// Pola obsługiwane wewnętrznie przez komponenty diagramów (nie renderowane jako osobne pola)
-const HIDDEN_FIELD_KEYS = new Set([
-  'h_1','cc_1','h_2','cc_2','h_3','cc_3','h_4','cc_4','h_5','cc_5',
-  'p_1','p_2','p_3','p_4','p_5','p_6','p_7','p_8','p_9','p_10',
-  'p_11','p_12','p_13','p_14','p_15','p_16','p_17','p_18','p_19','p_20',
-  'p_21','p_22','p_23','p_24','p_25',
-])
-
 const activeSections = computed(() => {
-  const fields = currentCalculatorDefinition.value?.fields
-  if (!fields) return []
-  const fieldKeys = Object.keys(fields)
-  // Pola przypisane do jakiejś sekcji
-  const assignedKeys = new Set(FIELD_SECTIONS.flatMap(s => [...s.keys]))
-  // Pola niezidentyfikowane → sekcja 'ogolne' (z pominięciem ukrytych)
-  const unassigned = fieldKeys.filter(k => !assignedKeys.has(k) && !HIDDEN_FIELD_KEYS.has(k))
-  return FIELD_SECTIONS.map((section, idx) => {
-    const sectionFieldKeys = idx === 0
-      ? [...unassigned, ...fieldKeys.filter(k => section.keys.has(k))]
-      : fieldKeys.filter(k => section.keys.has(k))
-    return { ...section, fieldKeys: sectionFieldKeys }
-  }).filter(s => s.fieldKeys.length > 0)
+  const calc = currentCalculatorDefinition.value
+  if (!calc?.fields) return []
+  return (calc.sections || [])
+    .map(s => ({ key: s.id, label: s.title, icon: s.icon, fieldKeys: s.fields.filter(k => calc.fields[k]) }))
+    .filter(s => s.fieldKeys.length > 0)
 })
 
 const savedResultsColumns = [
@@ -348,8 +360,37 @@ const savedResultsColumns = [
   { name: 'actions', label: 'Akcje', align: 'center' }
 ]
 
+// Pola kalkulatora pomocniczego cykli — filtrowane z renderowania sekcji
+const CYCLE_HELPER_KEYS = ['tryb_pracy', 'cykle_zmiana', 'dni_robocze']
+const hasCycleHelper = computed(() =>
+  CYCLE_HELPER_KEYS.every(k => currentCalculatorDefinition.value?.fields[k])
+)
+const cycleHelperOpen = ref(false)
+const cycleHelper = reactive({ tryb_pracy: 'jednozmianowy', cykle_zmiana: null, dni_robocze: 250 })
+
+function getLataPracy() {
+  const lata = formData.value.lata_pracy
+  if (typeof lata === 'object' && lata !== null) return parseFloat(lata.value) || 1
+  return parseFloat(lata) || 1
+}
+
+function calculatePreviewCycles() {
+  const shifts = { jednozmianowy: 1, dwuzmianowy: 2, trzyzmianowy: 3 }
+  const lata = getLataPracy()
+  const val = Math.round((cycleHelper.cykle_zmiana || 0) * (shifts[cycleHelper.tryb_pracy] || 1) * (cycleHelper.dni_robocze || 0) * lata)
+  return val.toLocaleString()
+}
+
+function calculateClientCycles() {
+  const shifts = { jednozmianowy: 1, dwuzmianowy: 2, trzyzmianowy: 3 }
+  const lata = getLataPracy()
+  const cykli = Math.round((cycleHelper.cykle_zmiana || 0) * (shifts[cycleHelper.tryb_pracy] || 1) * (cycleHelper.dni_robocze || 0) * lata)
+  formData.value.ilosc_cykli = { value: cykli, unit: formData.value.ilosc_cykli?.unit || 'cykl' }
+  cycleHelperOpen.value = false
+}
+
 function fieldColClass(field) {
-  if (field.type === 'textarea' || field.type === 'radio' || field.type === 'diagram') return 'col-12'
+  if (['textarea', 'radio', 'diagram', 'gnp_selector', 'inspection_status'].includes(field.type)) return 'col-12'
   return 'col-12 col-sm-6'
 }
 
@@ -422,7 +463,15 @@ function initializeFormData() {
   for (const key in currentCalculatorDefinition.value.fields) {
     const f = currentCalculatorDefinition.value.fields[key]
     if (f.type === 'diagram') continue
-    data[key] = f.type === 'number' ? { value: f.default_value ?? null, unit: f.default_unit || units.value[f.unit_type]?.[0]?.symbol || null } : f.default_value ?? null
+    if (f.type === 'number') {
+      data[key] = { value: f.default_value ?? null, unit: f.default_unit || units.value[f.unit_type]?.[0]?.symbol || null }
+    } else if (f.type === 'inspection_status' && f.options?.length) {
+      // Domyślnie ostatnia opcja ("Nie dotyczy")
+      const last = f.options[f.options.length - 1]
+      data[key] = f.default_value ?? (typeof last === 'object' ? last.value : last)
+    } else {
+      data[key] = f.default_value ?? null
+    }
   }
   formData.value = data
 }
