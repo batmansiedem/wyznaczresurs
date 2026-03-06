@@ -10,7 +10,7 @@ class CalculatorDefinitionMinimalSerializer(serializers.ModelSerializer):
     """Minimalny serializer definicji — do osadzania w wynikach."""
     class Meta:
         model = CalculatorDefinition
-        fields = ['id', 'name', 'slug']
+        fields = ['id', 'name', 'slug', 'premium_cost']
 
 
 class CalculatorResultSerializer(serializers.ModelSerializer):

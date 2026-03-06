@@ -61,8 +61,16 @@
             <q-btn flat round dense color="primary" icon="visibility" @click="viewInvoice(props.row)">
               <q-tooltip>Podgląd szczegółów</q-tooltip>
             </q-btn>
-            <q-btn flat round dense color="secondary" icon="download" @click="downloadInvoice(props.row)">
-              <q-tooltip>Pobierz PDF</q-tooltip>
+            <q-btn
+              flat round dense
+              :color="props.row.ksef_status === 'accepted' ? 'secondary' : 'grey-5'"
+              icon="download"
+              :disable="props.row.ksef_status !== 'accepted'"
+              @click="downloadInvoice(props.row)"
+            >
+              <q-tooltip>
+                {{ props.row.ksef_status === 'accepted' ? 'Pobierz PDF' : 'PDF dostępny po akceptacji KSeF' }}
+              </q-tooltip>
             </q-btn>
           </q-td>
         </template>

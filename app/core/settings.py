@@ -239,5 +239,14 @@ AUTHENTICATION_BACKENDS = [
 AXES_FAILURE_LIMIT = 5            
 AXES_COOLOFF_TIME = 1             
 AXES_RESET_ON_SUCCESS = True      
-AXES_LOCKOUT_PARAMETERS = [["ip_address", "username"]] 
+AXES_LOCKOUT_PARAMETERS = [["ip_address", "username"]]
 AXES_ONLY_USER_LOCKOUT = False
+
+# ==============================================================================
+# PAYPAL (Sandbox — zmień na produkcji)
+# Utwórz aplikację sandbox na: https://developer.paypal.com/developer/applications
+# ==============================================================================
+import os
+PAYPAL_SANDBOX = DEBUG  # True = sandbox.paypal.com, False = api.paypal.com
+PAYPAL_CLIENT_ID = os.environ.get('PAYPAL_CLIENT_ID', 'SANDBOX_CLIENT_ID_TUTAJ')
+PAYPAL_CLIENT_SECRET = os.environ.get('PAYPAL_CLIENT_SECRET', 'SANDBOX_SECRET_TUTAJ')

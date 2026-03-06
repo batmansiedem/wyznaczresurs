@@ -101,67 +101,7 @@
         "label": "Qmax (Maksymalny udźwig)",
         "required": true,
         "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "q_1": {
-        "type": "number",
-        "label": "Q1",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_1": {
-        "type": "number",
-        "label": "C1 (%)",
-        "required": false
-      },
-      "q_2": {
-        "type": "number",
-        "label": "Q2",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_2": {
-        "type": "number",
-        "label": "C2 (%)",
-        "required": false
-      },
-      "q_3": {
-        "type": "number",
-        "label": "Q3",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_3": {
-        "type": "number",
-        "label": "C3 (%)",
-        "required": false
-      },
-      "q_4": {
-        "type": "number",
-        "label": "Q4",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_4": {
-        "type": "number",
-        "label": "C4 (%)",
-        "required": false
-      },
-      "q_5": {
-        "type": "number",
-        "label": "Q5",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_5": {
-        "type": "number",
-        "label": "C5 (%)",
-        "required": false
+        "default_unit": "kg"
       },
       "max_cykle_prod": {
         "type": "number",
@@ -238,6 +178,11 @@
           "Niesprawna",
           "Nie dotyczy"
         ]
+      },
+      "diagram_kd": {
+        "type": "diagram",
+        "label": "Widmo obciążeń Kd",
+        "svg": "schemat_kd"
       }
     },
     "sections": [
@@ -275,16 +220,7 @@
         "title": "Za pomocą kalkulatora wyznacz współczynnik Kd",
         "icon": "balance",
         "fields": [
-          "q_1",
-          "c_1",
-          "q_2",
-          "c_2",
-          "q_3",
-          "c_3",
-          "q_4",
-          "c_4",
-          "q_5",
-          "c_5"
+          "diagram_kd"
         ]
       },
       {
@@ -402,7 +338,7 @@
       },
       "spec": {
         "type": "select",
-        "label": "Praca w warunkach specjalnych",
+        "label": "Resurs po pierwszym przeglądzie specjalnym",
         "required": true,
         "options": [
           "Nie",
@@ -425,7 +361,8 @@
         "show_if": {
           "field": "ponowny_resurs",
           "value": "Tak"
-        }
+        },
+        "default_unit": "%"
       },
       "data_resurs": {
         "type": "date",
@@ -436,142 +373,17 @@
           "value": "Tak"
         }
       },
-      "cc_1": {
-        "type": "number",
-        "label": "Ciężar ładunku (C1)",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "h_1": {
-        "type": "number",
-        "label": "Wysokość podnoszenia (H1)",
-        "required": false,
-        "unit_type": "length",
-        "default_unit": "m"
-      },
-      "cc_2": {
-        "type": "number",
-        "label": "Ciężar ładunku (C2)",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "h_2": {
-        "type": "number",
-        "label": "Wysokość podnoszenia (H2)",
-        "required": false,
-        "unit_type": "length",
-        "default_unit": "m"
-      },
-      "cc_3": {
-        "type": "number",
-        "label": "Ciężar ładunku (C3)",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "h_3": {
-        "type": "number",
-        "label": "Wysokość podnoszenia (H3)",
-        "required": false,
-        "unit_type": "length",
-        "default_unit": "m"
-      },
-      "cc_4": {
-        "type": "number",
-        "label": "Ciężar ładunku (C4)",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "h_4": {
-        "type": "number",
-        "label": "Wysokość podnoszenia (H4)",
-        "required": false,
-        "unit_type": "length",
-        "default_unit": "m"
-      },
-      "cc_5": {
-        "type": "number",
-        "label": "Ciężar ładunku (C5)",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "h_5": {
-        "type": "number",
-        "label": "Wysokość podnoszenia (H5)",
-        "required": false,
-        "unit_type": "length",
-        "default_unit": "m"
+      "diagram_hdr": {
+        "type": "diagram",
+        "label": "Schemat stref wysokości (H_dr)",
+        "svg": "schemat_hdr"
       },
       "q_max": {
         "type": "number",
         "label": "Qmax (Maksymalny udźwig)",
         "required": true,
         "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "q_1": {
-        "type": "number",
-        "label": "Q1",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_1": {
-        "type": "number",
-        "label": "C1 (%)",
-        "required": false
-      },
-      "q_2": {
-        "type": "number",
-        "label": "Q2",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_2": {
-        "type": "number",
-        "label": "C2 (%)",
-        "required": false
-      },
-      "q_3": {
-        "type": "number",
-        "label": "Q3",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_3": {
-        "type": "number",
-        "label": "C3 (%)",
-        "required": false
-      },
-      "q_4": {
-        "type": "number",
-        "label": "Q4",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_4": {
-        "type": "number",
-        "label": "C4 (%)",
-        "required": false
-      },
-      "q_5": {
-        "type": "number",
-        "label": "Q5",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_5": {
-        "type": "number",
-        "label": "C5 (%)",
-        "required": false
+        "default_unit": "kg"
       },
       "konstrukcja": {
         "type": "inspection_status",
@@ -641,6 +453,11 @@
           "Niesprawne",
           "Nie dotyczy"
         ]
+      },
+      "diagram_kd": {
+        "type": "diagram",
+        "label": "Widmo obciążeń Kd",
+        "svg": "schemat_kd"
       }
     },
     "sections": [
@@ -688,26 +505,15 @@
         "title": "Za pomocą kalkulatora wyznacz współczynnik Kd",
         "icon": "balance",
         "fields": [
-          "q_1",
-          "c_1",
-          "q_2",
-          "c_2",
-          "q_3",
-          "c_3",
-          "q_4",
-          "c_4",
-          "q_5",
-          "c_5",
-          "cc_1",
-          "h_1",
-          "cc_2",
-          "h_2",
-          "cc_3",
-          "h_3",
-          "cc_4",
-          "h_4",
-          "cc_5",
-          "h_5"
+          "diagram_kd"
+        ]
+      },
+      {
+        "id": "hdr",
+        "title": "Za pomocą kalkulatora wyznacz współczynnik wysokości",
+        "icon": "height",
+        "fields": [
+          "diagram_hdr"
         ]
       },
       {
@@ -816,7 +622,7 @@
       },
       "spec": {
         "type": "select",
-        "label": "Praca w warunkach specjalnych",
+        "label": "Resurs po pierwszym przeglądzie specjalnym",
         "required": true,
         "options": [
           "Nie",
@@ -839,7 +645,8 @@
         "show_if": {
           "field": "ponowny_resurs",
           "value": "Tak"
-        }
+        },
+        "default_unit": "%"
       },
       "data_resurs": {
         "type": "date",
@@ -855,67 +662,7 @@
         "label": "Qmax (Maksymalny udźwig)",
         "required": true,
         "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "q_1": {
-        "type": "number",
-        "label": "Q1",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_1": {
-        "type": "number",
-        "label": "C1 (%)",
-        "required": false
-      },
-      "q_2": {
-        "type": "number",
-        "label": "Q2",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_2": {
-        "type": "number",
-        "label": "C2 (%)",
-        "required": false
-      },
-      "q_3": {
-        "type": "number",
-        "label": "Q3",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_3": {
-        "type": "number",
-        "label": "C3 (%)",
-        "required": false
-      },
-      "q_4": {
-        "type": "number",
-        "label": "Q4",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_4": {
-        "type": "number",
-        "label": "C4 (%)",
-        "required": false
-      },
-      "q_5": {
-        "type": "number",
-        "label": "Q5",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_5": {
-        "type": "number",
-        "label": "C5 (%)",
-        "required": false
+        "default_unit": "kg"
       },
       "konstrukcja": {
         "type": "inspection_status",
@@ -975,6 +722,11 @@
           "Nieszczelny",
           "Nie dotyczy"
         ]
+      },
+      "diagram_kd": {
+        "type": "diagram",
+        "label": "Widmo obciążeń Kd",
+        "svg": "schemat_kd"
       }
     },
     "sections": [
@@ -1021,16 +773,7 @@
         "title": "Za pomocą kalkulatora wyznacz współczynnik Kd",
         "icon": "balance",
         "fields": [
-          "q_1",
-          "c_1",
-          "q_2",
-          "c_2",
-          "q_3",
-          "c_3",
-          "q_4",
-          "c_4",
-          "q_5",
-          "c_5"
+          "diagram_kd"
         ]
       },
       {
@@ -1109,7 +852,8 @@
         "show_if": {
           "field": "pyt_motogodzin",
           "value": "1"
-        }
+        },
+        "default_unit": "mth"
       },
       "dni_robocze": {
         "type": "number",
@@ -1234,67 +978,7 @@
         "label": "Qmax (Maksymalny udźwig)",
         "required": true,
         "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "q_1": {
-        "type": "number",
-        "label": "Q1",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_1": {
-        "type": "number",
-        "label": "C1 (%)",
-        "required": false
-      },
-      "q_2": {
-        "type": "number",
-        "label": "Q2",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_2": {
-        "type": "number",
-        "label": "C2 (%)",
-        "required": false
-      },
-      "q_3": {
-        "type": "number",
-        "label": "Q3",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_3": {
-        "type": "number",
-        "label": "C3 (%)",
-        "required": false
-      },
-      "q_4": {
-        "type": "number",
-        "label": "Q4",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_4": {
-        "type": "number",
-        "label": "C4 (%)",
-        "required": false
-      },
-      "q_5": {
-        "type": "number",
-        "label": "Q5",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_5": {
-        "type": "number",
-        "label": "C5 (%)",
-        "required": false
+        "default_unit": "kg"
       },
       "liny_nosne": {
         "type": "inspection_status",
@@ -1713,6 +1397,11 @@
             "value": "-1"
           }
         ]
+      },
+      "diagram_kd": {
+        "type": "diagram",
+        "label": "Widmo obciążeń Kd",
+        "svg": "schemat_kd"
       }
     },
     "sections": [
@@ -1752,16 +1441,7 @@
         "title": "Za pomocą kalkulatora wyznacz współczynnik Kd",
         "icon": "balance",
         "fields": [
-          "q_1",
-          "c_1",
-          "q_2",
-          "c_2",
-          "q_3",
-          "c_3",
-          "q_4",
-          "c_4",
-          "q_5",
-          "c_5"
+          "diagram_kd"
         ]
       },
       {
@@ -1915,71 +1595,11 @@
         "label": "Qmax (Maksymalny udźwig)",
         "required": true,
         "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "q_1": {
-        "type": "number",
-        "label": "Q1",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_1": {
-        "type": "number",
-        "label": "C1 (%)",
-        "required": false
-      },
-      "q_2": {
-        "type": "number",
-        "label": "Q2",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_2": {
-        "type": "number",
-        "label": "C2 (%)",
-        "required": false
-      },
-      "q_3": {
-        "type": "number",
-        "label": "Q3",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_3": {
-        "type": "number",
-        "label": "C3 (%)",
-        "required": false
-      },
-      "q_4": {
-        "type": "number",
-        "label": "Q4",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_4": {
-        "type": "number",
-        "label": "C4 (%)",
-        "required": false
-      },
-      "q_5": {
-        "type": "number",
-        "label": "Q5",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_5": {
-        "type": "number",
-        "label": "C5 (%)",
-        "required": false
+        "default_unit": "kg"
       },
       "spec": {
         "type": "select",
-        "label": "Praca w warunkach specjalnych",
+        "label": "Resurs po pierwszym przeglądzie specjalnym",
         "required": true,
         "options": [
           "Nie",
@@ -2002,7 +1622,8 @@
         "show_if": {
           "field": "ponowny_resurs",
           "value": "Tak"
-        }
+        },
+        "default_unit": "%"
       },
       "data_resurs": {
         "type": "date",
@@ -2057,6 +1678,11 @@
           "Zgodne",
           "Niezgodne"
         ]
+      },
+      "diagram_kd": {
+        "type": "diagram",
+        "label": "Widmo obciążeń Kd",
+        "svg": "schemat_kd"
       }
     },
     "sections": [
@@ -2110,16 +1736,7 @@
         "title": "Na podstawie kalkulatora współczynnika Kd, wybierz odpowiedni stan obciążenia",
         "icon": "balance",
         "fields": [
-          "q_1",
-          "c_1",
-          "q_2",
-          "c_2",
-          "q_3",
-          "c_3",
-          "q_4",
-          "c_4",
-          "q_5",
-          "c_5"
+          "diagram_kd"
         ]
       },
       {
@@ -2244,71 +1861,11 @@
         "label": "Qmax (Maksymalny udźwig)",
         "required": true,
         "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "q_1": {
-        "type": "number",
-        "label": "Q1",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_1": {
-        "type": "number",
-        "label": "C1 (%)",
-        "required": false
-      },
-      "q_2": {
-        "type": "number",
-        "label": "Q2",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_2": {
-        "type": "number",
-        "label": "C2 (%)",
-        "required": false
-      },
-      "q_3": {
-        "type": "number",
-        "label": "Q3",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_3": {
-        "type": "number",
-        "label": "C3 (%)",
-        "required": false
-      },
-      "q_4": {
-        "type": "number",
-        "label": "Q4",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_4": {
-        "type": "number",
-        "label": "C4 (%)",
-        "required": false
-      },
-      "q_5": {
-        "type": "number",
-        "label": "Q5",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_5": {
-        "type": "number",
-        "label": "C5 (%)",
-        "required": false
+        "default_unit": "kg"
       },
       "spec": {
         "type": "select",
-        "label": "Praca w warunkach specjalnych",
+        "label": "Resurs po pierwszym przeglądzie specjalnym",
         "required": true,
         "options": [
           "Nie",
@@ -2331,7 +1888,8 @@
         "show_if": {
           "field": "ponowny_resurs",
           "value": "Tak"
-        }
+        },
+        "default_unit": "%"
       },
       "data_resurs": {
         "type": "date",
@@ -2386,6 +1944,11 @@
           "Zgodne",
           "Niezgodne"
         ]
+      },
+      "diagram_kd": {
+        "type": "diagram",
+        "label": "Widmo obciążeń Kd",
+        "svg": "schemat_kd"
       }
     },
     "sections": [
@@ -2439,16 +2002,7 @@
         "title": "Na podstawie kalkulatora współczynnika Kd, wybierz odpowiedni stan obciążenia",
         "icon": "balance",
         "fields": [
-          "q_1",
-          "c_1",
-          "q_2",
-          "c_2",
-          "q_3",
-          "c_3",
-          "q_4",
-          "c_4",
-          "q_5",
-          "c_5"
+          "diagram_kd"
         ]
       },
       {
@@ -2569,71 +2123,11 @@
         "label": "Qmax (Maksymalny udźwig)",
         "required": true,
         "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "q_1": {
-        "type": "number",
-        "label": "Q1",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_1": {
-        "type": "number",
-        "label": "C1 (%)",
-        "required": false
-      },
-      "q_2": {
-        "type": "number",
-        "label": "Q2",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_2": {
-        "type": "number",
-        "label": "C2 (%)",
-        "required": false
-      },
-      "q_3": {
-        "type": "number",
-        "label": "Q3",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_3": {
-        "type": "number",
-        "label": "C3 (%)",
-        "required": false
-      },
-      "q_4": {
-        "type": "number",
-        "label": "Q4",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_4": {
-        "type": "number",
-        "label": "C4 (%)",
-        "required": false
-      },
-      "q_5": {
-        "type": "number",
-        "label": "Q5",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_5": {
-        "type": "number",
-        "label": "C5 (%)",
-        "required": false
+        "default_unit": "kg"
       },
       "spec": {
         "type": "select",
-        "label": "Praca w warunkach specjalnych",
+        "label": "Resurs po pierwszym przeglądzie specjalnym",
         "required": true,
         "options": [
           "Nie",
@@ -2656,7 +2150,8 @@
         "show_if": {
           "field": "ponowny_resurs",
           "value": "Tak"
-        }
+        },
+        "default_unit": "%"
       },
       "data_resurs": {
         "type": "date",
@@ -2711,6 +2206,11 @@
           "Zgodne",
           "Niezgodne"
         ]
+      },
+      "diagram_kd": {
+        "type": "diagram",
+        "label": "Widmo obciążeń Kd",
+        "svg": "schemat_kd"
       }
     },
     "sections": [
@@ -2764,16 +2264,7 @@
         "title": "Na podstawie kalkulatora współczynnika Kd, wybierz odpowiedni stan obciążenia",
         "icon": "balance",
         "fields": [
-          "q_1",
-          "c_1",
-          "q_2",
-          "c_2",
-          "q_3",
-          "c_3",
-          "q_4",
-          "c_4",
-          "q_5",
-          "c_5"
+          "diagram_kd"
         ]
       },
       {
@@ -2940,7 +2431,7 @@
         "label": "Qmax (Maksymalny udźwig)",
         "required": true,
         "unit_type": "mass",
-        "default_unit": "t"
+        "default_unit": "kg"
       },
       "q_o": {
         "type": "number",
@@ -2949,69 +2440,9 @@
         "unit_type": "mass",
         "default_unit": "kg"
       },
-      "q_1": {
-        "type": "number",
-        "label": "Q1",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_1": {
-        "type": "number",
-        "label": "C1 (%)",
-        "required": false
-      },
-      "q_2": {
-        "type": "number",
-        "label": "Q2",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_2": {
-        "type": "number",
-        "label": "C2 (%)",
-        "required": false
-      },
-      "q_3": {
-        "type": "number",
-        "label": "Q3",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_3": {
-        "type": "number",
-        "label": "C3 (%)",
-        "required": false
-      },
-      "q_4": {
-        "type": "number",
-        "label": "Q4",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_4": {
-        "type": "number",
-        "label": "C4 (%)",
-        "required": false
-      },
-      "q_5": {
-        "type": "number",
-        "label": "Q5",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_5": {
-        "type": "number",
-        "label": "C5 (%)",
-        "required": false
-      },
       "spec": {
         "type": "select",
-        "label": "Praca w warunkach specjalnych",
+        "label": "Resurs po pierwszym przeglądzie specjalnym",
         "required": true,
         "options": [
           "Nie",
@@ -3034,7 +2465,8 @@
         "show_if": {
           "field": "ponowny_resurs",
           "value": "Tak"
-        }
+        },
+        "default_unit": "%"
       },
       "data_resurs": {
         "type": "date",
@@ -3089,6 +2521,11 @@
           "Zgodne",
           "Niezgodne"
         ]
+      },
+      "diagram_kd": {
+        "type": "diagram",
+        "label": "Widmo obciążeń Kd",
+        "svg": "schemat_kd"
       }
     },
     "sections": [
@@ -3145,16 +2582,7 @@
         "title": "Na podstawie kalkulatora współczynnika Kd, wybierz odpowiedni stan obciążenia",
         "icon": "balance",
         "fields": [
-          "q_1",
-          "c_1",
-          "q_2",
-          "c_2",
-          "q_3",
-          "c_3",
-          "q_4",
-          "c_4",
-          "q_5",
-          "c_5"
+          "diagram_kd"
         ]
       },
       {
@@ -3276,71 +2704,11 @@
         "label": "Qmax (Maksymalny udźwig)",
         "required": true,
         "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "q_1": {
-        "type": "number",
-        "label": "Q1",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_1": {
-        "type": "number",
-        "label": "C1 (%)",
-        "required": false
-      },
-      "q_2": {
-        "type": "number",
-        "label": "Q2",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_2": {
-        "type": "number",
-        "label": "C2 (%)",
-        "required": false
-      },
-      "q_3": {
-        "type": "number",
-        "label": "Q3",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_3": {
-        "type": "number",
-        "label": "C3 (%)",
-        "required": false
-      },
-      "q_4": {
-        "type": "number",
-        "label": "Q4",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_4": {
-        "type": "number",
-        "label": "C4 (%)",
-        "required": false
-      },
-      "q_5": {
-        "type": "number",
-        "label": "Q5",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_5": {
-        "type": "number",
-        "label": "C5 (%)",
-        "required": false
+        "default_unit": "kg"
       },
       "spec": {
         "type": "select",
-        "label": "Praca w warunkach specjalnych",
+        "label": "Resurs po pierwszym przeglądzie specjalnym",
         "required": true,
         "options": [
           "Nie",
@@ -3363,7 +2731,8 @@
         "show_if": {
           "field": "ponowny_resurs",
           "value": "Tak"
-        }
+        },
+        "default_unit": "%"
       },
       "data_resurs": {
         "type": "date",
@@ -3396,131 +2765,6 @@
         "type": "diagram",
         "label": "Schemat stref zasięgu i wysokości (L_dr)",
         "svg": "schemat_ldr"
-      },
-      "p_1": {
-        "type": "number",
-        "label": "Procent cykli (P1)",
-        "required": false
-      },
-      "p_2": {
-        "type": "number",
-        "label": "Procent cykli (P2)",
-        "required": false
-      },
-      "p_3": {
-        "type": "number",
-        "label": "Procent cykli (P3)",
-        "required": false
-      },
-      "p_4": {
-        "type": "number",
-        "label": "Procent cykli (P4)",
-        "required": false
-      },
-      "p_5": {
-        "type": "number",
-        "label": "Procent cykli (P5)",
-        "required": false
-      },
-      "p_6": {
-        "type": "number",
-        "label": "Procent cykli (P6)",
-        "required": false
-      },
-      "p_7": {
-        "type": "number",
-        "label": "Procent cykli (P7)",
-        "required": false
-      },
-      "p_8": {
-        "type": "number",
-        "label": "Procent cykli (P8)",
-        "required": false
-      },
-      "p_9": {
-        "type": "number",
-        "label": "Procent cykli (P9)",
-        "required": false
-      },
-      "p_10": {
-        "type": "number",
-        "label": "Procent cykli (P10)",
-        "required": false
-      },
-      "p_11": {
-        "type": "number",
-        "label": "Procent cykli (P11)",
-        "required": false
-      },
-      "p_12": {
-        "type": "number",
-        "label": "Procent cykli (P12)",
-        "required": false
-      },
-      "p_13": {
-        "type": "number",
-        "label": "Procent cykli (P13)",
-        "required": false
-      },
-      "p_14": {
-        "type": "number",
-        "label": "Procent cykli (P14)",
-        "required": false
-      },
-      "p_15": {
-        "type": "number",
-        "label": "Procent cykli (P15)",
-        "required": false
-      },
-      "p_16": {
-        "type": "number",
-        "label": "Procent cykli (P16)",
-        "required": false
-      },
-      "p_17": {
-        "type": "number",
-        "label": "Procent cykli (P17)",
-        "required": false
-      },
-      "p_18": {
-        "type": "number",
-        "label": "Procent cykli (P18)",
-        "required": false
-      },
-      "p_19": {
-        "type": "number",
-        "label": "Procent cykli (P19)",
-        "required": false
-      },
-      "p_20": {
-        "type": "number",
-        "label": "Procent cykli (P20)",
-        "required": false
-      },
-      "p_21": {
-        "type": "number",
-        "label": "Procent cykli (P21)",
-        "required": false
-      },
-      "p_22": {
-        "type": "number",
-        "label": "Procent cykli (P22)",
-        "required": false
-      },
-      "p_23": {
-        "type": "number",
-        "label": "Procent cykli (P23)",
-        "required": false
-      },
-      "p_24": {
-        "type": "number",
-        "label": "Procent cykli (P24)",
-        "required": false
-      },
-      "p_25": {
-        "type": "number",
-        "label": "Procent cykli (P25)",
-        "required": false
       },
       "konstrukcja": {
         "type": "inspection_status",
@@ -3584,6 +2828,11 @@
           "Sprawne",
           "Niesprawne"
         ]
+      },
+      "diagram_kd": {
+        "type": "diagram",
+        "label": "Widmo obciążeń Kd",
+        "svg": "schemat_kd"
       }
     },
     "sections": [
@@ -3632,16 +2881,7 @@
         "title": "Za pomocą kalkulatora wyznacz współczynnik Kd",
         "icon": "balance",
         "fields": [
-          "q_1",
-          "c_1",
-          "q_2",
-          "c_2",
-          "q_3",
-          "c_3",
-          "q_4",
-          "c_4",
-          "q_5",
-          "c_5"
+          "diagram_kd"
         ]
       },
       {
@@ -3657,32 +2897,7 @@
         "title": "Za pomocą kalkulatora wyznacz współczynnik wykorzystania wysięgu",
         "icon": "bar_chart",
         "fields": [
-          "diagram_ldr",
-          "p_1",
-          "p_2",
-          "p_3",
-          "p_4",
-          "p_5",
-          "p_6",
-          "p_7",
-          "p_8",
-          "p_9",
-          "p_10",
-          "p_11",
-          "p_12",
-          "p_13",
-          "p_14",
-          "p_15",
-          "p_16",
-          "p_17",
-          "p_18",
-          "p_19",
-          "p_20",
-          "p_21",
-          "p_22",
-          "p_23",
-          "p_24",
-          "p_25"
+          "diagram_ldr"
         ]
       },
       {
@@ -3789,7 +3004,8 @@
         "show_if": {
           "field": "ponowny_resurs",
           "value": "Tak"
-        }
+        },
+        "default_unit": "%"
       },
       "ostatni_resurs_mech_pod": {
         "type": "number",
@@ -3857,7 +3073,7 @@
       },
       "spec": {
         "type": "select",
-        "label": "Praca w warunkach specjalnych",
+        "label": "Resurs po pierwszym przeglądzie specjalnym",
         "required": true,
         "options": [
           "Nie",
@@ -3919,8 +3135,7 @@
         "type": "number",
         "label": "Licznik pracy",
         "required": true,
-        "unit_type": "time",
-        "default_unit": "lata"
+        "default_unit": "mth"
       },
       "h_max": {
         "type": "number",
@@ -3979,74 +3194,14 @@
         "label": "Ciężar ładunku Qo (kg)",
         "required": true,
         "unit_type": "mass",
-        "default_unit": "t"
+        "default_unit": "kg"
       },
       "q_max": {
         "type": "number",
         "label": "Qmax (Maksymalny udźwig)",
         "required": true,
         "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "q_1": {
-        "type": "number",
-        "label": "Q1",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_1": {
-        "type": "number",
-        "label": "C1 (%)",
-        "required": false
-      },
-      "q_2": {
-        "type": "number",
-        "label": "Q2",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_2": {
-        "type": "number",
-        "label": "C2 (%)",
-        "required": false
-      },
-      "q_3": {
-        "type": "number",
-        "label": "Q3",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_3": {
-        "type": "number",
-        "label": "C3 (%)",
-        "required": false
-      },
-      "q_4": {
-        "type": "number",
-        "label": "Q4",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_4": {
-        "type": "number",
-        "label": "C4 (%)",
-        "required": false
-      },
-      "q_5": {
-        "type": "number",
-        "label": "Q5",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_5": {
-        "type": "number",
-        "label": "C5 (%)",
-        "required": false
+        "default_unit": "kg"
       },
       "max_czas": {
         "type": "number",
@@ -4099,6 +3254,11 @@
           "Zgodne",
           "Niezgodne"
         ]
+      },
+      "diagram_kd": {
+        "type": "diagram",
+        "label": "Widmo obciążeń Kd",
+        "svg": "schemat_kd"
       }
     },
     "sections": [
@@ -4110,8 +3270,8 @@
           "spec",
           "ponowny_resurs",
           "data_resurs",
-          "ostatni_licznik",
           "ostatni_resurs",
+          "ostatni_licznik",
           "ostatni_resurs_mech_pod",
           "ostatni_resurs_mech_jaz",
           "ostatni_resurs_mech_prz",
@@ -4163,16 +3323,7 @@
         "title": "Za pomocą kalkulatora wyznacz współczynnik Kd",
         "icon": "balance",
         "fields": [
-          "q_1",
-          "c_1",
-          "q_2",
-          "c_2",
-          "q_3",
-          "c_3",
-          "q_4",
-          "c_4",
-          "q_5",
-          "c_5"
+          "diagram_kd"
         ]
       },
       {
@@ -4273,28 +3424,25 @@
         "label": "Qmax (Maksymalny udźwig)",
         "required": true,
         "unit_type": "mass",
-        "default_unit": "t"
+        "default_unit": "kg"
       },
       "licznik_pracy_pod": {
         "type": "number",
         "label": "Motogodziny mechanizmu podnoszenia [h]",
         "required": false,
-        "unit_type": "time",
-        "default_unit": "h"
+        "default_unit": "mth"
       },
       "licznik_pracy_jaz": {
         "type": "number",
         "label": "Motogodziny mechanizmu jazdy [h]",
         "required": false,
-        "unit_type": "time",
-        "default_unit": "h"
+        "default_unit": "mth"
       },
       "licznik_pracy_prz": {
         "type": "number",
         "label": "Motogodziny mechanizmu przesuwu palety [h]",
         "required": false,
-        "unit_type": "time",
-        "default_unit": "h"
+        "default_unit": "mth"
       },
       "lata_pracy": {
         "type": "number",
@@ -4344,69 +3492,9 @@
           "Brak informacji o historii urządzenia"
         ]
       },
-      "q_1": {
-        "type": "number",
-        "label": "Q1",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_1": {
-        "type": "number",
-        "label": "C1 (%)",
-        "required": false
-      },
-      "q_2": {
-        "type": "number",
-        "label": "Q2",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_2": {
-        "type": "number",
-        "label": "C2 (%)",
-        "required": false
-      },
-      "q_3": {
-        "type": "number",
-        "label": "Q3",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_3": {
-        "type": "number",
-        "label": "C3 (%)",
-        "required": false
-      },
-      "q_4": {
-        "type": "number",
-        "label": "Q4",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_4": {
-        "type": "number",
-        "label": "C4 (%)",
-        "required": false
-      },
-      "q_5": {
-        "type": "number",
-        "label": "Q5",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_5": {
-        "type": "number",
-        "label": "C5 (%)",
-        "required": false
-      },
       "spec": {
         "type": "select",
-        "label": "Praca w warunkach specjalnych",
+        "label": "Resurs po pierwszym przeglądzie specjalnym",
         "required": true,
         "options": [
           "Nie",
@@ -4429,7 +3517,8 @@
         "show_if": {
           "field": "ponowny_resurs",
           "value": "Tak"
-        }
+        },
+        "default_unit": "%"
       },
       "data_resurs": {
         "type": "date",
@@ -4484,6 +3573,11 @@
           "Zgodne",
           "Niezgodne"
         ]
+      },
+      "diagram_kd": {
+        "type": "diagram",
+        "label": "Widmo obciążeń Kd",
+        "svg": "schemat_kd"
       }
     },
     "sections": [
@@ -4538,16 +3632,7 @@
         "title": "Za pomocą kalkulatora wyznacz współczynnik Kd",
         "icon": "balance",
         "fields": [
-          "q_1",
-          "c_1",
-          "q_2",
-          "c_2",
-          "q_3",
-          "c_3",
-          "q_4",
-          "c_4",
-          "q_5",
-          "c_5"
+          "diagram_kd"
         ]
       },
       {
@@ -4661,7 +3746,7 @@
         "label": "Qmax (Maksymalny udźwig)",
         "required": true,
         "unit_type": "mass",
-        "default_unit": "t"
+        "default_unit": "kg"
       },
       "h_max": {
         "type": "number",
@@ -4698,61 +3783,6 @@
         "type": "number",
         "label": "A3 (%)",
         "required": true
-      },
-      "q_1": {
-        "type": "number",
-        "label": "Q1",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_1": {
-        "type": "number",
-        "label": "C1 (%)"
-      },
-      "q_2": {
-        "type": "number",
-        "label": "Q2",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_2": {
-        "type": "number",
-        "label": "C2 (%)"
-      },
-      "q_3": {
-        "type": "number",
-        "label": "Q3",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_3": {
-        "type": "number",
-        "label": "C3 (%)"
-      },
-      "q_4": {
-        "type": "number",
-        "label": "Q4",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_4": {
-        "type": "number",
-        "label": "C4 (%)"
-      },
-      "q_5": {
-        "type": "number",
-        "label": "Q5",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_5": {
-        "type": "number",
-        "label": "C5 (%)"
       },
       "konstrukcja": {
         "type": "inspection_status",
@@ -4801,6 +3831,16 @@
           "Sprawne",
           "Niesprawne"
         ]
+      },
+      "diagram_kd": {
+        "type": "diagram",
+        "label": "Widmo obciążeń Kd",
+        "svg": "schemat_kd"
+      },
+      "diagram_ad": {
+        "type": "diagram",
+        "svg": "schemat_ad",
+        "label": "Rozkład kątów"
       }
     },
     "sections": [
@@ -4837,23 +3877,19 @@
         ]
       },
       {
+        "id": "ad",
+        "title": "Wyznacz współczynnik αd — kąt ustawienia windy dekarskiej",
+        "icon": "architecture",
+        "fields": [
+          "diagram_ad"
+        ]
+      },
+      {
         "id": "kd",
         "title": "Za pomocą kalkulatora wyznacz współczynnik Kd",
         "icon": "balance",
         "fields": [
-          "q_1",
-          "c_1",
-          "q_2",
-          "c_2",
-          "q_3",
-          "c_3",
-          "q_4",
-          "c_4",
-          "q_5",
-          "c_5",
-          "a_1",
-          "a_2",
-          "a_3"
+          "diagram_kd"
         ]
       },
       {
@@ -4973,71 +4009,11 @@
         "label": "Qmax (Maksymalny udźwig)",
         "required": true,
         "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "q_1": {
-        "type": "number",
-        "label": "Q1",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_1": {
-        "type": "number",
-        "label": "C1 (%)",
-        "required": false
-      },
-      "q_2": {
-        "type": "number",
-        "label": "Q2",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_2": {
-        "type": "number",
-        "label": "C2 (%)",
-        "required": false
-      },
-      "q_3": {
-        "type": "number",
-        "label": "Q3",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_3": {
-        "type": "number",
-        "label": "C3 (%)",
-        "required": false
-      },
-      "q_4": {
-        "type": "number",
-        "label": "Q4",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_4": {
-        "type": "number",
-        "label": "C4 (%)",
-        "required": false
-      },
-      "q_5": {
-        "type": "number",
-        "label": "Q5",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_5": {
-        "type": "number",
-        "label": "C5 (%)",
-        "required": false
+        "default_unit": "kg"
       },
       "spec": {
         "type": "select",
-        "label": "Praca w warunkach specjalnych",
+        "label": "Resurs po pierwszym przeglądzie specjalnym",
         "required": true,
         "options": [
           "Nie",
@@ -5060,7 +4036,8 @@
         "show_if": {
           "field": "ponowny_resurs",
           "value": "Tak"
-        }
+        },
+        "default_unit": "%"
       },
       "data_resurs": {
         "type": "date",
@@ -5115,6 +4092,11 @@
           "Zgodne",
           "Niezgodne"
         ]
+      },
+      "diagram_kd": {
+        "type": "diagram",
+        "label": "Widmo obciążeń Kd",
+        "svg": "schemat_kd"
       }
     },
     "sections": [
@@ -5168,16 +4150,7 @@
         "title": "Na podstawie kalkulatora współczynnika Kd, wybierz odpowiedni stan obciążenia",
         "icon": "balance",
         "fields": [
-          "q_1",
-          "c_1",
-          "q_2",
-          "c_2",
-          "q_3",
-          "c_3",
-          "q_4",
-          "c_4",
-          "q_5",
-          "c_5"
+          "diagram_kd"
         ]
       },
       {
@@ -5197,7 +4170,9 @@
   "mech_jazdy_suwnicy": {
     "name": "Mechanizm Jazdy Suwnicy",
     "description": "Kalkulator resursu dla mechanizmu jazdy suwnicy.",
-    "parent_devices": ["suwnica"],
+    "parent_devices": [
+      "suwnica"
+    ],
     "fields": {
       "wykonawca": {
         "type": "text",
@@ -5289,71 +4264,11 @@
         "label": "Qmax (Maksymalny udźwig)",
         "required": true,
         "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "q_1": {
-        "type": "number",
-        "label": "Q1",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_1": {
-        "type": "number",
-        "label": "C1 (%)",
-        "required": false
-      },
-      "q_2": {
-        "type": "number",
-        "label": "Q2",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_2": {
-        "type": "number",
-        "label": "C2 (%)",
-        "required": false
-      },
-      "q_3": {
-        "type": "number",
-        "label": "Q3",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_3": {
-        "type": "number",
-        "label": "C3 (%)",
-        "required": false
-      },
-      "q_4": {
-        "type": "number",
-        "label": "Q4",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_4": {
-        "type": "number",
-        "label": "C4 (%)",
-        "required": false
-      },
-      "q_5": {
-        "type": "number",
-        "label": "Q5",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_5": {
-        "type": "number",
-        "label": "C5 (%)",
-        "required": false
+        "default_unit": "kg"
       },
       "spec": {
         "type": "select",
-        "label": "Praca w warunkach specjalnych",
+        "label": "Resurs po pierwszym przeglądzie specjalnym",
         "required": true,
         "options": [
           "Nie",
@@ -5376,7 +4291,8 @@
         "show_if": {
           "field": "ponowny_resurs",
           "value": "Tak"
-        }
+        },
+        "default_unit": "%"
       },
       "data_resurs": {
         "type": "date",
@@ -5386,6 +4302,11 @@
           "field": "ponowny_resurs",
           "value": "Tak"
         }
+      },
+      "diagram_kd": {
+        "type": "diagram",
+        "label": "Widmo obciążeń Kd",
+        "svg": "schemat_kd"
       }
     },
     "sections": [
@@ -5438,16 +4359,7 @@
         "title": "Na podstawie kalkulatora współczynnika Kd, wybierz odpowiedni stan obciążenia",
         "icon": "balance",
         "fields": [
-          "q_1",
-          "c_1",
-          "q_2",
-          "c_2",
-          "q_3",
-          "c_3",
-          "q_4",
-          "c_4",
-          "q_5",
-          "c_5"
+          "diagram_kd"
         ]
       }
     ]
@@ -5455,7 +4367,9 @@
   "mech_jazdy_wciagarki": {
     "name": "Mechanizm Jazdy Wciągarki",
     "description": "Kalkulator resursu dla mechanizmu jazdy wciągarki.",
-    "parent_devices": ["wciagarka"],
+    "parent_devices": [
+      "wciagarka"
+    ],
     "fields": {
       "wykonawca": {
         "type": "text",
@@ -5547,71 +4461,11 @@
         "label": "Qmax (Maksymalny udźwig)",
         "required": true,
         "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "q_1": {
-        "type": "number",
-        "label": "Q1",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_1": {
-        "type": "number",
-        "label": "C1 (%)",
-        "required": false
-      },
-      "q_2": {
-        "type": "number",
-        "label": "Q2",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_2": {
-        "type": "number",
-        "label": "C2 (%)",
-        "required": false
-      },
-      "q_3": {
-        "type": "number",
-        "label": "Q3",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_3": {
-        "type": "number",
-        "label": "C3 (%)",
-        "required": false
-      },
-      "q_4": {
-        "type": "number",
-        "label": "Q4",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_4": {
-        "type": "number",
-        "label": "C4 (%)",
-        "required": false
-      },
-      "q_5": {
-        "type": "number",
-        "label": "Q5",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_5": {
-        "type": "number",
-        "label": "C5 (%)",
-        "required": false
+        "default_unit": "kg"
       },
       "spec": {
         "type": "select",
-        "label": "Praca w warunkach specjalnych",
+        "label": "Resurs po pierwszym przeglądzie specjalnym",
         "required": true,
         "options": [
           "Nie",
@@ -5634,7 +4488,8 @@
         "show_if": {
           "field": "ponowny_resurs",
           "value": "Tak"
-        }
+        },
+        "default_unit": "%"
       },
       "data_resurs": {
         "type": "date",
@@ -5644,6 +4499,11 @@
           "field": "ponowny_resurs",
           "value": "Tak"
         }
+      },
+      "diagram_kd": {
+        "type": "diagram",
+        "label": "Widmo obciążeń Kd",
+        "svg": "schemat_kd"
       }
     },
     "sections": [
@@ -5696,16 +4556,7 @@
         "title": "Na podstawie kalkulatora współczynnika Kd, wybierz odpowiedni stan obciążenia",
         "icon": "balance",
         "fields": [
-          "q_1",
-          "c_1",
-          "q_2",
-          "c_2",
-          "q_3",
-          "c_3",
-          "q_4",
-          "c_4",
-          "q_5",
-          "c_5"
+          "diagram_kd"
         ]
       }
     ]
@@ -5713,7 +4564,9 @@
   "mech_jazdy_zurawia": {
     "name": "Mechanizm Jazdy Żurawia",
     "description": "Kalkulator resursu dla mechanizmu jazdy żurawia.",
-    "parent_devices": ["zuraw"],
+    "parent_devices": [
+      "zuraw"
+    ],
     "fields": {
       "wykonawca": {
         "type": "text",
@@ -5805,71 +4658,11 @@
         "label": "Qmax (Maksymalny udźwig)",
         "required": true,
         "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "q_1": {
-        "type": "number",
-        "label": "Q1",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_1": {
-        "type": "number",
-        "label": "C1 (%)",
-        "required": false
-      },
-      "q_2": {
-        "type": "number",
-        "label": "Q2",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_2": {
-        "type": "number",
-        "label": "C2 (%)",
-        "required": false
-      },
-      "q_3": {
-        "type": "number",
-        "label": "Q3",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_3": {
-        "type": "number",
-        "label": "C3 (%)",
-        "required": false
-      },
-      "q_4": {
-        "type": "number",
-        "label": "Q4",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_4": {
-        "type": "number",
-        "label": "C4 (%)",
-        "required": false
-      },
-      "q_5": {
-        "type": "number",
-        "label": "Q5",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_5": {
-        "type": "number",
-        "label": "C5 (%)",
-        "required": false
+        "default_unit": "kg"
       },
       "spec": {
         "type": "select",
-        "label": "Praca w warunkach specjalnych",
+        "label": "Resurs po pierwszym przeglądzie specjalnym",
         "required": true,
         "options": [
           "Nie",
@@ -5892,7 +4685,8 @@
         "show_if": {
           "field": "ponowny_resurs",
           "value": "Tak"
-        }
+        },
+        "default_unit": "%"
       },
       "data_resurs": {
         "type": "date",
@@ -5902,6 +4696,11 @@
           "field": "ponowny_resurs",
           "value": "Tak"
         }
+      },
+      "diagram_kd": {
+        "type": "diagram",
+        "label": "Widmo obciążeń Kd",
+        "svg": "schemat_kd"
       }
     },
     "sections": [
@@ -5954,16 +4753,7 @@
         "title": "Na podstawie kalkulatora współczynnika Kd, wybierz odpowiedni stan obciążenia",
         "icon": "balance",
         "fields": [
-          "q_1",
-          "c_1",
-          "q_2",
-          "c_2",
-          "q_3",
-          "c_3",
-          "q_4",
-          "c_4",
-          "q_5",
-          "c_5"
+          "diagram_kd"
         ]
       }
     ]
@@ -5971,7 +4761,12 @@
   "mech_podnoszenia": {
     "name": "Mechanizm Podnoszenia",
     "description": "Kalkulator resursu dla mechanizmu podnoszenia.",
-    "parent_devices": ["suwnica", "wciagarka", "wciagnik", "zuraw"],
+    "parent_devices": [
+      "suwnica",
+      "wciagarka",
+      "wciagnik",
+      "zuraw"
+    ],
     "fields": {
       "wykonawca": {
         "type": "text",
@@ -6063,71 +4858,11 @@
         "label": "Qmax (Maksymalny udźwig)",
         "required": true,
         "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "q_1": {
-        "type": "number",
-        "label": "Q1",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_1": {
-        "type": "number",
-        "label": "C1 (%)",
-        "required": false
-      },
-      "q_2": {
-        "type": "number",
-        "label": "Q2",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_2": {
-        "type": "number",
-        "label": "C2 (%)",
-        "required": false
-      },
-      "q_3": {
-        "type": "number",
-        "label": "Q3",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_3": {
-        "type": "number",
-        "label": "C3 (%)",
-        "required": false
-      },
-      "q_4": {
-        "type": "number",
-        "label": "Q4",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_4": {
-        "type": "number",
-        "label": "C4 (%)",
-        "required": false
-      },
-      "q_5": {
-        "type": "number",
-        "label": "Q5",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_5": {
-        "type": "number",
-        "label": "C5 (%)",
-        "required": false
+        "default_unit": "kg"
       },
       "spec": {
         "type": "select",
-        "label": "Praca w warunkach specjalnych",
+        "label": "Resurs po pierwszym przeglądzie specjalnym",
         "required": true,
         "options": [
           "Nie",
@@ -6150,7 +4885,8 @@
         "show_if": {
           "field": "ponowny_resurs",
           "value": "Tak"
-        }
+        },
+        "default_unit": "%"
       },
       "data_resurs": {
         "type": "date",
@@ -6160,6 +4896,11 @@
           "field": "ponowny_resurs",
           "value": "Tak"
         }
+      },
+      "diagram_kd": {
+        "type": "diagram",
+        "label": "Widmo obciążeń Kd",
+        "svg": "schemat_kd"
       }
     },
     "sections": [
@@ -6212,16 +4953,7 @@
         "title": "Na podstawie kalkulatora współczynnika Kd, wybierz odpowiedni stan obciążenia",
         "icon": "balance",
         "fields": [
-          "q_1",
-          "c_1",
-          "q_2",
-          "c_2",
-          "q_3",
-          "c_3",
-          "q_4",
-          "c_4",
-          "q_5",
-          "c_5"
+          "diagram_kd"
         ]
       }
     ]
@@ -6229,7 +4961,9 @@
   "mech_zmiany_obrotu": {
     "name": "Mechanizm Zmiany Obrotu",
     "description": "Kalkulator resursu dla mechanizmu zmiany obrotu.",
-    "parent_devices": ["zuraw"],
+    "parent_devices": [
+      "zuraw"
+    ],
     "fields": {
       "wykonawca": {
         "type": "text",
@@ -6321,71 +5055,11 @@
         "label": "Qmax (Maksymalny udźwig)",
         "required": true,
         "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "q_1": {
-        "type": "number",
-        "label": "Q1",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_1": {
-        "type": "number",
-        "label": "C1 (%)",
-        "required": false
-      },
-      "q_2": {
-        "type": "number",
-        "label": "Q2",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_2": {
-        "type": "number",
-        "label": "C2 (%)",
-        "required": false
-      },
-      "q_3": {
-        "type": "number",
-        "label": "Q3",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_3": {
-        "type": "number",
-        "label": "C3 (%)",
-        "required": false
-      },
-      "q_4": {
-        "type": "number",
-        "label": "Q4",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_4": {
-        "type": "number",
-        "label": "C4 (%)",
-        "required": false
-      },
-      "q_5": {
-        "type": "number",
-        "label": "Q5",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_5": {
-        "type": "number",
-        "label": "C5 (%)",
-        "required": false
+        "default_unit": "kg"
       },
       "spec": {
         "type": "select",
-        "label": "Praca w warunkach specjalnych",
+        "label": "Resurs po pierwszym przeglądzie specjalnym",
         "required": true,
         "options": [
           "Nie",
@@ -6408,7 +5082,8 @@
         "show_if": {
           "field": "ponowny_resurs",
           "value": "Tak"
-        }
+        },
+        "default_unit": "%"
       },
       "data_resurs": {
         "type": "date",
@@ -6418,6 +5093,11 @@
           "field": "ponowny_resurs",
           "value": "Tak"
         }
+      },
+      "diagram_kd": {
+        "type": "diagram",
+        "label": "Widmo obciążeń Kd",
+        "svg": "schemat_kd"
       }
     },
     "sections": [
@@ -6470,16 +5150,7 @@
         "title": "Na podstawie kalkulatora współczynnika Kd, wybierz odpowiedni stan obciążenia",
         "icon": "balance",
         "fields": [
-          "q_1",
-          "c_1",
-          "q_2",
-          "c_2",
-          "q_3",
-          "c_3",
-          "q_4",
-          "c_4",
-          "q_5",
-          "c_5"
+          "diagram_kd"
         ]
       }
     ]
@@ -6487,7 +5158,9 @@
   "mech_zmiany_wysiegu": {
     "name": "Mechanizm Zmiany Wysięgu",
     "description": "Kalkulator resursu dla mechanizmu zmiany wysięgu.",
-    "parent_devices": ["zuraw"],
+    "parent_devices": [
+      "zuraw"
+    ],
     "fields": {
       "wykonawca": {
         "type": "text",
@@ -6579,71 +5252,11 @@
         "label": "Qmax (Maksymalny udźwig)",
         "required": true,
         "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "q_1": {
-        "type": "number",
-        "label": "Q1",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_1": {
-        "type": "number",
-        "label": "C1 (%)",
-        "required": false
-      },
-      "q_2": {
-        "type": "number",
-        "label": "Q2",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_2": {
-        "type": "number",
-        "label": "C2 (%)",
-        "required": false
-      },
-      "q_3": {
-        "type": "number",
-        "label": "Q3",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_3": {
-        "type": "number",
-        "label": "C3 (%)",
-        "required": false
-      },
-      "q_4": {
-        "type": "number",
-        "label": "Q4",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_4": {
-        "type": "number",
-        "label": "C4 (%)",
-        "required": false
-      },
-      "q_5": {
-        "type": "number",
-        "label": "Q5",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_5": {
-        "type": "number",
-        "label": "C5 (%)",
-        "required": false
+        "default_unit": "kg"
       },
       "spec": {
         "type": "select",
-        "label": "Praca w warunkach specjalnych",
+        "label": "Resurs po pierwszym przeglądzie specjalnym",
         "required": true,
         "options": [
           "Nie",
@@ -6666,7 +5279,8 @@
         "show_if": {
           "field": "ponowny_resurs",
           "value": "Tak"
-        }
+        },
+        "default_unit": "%"
       },
       "data_resurs": {
         "type": "date",
@@ -6676,6 +5290,11 @@
           "field": "ponowny_resurs",
           "value": "Tak"
         }
+      },
+      "diagram_kd": {
+        "type": "diagram",
+        "label": "Widmo obciążeń Kd",
+        "svg": "schemat_kd"
       }
     },
     "sections": [
@@ -6728,16 +5347,7 @@
         "title": "Na podstawie kalkulatora współczynnika Kd, wybierz odpowiedni stan obciążenia",
         "icon": "balance",
         "fields": [
-          "q_1",
-          "c_1",
-          "q_2",
-          "c_2",
-          "q_3",
-          "c_3",
-          "q_4",
-          "c_4",
-          "q_5",
-          "c_5"
+          "diagram_kd"
         ]
       }
     ]
@@ -6868,7 +5478,7 @@
         "label": "Qmax (Maksymalny udźwig)",
         "required": true,
         "unit_type": "mass",
-        "default_unit": "t"
+        "default_unit": "kg"
       },
       "h_max": {
         "type": "number",
@@ -6897,7 +5507,7 @@
       },
       "spec": {
         "type": "select",
-        "label": "Praca w warunkach specjalnych",
+        "label": "Resurs po pierwszym przeglądzie specjalnym",
         "required": true,
         "options": [
           "Nie",
@@ -6920,7 +5530,8 @@
         "show_if": {
           "field": "ponowny_resurs",
           "value": "Tak"
-        }
+        },
+        "default_unit": "%"
       },
       "data_resurs": {
         "type": "date",
@@ -6949,61 +5560,6 @@
           "S7"
         ]
       },
-      "q_1": {
-        "type": "number",
-        "label": "Q1",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_1": {
-        "type": "number",
-        "label": "C1 (%)"
-      },
-      "q_2": {
-        "type": "number",
-        "label": "Q2",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_2": {
-        "type": "number",
-        "label": "C2 (%)"
-      },
-      "q_3": {
-        "type": "number",
-        "label": "Q3",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_3": {
-        "type": "number",
-        "label": "C3 (%)"
-      },
-      "q_4": {
-        "type": "number",
-        "label": "Q4",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_4": {
-        "type": "number",
-        "label": "C4 (%)"
-      },
-      "q_5": {
-        "type": "number",
-        "label": "Q5",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_5": {
-        "type": "number",
-        "label": "C5 (%)"
-      },
       "diagram_hdr": {
         "type": "diagram",
         "label": "Schemat stref wysokości (H_dr)",
@@ -7012,143 +5568,7 @@
           "field": "typ",
           "value": [
             "nożycowy",
-            "masztowy",
-            "przenośny"
-          ]
-        }
-      },
-      "h_1": {
-        "type": "number",
-        "label": "Wysokość H1",
-        "required": false,
-        "unit_type": "length",
-        "default_unit": "m",
-        "show_if": {
-          "field": "typ",
-          "value": [
-            "nożycowy",
-            "masztowy",
-            "przenośny"
-          ]
-        }
-      },
-      "cc_1": {
-        "type": "number",
-        "label": "Udział cc1 (%)",
-        "show_if": {
-          "field": "typ",
-          "value": [
-            "nożycowy",
-            "masztowy",
-            "przenośny"
-          ]
-        }
-      },
-      "h_2": {
-        "type": "number",
-        "label": "Wysokość H2",
-        "required": false,
-        "unit_type": "length",
-        "default_unit": "m",
-        "show_if": {
-          "field": "typ",
-          "value": [
-            "nożycowy",
-            "masztowy",
-            "przenośny"
-          ]
-        }
-      },
-      "cc_2": {
-        "type": "number",
-        "label": "Udział cc2 (%)",
-        "show_if": {
-          "field": "typ",
-          "value": [
-            "nożycowy",
-            "masztowy",
-            "przenośny"
-          ]
-        }
-      },
-      "h_3": {
-        "type": "number",
-        "label": "Wysokość H3",
-        "required": false,
-        "unit_type": "length",
-        "default_unit": "m",
-        "show_if": {
-          "field": "typ",
-          "value": [
-            "nożycowy",
-            "masztowy",
-            "przenośny"
-          ]
-        }
-      },
-      "cc_3": {
-        "type": "number",
-        "label": "Udział cc3 (%)",
-        "show_if": {
-          "field": "typ",
-          "value": [
-            "nożycowy",
-            "masztowy",
-            "przenośny"
-          ]
-        }
-      },
-      "h_4": {
-        "type": "number",
-        "label": "Wysokość H4",
-        "required": false,
-        "unit_type": "length",
-        "default_unit": "m",
-        "show_if": {
-          "field": "typ",
-          "value": [
-            "nożycowy",
-            "masztowy",
-            "przenośny"
-          ]
-        }
-      },
-      "cc_4": {
-        "type": "number",
-        "label": "Udział cc4 (%)",
-        "show_if": {
-          "field": "typ",
-          "value": [
-            "nożycowy",
-            "masztowy",
-            "przenośny"
-          ]
-        }
-      },
-      "h_5": {
-        "type": "number",
-        "label": "Wysokość H5",
-        "required": false,
-        "unit_type": "length",
-        "default_unit": "m",
-        "show_if": {
-          "field": "typ",
-          "value": [
-            "nożycowy",
-            "masztowy",
-            "przenośny"
-          ]
-        }
-      },
-      "cc_5": {
-        "type": "number",
-        "label": "Udział cc5 (%)",
-        "show_if": {
-          "field": "typ",
-          "value": [
-            "nożycowy",
-            "masztowy",
-            "przenośny"
+            "masztowy"
           ]
         }
       },
@@ -7158,388 +5578,9 @@
         "svg": "schemat_ldr",
         "show_if": {
           "field": "typ",
-          "negate": true,
           "value": [
-            "nożycowy",
-            "masztowy",
-            "przenośny",
-            "BUMAR",
-            ""
-          ]
-        }
-      },
-      "p_1": {
-        "type": "number",
-        "label": "p1 — strefa R1/H5 (%)",
-        "show_if": {
-          "field": "typ",
-          "negate": true,
-          "value": [
-            "nożycowy",
-            "masztowy",
-            "przenośny",
-            "BUMAR",
-            ""
-          ]
-        }
-      },
-      "p_2": {
-        "type": "number",
-        "label": "p2 — strefa R2/H5 (%)",
-        "show_if": {
-          "field": "typ",
-          "negate": true,
-          "value": [
-            "nożycowy",
-            "masztowy",
-            "przenośny",
-            "BUMAR",
-            ""
-          ]
-        }
-      },
-      "p_3": {
-        "type": "number",
-        "label": "p3 — strefa R3/H5 (%)",
-        "show_if": {
-          "field": "typ",
-          "negate": true,
-          "value": [
-            "nożycowy",
-            "masztowy",
-            "przenośny",
-            "BUMAR",
-            ""
-          ]
-        }
-      },
-      "p_4": {
-        "type": "number",
-        "label": "p4 — strefa R4/H5 (%)",
-        "show_if": {
-          "field": "typ",
-          "negate": true,
-          "value": [
-            "nożycowy",
-            "masztowy",
-            "przenośny",
-            "BUMAR",
-            ""
-          ]
-        }
-      },
-      "p_5": {
-        "type": "number",
-        "label": "p5 — strefa R5/H5 (%)",
-        "show_if": {
-          "field": "typ",
-          "negate": true,
-          "value": [
-            "nożycowy",
-            "masztowy",
-            "przenośny",
-            "BUMAR",
-            ""
-          ]
-        }
-      },
-      "p_6": {
-        "type": "number",
-        "label": "p6 — strefa R1/H4 (%)",
-        "show_if": {
-          "field": "typ",
-          "negate": true,
-          "value": [
-            "nożycowy",
-            "masztowy",
-            "przenośny",
-            "BUMAR",
-            ""
-          ]
-        }
-      },
-      "p_7": {
-        "type": "number",
-        "label": "p7 — strefa R2/H4 (%)",
-        "show_if": {
-          "field": "typ",
-          "negate": true,
-          "value": [
-            "nożycowy",
-            "masztowy",
-            "przenośny",
-            "BUMAR",
-            ""
-          ]
-        }
-      },
-      "p_8": {
-        "type": "number",
-        "label": "p8 — strefa R3/H4 (%)",
-        "show_if": {
-          "field": "typ",
-          "negate": true,
-          "value": [
-            "nożycowy",
-            "masztowy",
-            "przenośny",
-            "BUMAR",
-            ""
-          ]
-        }
-      },
-      "p_9": {
-        "type": "number",
-        "label": "p9 — strefa R4/H4 (%)",
-        "show_if": {
-          "field": "typ",
-          "negate": true,
-          "value": [
-            "nożycowy",
-            "masztowy",
-            "przenośny",
-            "BUMAR",
-            ""
-          ]
-        }
-      },
-      "p_10": {
-        "type": "number",
-        "label": "p10 — strefa R5/H4 (%)",
-        "show_if": {
-          "field": "typ",
-          "negate": true,
-          "value": [
-            "nożycowy",
-            "masztowy",
-            "przenośny",
-            "BUMAR",
-            ""
-          ]
-        }
-      },
-      "p_11": {
-        "type": "number",
-        "label": "p11 — strefa R1/H3 (%)",
-        "show_if": {
-          "field": "typ",
-          "negate": true,
-          "value": [
-            "nożycowy",
-            "masztowy",
-            "przenośny",
-            "BUMAR",
-            ""
-          ]
-        }
-      },
-      "p_12": {
-        "type": "number",
-        "label": "p12 — strefa R2/H3 (%)",
-        "show_if": {
-          "field": "typ",
-          "negate": true,
-          "value": [
-            "nożycowy",
-            "masztowy",
-            "przenośny",
-            "BUMAR",
-            ""
-          ]
-        }
-      },
-      "p_13": {
-        "type": "number",
-        "label": "p13 — strefa R3/H3 (%)",
-        "show_if": {
-          "field": "typ",
-          "negate": true,
-          "value": [
-            "nożycowy",
-            "masztowy",
-            "przenośny",
-            "BUMAR",
-            ""
-          ]
-        }
-      },
-      "p_14": {
-        "type": "number",
-        "label": "p14 — strefa R4/H3 (%)",
-        "show_if": {
-          "field": "typ",
-          "negate": true,
-          "value": [
-            "nożycowy",
-            "masztowy",
-            "przenośny",
-            "BUMAR",
-            ""
-          ]
-        }
-      },
-      "p_15": {
-        "type": "number",
-        "label": "p15 — strefa R5/H3 (%)",
-        "show_if": {
-          "field": "typ",
-          "negate": true,
-          "value": [
-            "nożycowy",
-            "masztowy",
-            "przenośny",
-            "BUMAR",
-            ""
-          ]
-        }
-      },
-      "p_16": {
-        "type": "number",
-        "label": "p16 — strefa R1/H2 (%)",
-        "show_if": {
-          "field": "typ",
-          "negate": true,
-          "value": [
-            "nożycowy",
-            "masztowy",
-            "przenośny",
-            "BUMAR",
-            ""
-          ]
-        }
-      },
-      "p_17": {
-        "type": "number",
-        "label": "p17 — strefa R2/H2 (%)",
-        "show_if": {
-          "field": "typ",
-          "negate": true,
-          "value": [
-            "nożycowy",
-            "masztowy",
-            "przenośny",
-            "BUMAR",
-            ""
-          ]
-        }
-      },
-      "p_18": {
-        "type": "number",
-        "label": "p18 — strefa R3/H2 (%)",
-        "show_if": {
-          "field": "typ",
-          "negate": true,
-          "value": [
-            "nożycowy",
-            "masztowy",
-            "przenośny",
-            "BUMAR",
-            ""
-          ]
-        }
-      },
-      "p_19": {
-        "type": "number",
-        "label": "p19 — strefa R4/H2 (%)",
-        "show_if": {
-          "field": "typ",
-          "negate": true,
-          "value": [
-            "nożycowy",
-            "masztowy",
-            "przenośny",
-            "BUMAR",
-            ""
-          ]
-        }
-      },
-      "p_20": {
-        "type": "number",
-        "label": "p20 — strefa R5/H2 (%)",
-        "show_if": {
-          "field": "typ",
-          "negate": true,
-          "value": [
-            "nożycowy",
-            "masztowy",
-            "przenośny",
-            "BUMAR",
-            ""
-          ]
-        }
-      },
-      "p_21": {
-        "type": "number",
-        "label": "p21 — strefa R1/H1 (%)",
-        "show_if": {
-          "field": "typ",
-          "negate": true,
-          "value": [
-            "nożycowy",
-            "masztowy",
-            "przenośny",
-            "BUMAR",
-            ""
-          ]
-        }
-      },
-      "p_22": {
-        "type": "number",
-        "label": "p22 — strefa R2/H1 (%)",
-        "show_if": {
-          "field": "typ",
-          "negate": true,
-          "value": [
-            "nożycowy",
-            "masztowy",
-            "przenośny",
-            "BUMAR",
-            ""
-          ]
-        }
-      },
-      "p_23": {
-        "type": "number",
-        "label": "p23 — strefa R3/H1 (%)",
-        "show_if": {
-          "field": "typ",
-          "negate": true,
-          "value": [
-            "nożycowy",
-            "masztowy",
-            "przenośny",
-            "BUMAR",
-            ""
-          ]
-        }
-      },
-      "p_24": {
-        "type": "number",
-        "label": "p24 — strefa R4/H1 (%)",
-        "show_if": {
-          "field": "typ",
-          "negate": true,
-          "value": [
-            "nożycowy",
-            "masztowy",
-            "przenośny",
-            "BUMAR",
-            ""
-          ]
-        }
-      },
-      "p_25": {
-        "type": "number",
-        "label": "p25 — strefa R5/H1 (%)",
-        "show_if": {
-          "field": "typ",
-          "negate": true,
-          "value": [
-            "nożycowy",
-            "masztowy",
-            "przenośny",
-            "BUMAR",
-            ""
+            "teleskopowy",
+            "składany"
           ]
         }
       },
@@ -7598,6 +5639,11 @@
           "Sprawne",
           "Niesprawne"
         ]
+      },
+      "diagram_kd": {
+        "type": "diagram",
+        "label": "Widmo obciążeń Kd",
+        "svg": "schemat_kd"
       }
     },
     "sections": [
@@ -7649,26 +5695,14 @@
         "title": "Za pomocą kalkulatora wyznacz współczynnik Kd",
         "icon": "balance",
         "fields": [
-          "q_1",
-          "c_1",
-          "q_2",
-          "c_2",
-          "q_3",
-          "c_3",
-          "q_4",
-          "c_4",
-          "q_5",
-          "c_5",
-          "h_1",
-          "cc_1",
-          "h_2",
-          "cc_2",
-          "h_3",
-          "cc_3",
-          "h_4",
-          "cc_4",
-          "h_5",
-          "cc_5",
+          "diagram_kd"
+        ]
+      },
+      {
+        "id": "hdr",
+        "title": "Za pomocą kalkulatora wyznacz współczynnik wysokości",
+        "icon": "height",
+        "fields": [
           "diagram_hdr"
         ]
       },
@@ -7685,32 +5719,7 @@
         "title": "Za pomocą kalkulatora wyznacz współczynnik wykorzystania wysięgu",
         "icon": "bar_chart",
         "fields": [
-          "diagram_ldr",
-          "p_1",
-          "p_2",
-          "p_3",
-          "p_4",
-          "p_5",
-          "p_6",
-          "p_7",
-          "p_8",
-          "p_9",
-          "p_10",
-          "p_11",
-          "p_12",
-          "p_13",
-          "p_14",
-          "p_15",
-          "p_16",
-          "p_17",
-          "p_18",
-          "p_19",
-          "p_20",
-          "p_21",
-          "p_22",
-          "p_23",
-          "p_24",
-          "p_25"
+          "diagram_ldr"
         ]
       },
       {
@@ -7816,62 +5825,7 @@
         "label": "Qmax (Maksymalny udźwig)",
         "required": true,
         "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "q_1": {
-        "type": "number",
-        "label": "Q1",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_1": {
-        "type": "number",
-        "label": "C1 (%)"
-      },
-      "q_2": {
-        "type": "number",
-        "label": "Q2",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_2": {
-        "type": "number",
-        "label": "C2 (%)"
-      },
-      "q_3": {
-        "type": "number",
-        "label": "Q3",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_3": {
-        "type": "number",
-        "label": "C3 (%)"
-      },
-      "q_4": {
-        "type": "number",
-        "label": "Q4",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_4": {
-        "type": "number",
-        "label": "C4 (%)"
-      },
-      "q_5": {
-        "type": "number",
-        "label": "Q5",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_5": {
-        "type": "number",
-        "label": "C5 (%)"
+        "default_unit": "kg"
       },
       "ponowny_resurs": {
         "type": "select",
@@ -7889,7 +5843,8 @@
         "show_if": {
           "field": "ponowny_resurs",
           "value": "Tak"
-        }
+        },
+        "default_unit": "%"
       },
       "data_resurs": {
         "type": "date",
@@ -7955,6 +5910,11 @@
           "Sprawne",
           "Niesprawne"
         ]
+      },
+      "diagram_kd": {
+        "type": "diagram",
+        "label": "Widmo obciążeń Kd",
+        "svg": "schemat_kd"
       }
     },
     "sections": [
@@ -8000,16 +5960,7 @@
         "title": "Za pomocą kalkulatora wyznacz współczynnik Kd",
         "icon": "balance",
         "fields": [
-          "q_1",
-          "c_1",
-          "q_2",
-          "c_2",
-          "q_3",
-          "c_3",
-          "q_4",
-          "c_4",
-          "q_5",
-          "c_5"
+          "diagram_kd"
         ]
       },
       {
@@ -8116,62 +6067,7 @@
         "label": "Qmax (Maksymalny udźwig)",
         "required": true,
         "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "q_1": {
-        "type": "number",
-        "label": "Q1",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_1": {
-        "type": "number",
-        "label": "C1 (%)"
-      },
-      "q_2": {
-        "type": "number",
-        "label": "Q2",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_2": {
-        "type": "number",
-        "label": "C2 (%)"
-      },
-      "q_3": {
-        "type": "number",
-        "label": "Q3",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_3": {
-        "type": "number",
-        "label": "C3 (%)"
-      },
-      "q_4": {
-        "type": "number",
-        "label": "Q4",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_4": {
-        "type": "number",
-        "label": "C4 (%)"
-      },
-      "q_5": {
-        "type": "number",
-        "label": "Q5",
-        "required": false,
-        "unit_type": "mass",
-        "default_unit": "t"
-      },
-      "c_5": {
-        "type": "number",
-        "label": "C5 (%)"
+        "default_unit": "kg"
       },
       "ponowny_resurs": {
         "type": "select",
@@ -8189,7 +6085,8 @@
         "show_if": {
           "field": "ponowny_resurs",
           "value": "Tak"
-        }
+        },
+        "default_unit": "%"
       },
       "data_resurs": {
         "type": "date",
@@ -8255,6 +6152,11 @@
           "Sprawna",
           "Niesprawna"
         ]
+      },
+      "diagram_kd": {
+        "type": "diagram",
+        "label": "Widmo obciążeń Kd",
+        "svg": "schemat_kd"
       }
     },
     "sections": [
@@ -8300,16 +6202,7 @@
         "title": "Za pomocą kalkulatora wyznacz współczynnik Kd",
         "icon": "balance",
         "fields": [
-          "q_1",
-          "c_1",
-          "q_2",
-          "c_2",
-          "q_3",
-          "c_3",
-          "q_4",
-          "c_4",
-          "q_5",
-          "c_5"
+          "diagram_kd"
         ]
       },
       {

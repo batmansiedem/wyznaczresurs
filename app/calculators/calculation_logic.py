@@ -129,6 +129,7 @@ _UNIT_CONVERSION = {
     # czas — baza: lata
     'h':     Decimal('0.000114155'),   # 1 h ≈ 1/8766 roku
     'hour':  Decimal('0.000114155'),   # alias (z migracji 0003)
+    'mth':   Decimal('0.000114155'),   # motogodziny = godziny
     'lata':  Decimal('1.0'),
     'year':  Decimal('1.0'),      # alias (z migracji 0003)
     'day':   Decimal('0.00273973'),    # 1 dzień = 1/365 roku
@@ -832,7 +833,7 @@ class PodestRuchomyCalculator(BaseCalculator):
 
         if typ == 'składany na pojeździe BUMAR':
             U_WSK, extra_data = self._calculate_bumar_type(common_inputs, kss)
-        elif typ in ['nożycowy samobieżny', 'masztowy samobieżny', 'masztowy stacjonarny', 'składany przenośny']:
+        elif typ in ['nożycowy samobieżny', 'masztowy samobieżny', 'masztowy stacjonarny']:
             U_WSK, extra_data = self._calculate_hdr_type(common_inputs, kss)
         else: # Default to LDR type for all others
             U_WSK, extra_data = self._calculate_ldr_type(common_inputs, kss)

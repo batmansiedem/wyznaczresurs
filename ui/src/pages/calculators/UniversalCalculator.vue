@@ -64,6 +64,8 @@
                         <template v-if="currentCalculatorDefinition.fields[key].type === 'diagram'">
                           <SchemLdr v-if="currentCalculatorDefinition.fields[key].svg === 'schemat_ldr'" :data="formData" />
                           <SchemHdr v-else-if="currentCalculatorDefinition.fields[key].svg === 'schemat_hdr'" :data="formData" />
+                          <SchemKd v-else-if="currentCalculatorDefinition.fields[key].svg === 'schemat_kd'" ref="schemKdRef" :data="formData" @kg-to-t="onSchemKdKgToT" />
+                          <SchemAd v-else-if="currentCalculatorDefinition.fields[key].svg === 'schemat_ad'" :data="formData" />
                         </template>
                         <template v-else>
                           <CalculatorField :field="currentCalculatorDefinition.fields[key]" v-model="formData[key]" :units="units" />
@@ -253,11 +255,47 @@
           <template v-else>
             <q-card flat bordered class="shadow-1 overflow-hidden">
               <q-table :rows="savedResults" :columns="savedResultsColumns" row-key="id" flat :pagination="{ rowsPerPage: 10 }" @row-click="(evt, row) => selectSavedResult(row)">
+                <template v-slot:body-cell-resurs="props">
+                  <q-td :props="props">
+                    <span v-if="props.row.is_locked" class="text-grey-6">—</span>
+                    <span v-else>{{ props.row.output_data?.resurs_wykorzystanie ?? props.row.output_data?.resurs ?? 0 }}%</span>
+                  </q-td>
+                </template>
+                <template v-slot:body-cell-status="props">
+                  <q-td :props="props" class="text-center">
+                    <q-badge v-if="props.row.is_locked" color="warning" outline>
+                      <q-icon name="lock" size="12px" class="q-mr-xs" />Zablokowany
+                    </q-badge>
+                    <q-badge v-else color="positive" outline>
+                      <q-icon name="check" size="12px" class="q-mr-xs" />Odblokowany
+                    </q-badge>
+                  </q-td>
+                </template>
                 <template v-slot:body-cell-actions="props">
                   <q-td :props="props" class="q-gutter-x-xs text-center">
-                    <q-btn icon="picture_as_pdf" color="primary" flat dense @click.stop="downloadPdf(props.row.id)" />
-                    <q-btn icon="upload" color="primary" flat dense @click.stop="loadResultToForm(props.row)" />
-                    <q-btn icon="delete" color="negative" flat dense @click.stop="confirmDelete(props.row)" />
+                    <template v-if="props.row.is_locked">
+                      <q-btn
+                        v-if="(userStore.user?.premium ?? 0) >= (props.row.calculator_definition?.premium_cost ?? 0)"
+                        icon="lock_open" color="primary" flat dense :loading="unlocking"
+                        @click.stop="unlockSavedResult(props.row)"
+                      >
+                        <q-tooltip>Odblokuj wyniki</q-tooltip>
+                      </q-btn>
+                      <q-btn v-else icon="add_circle" color="warning" flat dense to="/pricing">
+                        <q-tooltip>Doładuj konto (brak punktów)</q-tooltip>
+                      </q-btn>
+                    </template>
+                    <template v-else>
+                      <q-btn icon="picture_as_pdf" color="primary" flat dense @click.stop="downloadPdf(props.row.id)">
+                        <q-tooltip>Pobierz PDF</q-tooltip>
+                      </q-btn>
+                    </template>
+                    <q-btn icon="upload" color="primary" flat dense @click.stop="loadResultToForm(props.row)">
+                      <q-tooltip>Wczytaj dane do formularza</q-tooltip>
+                    </q-btn>
+                    <q-btn icon="delete" color="negative" flat dense @click.stop="confirmDelete(props.row)">
+                      <q-tooltip>Usuń</q-tooltip>
+                    </q-btn>
                   </q-td>
                 </template>
               </q-table>
@@ -270,7 +308,26 @@
                 <q-btn flat dense icon="close" @click="selectedSavedResult = null" color="white" />
               </q-card-section>
               <q-card-section class="q-pa-lg">
-                <div class="row q-col-gutter-lg">
+                <!-- Zablokowany wynik -->
+                <div v-if="selectedSavedResult.is_locked" class="text-center q-pa-xl">
+                  <q-icon name="lock" size="4em" color="warning" class="q-mb-md" />
+                  <div class="text-h6 text-weight-bold q-mb-sm">Wyniki zablokowane</div>
+                  <div class="text-body2 text-grey-7 q-mb-lg">
+                    Odblokowanie wymaga <strong>{{ selectedSavedResult.calculator_definition?.premium_cost ?? '?' }} pkt</strong>.
+                    Masz <strong>{{ userStore.user?.premium ?? 0 }} pkt</strong> na koncie.
+                  </div>
+                  <div class="row justify-center q-gutter-md">
+                    <q-btn
+                      v-if="(userStore.user?.premium ?? 0) >= (selectedSavedResult.calculator_definition?.premium_cost ?? 0)"
+                      label="Odblokuj wyniki" icon="lock_open" color="primary" unelevated no-caps
+                      :loading="unlocking" @click="unlockSavedResult(selectedSavedResult)"
+                    />
+                    <q-btn v-else label="Doładuj konto" icon="add_circle" color="primary" unelevated no-caps to="/pricing" />
+                  </div>
+                </div>
+
+                <!-- Odblokowany wynik -->
+                <div v-else class="row q-col-gutter-lg">
                   <div class="col-12 col-md-6">
                     <div class="text-overline text-primary q-mb-md">Parametry wejściowe</div>
                     <q-list dense separator bordered class="rounded-borders">
@@ -306,6 +363,8 @@ import VueApexCharts from 'vue3-apexcharts'
 import CalculatorField from 'components/CalculatorField.vue'
 import SchemLdr from 'components/SchemLdr.vue'
 import SchemHdr from 'components/SchemHdr.vue'
+import SchemKd from 'components/SchemKd.vue'
+import SchemAd from 'components/SchemAd.vue'
 import calculatorFields from 'src/data/calculator_fields.json'
 import calculatorOutputFields from 'src/data/calculator_output_fields.json'
 import { useUserStore } from 'stores/user-store'
@@ -317,6 +376,11 @@ const userStore = useUserStore()
 const resultsRef = ref(null)
 const activeTab = ref('calculator')
 const formData = ref({})
+
+// spec i ponowny_resurs są wzajemnie wykluczające — Tak na jednym zeruje drugie
+watch(() => formData.value.spec, v => { if (v === 'Tak') formData.value.ponowny_resurs = 'Nie' })
+watch(() => formData.value.ponowny_resurs, v => { if (v === 'Tak') formData.value.spec = 'Nie' })
+
 const calculatedResult = ref(null)
 const units = ref({})
 const loading = ref(true)
@@ -346,17 +410,72 @@ const currentCalculatorDefinition = computed(() => calculatorFields[calculatorSl
 const inputFieldDefinitions = computed(() => currentCalculatorDefinition.value?.fields || null)
 const outputFieldDefinitions = computed(() => calculatorOutputFields[calculatorSlug.value]?.fields || null)
 
+// Wykrywanie zmiany kg → t w polach masy — pytanie o zmianę wszędzie
+const massFieldUnits = computed(() => {
+  const result = {}
+  const fields = currentCalculatorDefinition.value?.fields || {}
+  for (const key in fields) {
+    const f = fields[key]
+    if (f.unit_type === 'mass' && f.type !== 'diagram') {
+      const val = formData.value[key]
+      if (val && typeof val === 'object') result[key] = val.unit
+    }
+  }
+  return result
+})
+const schemKdRef = ref(null)
+let askingMassUnit = false
+
+function showMassUnitDialog() {
+  askingMassUnit = true
+  const fields = currentCalculatorDefinition.value?.fields || {}
+  $q.dialog({
+    title: 'Zmiana jednostki masy',
+    message: 'Zmienić jednostkę masy na tony [t] we wszystkich polach?',
+    cancel: { label: 'Tylko to pole', flat: true, color: 'primary' },
+    ok: { label: 'Zmień wszędzie', color: 'primary', unelevated: true }
+  }).onOk(() => {
+    for (const k in fields) {
+      if (fields[k].unit_type !== 'mass' || fields[k].type === 'diagram') continue
+      if (formData.value[k] && typeof formData.value[k] === 'object') {
+        formData.value[k] = { ...formData.value[k], unit: 't' }
+      }
+    }
+    // ref w v-for → tablica; bierzemy pierwszy (jedyny) element
+    const kd = Array.isArray(schemKdRef.value) ? schemKdRef.value[0] : schemKdRef.value
+    kd?.applyUnit?.('t')
+  }).onDismiss(() => { askingMassUnit = false })
+}
+
+// Zmiana kg→t w regularnym polu formularza
+watch(massFieldUnits, (newUnits, oldUnits) => {
+  if (askingMassUnit) return
+  for (const key in newUnits) {
+    if (oldUnits[key] === 'kg' && newUnits[key] === 't') {
+      showMassUnitDialog()
+      break
+    }
+  }
+})
+
+// Zmiana kg→t w SchemKd (widmo obciążeń)
+function onSchemKdKgToT() {
+  if (askingMassUnit) return
+  showMassUnitDialog()
+}
+
 const activeSections = computed(() => {
   const calc = currentCalculatorDefinition.value
   if (!calc?.fields) return []
   return (calc.sections || [])
     .map(s => ({ key: s.id, label: s.title, icon: s.icon, fieldKeys: s.fields.filter(k => calc.fields[k]) }))
-    .filter(s => s.fieldKeys.length > 0)
+    .filter(s => s.fieldKeys.some(k => isFieldVisible(k)))
 })
 
 const savedResultsColumns = [
   { name: 'created_at', label: 'Data', align: 'left', field: 'created_at', sortable: true, format: val => new Date(val).toLocaleString() },
-  { name: 'resurs', label: 'Zużycie [%]', align: 'left', field: row => `${row.output_data?.resurs_wykorzystanie ?? row.output_data?.resurs ?? 0}%`, sortable: true },
+  { name: 'resurs', label: 'Zużycie [%]', align: 'left', field: row => row.is_locked ? null : `${row.output_data?.resurs_wykorzystanie ?? row.output_data?.resurs ?? 0}%`, sortable: true },
+  { name: 'status', label: 'Status', align: 'center' },
   { name: 'actions', label: 'Akcje', align: 'center' }
 ]
 
@@ -563,6 +682,26 @@ async function unlockResult() {
       userStore.user.premium = res.data.remaining_premium
     }
     fetchSavedResults()
+    Notify.create({ type: 'positive', message: 'Wyniki odblokowane pomyślnie!' })
+  } catch (error) {
+    Notify.create({ type: 'negative', message: error.response?.data?.detail || error.response?.data?.[0] || 'Błąd odblokowania.' })
+  } finally { unlocking.value = false }
+}
+
+async function unlockSavedResult(row) {
+  unlocking.value = true
+  try {
+    const res = await api.post(`/calculators/results/${row.id}/unlock/`)
+    const idx = savedResults.value.findIndex(r => r.id === row.id)
+    if (idx !== -1) {
+      savedResults.value[idx] = { ...savedResults.value[idx], is_locked: false, output_data: res.data.output_data }
+    }
+    if (selectedSavedResult.value?.id === row.id) {
+      selectedSavedResult.value = { ...selectedSavedResult.value, is_locked: false, output_data: res.data.output_data }
+    }
+    if (res.data.remaining_premium !== undefined && userStore.user) {
+      userStore.user.premium = res.data.remaining_premium
+    }
     Notify.create({ type: 'positive', message: 'Wyniki odblokowane pomyślnie!' })
   } catch (error) {
     Notify.create({ type: 'negative', message: error.response?.data?.detail || error.response?.data?.[0] || 'Błąd odblokowania.' })

@@ -41,8 +41,23 @@
             <q-td :props="props" class="q-gutter-x-sm">
               <q-btn icon="visibility" label="Szczegóły" color="primary" flat dense
                 @click="showDetails(props.row)" no-caps />
-              <q-btn icon="picture_as_pdf" color="primary" flat dense
-                @click="downloadPdf(props.row)" :loading="downloadingPdf" />
+              <q-btn
+                v-if="!props.row.is_locked"
+                icon="picture_as_pdf" color="primary" flat dense
+                @click="downloadPdf(props.row)" :loading="downloadingPdf"
+              >
+                <q-tooltip>Pobierz PDF</q-tooltip>
+              </q-btn>
+              <q-btn
+                v-else-if="(userStore.user?.premium ?? 0) >= (props.row.calculator_definition?.premium_cost ?? 0)"
+                icon="lock_open" color="warning" flat dense
+                :loading="unlocking" @click="unlockResult(props.row)"
+              >
+                <q-tooltip>Odblokuj ({{ props.row.calculator_definition?.premium_cost ?? '?' }} pkt)</q-tooltip>
+              </q-btn>
+              <q-btn v-else icon="add_circle" color="warning" flat dense to="/pricing">
+                <q-tooltip>Brak punktów — doładuj konto</q-tooltip>
+              </q-btn>
               <q-btn icon="delete" color="negative" flat dense
                 @click="confirmDelete(props.row)" />
             </q-td>
@@ -94,15 +109,28 @@
               <template v-if="selectedResult?.is_locked">
                 <div class="text-center q-pa-lg">
                   <q-icon name="lock" size="3em" color="warning" class="q-mb-sm" />
-                  <div class="text-body2 text-grey-7 q-mb-md">Wyniki zablokowane — wymagają punktów premium.</div>
+                  <div class="text-body2 text-grey-7 q-mb-sm">Wyniki zablokowane — wymagają punktów premium.</div>
+                  <div class="text-caption text-grey-6 q-mb-md">
+                    Koszt odblokowania: <strong>{{ selectedResult.calculator_definition?.premium_cost ?? '?' }} pkt</strong>
+                    &nbsp;·&nbsp; Twoje saldo: <strong>{{ userStore.user?.premium ?? 0 }} pkt</strong>
+                  </div>
                   <q-btn
+                    v-if="(userStore.user?.premium ?? 0) >= (selectedResult.calculator_definition?.premium_cost ?? 0)"
                     label="Odblokuj wyniki"
                     icon="lock_open"
                     color="primary"
-                    unelevated
-                    no-caps
+                    unelevated no-caps
                     :loading="unlocking"
                     @click="unlockResult(selectedResult)"
+                  />
+                  <q-btn
+                    v-else
+                    label="Doładuj konto"
+                    icon="add_circle"
+                    color="primary"
+                    unelevated no-caps
+                    to="/pricing"
+                    v-close-popup
                   />
                 </div>
               </template>
@@ -125,7 +153,11 @@
         <q-card-actions align="right" class="q-pa-md">
           <q-btn flat label="Zamknij" color="grey-7" v-close-popup no-caps />
           <q-btn unelevated label="Pobierz PDF" color="primary" icon="picture_as_pdf" no-caps
-            :loading="downloadingPdf" @click="downloadPdf(selectedResult)" />
+            :loading="downloadingPdf" :disable="selectedResult?.is_locked"
+            @click="downloadPdf(selectedResult)"
+          >
+            <q-tooltip v-if="selectedResult?.is_locked">Odblokuj wyniki, aby pobrać PDF</q-tooltip>
+          </q-btn>
         </q-card-actions>
       </q-card>
     </q-dialog>

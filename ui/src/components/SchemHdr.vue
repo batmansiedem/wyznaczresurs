@@ -1,151 +1,197 @@
 <template>
-  <div class="schem-wrap q-mb-sm">
-    <div class="text-caption text-grey-7 q-mb-xs text-weight-medium">
-      Schemat stref wysokości — współczynnik <em>H<sub>dr</sub></em>
+  <div class="schem-hdr-wrap">
+
+    <!-- Nagłówek -->
+    <div class="schem-hd">
+      <span class="schem-title">Widmo wysokości — <em>H<sub>dr</sub></em></span>
+      <span class="schem-formula">= Σ [ cc<sub>i</sub>/100 · (h<sub>i</sub>/h<sub>max</sub>)<sup>3</sup> ]</span>
     </div>
-    <div class="text-caption text-grey-6 q-mb-sm">
-      Kliknij strefę, podaj wys. h<sub>i</sub> (m) i udział cykli cc<sub>i</sub> (%). Suma cc<sub>i</sub> = 100%.
-    </div>
 
-    <div class="row items-start q-col-gutter-md">
+    <!-- Ciało: SVG po lewej, panel po prawej -->
+    <div class="schem-body">
 
-      <!-- ── 1. Schemat referencyjny (podest nożycowy z osią wysokości) ── -->
-      <div class="col-auto ref-col">
-        <svg viewBox="0 0 120 265" xmlns="http://www.w3.org/2000/svg"
-             style="width:100%;max-width:120px;display:block">
-          <defs>
-            <marker id="avHdr" markerWidth="5" markerHeight="5" refX="4" refY="2.5" orient="auto">
-              <path d="M0,0 L5,2.5 L0,5 Z" fill="#1b5e20"/>
-            </marker>
-          </defs>
-          <!-- Oś Y: h_pod/h_max -->
-          <line x1="40" y1="245" x2="40" y2="5" stroke="#1b5e20" stroke-width="1.3" marker-end="url(#avHdr)"/>
-          <!-- Etykiety Y -->
-          <text x="36" y="245" font-size="7.5" fill="#1b5e20" text-anchor="end">0%</text>
-          <text x="36" y="197" font-size="7.5" fill="#1b5e20" text-anchor="end">20%</text>
-          <text x="36" y="149" font-size="7.5" fill="#1b5e20" text-anchor="end">40%</text>
-          <text x="36" y="101" font-size="7.5" fill="#1b5e20" text-anchor="end">60%</text>
-          <text x="36" y="53"  font-size="7.5" fill="#1b5e20" text-anchor="end">80%</text>
-          <text x="36" y="10"  font-size="7.5" fill="#1b5e20" text-anchor="end">100%</text>
-          <!-- Opis osi Y -->
-          <text x="9" y="128" font-size="7.5" fill="#1b5e20" text-anchor="middle"
-                transform="rotate(-90,9,128)">h_pod/h_max[%]</text>
-          <!-- Linie siatki poziome -->
-          <line x1="40" y1="10"  x2="115" y2="10"  stroke="#1b5e20" stroke-width="0.6"/>
-          <line x1="40" y1="58"  x2="115" y2="58"  stroke="#1b5e20" stroke-width="0.6"/>
-          <line x1="40" y1="106" x2="115" y2="106" stroke="#1b5e20" stroke-width="0.6"/>
-          <line x1="40" y1="154" x2="115" y2="154" stroke="#1b5e20" stroke-width="0.6"/>
-          <line x1="40" y1="202" x2="115" y2="202" stroke="#1b5e20" stroke-width="0.6"/>
-          <!-- Sylwetka podestu nożycowego -->
-          <!-- Platforma górna -->
-          <rect x="41" y="12" width="68" height="9" fill="none" stroke="#1b5e20" stroke-width="1.8" rx="1"/>
-          <!-- Barierka -->
-          <line x1="41"  y1="12" x2="41"  y2="5"  stroke="#1b5e20" stroke-width="1.4"/>
-          <line x1="109" y1="12" x2="109" y2="5"  stroke="#1b5e20" stroke-width="1.4"/>
-          <line x1="41"  y1="5"  x2="109" y2="5"  stroke="#1b5e20" stroke-width="1.4"/>
-          <!-- Nożyce (dwa skrzyżowane ramiona) -->
-          <line x1="57"  y1="21" x2="78"  y2="233" stroke="#1b5e20" stroke-width="1.6"/>
-          <line x1="93"  y1="21" x2="57"  y2="233" stroke="#1b5e20" stroke-width="1.6"/>
-          <!-- Rama dolna -->
-          <rect x="47" y="233" width="58" height="9" fill="none" stroke="#1b5e20" stroke-width="1.8" rx="1"/>
-          <!-- Koła -->
-          <circle cx="59"  cy="249" r="7" fill="none" stroke="#1b5e20" stroke-width="1.5"/>
-          <circle cx="97"  cy="249" r="7" fill="none" stroke="#1b5e20" stroke-width="1.5"/>
-          <!-- Linia terenu -->
-          <line x1="35" y1="257" x2="115" y2="257" stroke="#1b5e20" stroke-width="1.2" stroke-dasharray="4,3"/>
-          <text x="75" y="265" font-size="7" fill="#1b5e20" text-anchor="middle">poziom terenu</text>
-        </svg>
+    <!-- SVG -->
+    <svg viewBox="0 0 420 550" xmlns="http://www.w3.org/2000/svg"
+         class="schem-svg" style="touch-action:manipulation">
+
+      <!-- ═══ Strefy wysokości (klikalne pasy poziome) ═══
+           Oś Y: y=455 (h=0%) do y=55 (h=100%), zakres=400px, 5 stref po 80px -->
+
+      <template v-for="(z, idx) in ZONES" :key="z.i">
+        <!-- Pas strefy -->
+        <rect
+          x="110" :y="55 + idx*80" width="290" height="80"
+          :fill="zoneBgFill(z.i, idx)"
+          :stroke="isSelected(z.i) ? '#0d47a1' : 'rgba(21,101,192,0.18)'"
+          :stroke-width="isSelected(z.i) ? 2 : 0.8"
+          rx="2" style="cursor:pointer"
+          @click="toggleZone(z.i)"
+        />
+        <!-- Etykieta strefy (na pasie) -->
+        <text
+          x="118" :y="95 + idx*80"
+          text-anchor="start" dominant-baseline="middle"
+          font-size="12" font-weight="700"
+          :fill="isSelected(z.i) ? '#0d47a1' : '#78909c'"
+          font-family="'Segoe UI',Roboto,sans-serif"
+          style="pointer-events:none;user-select:none"
+        >Strefa {{ z.i }}</text>
+        <text
+          x="118" :y="110 + idx*80"
+          text-anchor="start" dominant-baseline="middle"
+          font-size="10" font-weight="500"
+          :fill="isSelected(z.i) ? '#1565C0' : '#90a4ae'"
+          font-family="'Segoe UI',Roboto,sans-serif"
+          style="pointer-events:none;user-select:none"
+        >{{ z.range }}</text>
+        <!-- Ptaszek zaznaczenia -->
+        <g v-if="isSelected(z.i)" style="pointer-events:none">
+          <circle cx="386" :cy="95 + idx*80" r="10" fill="#1565C0"/>
+          <text x="386" :y="96 + idx*80"
+                text-anchor="middle" dominant-baseline="middle"
+                font-size="11" font-weight="700" fill="white"
+                style="user-select:none">✓</text>
+        </g>
+        <!-- Linia podziału -->
+        <line v-if="idx < 4"
+              x1="110" :y1="135 + idx*80" x2="400" :y2="135 + idx*80"
+              stroke="#90caf9" stroke-width="0.7" stroke-dasharray="5,3"/>
+      </template>
+
+      <!-- Oś Y -->
+      <g stroke="#1565C0" stroke-width="2" fill="#1565C0">
+        <line x1="100" y1="460" x2="100" y2="38"/>
+        <polygon points="94,50 100,26 106,50" stroke="none"/>
+      </g>
+      <g fill="#1565C0" font-family="'Segoe UI',Roboto,sans-serif"
+         font-size="11" font-weight="600" text-anchor="end" dominant-baseline="middle">
+        <line x1="94" y1="455" x2="106" y2="455" stroke="#1565C0" stroke-width="1.5"/>
+        <text x="88" y="455">0%</text>
+        <line x1="94" y1="375" x2="106" y2="375" stroke="#1565C0" stroke-width="1.5"/>
+        <text x="88" y="375">20%</text>
+        <line x1="94" y1="295" x2="106" y2="295" stroke="#1565C0" stroke-width="1.5"/>
+        <text x="88" y="295">40%</text>
+        <line x1="94" y1="215" x2="106" y2="215" stroke="#1565C0" stroke-width="1.5"/>
+        <text x="88" y="215">60%</text>
+        <line x1="94" y1="135" x2="106" y2="135" stroke="#1565C0" stroke-width="1.5"/>
+        <text x="88" y="135">80%</text>
+        <line x1="94" y1="55"  x2="106" y2="55"  stroke="#1565C0" stroke-width="1.5"/>
+        <text x="88" y="55">100%</text>
+      </g>
+      <text x="28" y="258" fill="#1565C0" font-family="'Segoe UI',Roboto,sans-serif"
+            font-size="13" font-weight="700"
+            transform="rotate(-90 28 258)" text-anchor="middle">h_pod / h_max [%]</text>
+
+      <!-- Linia terenu -->
+      <line x1="100" y1="460" x2="410" y2="460"
+            stroke="#1565C0" stroke-width="1.2" stroke-dasharray="5,4" stroke-opacity="0.5"/>
+      <text x="255" y="476" text-anchor="middle" fill="#90a4ae"
+            font-family="'Segoe UI',Roboto,sans-serif" font-size="10" font-style="italic"
+            style="pointer-events:none">poziom terenu</text>
+
+      <!-- ═══ Podest nożycowy ═══ -->
+      <!-- Koła -->
+      <circle cx="175" cy="470" r="11" fill="none" stroke="#1565C0" stroke-width="2.8"/>
+      <circle cx="285" cy="470" r="11" fill="none" stroke="#1565C0" stroke-width="2.8"/>
+      <!-- Rama dolna -->
+      <rect x="158" y="454" width="144" height="13" rx="2" fill="none" stroke="#1565C0" stroke-width="2.8"/>
+      <!-- Nożyce dolny stopień -->
+      <line x1="168" y1="454" x2="290" y2="268" stroke="#1565C0" stroke-width="3.2" stroke-linecap="round"/>
+      <line x1="292" y1="454" x2="170" y2="268" stroke="#1565C0" stroke-width="3.2" stroke-linecap="round"/>
+      <circle cx="230" cy="361" r="4.5" fill="#1565C0"/>
+      <!-- Rama środkowa -->
+      <rect x="162" y="260" width="136" height="11" rx="2" fill="none" stroke="#1565C0" stroke-width="2.3" stroke-opacity="0.7"/>
+      <!-- Nożyce górny stopień -->
+      <line x1="172" y1="260" x2="282" y2="78" stroke="#1565C0" stroke-width="3.2" stroke-linecap="round"/>
+      <line x1="288" y1="260" x2="178" y2="78" stroke="#1565C0" stroke-width="3.2" stroke-linecap="round"/>
+      <circle cx="230" cy="169" r="4.5" fill="#1565C0"/>
+      <!-- Platforma górna -->
+      <rect x="153" y="64" width="154" height="13" rx="2" fill="rgba(21,101,192,0.12)" stroke="#1565C0" stroke-width="2.8"/>
+      <!-- Barierka -->
+      <line x1="160" y1="64" x2="160" y2="36" stroke="#1565C0" stroke-width="2.3"/>
+      <line x1="300" y1="64" x2="300" y2="36" stroke="#1565C0" stroke-width="2.3"/>
+      <line x1="160" y1="36" x2="300" y2="36" stroke="#1565C0" stroke-width="2.3"/>
+      <line x1="160" y1="50" x2="300" y2="50" stroke="#1565C0" stroke-width="1.6" stroke-opacity="0.5"/>
+      <!-- Sylwetka osoby -->
+      <circle cx="230" cy="28" r="8" fill="none" stroke="#1565C0" stroke-width="2"/>
+      <line x1="230" y1="36" x2="230" y2="58" stroke="#1565C0" stroke-width="2"/>
+      <line x1="215" y1="46" x2="245" y2="46" stroke="#1565C0" stroke-width="2"/>
+      <line x1="230" y1="58" x2="220" y2="72" stroke="#1565C0" stroke-width="2"/>
+      <line x1="230" y1="58" x2="240" y2="72" stroke="#1565C0" stroke-width="2"/>
+
+      <!-- Strzałka h_max -->
+      <line x1="330" y1="64" x2="330" y2="455" stroke="#1565C0" stroke-width="1.3"
+            stroke-dasharray="3,3" stroke-opacity="0.45"/>
+      <polygon points="324,72 330,54 336,72" fill="#1565C0" opacity="0.5" stroke="none"/>
+      <polygon points="324,447 330,465 336,447" fill="#1565C0" opacity="0.5" stroke="none"/>
+      <text x="344" y="260" fill="#1565C0" font-size="11" font-weight="700"
+            font-family="'Segoe UI',Roboto,sans-serif"
+            transform="rotate(90 344 260)" text-anchor="middle" dominant-baseline="middle">h_max</text>
+
+
+    </svg>
+
+    <!-- Panel inputów — po prawej -->
+    <div class="inputs-panel">
+      <div v-if="selectedZones.size === 0" class="no-sel">
+        <q-icon name="touch_app" size="16px" class="q-mr-xs"/>
+        Kliknij strefę na diagramie, podaj h<sub>i</sub> (m) i udział cykli cc<sub>i</sub>&nbsp;(%). Suma cc = 100%.
       </div>
-
-      <!-- ── 2. Klikalne strefy wysokości (siatka 1×5) ── -->
-      <div class="col-auto grid-col">
-        <svg viewBox="0 0 260 240" xmlns="http://www.w3.org/2000/svg"
-             style="width:100%;max-width:260px;display:block;touch-action:manipulation">
-
-          <!-- Nagłówek górny -->
-          <rect x="0" y="0" width="260" height="40" fill="#1b5e20"/>
-          <text x="130" y="15" font-size="9.5" fill="white" text-anchor="middle" font-weight="bold">Strefa</text>
-          <text x="130" y="31" font-size="9"   fill="white" text-anchor="middle">h_pod / h_max [%]</text>
-
-          <!-- 5 stref (idx=0 → Strefa 5, H 80-100%, GÓRA) -->
-          <template v-for="(z, idx) in ZONES" :key="z.i">
-            <!-- Etykieta wiersza (dark green) -->
-            <rect x="0" :y="40 + idx*40" width="130" height="40" fill="#1b5e20"/>
-            <text x="65" :y="40 + idx*40 + 15" font-size="10" fill="white" text-anchor="middle" font-weight="bold">
-              Strefa {{ z.i }}
-            </text>
-            <text x="65" :y="40 + idx*40 + 30" font-size="8" fill="white" text-anchor="middle">
-              {{ z.range }}
-            </text>
-            <!-- Klikalna komórka -->
-            <rect
-              x="130" :y="40 + idx*40" width="130" height="40"
-              :fill="isSelected(z.i) ? '#2e7d32' : '#ffffff'"
-              stroke="#4caf50" stroke-width="0.7"
-              rx="1" style="cursor:pointer"
-              @click="toggleZone(z.i)"
-            />
-            <text
-              v-if="isSelected(z.i)"
-              x="195" :y="40 + idx*40 + 26"
-              font-size="17" font-weight="bold" text-anchor="middle" fill="white"
-              style="pointer-events:none;user-select:none"
-            >{{ z.i }}</text>
-          </template>
-
-          <!-- Obramowanie -->
-          <rect x="0" y="0" width="260" height="240" fill="none" stroke="#1b5e20" stroke-width="1.4"/>
-        </svg>
-      </div>
-
-      <!-- ── 3. Tabela inputów (prawa kolumna) ── -->
-      <div class="col inputs-col">
-        <div v-if="selectedZones.size === 0" class="text-caption text-grey-5 q-pa-md text-center">
-          ← Zaznacz strefę na schemacie
+      <template v-else>
+        <div class="it-head">
+          <span class="it-c-no">Nr</span>
+          <span class="it-c-range">Zakres</span>
+          <span class="it-c-h">h<sub>i</sub> [m]</span>
+          <span class="it-c-cc">cc<sub>i</sub> [%]</span>
+          <span class="it-c-del"></span>
         </div>
-        <template v-else>
-          <div v-for="zi in sortedSelected" :key="zi" class="z-block">
-            <div class="z-header">Strefa {{ zi }} — {{ ZONES.find(z => z.i === zi).range }}</div>
-            <div class="z-row">
-              <div class="z-label">Typowa wysokość h<sub>{{ zi }}</sub> (m):</div>
-              <div class="z-input">
-                <q-input
-                  :model-value="getNum('h_' + zi)"
-                  @update:model-value="v => setNum('h_' + zi, v)"
-                  type="number" dense outlined hide-bottom-space
-                  :min="0" step="0.1"
-                  input-style="text-align:right"
-                />
-              </div>
-            </div>
-            <div class="z-row">
-              <div class="z-label">Udział cykli cc<sub>{{ zi }}</sub> (%):</div>
-              <div class="z-input">
-                <q-input
-                  :model-value="getNum('cc_' + zi)"
-                  @update:model-value="v => setNum('cc_' + zi, v)"
-                  type="number" dense outlined hide-bottom-space
-                  :min="0" :max="100" step="1"
-                  input-style="text-align:right"
-                  :color="ccSumOk ? 'positive' : 'warning'"
-                  suffix="%"
-                />
-              </div>
-              <div class="z-action">
-                <q-btn flat round dense icon="close" color="negative" size="xs" @click="removeZone(zi)" />
-              </div>
-            </div>
-          </div>
-
-          <div class="q-mt-sm">
-            <q-chip size="sm" :color="ccSumOk ? 'positive' : 'warning'" text-color="white" dense icon="functions">
-              Σ cc = {{ ccSum }}% <span class="q-ml-xs opacity-80">(wymagane 100%)</span>
-            </q-chip>
-          </div>
-        </template>
-      </div>
-
+        <div v-for="zi in sortedSelected" :key="zi" class="it-row">
+          <span class="it-c-no">
+            <span class="zone-dot">{{ zi }}</span>
+          </span>
+          <span class="it-c-range">{{ ZONES.find(z => z.i === zi)?.range }}</span>
+          <span class="it-c-h">
+            <q-input
+              :model-value="getNum('h_' + zi)"
+              @update:model-value="v => setNum('h_' + zi, v)"
+              type="number" dense outlined hide-bottom-space
+              :min="0" step="0.1" input-style="text-align:right;padding:0 4px"
+              class="it-inp"
+            />
+          </span>
+          <span class="it-c-cc">
+            <q-input
+              :model-value="getNum('cc_' + zi)"
+              @update:model-value="v => setNum('cc_' + zi, v)"
+              type="number" dense outlined hide-bottom-space
+              :min="0" :max="100" step="1" input-style="text-align:right;padding:0 4px"
+              :color="ccSumOk ? 'positive' : 'warning'"
+              class="it-inp"
+            />
+          </span>
+          <span class="it-c-del">
+            <q-btn flat round dense icon="close" color="negative" size="xs"
+                   @click="removeZone(zi)"/>
+          </span>
+        </div>
+        <div class="it-foot">
+          <q-chip dense :color="ccSumOk ? 'positive' : 'warning'"
+                  text-color="white" icon="functions" size="sm">
+            Σ cc = {{ ccSum }}%
+          </q-chip>
+          <span v-if="!ccSumOk && ccRemaining > 0" class="remain-hint">
+            pozostało {{ ccRemaining }}%
+            <q-btn flat dense size="xs" color="primary" no-caps
+                   label="dopełnij →" @click="fillRemaining"/>
+          </span>
+          <span v-else-if="!ccSumOk && ccRemaining < 0" class="remain-hint warn">
+            przekroczono o {{ -ccRemaining }}%
+          </span>
+        </div>
+      </template>
     </div>
+
+    </div><!-- /schem-body -->
   </div>
 </template>
 
@@ -153,11 +199,8 @@
 import { ref, computed, watch } from 'vue'
 
 const props = defineProps({ data: { type: Object, required: true } })
-
-// `d` to ten sam obiekt co formData w rodzicu — mutacja wewnętrznych kluczy jest celowa
 const d = props.data
 
-// Strefy: idx=0 → Strefa 5 (GÓRA, H 80-100%), idx=4 → Strefa 1 (DÓŁ, H 0-20%)
 const ZONES = [
   { i: 5, range: '80–100% h_max' },
   { i: 4, range: '60–80% h_max' },
@@ -165,6 +208,25 @@ const ZONES = [
   { i: 2, range: '20–40% h_max' },
   { i: 1, range: '0–20% h_max' },
 ]
+
+const ZONE_FILLS_UNSEL = [
+  'rgba(21,101,192,0.12)',
+  'rgba(21,101,192,0.08)',
+  'rgba(21,101,192,0.05)',
+  'rgba(21,101,192,0.03)',
+  'rgba(21,101,192,0.01)',
+]
+const ZONE_FILLS_SEL = [
+  'rgba(21,101,192,0.28)',
+  'rgba(21,101,192,0.23)',
+  'rgba(21,101,192,0.18)',
+  'rgba(21,101,192,0.14)',
+  'rgba(21,101,192,0.10)',
+]
+
+function zoneBgFill(zoneI, idx) {
+  return isSelected(zoneI) ? ZONE_FILLS_SEL[idx] : ZONE_FILLS_UNSEL[idx]
+}
 
 function getNum(key) {
   const v = d[key]
@@ -184,7 +246,6 @@ function clearNum(key) {
 
 const selectedZones = ref(new Set())
 
-// Przywróć zaznaczenie przy wczytaniu zapisanego wyniku
 watch(() => props.data, (val) => {
   if (!val) return
   const s = new Set()
@@ -213,7 +274,6 @@ function removeZone(i) {
   clearNum(`cc_${i}`)
 }
 
-// Wyświetlaj od najwyższej strefy do najniższej
 const sortedSelected = computed(() => [...selectedZones.value].sort((a, b) => b - a))
 
 const ccSum = computed(() => {
@@ -222,62 +282,148 @@ const ccSum = computed(() => {
   return Math.round(s * 10) / 10
 })
 const ccSumOk = computed(() => ccSum.value === 100)
+const ccRemaining = computed(() => Math.round((100 - ccSum.value) * 10) / 10)
+
+function fillRemaining() {
+  // Dopełnij ostatnią wybraną strefę do 100%
+  const last = sortedSelected.value[sortedSelected.value.length - 1]
+  if (last == null || ccRemaining.value <= 0) return
+  const cur = Number(getNum(`cc_${last}`) ?? 0)
+  setNum(`cc_${last}`, Math.min(100, cur + ccRemaining.value))
+}
 </script>
 
 <style scoped>
-.schem-wrap {
-  border: 1px solid rgba(0,0,0,.09);
-  border-radius: 8px;
+.schem-hdr-wrap {
+  border: 1px solid rgba(21,101,192,0.18);
+  border-radius: 10px;
   padding: 12px;
-  background: #fff;
 }
-.body--dark .schem-wrap { background: #1e2530; border-color: rgba(255,255,255,.1); }
+.body--dark .schem-hdr-wrap { border-color: rgba(144,202,249,0.22); }
 
-.ref-col   { min-width: 100px; max-width: 130px; }
-.grid-col  { min-width: 200px; max-width: 260px; }
-.inputs-col { min-width: 240px; }
-
-/* Blok jednej strefy w tabeli inputów */
-.z-block {
-  border: 1px solid #4caf50;
-  border-radius: 4px;
-  margin-bottom: 8px;
-  overflow: hidden;
+.schem-hd {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
 }
-.z-header {
-  background: #1b5e20;
-  color: white;
+.schem-title { font-size: 13px; font-weight: 700; color: #1565C0; }
+.body--dark .schem-title { color: #90caf9; }
+.schem-formula { font-size: 12px; color: #1976d2; font-style: italic; }
+.body--dark .schem-formula { color: #64b5f6; }
+.schem-hint { font-size: 11px; color: #78909c; margin-left: auto; }
+
+.svg-above-hint {
+  font-size: 11px;
+  font-style: italic;
+  color: #90caf9;
+  text-align: center;
+  margin-bottom: 4px;
+}
+
+.schem-body {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.schem-svg {
+  flex: 0 0 23%;
+  width: 23%;
+  display: block;
+}
+
+.inputs-panel {
+  flex: 0 0 auto;
+}
+
+.no-sel {
+  font-size: 12px;
+  color: #90a4ae;
+  font-style: italic;
+  padding: 12px 0;
+}
+
+.it-head, .it-row {
+  display: grid;
+  grid-template-columns: 38px auto 72px 72px 28px;
+  align-items: center;
+  gap: 0;
+}
+.it-head {
+  background: rgba(21,101,192,0.08);
+  padding: 5px 6px;
   font-size: 11px;
   font-weight: 700;
-  padding: 4px 10px;
+  color: #1565C0;
+  border-radius: 6px 6px 0 0;
+  border: 1px solid rgba(21,101,192,0.18);
+  border-bottom: none;
 }
-.z-row {
-  display: flex;
-  align-items: center;
-  border-top: 1px solid #e8f5e9;
-}
-.z-label {
-  flex: 1;
-  background: #e8f5e9;
-  color: #1b5e20;
-  font-size: 11px;
-  font-weight: 600;
-  padding: 5px 10px;
-  border-right: 1px solid #4caf50;
-}
-.body--dark .z-label { background: #1a3a1a; color: #a5d6a7; }
-.z-input {
-  width: 90px;
+.body--dark .it-head { background: rgba(21,101,192,0.2); color: #90caf9; border-color: rgba(144,202,249,0.2); }
+.it-head span { padding: 0 3px; }
+.it-c-h, .it-c-cc, .it-c-del { text-align: center; }
+
+.it-row {
+  border: 1px solid rgba(21,101,192,0.12);
+  border-top: none;
   padding: 3px 6px;
-  background: #fff;
 }
-.body--dark .z-input { background: #263238; }
-.z-action {
-  width: 36px;
-  display: flex;
+.it-row:last-of-type { border-radius: 0 0 6px 6px; }
+.it-row:nth-child(odd) { background: rgba(21,101,192,0.025); }
+.body--dark .it-row { border-color: rgba(144,202,249,0.15); }
+.body--dark .it-row:nth-child(odd) { background: rgba(21,101,192,0.08); }
+
+.zone-dot {
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: #fff;
+  width: 26px; height: 26px;
+  background: #1565C0;
+  color: #fff;
+  border-radius: 50%;
+  font-size: 12px;
+  font-weight: 800;
 }
-.body--dark .z-action { background: #263238; }
+
+.it-c-range {
+  font-size: 10px;
+  color: #546e7a;
+  padding: 0 4px;
+}
+.body--dark .it-c-range { color: #90a4ae; }
+
+.it-c-h, .it-c-cc { padding: 2px 3px; }
+.it-inp { width: 100%; }
+
+.it-c-del {
+  display: flex;
+  justify-content: center;
+}
+
+.it-foot {
+  padding: 6px 4px 2px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.remain-hint {
+  font-size: 11px;
+  color: #ef6c00;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+.remain-hint.warn { color: #c62828; }
+
+.no-sel {
+  font-size: 11px;
+  color: #78909c;
+  font-style: italic;
+  padding: 8px 0;
+  line-height: 1.5;
+}
 </style>
