@@ -232,10 +232,10 @@
             <q-banner
               v-if="!paypalConfigured"
               dense
-              class="bg-amber-1 rounded-borders q-mb-sm"
+              class="bg-warning text-white rounded-borders q-mb-sm shadow-2"
             >
               <template v-slot:avatar>
-                <q-icon name="warning" color="warning" />
+                <q-icon name="warning" color="white" />
               </template>
               PayPal wymaga ustawienia <strong>PAYPAL_CLIENT_ID</strong> w konfiguracji aplikacji.
             </q-banner>
@@ -336,7 +336,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, nextTick } from 'vue'
+import { ref, computed, onMounted, nextTick } from 'vue'
 import { useQuasar } from 'quasar'
 import { api } from 'boot/axios'
 import { useUserStore } from 'stores/user-store'
@@ -362,14 +362,9 @@ const fixedPackages = [
 
 // ─── PayPal ────────────────────────────────────────────────────────────────
 
-/**
- * Sandbox Client ID — zastąp wartością z:
- *   https://developer.paypal.com → My Apps → sandbox app → Client ID
- * Client ID jest publiczny (nie jest sekretem).
- */
-const PAYPAL_CLIENT_ID = 'SANDBOX_CLIENT_ID_TUTAJ'
-
-const paypalConfigured = PAYPAL_CLIENT_ID !== 'SANDBOX_CLIENT_ID_TUTAJ'
+const paypalClientId = ref('')
+const isSandbox      = ref(true)
+const paypalConfigured = computed(() => !!paypalClientId.value && paypalClientId.value !== 'SANDBOX_CLIENT_ID_TUTAJ')
 
 const customPoints  = ref(200)
 const customPkg     = ref({ key: 'custom', pts: 200, price: 200 })
@@ -392,14 +387,15 @@ const selectPackage = (pkg) => {
 const loadPaypalSdk = () => new Promise((resolve, reject) => {
   if (window.paypal) { resolve(); return }
   const script = document.createElement('script')
-  script.src = `https://www.paypal.com/sdk/js?client-id=${PAYPAL_CLIENT_ID}&currency=PLN`
+  // Dynamiczne ID pobrane z backendu
+  script.src = `https://www.paypal.com/sdk/js?client-id=${paypalClientId.value}&currency=PLN`
   script.onload  = resolve
   script.onerror = () => reject(new Error('Nie udało się pobrać SDK PayPal. Sprawdź połączenie lub Client ID.'))
   document.head.appendChild(script)
 })
 
 const initPaypal = async () => {
-  if (!paypalConfigured) return
+  if (!paypalConfigured.value) return
   paypalLoading.value = true
   paypalError.value   = ''
 
@@ -457,8 +453,19 @@ const initPaypal = async () => {
   }
 }
 
+const fetchPaypalConfig = async () => {
+  try {
+    const res = await api.get('/billing/public-config/')
+    paypalClientId.value = res.data.paypal_client_id
+    isSandbox.value      = res.data.is_sandbox
+    if (userStore.isLoggedIn) initPaypal()
+  } catch (e) {
+    console.error('Błąd pobierania konfiguracji PayPal:', e)
+  }
+}
+
 onMounted(() => {
-  if (userStore.isLoggedIn) initPaypal()
+  fetchPaypalConfig()
 })
 </script>
 

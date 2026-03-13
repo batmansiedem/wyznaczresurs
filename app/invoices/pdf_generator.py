@@ -38,7 +38,8 @@ def generate_invoice_pdf(invoice) -> bytes:
         fontSize=9, textColor=colors.white, fontName='DejaVuSans-Bold')
 
     # 1. Nagłówek (Numer faktury i daty)
-    story.append(Paragraph(f"FAKTURA NR {invoice.invoice_number}", title_style))
+    title_text = f"FAKTURA PROFORMA NR {invoice.invoice_number}" if invoice.is_proforma else f"FAKTURA NR {invoice.invoice_number}"
+    story.append(Paragraph(title_text, title_style))
     
     header_data = [
         [Paragraph("Data wystawienia:", label_style), Paragraph("Miejsce wystawienia:", label_style)],
@@ -49,18 +50,30 @@ def generate_invoice_pdf(invoice) -> bytes:
     story.append(header_table)
     story.append(Spacer(1, 0.5*cm))
 
-    # 2. Sprzedawca i Nabywca
+    # 2. Sprzedawca, Nabywca, Odbiorca (Pionowo)
     sides_data = [
-        [Paragraph("SPRZEDAWCA", label_style), Paragraph("NABYWCA", label_style)],
-        [
-            Paragraph("<b>wyznaczresurs.com Sp. z o.o.</b><br/>ul. Przykładowa 123<br/>00-001 Warszawa<br/>NIP: 1234567890", value_style),
-            Paragraph(f"<b>{invoice.buyer_name}</b><br/>{invoice.buyer_address.replace(',', '<br/>')}<br/>NIP: {invoice.buyer_nip}", value_style)
-        ]
+        [Paragraph("SPRZEDAWCA", label_style)],
+        [Paragraph("<b>wyznaczresurs.com Sp. z o.o.</b><br/>ul. Przykładowa 123, 00-001 Warszawa<br/>NIP: 1234567890", value_style)],
+        [Spacer(1, 0.3*cm)],
+        [Paragraph("NABYWCA", label_style)],
+        [Paragraph(f"<b>{invoice.buyer_name}</b><br/>{invoice.buyer_address.replace(',', '<br/>')}<br/>NIP: {invoice.buyer_nip}", value_style)]
     ]
-    sides_table = Table(sides_data, colWidths=[9*cm, 8*cm])
-    sides_table.setStyle(TableStyle([('VALIGN', (0,0), (-1,-1), 'TOP'), ('LEFTPADDING', (0,0), (-1,-1), 0)]))
+    
+    if invoice.recipient_name:
+        sides_data.extend([
+            [Spacer(1, 0.3*cm)],
+            [Paragraph("ODBIORCA", label_style)],
+            [Paragraph(f"<b>{invoice.recipient_name}</b><br/>{invoice.recipient_address.replace(',', '<br/>')}", value_style)]
+        ])
+    
+    sides_table = Table(sides_data, colWidths=[17*cm])
+    sides_table.setStyle(TableStyle([
+        ('VALIGN', (0,0), (-1,-1), 'TOP'),
+        ('LEFTPADDING', (0,0), (-1,-1), 0),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 0),
+    ]))
     story.append(sides_table)
-    story.append(Spacer(1, 1*cm))
+    story.append(Spacer(1, 0.5*cm))
 
     # 3. Pozycje na fakturze
     items_data = [
@@ -69,17 +82,17 @@ def generate_invoice_pdf(invoice) -> bytes:
          Paragraph("VAT", table_header_style), Paragraph("Brutto", table_header_style)]
     ]
     
-    # Tylko jedna pozycja - doładowanie punktów
+    # Pozycja z nazwy usługi w modelu
     items_data.append([
         "1", 
-        f"Doładowanie punktów premium (+{invoice.points_added} pkt)", 
+        Paragraph(invoice.service_name, value_style), 
         "1 szt.", 
         f"{invoice.net_amount} PLN", 
         "23%", 
         f"{invoice.gross_amount} PLN"
     ])
 
-    items_table = Table(items_data, colWidths=[1*cm, 8*cm, 2*cm, 2*cm, 2*cm, 3*cm])
+    items_table = Table(items_data, colWidths=[1*cm, 6*cm, 2*cm, 2.5*cm, 2*cm, 3.5*cm])
     items_table.setStyle(TableStyle([
         ('BACKGROUND', (0,0), (-1,0), PRIMARY),
         ('GRID', (0,0), (-1,-1), 0.5, colors.grey),
@@ -99,7 +112,7 @@ def generate_invoice_pdf(invoice) -> bytes:
         ["", "Stawka", "Netto", "VAT", "Brutto"],
         ["RAZEM", "23%", f"{invoice.net_amount} PLN", f"{invoice.vat_amount} PLN", f"{invoice.gross_amount} PLN"]
     ]
-    summary_table = Table(summary_data, colWidths=[9*cm, 2*cm, 2*cm, 2*cm, 3*cm])
+    summary_table = Table(summary_data, colWidths=[7*cm, 2*cm, 2.5*cm, 2.5*cm, 3*cm])
     summary_table.setStyle(TableStyle([
         ('GRID', (1,0), (-1,-1), 0.5, colors.grey),
         ('ALIGN', (1,0), (-1,-1), 'CENTER'),
@@ -108,7 +121,13 @@ def generate_invoice_pdf(invoice) -> bytes:
         ('BACKGROUND', (1,0), (-1,0), colors.whitesmoke),
     ]))
     story.append(summary_table)
-    story.append(Spacer(1, 1*cm))
+    story.append(Spacer(1, 0.5*cm))
+
+    # Warunki płatności
+    terms_map = dict(invoice.PAYMENT_TERM_CHOICES)
+    term_label = terms_map.get(invoice.payment_terms, invoice.payment_terms)
+    story.append(Paragraph(f"<b>Sposób i termin płatności:</b> {term_label}", value_style))
+    story.append(Spacer(1, 0.5*cm))
 
     # 5. KSeF info
     if invoice.ksef_reference_number:

@@ -21,11 +21,18 @@ class CreateInvoiceSerializer(serializers.Serializer):
     user_id = serializers.IntegerField()
     net_amount = serializers.DecimalField(max_digits=10, decimal_places=2)
     points_to_add = serializers.IntegerField()
+    is_proforma = serializers.BooleanField(default=False)
+    service_name = serializers.CharField(max_length=255, required=False)
     
     # In a real app, these might come from the User model by default
-    buyer_name = serializers.CharField(max_length=255, required=False)
-    buyer_nip = serializers.CharField(max_length=20, required=False)
-    buyer_address = serializers.CharField(style={'base_template': 'textarea.html'}, required=False)
+    buyer_name = serializers.CharField(max_length=255, required=False, allow_blank=True)
+    buyer_nip = serializers.CharField(max_length=20, required=False, allow_blank=True)
+    buyer_address = serializers.CharField(style={'base_template': 'textarea.html'}, required=False, allow_blank=True)
+
+    recipient_name = serializers.CharField(max_length=255, required=False, allow_blank=True)
+    recipient_address = serializers.CharField(style={'base_template': 'textarea.html'}, required=False, allow_blank=True)
+    
+    payment_terms = serializers.ChoiceField(choices=Invoice.PAYMENT_TERM_CHOICES, default="paid")
 
     def validate_user_id(self, value):
         if not User.objects.filter(id=value).exists():

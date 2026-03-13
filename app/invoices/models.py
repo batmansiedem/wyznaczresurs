@@ -33,6 +33,8 @@ class Invoice(models.Model):
     vat_amount   = models.DecimalField(max_digits=10, decimal_places=2, verbose_name=_("Kwota VAT"))
     gross_amount = models.DecimalField(max_digits=10, decimal_places=2, verbose_name=_("Kwota brutto"))
 
+    is_proforma = models.BooleanField(default=False, verbose_name=_("Proforma"))
+    service_name = models.CharField(max_length=255, default="Wyznaczenie resursu UTB GTU_12", verbose_name=_("Nazwa usługi"))
     points_added = models.IntegerField(default=0, verbose_name=_("Dodane punkty"))
 
     # KSeF
@@ -50,6 +52,23 @@ class Invoice(models.Model):
     buyer_name    = models.CharField(max_length=255, verbose_name=_("Nazwa nabywcy"))
     buyer_nip     = models.CharField(max_length=20, blank=True, verbose_name=_("NIP nabywcy"))
     buyer_address = models.TextField(blank=True, verbose_name=_("Adres nabywcy"))
+
+    # Odbiorca (opcjonalnie, np. dla samorządów)
+    recipient_name    = models.CharField(max_length=255, blank=True, verbose_name=_("Nazwa odbiorcy"))
+    recipient_address = models.TextField(blank=True, verbose_name=_("Adres odbiorcy"))
+
+    # Warunki płatności
+    PAYMENT_TERM_CHOICES = (
+        ("paid", "Zapłacono przelewem"),
+        ("7_days", "Do zapłaty w ciągu 7 dni"),
+        ("14_days", "Do zapłaty w ciągu 14 dni"),
+    )
+    payment_terms = models.CharField(
+        max_length=20, 
+        choices=PAYMENT_TERM_CHOICES, 
+        default="paid", 
+        verbose_name=_("Warunki płatności")
+    )
 
     class Meta:
         verbose_name = _("Faktura")

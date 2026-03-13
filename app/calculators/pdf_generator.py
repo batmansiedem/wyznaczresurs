@@ -1,11 +1,12 @@
 """Generowanie raportów PDF dla wyników obliczeń resursu UTB."""
 
 import os
+from PIL import Image as PILImage
 from django.conf import settings
 from reportlab.lib.pagesizes import A4
 from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle, Spacer
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle, Spacer, Image
 from reportlab.lib.units import cm
 from reportlab.graphics.shapes import Drawing
 from reportlab.graphics.charts.piecharts import Pie
@@ -40,7 +41,7 @@ OUTPUT_LABELS = {
 }
 
 
-def _make_pie_chart(utilization: float) -> Drawing:
+def _make_pie_chart(utilization: float, theme_color) -> Drawing:
     """Tworzy kołowy wykres wykorzystania resursu (ReportLab Drawing)."""
     used = max(0.0, min(100.0, float(utilization)))
     remaining = max(0.0, 100.0 - used)
@@ -52,7 +53,7 @@ def _make_pie_chart(utilization: float) -> Drawing:
     pie.height = 100
     pie.data = [used, remaining]
     pie.labels = [f'{used:.1f}%', f'{remaining:.1f}%']
-    pie.slices[0].fillColor = PRIMARY
+    pie.slices[0].fillColor = theme_color
     pie.slices[1].fillColor = colors.HexColor('#B0BEC5')
     pie.slices[0].strokeColor = colors.white
     pie.slices[1].strokeColor = colors.white
@@ -75,6 +76,10 @@ def _format_input_value(val):
 
 def generate_result_pdf(result, calculator_name: str) -> bytes:
     """Generuje raport PDF dla wyniku obliczeń resursu."""
+    # Ustalenie koloru motywu (domyślnie PRIMARY, lub własny użytkownika)
+    user_color = result.user.theme_color if hasattr(result.user, 'theme_color') else '#1565C0'
+    THEME_COLOR = colors.HexColor(user_color)
+
     buffer = BytesIO()
     doc = SimpleDocTemplate(buffer, pagesize=A4,
         rightMargin=2*cm, leftMargin=2*cm, topMargin=2*cm, bottomMargin=2*cm)
@@ -82,18 +87,80 @@ def generate_result_pdf(result, calculator_name: str) -> bytes:
     styles = getSampleStyleSheet()
 
     title_style = ParagraphStyle('Title', parent=styles['Heading1'],
-        textColor=PRIMARY, fontSize=16, spaceAfter=6, fontName='DejaVuSans-Bold')
+        textColor=THEME_COLOR, fontSize=16, spaceAfter=6, fontName='DejaVuSans-Bold')
     sub_style = ParagraphStyle('Sub', parent=styles['Normal'],
         textColor=colors.grey, fontSize=9, spaceAfter=12, fontName='DejaVuSans')
     section_style = ParagraphStyle('Section', parent=styles['Heading3'],
-        textColor=PRIMARY, spaceBefore=8, spaceAfter=4, fontName='DejaVuSans-Bold')
+        textColor=THEME_COLOR, spaceBefore=8, spaceAfter=4, fontName='DejaVuSans-Bold')
     note_style = ParagraphStyle('Note', parent=styles['Normal'],
         fontSize=9, textColor=colors.grey, fontName='DejaVuSans')
     footer_style = ParagraphStyle('Footer', parent=styles['Normal'],
         fontSize=7, textColor=colors.grey, fontName='DejaVuSans')
 
-    # Nagłówek
-    story.append(Paragraph("Raport wyznaczenia resursu UTB", title_style))
+    # Nagłówek (Tytuł + opcjonalne Logo użytkownika)
+    header_title = Paragraph("Raport wyznaczenia resursu UTB", title_style)
+    
+    # 1. Przygotowanie logotypu (jeśli istnieje)
+    logo_img = None
+    if result.user.has_custom_logo and result.user.custom_logo:
+        try:
+            logo_path = result.user.custom_logo.path
+            # Pobierz wymiary przy użyciu PIL dla precyzji
+            with PILImage.open(logo_path) as pil_img:
+                orig_w, orig_h = pil_img.size
+
+            aspect = orig_h / float(orig_w)
+
+            # Wymiary z ustawień użytkownika (mm -> cm)
+            max_w_user = (result.user.logo_width / 10.0) * cm
+            max_h_user = (result.user.logo_height / 10.0) * cm
+
+            # Obliczanie wymiarów przy zachowaniu proporcji
+            w = max_w_user
+            h = w * aspect
+
+            if h > max_h_user:
+                h = max_h_user
+                w = h / aspect
+
+            logo_img = Image(logo_path, width=w, height=h)
+        except Exception:
+            pass
+
+    # 2. Rozmieszczenie logotypu wg ustawień
+    pos = result.user.logo_position
+    
+    if logo_img:
+        if pos == 'top_center':
+            # Logo na samej górze, wyśrodkowane
+            logo_table = Table([[logo_img]], colWidths=[17*cm])
+            logo_table.setStyle(TableStyle([('ALIGN', (0,0), (0,0), 'CENTER')]))
+            story.append(logo_table)
+            story.append(Spacer(1, 0.5*cm))
+            story.append(header_title)
+        elif pos == 'left':
+            # Logo po lewej, tytuł po prawej
+            # Szerokość loga + margines
+            w_cm = result.user.logo_width / 10.0
+            header_table = Table([[logo_img, header_title]], colWidths=[(w_cm + 0.5)*cm, (16.5 - w_cm)*cm])
+            header_table.setStyle(TableStyle([
+                ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
+                ('ALIGN', (0,0), (0,0), 'LEFT'),
+            ]))
+            story.append(header_table)
+        else: # default: right
+            # Tytuł po lewej, logo po prawej (stary układ)
+            w_cm = result.user.logo_width / 10.0
+            header_table = Table([[header_title, logo_img]], colWidths=[(16.5 - w_cm)*cm, (w_cm + 0.5)*cm])
+            header_table.setStyle(TableStyle([
+                ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
+                ('ALIGN', (1,0), (1,0), 'RIGHT'),
+            ]))
+            story.append(header_table)
+    else:
+        # Brak loga — tylko tytuł
+        story.append(header_title)
+
     story.append(Paragraph(
         f"Kalkulator: <b>{calculator_name}</b> &nbsp;|&nbsp; "
         f"Data: {result.created_at.strftime('%d.%m.%Y %H:%M')} &nbsp;|&nbsp; "
@@ -101,7 +168,7 @@ def generate_result_pdf(result, calculator_name: str) -> bytes:
 
     # Niebieski pasek separatora
     story.append(Table([['']], colWidths=[17*cm],
-        style=TableStyle([('LINEABOVE', (0,0),(0,0), 3, PRIMARY),
+        style=TableStyle([('LINEABOVE', (0,0),(0,0), 3, THEME_COLOR),
                           ('LINEBELOW', (0,0),(0,0), 0.5, colors.lightgrey)])))
     story.append(Spacer(1, 0.4*cm))
 
@@ -117,7 +184,7 @@ def generate_result_pdf(result, calculator_name: str) -> bytes:
 
     input_table = Table(input_rows, colWidths=[9*cm, 8*cm])
     input_table.setStyle(TableStyle([
-        ('BACKGROUND', (0,0), (-1,0), PRIMARY),
+        ('BACKGROUND', (0,0), (-1,0), THEME_COLOR),
         ('TEXTCOLOR', (0,0), (-1,0), colors.white),
         ('FONTNAME', (0,0), (-1,0), 'DejaVuSans-Bold'),
         ('FONTNAME', (0,1), (-1,-1), 'DejaVuSans'),
@@ -149,7 +216,7 @@ def generate_result_pdf(result, calculator_name: str) -> bytes:
     result_table = Table(result_rows, colWidths=[11*cm, 6*cm])
 
     table_style = [
-        ('BACKGROUND', (0,0), (-1,0), PRIMARY),
+        ('BACKGROUND', (0,0), (-1,0), THEME_COLOR),
         ('TEXTCOLOR', (0,0), (-1,0), colors.white),
         ('FONTNAME', (0,0), (-1,0), 'DejaVuSans-Bold'),
         ('FONTNAME', (0,1), (-1,-1), 'DejaVuSans'),
@@ -186,7 +253,7 @@ def generate_result_pdf(result, calculator_name: str) -> bytes:
     # Wykres kołowy obok tabeli wyników
     if resurs_val is not None:
         try:
-            pie = _make_pie_chart(float(resurs_val))
+            pie = _make_pie_chart(float(resurs_val), THEME_COLOR)
             layout = Table([[result_table, pie]], colWidths=[11*cm, 5.5*cm])
             layout.setStyle(TableStyle([
                 ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),

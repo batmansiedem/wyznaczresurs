@@ -81,9 +81,9 @@
           </q-item-section>
         </q-item>
 
-        <q-item clickable to="/invoices" active-class="text-primary bg-primary-opacity" class="rounded-borders">
-          <q-item-section avatar><q-icon name="receipt_long" /></q-item-section>
-          <q-item-section class="text-weight-medium">Faktury</q-item-section>
+        <q-item clickable to="/account" active-class="text-primary bg-primary-opacity" class="rounded-borders">
+          <q-item-section avatar><q-icon name="person" /></q-item-section>
+          <q-item-section class="text-weight-medium">Moje dane</q-item-section>
         </q-item>
 
         <q-item clickable to="/pricing" active-class="text-primary bg-primary-opacity" class="rounded-borders">
@@ -103,15 +103,11 @@
 
         <q-separator class="q-my-md" />
 
-        <q-item clickable to="/contact" active-class="text-primary bg-primary-opacity" class="rounded-borders">
-          <q-item-section avatar><q-icon name="email" /></q-item-section>
-          <q-item-section class="text-weight-medium">Kontakt</q-item-section>
-        </q-item>
-
         <q-item clickable to="/help" active-class="text-primary bg-primary-opacity" class="rounded-borders">
           <q-item-section avatar><q-icon name="help_outline" /></q-item-section>
           <q-item-section class="text-weight-medium">Pomoc / FAQ</q-item-section>
         </q-item>
+
 
         <!-- Linki prawne na dole -->
         <div class="q-mt-xl q-mb-sm q-px-sm legal-footer">

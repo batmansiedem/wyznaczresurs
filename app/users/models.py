@@ -59,6 +59,21 @@ class CustomUser(AbstractUser):
     city = models.CharField(max_length=100, blank=True)
     premium = models.IntegerField(default=0, verbose_name="Punkty Premium")
 
+    # Własne logo na obliczeniach (wykupowane za 200 pkt)
+    has_custom_logo = models.BooleanField(default=False, verbose_name="Ma wykupione własne logo")
+    custom_logo = models.ImageField(upload_to='user_logos/', blank=True, null=True, verbose_name="Plik loga")
+    
+    # Ustawienia wyświetlania loga
+    LOGO_POSITIONS = (
+        ('right', 'Po prawej stronie tytułu'),
+        ('left', 'Po lewej stronie tytułu'),
+        ('top_center', 'Wyśrodkowane na górze (nad tytułem)'),
+    )
+    logo_width = models.IntegerField(default=45, verbose_name="Szerokość loga (mm)")
+    logo_height = models.IntegerField(default=20, verbose_name="Wysokość loga (mm)")
+    logo_position = models.CharField(max_length=20, choices=LOGO_POSITIONS, default='right', verbose_name="Pozycja loga")
+    theme_color = models.CharField(max_length=7, default='#1565C0', verbose_name="Kolor motywu (HEX)")
+
     def __str__(self):
         # Ładne wyświetlanie w panelu admina
         if self.is_company:

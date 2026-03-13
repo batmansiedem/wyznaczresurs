@@ -17,8 +17,11 @@ class CustomUserDetailsSerializer(UserDetailsSerializer):
             'is_company', 'company_name', 'nip',
             'address_line', 'postal_code', 'city', 'premium',
             'is_staff', 'is_superuser',
+            'has_custom_logo', 'custom_logo',
+            'logo_width', 'logo_height', 'logo_position',
+            'theme_color',
         )
-        read_only_fields = ('pk', 'email', 'premium', 'is_staff', 'is_superuser')
+        read_only_fields = ('pk', 'email', 'premium', 'is_staff', 'is_superuser', 'has_custom_logo')
 
 class CustomRegisterSerializer(RegisterSerializer):
     # 1. ZABEZPIECZENIE: Wyłączamy username w serializerze

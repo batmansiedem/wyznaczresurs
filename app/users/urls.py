@@ -1,6 +1,9 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import set_csrf_token, AdminUserViewSet, AdminAllTransactionsView
+from .views import (
+    set_csrf_token, AdminUserViewSet, AdminAllTransactionsView,
+    PurchaseCustomLogoView, UserLogoUploadView, LogoPreviewView
+)
 
 router = DefaultRouter()
 router.register(r'admin/users', AdminUserViewSet, basename='admin-users')
@@ -8,6 +11,11 @@ router.register(r'admin/users', AdminUserViewSet, basename='admin-users')
 urlpatterns = [
     # Endpoint pomocniczy — CSRF
     path('csrf/', set_csrf_token, name='csrf'),
+
+    # Własne logo
+    path('purchase-custom-logo/', PurchaseCustomLogoView.as_view(), name='purchase-custom-logo'),
+    path('upload-logo/', UserLogoUploadView.as_view(), name='upload-logo'),
+    path('logo-preview/', LogoPreviewView.as_view(), name='logo-preview'),
 
     # Gotowe widoki biblioteki (Login, Logout, Password Reset, Refresh)
     path('', include('dj_rest_auth.urls')),

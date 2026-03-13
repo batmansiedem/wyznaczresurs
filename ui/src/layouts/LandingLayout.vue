@@ -75,9 +75,7 @@
         <div class="col-6 col-md-2">
           <div class="text-subtitle1 text-weight-bold q-mb-md">Usługi</div>
           <q-list dense dark>
-            <q-item clickable to="/calculators"><q-item-section class="text-grey-5">Kalkulatory</q-item-section></q-item>
             <q-item clickable to="/pricing"><q-item-section class="text-grey-5">Cennik</q-item-section></q-item>
-            <q-item clickable to="/specialists"><q-item-section class="text-grey-5">Specjaliści</q-item-section></q-item>
           </q-list>
         </div>
         <div class="col-6 col-md-2">

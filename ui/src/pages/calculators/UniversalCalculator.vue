@@ -197,7 +197,7 @@
               <q-card-section v-else class="q-pa-lg">
                 <div class="row q-col-gutter-sm q-mb-lg no-print items-center">
                   <div class="text-subtitle2 text-weight-bold q-mr-md">Akcje:</div>
-                  <q-btn icon="picture_as_pdf" label="Pobierz PDF" color="primary" unelevated no-caps :loading="downloadingPdf" @click="downloadPdf" />
+                  <q-btn icon="picture_as_pdf" label="Pobierz PDF" color="primary" unelevated no-caps :loading="downloadingPdf" @click="downloadPdf()" />
                   <q-btn icon="print" label="Drukuj" color="grey-7" flat no-caps @click="printPage" />
                 </div>
 
@@ -722,7 +722,32 @@ async function downloadPdf(id = null) {
   } finally { downloadingPdf.value = false }
 }
 
-onMounted(async () => { await fetchUnits(); loading.value = false })
+async function loadSingleResult(resultId) {
+  try {
+    const res = await api.get(`/calculators/results/${resultId}/`)
+    const result = res.data
+    // Wczytaj dane do formularza
+    formData.value = JSON.parse(JSON.stringify(result.input_data))
+    // Jeśli odblokowany, pokaż wyniki od razu
+    if (!result.is_locked) {
+      calculatedResult.value = result
+      await nextTick()
+      resultsRef.value?.scrollIntoView({ behavior: 'smooth' })
+    } else {
+      calculatedResult.value = { ...result, result_id: result.id }
+    }
+  } catch (error) {
+    console.error('Błąd wczytywania wyniku:', error)
+  }
+}
+
+onMounted(async () => {
+  await fetchUnits()
+  if (route.query.result_id) {
+    await loadSingleResult(route.query.result_id)
+  }
+  loading.value = false
+})
 </script>
 
 <style scoped>

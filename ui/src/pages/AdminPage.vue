@@ -214,8 +214,6 @@
                 <div class="row q-gutter-sm justify-end">
                   <q-btn icon="print" label="Drukuj" color="secondary" unelevated no-caps
                     class="rounded-borders" :disable="!invoiceReport" @click="printInvoiceReport" />
-                  <q-btn icon="add" label="Nowa faktura" color="primary" unelevated no-caps
-                    class="rounded-borders shadow-2" @click="newInvoiceDialog = true" />
                 </div>
               </div>
             </div>
@@ -290,13 +288,34 @@
         <div v-if="statsLoading" class="text-center q-pa-xl">
           <q-spinner size="3rem" color="primary" />
         </div>
-        <div v-else-if="stats" class="row q-col-gutter-md">
-          <div v-for="s in statsCards" :key="s.label" class="col-6 col-md-3">
-            <q-card flat bordered class="rounded-borders text-center q-pa-md">
-              <q-icon :name="s.icon" size="2.5rem" :color="s.color" />
-              <div class="text-h4 text-weight-bold q-mt-sm" :class="`text-${s.color}`">{{ s.value }}</div>
-              <div class="text-caption text-grey-6 q-mt-xs">{{ s.label }}</div>
-            </q-card>
+        <div v-else-if="stats">
+          <!-- Liczniki główne -->
+          <div class="row q-col-gutter-md q-mb-lg">
+            <div v-for="s in statsCards" :key="s.label" class="col-6 col-md-3">
+              <q-card flat bordered class="rounded-borders text-center q-pa-md hover-primary">
+                <q-icon :name="s.icon" size="2.5rem" :color="s.color" />
+                <div class="text-h4 text-weight-bold q-mt-sm" :class="`text-${s.color}`">{{ s.value }}</div>
+                <div class="text-caption text-grey-6 q-mt-xs">{{ s.label }}</div>
+              </q-card>
+            </div>
+          </div>
+
+          <!-- Wykresy trendów -->
+          <div class="row q-col-gutter-lg">
+            <!-- Wykres aktywności -->
+            <div class="col-12 col-md-6">
+              <q-card flat bordered class="rounded-borders q-pa-md shadow-1">
+                <div class="text-subtitle1 text-weight-bold q-mb-md">Wzrost i aktywność (ostatnie 6 m-cy)</div>
+                <VueApexCharts height="300" type="line" :options="trendChartOptions" :series="activitySeries" />
+              </q-card>
+            </div>
+            <!-- Wykres przychodów -->
+            <div class="col-12 col-md-6">
+              <q-card flat bordered class="rounded-borders q-pa-md shadow-1">
+                <div class="text-subtitle1 text-weight-bold q-mb-md">Przychody brutto (ostatnie 6 m-cy)</div>
+                <VueApexCharts height="300" type="bar" :options="revenueChartOptions" :series="revenueSeries" />
+              </q-card>
+            </div>
           </div>
         </div>
       </q-tab-panel>
@@ -409,9 +428,8 @@
                     <q-td :props="props">
                       <div class="text-weight-medium">{{ props.row.calculator_definition?.name || props.row.calculator_name }}</div>
                       <div class="text-caption text-grey-6 q-gutter-x-sm">
-                        <span v-if="getField(props.row, 'nr_fabryczny')">Nr fab: <b>{{ getField(props.row, 'nr_fabryczny') }}</b></span>
-                        <span v-if="getField(props.row, 'typ')">Typ: {{ getField(props.row, 'typ') }}</span>
-                        <span v-if="getField(props.row, 'nr_udt')">Nr UDT: {{ getField(props.row, 'nr_udt') }}</span>
+                        <span><b>{{ getField(props.row, 'nr_fabryczny') || '—' }}</b> / {{ getField(props.row, 'typ') || '—' }}</span>
+                        <span v-if="getField(props.row, 'nr_udt')" class="q-ml-md">Nr UDT: {{ getField(props.row, 'nr_udt') }}</span>
                       </div>
                     </q-td>
                   </template>
@@ -449,6 +467,11 @@
 
             <!-- ---- FAKTURY ---- -->
             <q-tab-panel name="faktury" class="q-pa-none">
+              <div class="row justify-end q-mb-md">
+                <q-btn icon="add" label="Wystaw nową fakturę" color="primary" unelevated no-caps
+                  class="rounded-borders shadow-2" @click="openNewInvoiceForUser" />
+              </div>
+
               <div v-if="userInvLoading" class="text-center q-pa-lg"><q-spinner color="primary" /></div>
               <q-card v-else flat bordered class="rounded-borders">
                 <q-table
@@ -462,7 +485,10 @@
                 >
                   <template #body-cell-ksef_status="props">
                     <q-td :props="props" class="text-center">
-                      <q-chip :color="ksefColor(props.row.ksef_status)" text-color="white" size="sm" dense class="text-weight-bold">
+                      <q-chip v-if="props.row.is_proforma" color="grey-7" text-color="white" size="sm" dense class="text-weight-bold">
+                        PROFORMA
+                      </q-chip>
+                      <q-chip v-else :color="ksefColor(props.row.ksef_status)" text-color="white" size="sm" dense class="text-weight-bold">
                         {{ ksefLabel(props.row.ksef_status) }}
                       </q-chip>
                     </q-td>
@@ -473,7 +499,11 @@
                     </q-td>
                   </template>
                   <template #body-cell-inv_actions="props">
-                    <q-td :props="props" class="text-center">
+                    <q-td :props="props" class="text-center" style="white-space:nowrap">
+                      <q-btn v-if="props.row.is_proforma" flat round dense icon="check_circle" color="positive" size="sm"
+                        @click="approveProforma(props.row)">
+                        <q-tooltip>Zatwierdź i wyślij do KSeF</q-tooltip>
+                      </q-btn>
                       <q-btn flat round dense icon="picture_as_pdf" color="primary" size="sm"
                         @click="downloadInvoicePdf(props.row)">
                         <q-tooltip>Pobierz PDF</q-tooltip>
@@ -494,6 +524,105 @@
             </q-tab-panel>
 
           </q-tab-panels>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
+
+    <!-- ===================== DIALOG NOWEJ FAKTURY ===================== -->
+    <q-dialog v-model="newInvoiceDialog" persistent>
+      <q-card style="min-width:500px" class="rounded-borders">
+        <q-card-section class="bg-primary text-white row items-center q-pb-none">
+          <div class="text-h6 text-weight-bold">Wystaw nową fakturę</div>
+          <q-space />
+          <q-btn icon="close" flat round dense v-close-popup />
+        </q-card-section>
+
+        <q-card-section class="q-pt-md" v-if="selectedUser">
+          <div class="q-mb-md bg-blue-1 q-pa-sm rounded-borders text-primary row items-center">
+            <q-icon name="person" class="q-mr-sm" />
+            Dla: <b>{{ selectedUser.display_name }}</b> ({{ selectedUser.email }})
+          </div>
+
+          <q-form @submit="submitInvoice">
+            <div class="row q-col-gutter-md">
+              <div class="col-12">
+                <q-input v-model="invoice.service_name" label="Nazwa usługi na fakturze *" outlined dense
+                  :rules="[v => !!v || 'Wymagane']" />
+              </div>
+              <div class="col-12 col-sm-6">
+                <q-input v-model.number="invoice.net_amount" label="Kwota netto (PLN) *" outlined dense
+                  type="number" min="0" step="0.01" suffix="PLN"
+                  :rules="[v => v > 0 || 'Kwota musi być większa od 0']" />
+              </div>
+              <div class="col-12 col-sm-6">
+                <q-input v-model.number="invoice.points_to_add" label="Punkty do dodania *" outlined dense
+                  type="number" min="0" suffix="pkt"
+                  :rules="[v => v >= 0 || 'Nie może być ujemne']" />
+              </div>
+              <div class="col-12">
+                <q-select v-model="invoice.payment_terms" label="Warunki płatności" outlined dense
+                  :options="[
+                    { label: 'Zapłacono przelewem', value: 'paid' },
+                    { label: 'Do zapłaty w ciągu 7 dni', value: '7_days' },
+                    { label: 'Do zapłaty w ciągu 14 dni', value: '14_days' }
+                  ]"
+                  emit-value map-options />
+              </div>
+
+              <!-- OPCJA SAMORZĄD -->
+              <div class="col-12">
+                <q-expansion-item
+                  v-model="invoice.use_custom_buyer"
+                  icon="business"
+                  label="Inny Nabywca / Odbiorca (np. Samorząd)"
+                  header-class="bg-grey-2 rounded-borders"
+                  class="rounded-borders border-grey shadow-1"
+                >
+                  <q-card>
+                    <q-card-section class="q-gutter-y-sm">
+                      <div class="text-subtitle2 text-primary">Dane Nabywcy (Płatnik)</div>
+                      <q-input v-model="invoice.buyer_name" label="Nazwa Nabywcy" outlined dense />
+                      <q-input v-model="invoice.buyer_nip" label="NIP Nabywcy" outlined dense />
+                      <q-input v-model="invoice.buyer_address" label="Adres Nabywcy" outlined dense type="textarea" rows="2" />
+                      
+                      <q-separator class="q-my-md" />
+                      
+                      <div class="text-subtitle2 text-secondary">Dane Odbiorcy (opcjonalnie)</div>
+                      <q-input v-model="invoice.recipient_name" label="Nazwa Odbiorcy" outlined dense placeholder="Pozostaw puste, jeśli brak" />
+                      <q-input v-model="invoice.recipient_address" label="Adres Odbiorcy" outlined dense type="textarea" rows="2" />
+                    </q-card-section>
+                  </q-card>
+                </q-expansion-item>
+              </div>
+
+              <div class="col-12">
+                <q-checkbox v-model="invoice.is_proforma" label="Wystaw jako PROFORMA (nie wysyłaj do KSeF)" color="primary" />
+              </div>
+              <div class="col-12" v-if="invoice.net_amount">
+                <div class="bg-grey-2 q-pa-sm rounded-borders text-caption text-grey-8">
+                  <div class="row justify-between">
+                    <span>VAT (23%):</span><span>{{ formatAmount(invoice.net_amount * 0.23) }} PLN</span>
+                  </div>
+                  <div class="row justify-between text-weight-bold text-dark q-mt-xs">
+                    <span>Łącznie brutto:</span><span>{{ formatAmount(invoice.net_amount * 1.23) }} PLN</span>
+                  </div>
+                </div>
+              </div>
+              <div class="col-12">
+                <q-banner dense :class="invoice.is_proforma ? 'bg-grey-2 text-grey-8' : 'bg-blue-1 text-primary'" class="rounded-borders">
+                  <template #avatar><q-icon :name="invoice.is_proforma ? 'description' : 'info'" :color="invoice.is_proforma ? 'grey-7' : 'primary'" /></template>
+                  <span v-if="invoice.is_proforma">Dokument <strong>Proforma</strong> nie jest wysyłany do KSeF ani nie doładowuje punktów do czasu zatwierdzenia.</span>
+                  <span v-else>Faktura zostanie wysłana do środowiska testowego <strong>KSeF</strong>.</span>
+                </q-banner>
+              </div>
+              <div class="col-12">
+                <div class="row justify-end q-gutter-sm">
+                  <q-btn flat label="Anuluj" v-close-popup />
+                  <q-btn label="Wystaw i doładuj punkty" color="primary" unelevated type="submit" :loading="invoiceLoading" />
+                </div>
+              </div>
+            </div>
+          </q-form>
         </q-card-section>
       </q-card>
     </q-dialog>
@@ -709,68 +838,6 @@
       </q-card>
     </q-dialog>
 
-    <!-- ===================== DIALOG NOWEJ FAKTURY ===================== -->
-    <q-dialog v-model="newInvoiceDialog" persistent>
-      <q-card style="min-width:500px" class="rounded-borders">
-        <q-card-section class="bg-primary text-white row items-center q-pb-none">
-          <div class="text-h6 text-weight-bold">Wystaw nową fakturę</div>
-          <q-space />
-          <q-btn icon="close" flat round dense v-close-popup />
-        </q-card-section>
-
-        <q-card-section class="q-pt-md">
-          <q-form @submit="submitInvoice">
-            <div class="row q-col-gutter-md">
-              <div class="col-12">
-                <q-select v-model="invoice.user_id" :options="invoiceUserOptions"
-                  option-value="id" option-label="label" emit-value map-options
-                  outlined dense use-input input-debounce="300"
-                  label="Użytkownik *" hint="Wpisz email lub nazwę, aby wyszukać"
-                  :rules="[v => !!v || 'Wymagane']"
-                  @filter="filterInvoiceUsers">
-                  <template #no-option>
-                    <q-item><q-item-section class="text-grey">Brak wyników</q-item-section></q-item>
-                  </template>
-                </q-select>
-              </div>
-              <div class="col-12 col-sm-6">
-                <q-input v-model.number="invoice.net_amount" label="Kwota netto (PLN) *" outlined dense
-                  type="number" min="0" step="0.01" suffix="PLN"
-                  :rules="[v => v > 0 || 'Kwota musi być większa od 0']" />
-              </div>
-              <div class="col-12 col-sm-6">
-                <q-input v-model.number="invoice.points_to_add" label="Punkty do dodania *" outlined dense
-                  type="number" min="0" suffix="pkt"
-                  :rules="[v => v >= 0 || 'Nie może być ujemne']" />
-              </div>
-              <div class="col-12" v-if="invoice.net_amount">
-                <div class="bg-grey-2 q-pa-sm rounded-borders text-caption text-grey-8">
-                  <div class="row justify-between">
-                    <span>VAT (23%):</span><span>{{ formatAmount(invoice.net_amount * 0.23) }} PLN</span>
-                  </div>
-                  <div class="row justify-between text-weight-bold text-dark q-mt-xs">
-                    <span>Łącznie brutto:</span><span>{{ formatAmount(invoice.net_amount * 1.23) }} PLN</span>
-                  </div>
-                </div>
-              </div>
-              <div class="col-12">
-                <q-banner dense class="bg-blue-1 text-primary rounded-borders">
-                  <template #avatar><q-icon name="info" color="primary" /></template>
-                  Faktura zostanie wysłana do środowiska testowego <strong>KSeF</strong>.
-                </q-banner>
-              </div>
-              <div class="col-12">
-                <div class="row justify-end q-gutter-sm">
-                  <q-btn flat label="Anuluj" v-close-popup />
-                  <q-btn label="Wystaw i doładuj punkty" color="primary" unelevated type="submit" :loading="invoiceLoading" />
-                </div>
-              </div>
-            </div>
-          </q-form>
-        </q-card-section>
-      </q-card>
-    </q-dialog>
-
     <!-- ===================== DIALOG: PRZEKAŻ MOJE OBLICZENIE ===================== -->
     <q-dialog v-model="pickMyResultDialog" persistent style="max-width:800px">
       <q-card style="width:760px;max-width:95vw" class="rounded-borders">
@@ -849,6 +916,7 @@
 import { ref, computed, onMounted, watch } from 'vue'
 import { api } from 'boot/axios'
 import { useQuasar } from 'quasar'
+import VueApexCharts from 'vue3-apexcharts'
 
 const $q = useQuasar()
 
@@ -872,6 +940,39 @@ const statsCards = computed(() => {
     { icon: 'trending_up', color: 'teal', value: formatAmount(stats.value.revenue_this_month) + ' zł', label: 'Przychód w tym miesiącu' },
   ]
 })
+
+// Logika wykresów trendów
+const activitySeries = computed(() => {
+  if (!stats.value?.monthly_trends) return []
+  return [
+    { name: 'Nowi użytkownicy', data: stats.value.monthly_trends.map(t => t.users) },
+    { name: 'Obliczenia', data: stats.value.monthly_trends.map(t => t.transactions) }
+  ]
+})
+
+const revenueSeries = computed(() => {
+  if (!stats.value?.monthly_trends) return []
+  return [
+    { name: 'Przychód (PLN)', data: stats.value.monthly_trends.map(t => t.revenue) }
+  ]
+})
+
+const trendChartOptions = computed(() => ({
+  chart: { toolbar: { show: false }, zoom: { enabled: false } },
+  stroke: { curve: 'smooth', width: 3 },
+  xaxis: { categories: stats.value?.monthly_trends?.map(t => t.label) || [] },
+  colors: ['#1565C0', '#F57C00'],
+  markers: { size: 4 }
+}))
+
+const revenueChartOptions = computed(() => ({
+  chart: { toolbar: { show: false } },
+  stroke: { curve: 'area', width: 2 },
+  fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.4, opacityTo: 0.1 } },
+  xaxis: { categories: stats.value?.monthly_trends?.map(t => t.label) || [] },
+  colors: ['#2E7D32'],
+  yaxis: { labels: { formatter: (v) => formatAmount(v) + ' zł' } }
+}))
 
 async function fetchStats() {
   statsLoading.value = true
@@ -972,6 +1073,97 @@ async function fetchUserTransactions() {
 // ---- Faktury użytkownika ----
 const userInvoices = ref([])
 const userInvLoading = ref(false)
+const newInvoiceDialog = ref(false)
+const invoiceLoading = ref(false)
+const invoice = ref({
+  net_amount: null,
+  points_to_add: 100,
+  is_proforma: false,
+  service_name: 'Wyznaczenie resursu UTB GTU_12',
+  use_custom_buyer: false,
+  buyer_name: '',
+  buyer_nip: '',
+  buyer_address: '',
+  recipient_name: '',
+  recipient_address: '',
+  payment_terms: 'paid'
+})
+
+function openNewInvoiceForUser() {
+  const buyer = selectedUser.value
+  const name = buyer.company_name || `${buyer.first_name || ''} ${buyer.last_name || ''}`.trim() || buyer.email
+  const addr = [buyer.address_line, `${buyer.postal_code || ''} ${buyer.city || ''}`.trim()].filter(Boolean).join(', ')
+
+  invoice.value = {
+    net_amount: null,
+    points_to_add: 100,
+    is_proforma: false,
+    service_name: 'Wyznaczenie resursu UTB GTU_12',
+    use_custom_buyer: false,
+    buyer_name: name,
+    buyer_nip: buyer.nip || '',
+    buyer_address: addr,
+    recipient_name: '',
+    recipient_address: '',
+    payment_terms: 'paid'
+  }
+  newInvoiceDialog.value = true
+}
+
+async function submitInvoice() {
+  if (!selectedUser.value) return
+  invoiceLoading.value = true
+  try {
+    const payload = {
+      user_id: selectedUser.value.id,
+      net_amount: invoice.value.net_amount,
+      points_to_add: invoice.value.points_to_add,
+      is_proforma: invoice.value.is_proforma,
+      service_name: invoice.value.service_name,
+      buyer_name: invoice.value.buyer_name,
+      buyer_nip: invoice.value.buyer_nip,
+      buyer_address: invoice.value.buyer_address,
+      recipient_name: invoice.value.recipient_name,
+      recipient_address: invoice.value.recipient_address,
+      payment_terms: invoice.value.payment_terms
+    }
+    await api.post('/billing/invoices/', payload)
+    $q.notify({ type: 'positive', message: invoice.value.is_proforma ? 'Wystawiono proformę.' : 'Faktura wystawiona.', position: 'top' })
+    newInvoiceDialog.value = false
+    fetchUserInvoices()
+    
+    if (!invoice.value.is_proforma) {
+      const { data } = await api.get(`/auth/admin/users/${selectedUser.value.id}/`)
+      selectedUser.value = data
+      const idx = users.value.findIndex(u => u.id === data.id)
+      if (idx !== -1) users.value[idx] = data
+    }
+  } catch {
+    $q.notify({ type: 'negative', message: 'Błąd wystawiania faktury.', position: 'top' })
+  } finally {
+    invoiceLoading.value = false
+  }
+}
+
+async function approveProforma(inv) {
+  $q.dialog({
+    title: 'Zatwierdź proformę',
+    message: `Czy na pewno chcesz przekształcić proformę <b>${inv.invoice_number}</b> w fakturę ostateczną i wysłać ją do KSeF?`,
+    html: true,
+    cancel: true,
+    persistent: true
+  }).onOk(async () => {
+    try {
+      await api.post(`/billing/invoices/${inv.id}/approve_proforma/`)
+      $q.notify({ type: 'positive', message: 'Faktura zatwierdzona i wysłana do KSeF.', position: 'top' })
+      fetchUserInvoices()
+      const { data } = await api.get(`/auth/admin/users/${selectedUser.value.id}/`)
+      selectedUser.value = data
+    } catch {
+      $q.notify({ type: 'negative', message: 'Błąd podczas zatwierdzania faktury.', position: 'top' })
+    }
+  })
+}
 
 const userInvColumns = [
   { name: 'invoice_number', label: 'Nr faktury', field: 'invoice_number', align: 'left', sortable: true },
@@ -1002,10 +1194,8 @@ function openTxDetail(tx) {
   txDetailOpen.value = true
 }
 
-// Pola identyfikacyjne urządzenia
 const IDENT_KEYS = ['nr_fabryczny', 'typ', 'nr_udt', 'producent', 'marka', 'model', 'nazwa_urzadzenia']
 
-// COMPUTED — zamiast v-for + v-if na tym samym elemencie (ESLint vue/no-use-v-if-with-v-for)
 const filteredIdentFields = computed(() => {
   if (!selectedTx.value) return []
   return IDENT_KEYS
@@ -1013,7 +1203,6 @@ const filteredIdentFields = computed(() => {
     .filter(item => item.value !== '' && item.value !== null && item.value !== undefined)
 })
 
-// Dane wejściowe bez pól identyfikacyjnych (żeby nie dublować)
 const nonIdentInputData = computed(() => {
   if (!selectedTx.value?.input_data) return {}
   return Object.fromEntries(
@@ -1025,7 +1214,7 @@ function getField(tx, key) {
   const d = tx.input_data || {}
   const val = d[key]
   if (val === null || val === undefined) return ''
-  if (typeof val === 'object' && 'value' in val) return String(val.value)
+  if (typeof val === 'object' && val !== null && 'value' in val) return String(val.value)
   return String(val)
 }
 
@@ -1116,7 +1305,6 @@ async function copyText(text) {
   }
 }
 
-// ---- Zapisywanie obliczeń na konta ----
 const copyLoading = ref(false)
 const copyToUserLoading = ref(false)
 
@@ -1148,7 +1336,6 @@ async function copyResultToUser(userId) {
   }
 }
 
-// ---- Przekazywanie własnych obliczeń do użytkownika ----
 const pickMyResultDialog = ref(false)
 const myResults = ref([])
 const myResultsLoading = ref(false)
@@ -1201,7 +1388,6 @@ async function confirmPickMyResult() {
   }
 }
 
-// ---- Tworzenie użytkownika ----
 const createUserDialog = ref(false)
 const createLoading = ref(false)
 const newUser = ref(emptyNewUser())
@@ -1229,7 +1415,6 @@ async function submitCreateUser() {
   }
 }
 
-// ---- Edycja użytkownika ----
 const editUserDialog = ref(false)
 const editLoading = ref(false)
 const editUser = ref(null)
@@ -1264,7 +1449,6 @@ async function submitEditUser() {
   }
 }
 
-// ---- Usuwanie użytkownika ----
 function confirmDeleteUser(user) {
   $q.dialog({
     title: 'Usuń użytkownika',
@@ -1279,11 +1463,12 @@ function confirmDeleteUser(user) {
       $q.notify({ type: 'positive', message: 'Użytkownik usunięty.', position: 'top' })
       users.value = users.value.filter(u => u.id !== user.id)
       if (userDetailOpen.value && selectedUser.value?.id === user.id) userDetailOpen.value = false
-    } catch { /* interceptor */ }
+    } catch {
+      // Błąd jest obsługiwany przez interceptor axios
+    }
   })
 }
 
-// ---- Wszystkie transakcje ----
 const allTransactions = ref([])
 const txLoading = ref(false)
 const txSearch = ref('')
@@ -1292,7 +1477,7 @@ const txMonth = ref(null)
 
 const txColumns = [
   { name: 'calculator_name', label: 'Kalkulator', field: 'calculator_name', align: 'left', sortable: true },
-  { name: 'device_info', label: 'Nr fab / Typ', field: 'nr_fabryczny', align: 'left' },
+  { name: 'device_info', label: 'Nr fab / Typ', align: 'left', field: row => `${row.nr_fabryczny || '—'} / ${row.typ || '—'}` },
   { name: 'user_display', label: 'Użytkownik', field: 'user_display', align: 'left' },
   { name: 'is_locked', label: 'Status', field: 'is_locked', align: 'center' },
   { name: 'created_at', label: 'Data', field: 'created_at', align: 'left', sortable: true },
@@ -1326,17 +1511,11 @@ async function fetchAllTransactions() {
   }
 }
 
-// ---- Faktury / Zestawienia ----
 const invoiceReport = ref(null)
 const invLoading = ref(false)
 const invYear = ref(null)
 const invMonth = ref(null)
 const invStatus = ref(null)
-const newInvoiceDialog = ref(false)
-const invoiceLoading = ref(false)
-const invoice = ref({ user_id: null, net_amount: null, points_to_add: 100 })
-const allUsersForInvoice = ref([])
-const invoiceUserOptions = ref([])
 
 const ksefStatusOptions = [
   { label: 'Wszystkie', value: null },
@@ -1370,37 +1549,6 @@ async function fetchInvoiceReport() {
     invoiceReport.value = data
   } finally {
     invLoading.value = false
-  }
-}
-
-function filterInvoiceUsers(val, update) {
-  update(() => {
-    const needle = val.toLowerCase()
-    invoiceUserOptions.value = allUsersForInvoice.value
-      .filter(u => u.label.toLowerCase().includes(needle))
-      .slice(0, 40)
-  })
-}
-
-async function fetchInvoiceUsers() {
-  const { data } = await api.get('/billing/admin/users/')
-  allUsersForInvoice.value = data.map(u => ({
-    id: u.id,
-    label: `${u.company_name || (u.first_name + ' ' + u.last_name).trim() || u.email} (${u.email})`,
-  }))
-  invoiceUserOptions.value = allUsersForInvoice.value.slice(0, 40)
-}
-
-async function submitInvoice() {
-  invoiceLoading.value = true
-  try {
-    await api.post('/billing/invoices/', invoice.value)
-    $q.notify({ type: 'positive', message: 'Faktura wystawiona.', position: 'top' })
-    newInvoiceDialog.value = false
-    invoice.value = { user_id: null, net_amount: null, points_to_add: 100 }
-    fetchInvoiceReport()
-  } finally {
-    invoiceLoading.value = false
   }
 }
 
@@ -1454,7 +1602,6 @@ function printInvoiceReport() {
   setTimeout(() => win.print(), 400)
 }
 
-// ---- Pomocnicze ----
 const currentYear = new Date().getFullYear()
 const yearOptions = Array.from({ length: 6 }, (_, i) => ({ label: String(currentYear - i), value: String(currentYear - i) }))
 const monthOptions = [
@@ -1481,13 +1628,11 @@ function ksefLabel(s) {
   return { accepted: 'Zaakceptowana', pending: 'Oczekująca', sent: 'Wysłana', rejected: 'Odrzucona', cancelled: 'Anulowana' }[s] || s
 }
 
-// ---- Inicjalizacja ----
 onMounted(() => {
   fetchUsers()
   fetchStats()
   fetchAllTransactions()
   fetchInvoiceReport()
-  fetchInvoiceUsers()
 })
 
 watch(mainTab, tab => {
@@ -1496,7 +1641,6 @@ watch(mainTab, tab => {
 </script>
 
 <style scoped>
-/* Chip identyfikacji urządzenia */
 .ident-chip {
   background: rgba(21, 101, 192, 0.06);
   border: 1px solid rgba(21, 101, 192, 0.15);
@@ -1504,8 +1648,6 @@ watch(mainTab, tab => {
   padding: 6px 10px;
   height: 100%;
 }
-
-/* Wiersze danych wejściowych / wynikowych */
 .data-row {
   display: flex;
   justify-content: space-between;
@@ -1528,7 +1670,6 @@ watch(mainTab, tab => {
 .data-row--highlight {
   background: rgba(21, 101, 192, 0.07);
 }
-
 .font-mono :deep(textarea) {
   font-family: monospace;
   font-size: 12px;

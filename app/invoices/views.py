@@ -34,6 +34,20 @@ def _buyer_data(user) -> dict:
     }
 
 
+from django.conf import settings
+from rest_framework.views import APIView
+from rest_framework.permissions import AllowAny
+
+class PublicConfigView(APIView):
+    """Eksponuje publiczne ustawienia (np. PayPal Client ID) dla frontendu."""
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        return Response({
+            'paypal_client_id': settings.PAYPAL_CLIENT_ID,
+            'is_sandbox': settings.PAYPAL_SANDBOX,
+        })
+
 class InvoiceViewSet(viewsets.ModelViewSet):
     queryset = Invoice.objects.all()
     serializer_class = InvoiceSerializer
@@ -52,7 +66,8 @@ class InvoiceViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=["get"])
     def download_pdf(self, request, pk=None):
         invoice = self.get_object()
-        if invoice.ksef_status != "accepted":
+        # Proformę można pobrać zawsze, fakturę ostateczną dopiero po akceptacji KSeF
+        if not invoice.is_proforma and invoice.ksef_status != "accepted":
             return Response(
                 {"detail": "PDF dostępny dopiero po akceptacji przez KSeF."},
                 status=status.HTTP_403_FORBIDDEN,
@@ -63,9 +78,33 @@ class InvoiceViewSet(viewsets.ModelViewSet):
         response["Content-Disposition"] = f'attachment; filename="{filename}"'
         return response
 
+    @action(detail=True, methods=["post"])
+    @transaction.atomic
+    def approve_proforma(self, request, pk=None):
+        """Konwertuje proformę na fakturę ostateczną i wysyła do KSeF."""
+        if not request.user.is_staff:
+            return Response({"detail": "Brak uprawnień."}, status=status.HTTP_403_FORBIDDEN)
+
+        invoice = self.get_object()
+        if not invoice.is_proforma:
+            return Response(
+                {"detail": "To nie jest faktura proforma."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        invoice.is_proforma = False
+        # Można tu zmienić numer faktury na FV z proformy PF, jeśli taka jest polityka
+        # Na razie zostawiamy ten sam lub generujemy nowy
+        invoice.save()
+
+        # Wysyłka do KSeF + doładowanie punktów
+        ksef_submit(invoice)
+
+        return Response(InvoiceSerializer(invoice).data)
+
     @transaction.atomic
     def create(self, request, *args, **kwargs):
-        """Ręczne wystawianie faktury przez admina (natychmiastowa akceptacja KSeF)."""
+        """Ręczne wystawianie faktury przez admina."""
         if not request.user.is_staff:
             return Response({"detail": "Brak uprawnień."}, status=status.HTTP_403_FORBIDDEN)
 
@@ -78,22 +117,34 @@ class InvoiceViewSet(viewsets.ModelViewSet):
         vat = (net * Decimal("0.23")).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
         gross = net + vat
 
+        is_pro = data.get("is_proforma", False)
+        prefix = "PF" if is_pro else "FV"
+        
+        now = datetime.datetime.now()
+        invoice_number = f"{prefix}/{now.year}/{now.month:02d}/{str(uuid.uuid4())[:8].upper()}"
+
         buyer = _buyer_data(target_user)
         invoice = Invoice.objects.create(
             user=target_user,
-            invoice_number=_invoice_number(),
+            invoice_number=invoice_number,
             net_amount=net,
             vat_amount=vat,
             gross_amount=gross,
+            is_proforma=is_pro,
+            service_name=data.get("service_name") or "Wyznaczenie resursu UTB GTU_12",
             points_added=data["points_to_add"],
             ksef_status="pending",
             buyer_name=data.get("buyer_name") or buyer["buyer_name"],
             buyer_nip=data.get("buyer_nip") or buyer["buyer_nip"],
             buyer_address=data.get("buyer_address") or buyer["buyer_address"],
+            recipient_name=data.get("recipient_name") or "",
+            recipient_address=data.get("recipient_address") or "",
+            payment_terms=data.get("payment_terms", "paid"),
         )
 
-        # Admin wystawia fakturę → automatyczna akceptacja KSeF + doładowanie punktów
-        ksef_submit(invoice)
+        # Jeśli to nie proforma → automatyczna akceptacja KSeF + doładowanie punktów
+        if not is_pro:
+            ksef_submit(invoice)
 
         return Response(InvoiceSerializer(invoice).data, status=status.HTTP_201_CREATED)
 
@@ -209,6 +260,7 @@ class PayPalCaptureOrderView(views.APIView):
             gross_amount=gross,
             points_added=paypal_order.points,
             ksef_status="pending",   # ← jeszcze nie zaakceptowana
+            payment_terms="paid",
             **buyer,
         )
 

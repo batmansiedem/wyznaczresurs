@@ -2,6 +2,16 @@
 
 // app global css in SCSS form
 
+$primary:   #1565C0;
+$gutter-massive: 64px;
+
+.q-gutter-x-massive {
+  margin-left: -$gutter-massive;
+  > * {
+    margin-left: $gutter-massive;
+  }
+}
+
 // =============================================
 // GLOBALNA TYPOGRAFIA I RESET
 // =============================================
@@ -368,7 +378,7 @@ body {
 }
 
 .body--dark .gnp-norm-mapping { border-top-color: rgba(255,255,255,0.05); }
-.body--dark .norm-item b { color: lighten($primary, 20%); }
+.body--dark .norm-item b { color: color.adjust($primary, $lightness: 20%); }
 
 .gnp-card-title {
   font-weight: 700;
@@ -451,12 +461,12 @@ body {
     &.is-positive {
       background: rgba($positive, 0.08);
       border-color: $positive;
-      color: darken($positive, 15%);
+      color: color.adjust($positive, $lightness: -15%);
     }
     &.is-negative {
       background: rgba($negative, 0.08);
       border-color: $negative;
-      color: darken($negative, 15%);
+      color: color.adjust($negative, $lightness: -15%);
     }
     &.is-neutral {
       background: rgba(0,0,0,0.05);
@@ -495,8 +505,8 @@ body {
     &:hover { background: rgba(255,255,255,0.06); }
     
     &.selected {
-      &.is-positive { color: lighten($positive, 10%); }
-      &.is-negative { color: lighten($negative, 10%); }
+      &.is-positive { color: color.adjust($positive, $lightness: 10%); }
+      &.is-negative { color: color.adjust($negative, $lightness: 10%); }
       &.is-neutral { color: #bdbdbd; background: rgba(255,255,255,0.08); }
     }
   }

@@ -4,19 +4,8 @@
       <div class="col calc-page-header" style="margin-bottom:0">
         <h1 class="text-h4 text-weight-bolder text-primary q-my-none">Faktury i rozliczenia</h1>
         <p class="text-subtitle1 text-grey-7 q-mb-none">
-          {{ isAdmin ? 'Zarządzanie fakturami wszystkich użytkowników i doładowywanie punktów.' : 'Twoja historia faktur i zakupionych punktów premium.' }}
+          {{ isAdmin ? 'Przegląd faktur wszystkich użytkowników.' : 'Twoja historia faktur i zakupionych punktów premium.' }}
         </p>
-      </div>
-      <div class="col-auto q-pl-md" v-if="isAdmin">
-        <q-btn
-          color="primary"
-          icon="add"
-          label="Wystaw fakturę"
-          unelevated
-          no-caps
-          class="rounded-borders q-px-md shadow-2"
-          @click="showInvoiceDialog = true"
-        />
       </div>
     </div>
 
@@ -37,13 +26,13 @@
         <template v-slot:body-cell-ksef_status="props">
           <q-td :props="props">
             <q-chip
-              :color="getStatusColor(props.value)"
+              :color="getStatusColor(props.row)"
               text-color="white"
               size="sm"
               dense
               class="text-weight-bold"
             >
-              {{ getStatusLabel(props.value) }}
+              {{ getStatusLabel(props.row) }}
             </q-chip>
           </q-td>
         </template>
@@ -63,13 +52,15 @@
             </q-btn>
             <q-btn
               flat round dense
-              :color="props.row.ksef_status === 'accepted' ? 'secondary' : 'grey-5'"
+              :color="(props.row.is_proforma || props.row.ksef_status === 'accepted') ? 'secondary' : 'grey-5'"
               icon="download"
-              :disable="props.row.ksef_status !== 'accepted'"
+              :disable="!props.row.is_proforma && props.row.ksef_status !== 'accepted'"
               @click="downloadInvoice(props.row)"
             >
               <q-tooltip>
-                {{ props.row.ksef_status === 'accepted' ? 'Pobierz PDF' : 'PDF dostępny po akceptacji KSeF' }}
+                <span v-if="props.row.is_proforma">Pobierz PDF Proforma</span>
+                <span v-else-if="props.row.ksef_status === 'accepted'">Pobierz PDF</span>
+                <span v-else>PDF dostępny po akceptacji KSeF</span>
               </q-tooltip>
             </q-btn>
           </q-td>
@@ -77,85 +68,7 @@
       </q-table>
     </q-card>
 
-    <!-- Dialog wystawiania faktury (ADMIN ONLY) -->
-    <q-dialog v-model="showInvoiceDialog" persistent>
-      <q-card style="min-width: 500px" class="rounded-borders">
-        <q-card-section class="bg-primary text-white row items-center q-pb-none">
-          <div class="text-h6 text-weight-bold">Wystaw nową fakturę</div>
-          <q-space />
-          <q-btn icon="close" flat round dense v-close-popup />
-        </q-card-section>
-
-        <q-card-section class="q-pt-md">
-          <q-form @submit="onSubmitInvoice">
-            <div class="row q-col-gutter-md">
-              <div class="col-12">
-                <q-select
-                  v-model="newInvoice.user"
-                  :options="userOptions"
-                  option-label="email"
-                  label="Wybierz użytkownika *"
-                  outlined dense use-input input-debounce="300"
-                  @filter="filterUsers"
-                  hint="Wpisz email, aby wyszukać"
-                  :rules="[val => !!val || 'Użytkownik jest wymagany']"
-                >
-                  <template v-slot:option="scope">
-                    <q-item v-bind="scope.itemProps">
-                      <q-item-section>
-                        <q-item-label>{{ scope.opt.email }}</q-item-label>
-                        <q-item-label caption>
-                          {{ scope.opt.is_company ? scope.opt.company_name : scope.opt.first_name + ' ' + scope.opt.last_name }}
-                        </q-item-label>
-                      </q-item-section>
-                      <q-item-section side>
-                        <q-chip size="xs" color="blue-1" text-color="primary">{{ scope.opt.premium }} pkt</q-chip>
-                      </q-item-section>
-                    </q-item>
-                  </template>
-                </q-select>
-              </div>
-              <div class="col-12 col-sm-6">
-                <q-input v-model.number="newInvoice.net_amount" type="number" label="Kwota netto (PLN) *"
-                  outlined dense step="0.01" suffix="PLN"
-                  :rules="[val => val > 0 || 'Kwota musi być większa od 0']" />
-              </div>
-              <div class="col-12 col-sm-6">
-                <q-input v-model.number="newInvoice.points_to_add" type="number" label="Punkty do doładowania *"
-                  outlined dense suffix="pkt"
-                  :rules="[val => val >= 0 || 'Punkty nie mogą być ujemne']" />
-              </div>
-              <div class="col-12">
-                <div class="bg-grey-2 q-pa-sm rounded-borders text-caption text-grey-8">
-                  <div class="row justify-between">
-                    <span>VAT (23%):</span>
-                    <span>{{ (newInvoice.net_amount * 0.23).toFixed(2) }} PLN</span>
-                  </div>
-                  <div class="row justify-between text-weight-bold text-dark q-mt-xs">
-                    <span>Łącznie brutto:</span>
-                    <span>{{ (newInvoice.net_amount * 1.23).toFixed(2) }} PLN</span>
-                  </div>
-                </div>
-              </div>
-              <div class="col-12">
-                <q-banner dense class="bg-blue-1 text-primary rounded-borders">
-                  <template v-slot:avatar><q-icon name="info" color="primary" /></template>
-                  Faktura zostanie automatycznie wysłana do środowiska testowego <strong>KSeF</strong>.
-                </q-banner>
-              </div>
-              <div class="col-12">
-                <div class="row justify-end q-gutter-sm">
-                  <q-btn label="Anuluj" flat v-close-popup />
-                  <q-btn label="Wystaw i doładuj punkty" color="primary" unelevated type="submit" :loading="submitting" />
-                </div>
-              </div>
-            </div>
-          </q-form>
-        </q-card-section>
-      </q-card>
-    </q-dialog>
-
-    <!-- Dialog podglądu (mock) -->
+    <!-- Dialog podglądu -->
     <q-dialog v-model="showDetailsDialog">
       <q-card v-if="selectedInvoice" style="min-width: 400px">
         <q-card-section class="bg-primary text-white">
@@ -163,7 +76,7 @@
         </q-card-section>
         <q-card-section class="q-pa-md">
           <q-list dense separator>
-            <q-item><q-item-section><q-item-label caption>Status KSeF</q-item-label><q-item-label>{{ getStatusLabel(selectedInvoice.ksef_status) }}</q-item-label></q-item-section></q-item>
+            <q-item><q-item-section><q-item-label caption>Status</q-item-label><q-item-label>{{ getStatusLabel(selectedInvoice) }}</q-item-label></q-item-section></q-item>
             <q-item><q-item-section><q-item-label caption>Numer KSeF</q-item-label><q-item-label class="text-mono">{{ selectedInvoice.ksef_reference_number }}</q-item-label></q-item-section></q-item>
             <q-item><q-item-section><q-item-label caption>Data wystawienia</q-item-label><q-item-label>{{ selectedInvoice.issue_date }}</q-item-label></q-item-section></q-item>
             <q-item><q-item-section><q-item-label caption>Nabywca</q-item-label><q-item-label>{{ selectedInvoice.buyer_name }} (NIP: {{ selectedInvoice.buyer_nip }})</q-item-label></q-item-section></q-item>
@@ -191,13 +104,8 @@ const isAdmin = computed(() => userStore.user?.is_staff || userStore.user?.is_su
 
 const invoices = ref([])
 const loading = ref(false)
-const submitting = ref(false)
-const showInvoiceDialog = ref(false)
 const showDetailsDialog = ref(false)
 const selectedInvoice = ref(null)
-
-const allUsers = ref([])
-const userOptions = ref([])
 
 const pagination = ref({
   sortBy: 'issue_date',
@@ -223,15 +131,6 @@ const columns = computed(() => {
   return base
 })
 
-const newInvoice = ref({
-  user: null,
-  net_amount: 100,
-  points_to_add: 100,
-  buyer_name: '',
-  buyer_nip: '',
-  buyer_address: ''
-})
-
 const fetchInvoices = async () => {
   loading.value = true
   try {
@@ -241,53 +140,6 @@ const fetchInvoices = async () => {
     $q.notify({ color: 'negative', message: 'Błąd podczas pobierania faktur' })
   } finally {
     loading.value = false
-  }
-}
-
-const fetchUsers = async () => {
-  if (!isAdmin.value) return
-  try {
-    const response = await api.get('/billing/admin/users/')
-    allUsers.value = response.data
-    userOptions.value = response.data
-  } catch (error) {
-    console.error('Błąd pobierania użytkowników', error)
-  }
-}
-
-const filterUsers = (val, update) => {
-  if (val === '') {
-    update(() => { userOptions.value = allUsers.value })
-    return
-  }
-  update(() => {
-    const needle = val.toLowerCase()
-    userOptions.value = allUsers.value.filter(v => v.email.toLowerCase().indexOf(needle) > -1)
-  })
-}
-
-const onSubmitInvoice = async () => {
-  submitting.value = true
-  try {
-    const payload = {
-      user_id: newInvoice.value.user.id,
-      net_amount: newInvoice.value.net_amount,
-      points_to_add: newInvoice.value.points_to_add
-    }
-    
-    await api.post('/billing/invoices/', payload)
-    $q.notify({ color: 'positive', message: 'Faktura wystawiona pomyślnie. Punkty dodane.', icon: 'check' })
-    showInvoiceDialog.value = false
-    fetchInvoices()
-    // Odśwież dane użytkownika (jeśli to admin doładowuje sam siebie, albo żeby zaktualizować state jeśli to możliwe)
-    if (newInvoice.value.user.id === userStore.user.id) {
-       userStore.fetchUser()
-    }
-  } catch (error) {
-    const detail = error.response?.data?.detail || 'Błąd podczas wystawiania faktury'
-    $q.notify({ color: 'negative', message: detail })
-  } finally {
-    submitting.value = false
   }
 }
 
@@ -314,7 +166,9 @@ const downloadInvoice = async (invoice) => {
   }
 }
 
-const getStatusColor = (status) => {
+const getStatusColor = (row) => {
+  if (row.is_proforma) return 'grey-7'
+  const status = row.ksef_status
   const map = {
     'accepted': 'positive',
     'pending': 'warning',
@@ -324,7 +178,9 @@ const getStatusColor = (status) => {
   return map[status] || 'grey'
 }
 
-const getStatusLabel = (status) => {
+const getStatusLabel = (row) => {
+  if (row.is_proforma) return 'PROFORMA'
+  const status = row.ksef_status
   const map = {
     'accepted': 'ZAAKCEPTOWANA',
     'pending': 'OCZEKUJĄCA',
@@ -336,7 +192,6 @@ const getStatusLabel = (status) => {
 
 onMounted(() => {
   fetchInvoices()
-  if (isAdmin.value) fetchUsers()
 })
 </script>
 
