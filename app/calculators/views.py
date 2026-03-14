@@ -179,11 +179,30 @@ class CalculatorResultViewSet(
         """Generuje raport PDF dla danego wyniku obliczeń."""
         from django.http import HttpResponse
         from .pdf_generator import generate_result_pdf
+        from users.models import UserLogo, UserSignature
+
         result = self.get_object()
         if result.is_locked:
             raise PermissionDenied("Odblokuj wyniki, aby pobrać PDF.")
+        
+        logo_id = request.query_params.get('logo_id')
+        logo_obj = None
+        if logo_id:
+            try:
+                logo_obj = UserLogo.objects.get(id=logo_id, user=request.user)
+            except UserLogo.DoesNotExist:
+                pass
+
+        signature_id = request.query_params.get('signature_id')
+        signature_obj = None
+        if signature_id:
+            try:
+                signature_obj = UserSignature.objects.get(id=signature_id, user=request.user)
+            except UserSignature.DoesNotExist:
+                pass
+        
         calculator_name = result.calculator_definition.name
-        pdf_bytes = generate_result_pdf(result, calculator_name)
+        pdf_bytes = generate_result_pdf(result, calculator_name, logo_obj=logo_obj, signature_obj=signature_obj)
         response = HttpResponse(pdf_bytes, content_type='application/pdf')
         slug = result.calculator_definition.slug
         response['Content-Disposition'] = f'attachment; filename="resurs_{slug}_{result.id}.pdf"'

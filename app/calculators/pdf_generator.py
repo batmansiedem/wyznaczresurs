@@ -18,7 +18,7 @@ from datetime import datetime
 PRIMARY = colors.HexColor('#1565C0')
 
 # Rejestracja czcionek wspierających polskie znaki
-FONT_PATH = os.path.join(settings.BASE_DIR, '..', 'public_html', 'fpdf', 'font', 'unifont')
+FONT_PATH = os.path.join(settings.BASE_DIR, 'core', 'fonts')
 pdfmetrics.registerFont(TTFont('DejaVuSans', os.path.join(FONT_PATH, 'DejaVuSans.ttf')))
 pdfmetrics.registerFont(TTFont('DejaVuSans-Bold', os.path.join(FONT_PATH, 'DejaVuSans-Bold.ttf')))
 
@@ -74,10 +74,14 @@ def _format_input_value(val):
     return str(val) if val is not None else '-'
 
 
-def generate_result_pdf(result, calculator_name: str) -> bytes:
+def generate_result_pdf(result, calculator_name: str, logo_obj=None, signature_obj=None) -> bytes:
     """Generuje raport PDF dla wyniku obliczeń resursu."""
-    # Ustalenie koloru motywu (domyślnie PRIMARY, lub własny użytkownika)
-    user_color = result.user.theme_color if hasattr(result.user, 'theme_color') else '#1565C0'
+    # Ustalenie koloru motywu
+    if logo_obj:
+        user_color = logo_obj.theme_color
+    else:
+        user_color = result.user.theme_color if hasattr(result.user, 'theme_color') else '#1565C0'
+    
     THEME_COLOR = colors.HexColor(user_color)
 
     buffer = BytesIO()
@@ -100,37 +104,52 @@ def generate_result_pdf(result, calculator_name: str) -> bytes:
     # Nagłówek (Tytuł + opcjonalne Logo użytkownika)
     header_title = Paragraph("Raport wyznaczenia resursu UTB", title_style)
     
-    # 1. Przygotowanie logotypu (jeśli istnieje)
+    # 1. Przygotowanie logotypu (jeśli istnieje i jest włączony)
     logo_img = None
-    if result.user.has_custom_logo and result.user.custom_logo:
-        try:
-            logo_path = result.user.custom_logo.path
-            # Pobierz wymiary przy użyciu PIL dla precyzji
-            with PILImage.open(logo_path) as pil_img:
-                orig_w, orig_h = pil_img.size
+    
+    # Sprawdzamy czy logo ma być wyświetlane
+    show_logo = getattr(result.user, 'show_logo_on_pdf', True)
 
-            aspect = orig_h / float(orig_w)
+    if show_logo:
+        # Wybieramy źródło danych o logo (logo_obj lub pola użytkownika)
+        active_logo_image = logo_obj.image if logo_obj else (result.user.custom_logo if result.user.has_custom_logo else None)
+        active_logo_width = logo_obj.width if logo_obj else (result.user.logo_width if hasattr(result.user, 'logo_width') else 45)
+        active_logo_height = logo_obj.height if logo_obj else (result.user.logo_height if hasattr(result.user, 'logo_height') else 20)
+        active_logo_position = logo_obj.position if logo_obj else (result.user.logo_position if hasattr(result.user, 'logo_position') else 'right')
 
-            # Wymiary z ustawień użytkownika (mm -> cm)
-            max_w_user = (result.user.logo_width / 10.0) * cm
-            max_h_user = (result.user.logo_height / 10.0) * cm
+        if active_logo_image:
+            try:
+                logo_path = active_logo_image.path
+                # Pobierz wymiary przy użyciu PIL dla precyzji
+                with PILImage.open(logo_path) as pil_img:
+                    orig_w, orig_h = pil_img.size
 
-            # Obliczanie wymiarów przy zachowaniu proporcji
-            w = max_w_user
-            h = w * aspect
+                aspect = orig_h / float(orig_w)
 
-            if h > max_h_user:
-                h = max_h_user
-                w = h / aspect
+                # Wymiary (mm -> cm)
+                max_w_user = (active_logo_width / 10.0) * cm
+                max_h_user = (active_logo_height / 10.0) * cm
 
-            logo_img = Image(logo_path, width=w, height=h)
-        except Exception:
-            pass
+                # Obliczanie wymiarów przy zachowaniu proporcji
+                w = max_w_user
+                h = w * aspect
+
+                if h > max_h_user:
+                    h = max_h_user
+                    w = h / aspect
+
+                logo_img = Image(logo_path, width=w, height=h)
+            except Exception:
+                pass
+    else:
+        # Jeśli logo wyłączone, używamy domyślnych wartości dla pozycjonowania (nieistotne, ale dla bezpieczeństwa)
+        active_logo_position = 'right'
+        active_logo_width = 45
 
     # 2. Rozmieszczenie logotypu wg ustawień
-    pos = result.user.logo_position
+    pos = active_logo_position
     
-    if logo_img:
+    if logo_img and show_logo:
         if pos == 'top_center':
             # Logo na samej górze, wyśrodkowane
             logo_table = Table([[logo_img]], colWidths=[17*cm])
@@ -141,7 +160,7 @@ def generate_result_pdf(result, calculator_name: str) -> bytes:
         elif pos == 'left':
             # Logo po lewej, tytuł po prawej
             # Szerokość loga + margines
-            w_cm = result.user.logo_width / 10.0
+            w_cm = active_logo_width / 10.0
             header_table = Table([[logo_img, header_title]], colWidths=[(w_cm + 0.5)*cm, (16.5 - w_cm)*cm])
             header_table.setStyle(TableStyle([
                 ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
@@ -150,7 +169,7 @@ def generate_result_pdf(result, calculator_name: str) -> bytes:
             story.append(header_table)
         else: # default: right
             # Tytuł po lewej, logo po prawej (stary układ)
-            w_cm = result.user.logo_width / 10.0
+            w_cm = active_logo_width / 10.0
             header_table = Table([[header_title, logo_img]], colWidths=[(16.5 - w_cm)*cm, (w_cm + 0.5)*cm])
             header_table.setStyle(TableStyle([
                 ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
@@ -271,6 +290,54 @@ def generate_result_pdf(result, calculator_name: str) -> bytes:
     if msg:
         story.append(Spacer(1, 0.3*cm))
         story.append(Paragraph(f"<i>{msg}</i>", note_style))
+
+    # --- PODPIS (Signature) ---
+    show_signature = getattr(result.user, 'show_signature_on_pdf', True)
+
+    if show_signature:
+        if not signature_obj:
+            from users.models import UserSignature
+            signature_obj = UserSignature.objects.filter(user=result.user, is_default=True).first()
+
+        if signature_obj:
+            try:
+                sig_path = signature_obj.image.path
+                with PILImage.open(sig_path) as pil_img:
+                    orig_w, orig_h = pil_img.size
+                aspect = orig_h / float(orig_w)
+
+                # Wymiary (mm -> cm)
+                w_sig = (signature_obj.width / 10.0) * cm
+                h_sig = w_sig * aspect
+                max_h_sig = (signature_obj.height / 10.0) * cm
+                if h_sig > max_h_sig:
+                    h_sig = max_h_sig
+                    w_sig = h_sig / aspect
+
+                sig_img = Image(sig_path, width=w_sig, height=h_sig)
+                story.append(Spacer(1, 1*cm))
+                
+                sig_pos = signature_obj.position
+                if sig_pos == 'bottom_left':
+                    sig_table = Table([[sig_img]], colWidths=[17*cm])
+                    sig_table.setStyle(TableStyle([('ALIGN', (0,0), (0,0), 'LEFT')]))
+                    story.append(sig_table)
+                elif sig_pos == 'bottom_center':
+                    sig_table = Table([[sig_img]], colWidths=[17*cm])
+                    sig_table.setStyle(TableStyle([('ALIGN', (0,0), (0,0), 'CENTER')]))
+                    story.append(sig_table)
+                else: # bottom_right
+                    sig_table = Table([[sig_img]], colWidths=[17*cm])
+                    sig_table.setStyle(TableStyle([('ALIGN', (0,0), (0,0), 'RIGHT')]))
+                    story.append(sig_table)
+                
+                # Dodatkowy opis pod podpisem (opcjonalnie)
+                if signature_obj.name:
+                    story.append(Paragraph(f"<font size=8>{signature_obj.name}</font>", 
+                        ParagraphStyle('SigName', parent=footer_style, alignment=1 if sig_pos=='bottom_center' else 2 if sig_pos=='bottom_right' else 0)))
+
+            except Exception:
+                pass
 
     # Stopka
     story.append(Spacer(1, 1*cm))

@@ -26,7 +26,11 @@ DEBUG = True
 
 # [ZMIEŃ TO NA PRODUKCJI]
 # Lista domen, pod którymi działa backend. Na produkcji np. ['api.mojanazwa.pl']
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    "localhost",
+    "127.0.0.1",
+    "51.75.65.27"
+]
 
 
 # ==============================================================================
@@ -222,12 +226,16 @@ ACCOUNT_SIGNUP_PASSWORD_ENTER_TWICE = True
 # ==============================================================================
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:9000",
-    "http://127.0.0.1:9000"
+    "http://127.0.0.1:9000",
+    "http://51.75.65.27",
+    "http://51.75.65.27:9000"
 ]
 CORS_ALLOW_CREDENTIALS = True 
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:9000",
-    "http://127.0.0.1:9000"
+    "http://127.0.0.1:9000",
+    "http://51.75.65.27",
+    "http://51.75.65.27:9000"
 ]
 CSRF_COOKIE_HTTPONLY = False 
 CSRF_COOKIE_SAMESITE = 'Lax'

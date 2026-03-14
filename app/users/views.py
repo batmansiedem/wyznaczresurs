@@ -34,6 +34,113 @@ def set_csrf_token(request):
 
 
 from rest_framework import permissions, parsers
+from .models import UserLogo, UserSignature
+from .serializers import (
+    AdminUserListSerializer,
+    AdminUpdateUserSerializer,
+    AdminCreateUserSerializer,
+    UserLogoSerializer,
+    UserSignatureSerializer,
+)
+
+User = get_user_model()
+
+class UserLogoViewSet(viewsets.ModelViewSet):
+    """Widok do zarządzania logotypami użytkownika."""
+    serializer_class = UserLogoSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    parser_classes = [parsers.MultiPartParser, parsers.FormParser, parsers.JSONParser]
+
+    def get_queryset(self):
+        return UserLogo.objects.filter(user=self.request.user).order_by('-is_default', '-created_at')
+
+    def create(self, request, *args, **kwargs):
+        user = request.user
+        cost = 200
+        
+        if user.premium < cost:
+            return Response(
+                {"detail": f"Niewystarczająca liczba punktów premium (wymagane {cost} pkt)."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        
+        user.premium -= cost
+        user.has_custom_logo = True
+        user.save()
+        
+        # Jeśli to pierwsze logo, ustaw jako domyślne
+        is_first = not UserLogo.objects.filter(user=user).exists()
+        logo = serializer.save(user=user, is_default=is_first)
+        
+        # Synchronizacja z "starymi" polami w CustomUser dla wstecznej kompatybilności
+        if is_first or logo.is_default:
+            user.custom_logo = logo.image
+            user.logo_width = logo.width
+            user.logo_height = logo.height
+            user.logo_position = logo.position
+            user.theme_color = logo.theme_color
+            user.save()
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    def perform_update(self, serializer):
+        logo = serializer.save()
+        user = self.request.user
+        # Jeśli edytowane logo jest domyślne, zaktualizuj też pola w CustomUser
+        if logo.is_default:
+            user.custom_logo = logo.image
+            user.logo_width = logo.width
+            user.logo_height = logo.height
+            user.logo_position = logo.position
+            user.theme_color = logo.theme_color
+            user.save()
+
+    @action(detail=True, methods=['post'])
+    def set_default(self, request, pk=None):
+        logo = self.get_object()
+        logo.is_default = True
+        logo.save()
+        
+        # Aktualizacja CustomUser
+        user = request.user
+        user.custom_logo = logo.image
+        user.logo_width = logo.width
+        user.logo_height = logo.height
+        user.logo_position = logo.position
+        user.theme_color = logo.theme_color
+        user.save()
+        
+        return Response({"message": "Logo ustawione jako domyślne."})
+
+class UserSignatureViewSet(viewsets.ModelViewSet):
+    """Widok do zarządzania podpisami użytkownika."""
+    serializer_class = UserSignatureSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    parser_classes = [parsers.MultiPartParser, parsers.FormParser, parsers.JSONParser]
+
+    def get_queryset(self):
+        return UserSignature.objects.filter(user=self.request.user).order_by('-is_default', '-created_at')
+
+    def create(self, request, *args, **kwargs):
+        user = request.user
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        
+        # Podpisy są obecnie darmowe
+        is_first = not UserSignature.objects.filter(user=user).exists()
+        serializer.save(user=user, is_default=is_first)
+        
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    @action(detail=True, methods=['post'])
+    def set_default(self, request, pk=None):
+        signature = self.get_object()
+        signature.is_default = True
+        signature.save()
+        return Response({"message": "Podpis ustawiony jako domyślny."})
 
 class PurchaseCustomLogoView(APIView):
     """Zakup własnego loga na obliczeniach za 200 pkt."""
@@ -87,6 +194,22 @@ class LogoPreviewView(APIView):
 
     def get(self, request):
         user = request.user
+        logo_id = request.query_params.get('logo_id')
+        
+        # Pobierz konkretne logo lub domyślne
+        logo_obj = None
+        if logo_id:
+            try:
+                logo_obj = UserLogo.objects.get(id=logo_id, user=user)
+            except UserLogo.DoesNotExist:
+                pass
+        
+        if not logo_obj:
+            logo_obj = UserLogo.objects.filter(user=user, is_default=True).first()
+            if not logo_obj and user.has_custom_logo:
+                # Fallback do pól w CustomUser jeśli brak modelu UserLogo (nie powinno się zdarzyć po migracji)
+                pass
+
         from calculators.pdf_generator import generate_result_pdf
         from calculators.models import CalculatorResult
         import datetime
@@ -106,17 +229,70 @@ class LogoPreviewView(APIView):
                 "resurs_message": "Urządzenie zdolne do dalszej eksploatacji."
             }
         )
-        # Przekazujemy atrybuty użytkownika do mocka, żeby generator PDF je widział
-        mock_result.user.has_custom_logo = user.has_custom_logo
-        mock_result.user.custom_logo = user.custom_logo
-        mock_result.user.logo_width = user.logo_width
-        mock_result.user.logo_height = user.logo_height
-        mock_result.user.logo_position = user.logo_position
+        # Przekazujemy atrybuty użytkownika/loga do mocka
+        mock_result.user.has_custom_logo = True if logo_obj else user.has_custom_logo
+        if logo_obj:
+            mock_result.user.custom_logo = logo_obj.image
+            mock_result.user.logo_width = logo_obj.width
+            mock_result.user.logo_height = logo_obj.height
+            mock_result.user.logo_position = logo_obj.position
+            mock_result.user.theme_color = logo_obj.theme_color
+        else:
+            mock_result.user.custom_logo = user.custom_logo
+            mock_result.user.logo_width = user.logo_width
+            mock_result.user.logo_height = user.logo_height
+            mock_result.user.logo_position = user.logo_position
+            mock_result.user.theme_color = user.theme_color
         
         from django.http import HttpResponse
-        pdf_content = generate_result_pdf(mock_result, "Kalkulator Przykładowy")
+        pdf_content = generate_result_pdf(mock_result, "Kalkulator Przykładowy", logo_obj=logo_obj)
         response = HttpResponse(pdf_content, content_type='application/pdf')
         response['Content-Disposition'] = 'inline; filename="przyklad_logo.pdf"'
+        return response
+
+class SignaturePreviewView(APIView):
+    """Generuje przykładowy dokument PDF z podpisem użytkownika."""
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        signature_id = request.query_params.get('signature_id')
+        
+        # Pobierz konkretny podpis lub domyślny
+        signature_obj = None
+        if signature_id:
+            try:
+                signature_obj = UserSignature.objects.get(id=signature_id, user=user)
+            except UserSignature.DoesNotExist:
+                pass
+        
+        if not signature_obj:
+            signature_obj = UserSignature.objects.filter(user=user, is_default=True).first()
+
+        from calculators.pdf_generator import generate_result_pdf
+        from calculators.models import CalculatorResult
+        import datetime
+
+        # Tworzymy tymczasowy, wirtualny wynik do celów podglądu
+        mock_result = CalculatorResult(
+            user=user,
+            created_at=datetime.datetime.now(),
+            input_data={
+                "nr_fabryczny": "PRZYKŁAD-PODPIS",
+                "producent": "TWOJA FIRMA",
+                "typ": "Urządzenie podlegające UDT",
+            },
+            output_data={
+                "resurs_wykorzystanie": 10.0,
+                "resurs_message": "Podgląd rozmieszczenia podpisu."
+            }
+        )
+        
+        from django.http import HttpResponse
+        # Uwaga: Muszę zaktualizować generate_result_pdf, aby przyjmował signature_obj
+        pdf_content = generate_result_pdf(mock_result, "Kalkulator Przykładowy", signature_obj=signature_obj)
+        response = HttpResponse(pdf_content, content_type='application/pdf')
+        response['Content-Disposition'] = 'inline; filename="przyklad_podpis.pdf"'
         return response
 
 class AdminUserViewSet(viewsets.ModelViewSet):
@@ -223,6 +399,54 @@ class AdminUserViewSet(viewsets.ModelViewSet):
         serializer = CalculatorResultSerializer(qs, many=True)
         return Response(serializer.data)
 
+    @action(detail=True, methods=['get', 'post'])
+    def logos(self, request, pk=None):
+        """Zarządzanie logotypami wybranego użytkownika przez admina."""
+        user = self.get_object()
+        
+        if request.method == 'POST':
+            serializer = UserLogoSerializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            
+            # Admin dodaje logo za darmo (nie pobieramy punktów)
+            logo = serializer.save(user=user)
+            
+            # Synchronizacja z "starymi" polami w CustomUser jeśli to domyślne lub pierwsze logo
+            is_first = user.logos.count() == 1
+            if is_first or logo.is_default:
+                user.has_custom_logo = True
+                user.custom_logo = logo.image
+                user.logo_width = logo.width
+                user.logo_height = logo.height
+                user.logo_position = logo.position
+                user.theme_color = logo.theme_color
+                user.save()
+                
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        # GET: Zwraca listę logotypów
+        logos = user.logos.all().order_by('-is_default', '-created_at')
+        serializer = UserLogoSerializer(logos, many=True)
+        return Response(serializer.data)
+
+    @action(detail=True, methods=['get', 'post'])
+    def signatures(self, request, pk=None):
+        """Zarządzanie podpisami wybranego użytkownika przez admina."""
+        user = self.get_object()
+        
+        if request.method == 'POST':
+            serializer = UserSignatureSerializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            
+            # Admin dodaje podpis za darmo
+            serializer.save(user=user)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        # GET: Zwraca listę podpisów
+        sigs = user.signatures.all().order_by('-is_default', '-created_at')
+        serializer = UserSignatureSerializer(sigs, many=True)
+        return Response(serializer.data)
+
     @action(detail=False, methods=['get'])
     def stats(self, request):
         """Statystyki globalne oraz trendy miesięczne dla dashboardu admina."""
@@ -247,20 +471,31 @@ class AdminUserViewSet(viewsets.ModelViewSet):
         # TRENDY (Ostatnie 6 miesięcy)
         monthly_trends = []
         for i in range(5, -1, -1):
-            # Oblicz daty graniczne dla każdego miesiąca wstecz
-            # Prosta logika przesunięcia o miesiące
-            m = (now.month - i - 1) % 12 + 1
-            y = now.year + (now.month - i - 1) // 12
+            # Obliczanie pierwszego dnia miesiąca sprzed i miesięcy
+            # month_start_date: 1-szy dzień obecnego miesiąca
+            # target_month: month_start_date minus i miesięcy
             
-            start = timezone.datetime(y, m, 1, tzinfo=timezone.get_current_timezone())
-            if m == 12:
-                end = timezone.datetime(y + 1, 1, 1, tzinfo=timezone.get_current_timezone())
-            else:
-                end = timezone.datetime(y, m + 1, 1, tzinfo=timezone.get_current_timezone())
+            # Prosta, bezpieczna arytmetyka miesięcy
+            target_year = now.year
+            target_month = now.month - i
+            while target_month <= 0:
+                target_month += 12
+                target_year -= 1
+            
+            start = timezone.datetime(target_year, target_month, 1, tzinfo=timezone.get_current_timezone())
+            
+            # Koniec miesiąca (początek następnego)
+            end_month = target_month + 1
+            end_year = target_year
+            if end_month > 12:
+                end_month = 1
+                end_year += 1
+            end = timezone.datetime(end_year, end_month, 1, tzinfo=timezone.get_current_timezone())
 
             new_u = User.objects.filter(date_joined__gte=start, date_joined__lt=end).count()
             txs = CalculatorResult.objects.filter(created_at__gte=start, created_at__lt=end).count()
-            rev = Invoice.objects.filter(created_at__gte=start, created_at__lt=end).aggregate(total=Sum('gross_amount'))['total'] or 0
+            # Używamy gross_amount dla przychodów brutto
+            rev = Invoice.objects.filter(created_at__gte=start, created_at__lt=end, is_proforma=False).aggregate(total=Sum('gross_amount'))['total'] or 0
             
             monthly_trends.append({
                 'label': start.strftime('%m/%Y'),

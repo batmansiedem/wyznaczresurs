@@ -197,6 +197,36 @@
               <q-card-section v-else class="q-pa-lg">
                 <div class="row q-col-gutter-sm q-mb-lg no-print items-center">
                   <div class="text-subtitle2 text-weight-bold q-mr-md">Akcje:</div>
+                  
+                  <!-- Wybór loga (jeśli użytkownik ma ich wiele) -->
+                  <template v-if="userStore.user?.logos?.length > 1">
+                    <q-select
+                      v-model="selectedLogoId"
+                      :options="userStore.user.logos"
+                      option-label="name"
+                      option-value="id"
+                      emit-value
+                      map-options
+                      outlined
+                      dense
+                      label="Wybierz logo na PDF"
+                      class="q-mr-md"
+                      style="min-width: 200px"
+                    >
+                      <template v-slot:option="scope">
+                        <q-item v-bind="scope.itemProps">
+                          <q-item-section avatar>
+                            <img :src="getFullLogoUrl(scope.opt.image)" style="height: 20px; width: 40px; object-fit: contain" />
+                          </q-item-section>
+                          <q-item-section>
+                            <q-item-label>{{ scope.opt.name || 'Bez nazwy' }}</q-item-label>
+                            <q-item-label caption v-if="scope.opt.is_default">Domyślne</q-item-label>
+                          </q-item-section>
+                        </q-item>
+                      </template>
+                    </q-select>
+                  </template>
+
                   <q-btn icon="picture_as_pdf" label="Pobierz PDF" color="primary" unelevated no-caps :loading="downloadingPdf" @click="downloadPdf()" />
                   <q-btn icon="print" label="Drukuj" color="grey-7" flat no-caps @click="printPage" />
                 </div>
@@ -394,6 +424,15 @@ const selectedSavedResult = ref(null)
 
 const deviceResults = ref([])
 const selectedDeviceResult = ref(null)
+
+const selectedLogoId = ref(null)
+
+watch(() => userStore.user?.logos, (logos) => {
+  if (logos?.length && !selectedLogoId.value) {
+    const def = logos.find(l => l.is_default) || logos[0]
+    selectedLogoId.value = def.id
+  }
+}, { immediate: true })
 
 const MECH_PARENT_DEVICES = {
   mech_podnoszenia: ['suwnica', 'wciagarka', 'wciagnik', 'zuraw'],
@@ -714,12 +753,26 @@ async function downloadPdf(id = null) {
   if (!rid) return
   downloadingPdf.value = true
   try {
-    const res = await api.get(`/calculators/results/${rid}/pdf/`, { responseType: 'blob' })
+    const params = {}
+    if (selectedLogoId.value) params.logo_id = selectedLogoId.value
+    
+    const res = await api.get(`/calculators/results/${rid}/pdf/`, { 
+      params,
+      responseType: 'blob' 
+    })
     const url = URL.createObjectURL(new Blob([res.data], { type: 'application/pdf' }))
     const a = document.createElement('a'); a.href = url; a.download = `resurs_${calculatorSlug.value}.pdf`; a.click()
   } catch (error) {
     console.error(error)
   } finally { downloadingPdf.value = false }
+}
+
+function getFullLogoUrl(url) {
+  if (!url) return ''
+  if (url.startsWith('http')) return url
+  const base = api.defaults.baseURL.replace(/\/api\/?$/, '')
+  const path = url.startsWith('/') ? url : '/' + url
+  return `${base}${path}`
 }
 
 async function loadSingleResult(resultId) {

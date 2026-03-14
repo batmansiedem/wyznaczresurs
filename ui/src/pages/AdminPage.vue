@@ -374,10 +374,12 @@
             </div>
           </div>
 
-          <!-- Zakładki: Obliczenia | Faktury -->
+          <!-- Zakładki: Obliczenia | Faktury | Logotypy | Podpisy -->
           <q-tabs v-model="detailTab" dense indicator-color="primary" active-color="primary" align="left" class="q-mb-sm">
             <q-tab name="obliczenia" icon="calculate" :label="`Obliczenia (${userTransactions.length})`" />
             <q-tab name="faktury" icon="receipt_long" :label="`Faktury (${userInvoices.length})`" />
+            <q-tab name="logotypy" icon="photo_library" :label="`Logotypy (${userLogos.length})`" />
+            <q-tab name="podpisy" icon="draw" :label="`Podpisy (${userSignatures.length})`" />
           </q-tabs>
 
           <q-tab-panels v-model="detailTab" animated>
@@ -521,6 +523,114 @@
                   Łącznie punktów: {{ userInvoices.reduce((s, i) => s + (i.points_added || 0), 0) }}
                 </q-chip>
               </div>
+            </q-tab-panel>
+
+            <!-- ---- LOGOTYPY ---- -->
+            <q-tab-panel name="logotypy" class="q-pa-none">
+              <div class="row justify-end q-mb-md">
+                <q-btn icon="add_photo_alternate" label="Dodaj logo użytkownikowi" color="primary" unelevated no-caps
+                  class="rounded-borders shadow-2" @click="openAdminAddLogo" />
+              </div>
+
+              <div v-if="userLogosLoading" class="text-center q-pa-lg"><q-spinner color="primary" /></div>
+              <q-card v-else flat bordered class="rounded-borders">
+                <q-table
+                  :rows="userLogos"
+                  :columns="userLogoColumns"
+                  row-key="id"
+                  flat dense
+                  no-data-label="Brak logotypów"
+                  rows-per-page-label="Wierszy na stronę"
+                  :rows-per-page-options="[10, 25, 0]"
+                >
+                  <template #body-cell-image="props">
+                    <q-td :props="props" class="text-center">
+                      <img :src="getFullLogoUrl(props.row.image)" style="height: 30px; max-width: 80px; object-fit: contain" class="bg-grey-2 rounded-borders q-pa-xs" />
+                    </q-td>
+                  </template>
+                  <template #body-cell-settings="props">
+                    <q-td :props="props">
+                      <div class="text-caption">
+                        {{ props.row.width }}x{{ props.row.height }}mm | {{ props.row.position }}
+                        <div :style="{ color: props.row.theme_color }" class="text-weight-bold">
+                          {{ props.row.theme_color }}
+                        </div>
+                      </div>
+                    </q-td>
+                  </template>
+                  <template #body-cell-is_default="props">
+                    <q-td :props="props" class="text-center">
+                      <q-icon v-if="props.row.is_default" name="check_circle" color="primary" size="sm" />
+                      <q-btn v-else flat round dense icon="radio_button_unchecked" color="grey-4" size="sm" @click="setAdminDefaultLogo(props.row.id)" />
+                    </q-td>
+                  </template>
+                  <template #body-cell-logo_actions="props">
+                    <q-td :props="props" class="text-center">
+                      <q-btn flat round dense icon="delete" color="negative" size="sm" @click="deleteUserLogo(props.row.id)">
+                        <q-tooltip>Usuń logo</q-tooltip>
+                      </q-btn>
+                    </q-td>
+                  </template>
+                </q-table>
+              </q-card>
+            </q-tab-panel>
+
+            <!-- ---- PODPISY ---- -->
+            <q-tab-panel name="podpisy" class="q-pa-none">
+              <div class="row items-center q-mb-md">
+                <div class="col">
+                  <q-toggle
+                    v-model="selectedUser.show_signature_on_pdf"
+                    label="Pokazuj podpis na orzeczeniu PDF dla tego użytkownika"
+                    color="primary"
+                    left-label
+                    @update:model-value="updateUserPdfSettings"
+                  />
+                </div>
+                <div class="col-auto">
+                  <q-btn icon="draw" label="Dodaj podpis użytkownikowi" color="primary" unelevated no-caps
+                    class="rounded-borders shadow-2" @click="openAdminAddSignature" />
+                </div>
+              </div>
+
+              <div v-if="userSignaturesLoading" class="text-center q-pa-lg"><q-spinner color="primary" /></div>
+              <q-card v-else flat bordered class="rounded-borders">
+                <q-table
+                  :rows="userSignatures"
+                  :columns="userSignatureColumns"
+                  row-key="id"
+                  flat dense
+                  no-data-label="Brak podpisów"
+                  rows-per-page-label="Wierszy na stronę"
+                  :rows-per-page-options="[10, 25, 0]"
+                >
+                  <template #body-cell-image="props">
+                    <q-td :props="props" class="text-center">
+                      <img :src="getFullLogoUrl(props.row.image)" style="height: 30px; max-width: 80px; object-fit: contain" class="bg-grey-2 rounded-borders q-pa-xs" />
+                    </q-td>
+                  </template>
+                  <template #body-cell-settings="props">
+                    <q-td :props="props">
+                      <div class="text-caption">
+                        {{ props.row.width }}x{{ props.row.height }}mm | {{ props.row.position }}
+                      </div>
+                    </q-td>
+                  </template>
+                  <template #body-cell-is_default="props">
+                    <q-td :props="props" class="text-center">
+                      <q-icon v-if="props.row.is_default" name="check_circle" color="primary" size="sm" />
+                      <q-btn v-else flat round dense icon="radio_button_unchecked" color="grey-4" size="sm" @click="setAdminDefaultSignature(props.row.id)" />
+                    </q-td>
+                  </template>
+                  <template #body-cell-sig_actions="props">
+                    <q-td :props="props" class="text-center">
+                      <q-btn flat round dense icon="delete" color="negative" size="sm" @click="deleteUserSignature(props.row.id)">
+                        <q-tooltip>Usuń podpis</q-tooltip>
+                      </q-btn>
+                    </q-td>
+                  </template>
+                </q-table>
+              </q-card>
             </q-tab-panel>
 
           </q-tab-panels>
@@ -823,8 +933,20 @@
               <div class="col-12 col-sm-6">
                 <q-input v-model.number="editUser.premium" label="Punkty Premium" outlined dense type="number" min="0" suffix="pkt" />
               </div>
-              <div class="col-12 col-sm-6 self-center">
+              <div class="col-12 col-sm-6 self-center q-gutter-x-md">
                 <q-toggle v-model="editUser.is_active" label="Konto aktywne" />
+              </div>
+              <div class="col-12">
+                <q-separator class="q-my-sm" />
+                <div class="text-subtitle2 text-weight-bold q-mb-xs">Ustawienia PDF</div>
+                <div class="row q-col-gutter-sm">
+                  <div class="col-6">
+                    <q-toggle v-model="editUser.show_logo_on_pdf" label="Pokazuj logo" dense />
+                  </div>
+                  <div class="col-6">
+                    <q-toggle v-model="editUser.show_signature_on_pdf" label="Pokazuj podpis" dense />
+                  </div>
+                </div>
               </div>
               <div class="col-12">
                 <div class="row justify-end q-gutter-sm">
@@ -909,6 +1031,122 @@
       </q-card>
     </q-dialog>
 
+    <!-- ===================== DIALOG DODAWANIA LOGA PRZEZ ADMINA ===================== -->
+    <q-dialog v-model="adminLogoDialog" persistent>
+      <q-card style="min-width:400px" class="rounded-borders">
+        <q-card-section class="bg-primary text-white row items-center q-pb-none">
+          <div class="text-h6 text-weight-bold">Dodaj logo użytkownikowi</div>
+          <q-space />
+          <q-btn icon="close" flat round dense v-close-popup />
+        </q-card-section>
+
+        <q-card-section class="q-pt-md" v-if="selectedUser">
+          <div class="q-mb-md bg-blue-1 q-pa-sm rounded-borders text-primary row items-center">
+            <q-icon name="person" class="q-mr-sm" />
+            Dla: <b>{{ selectedUser.display_name }}</b>
+          </div>
+
+          <q-form @submit="handleAdminLogoSubmit">
+            <div class="row q-col-gutter-md">
+              <div class="col-12">
+                <q-input v-model="adminLogoForm.name" label="Nazwa własna loga" outlined dense />
+              </div>
+              <div class="col-12">
+                <q-file v-model="adminLogoForm.imageFile" label="Plik loga (PNG/JPG)" outlined dense accept=".jpg,.jpeg,.png" :rules="[v => !!v || 'Wymagane']">
+                  <template #prepend><q-icon name="attach_file" /></template>
+                </q-file>
+              </div>
+              <div class="col-6">
+                <q-input v-model.number="adminLogoForm.width" label="Szerokość (mm)" type="number" outlined dense />
+              </div>
+              <div class="col-6">
+                <q-input v-model.number="adminLogoForm.height" label="Wysokość (mm)" type="number" outlined dense />
+              </div>
+              <div class="col-12">
+                <q-select v-model="adminLogoForm.position" label="Pozycja" outlined dense emit-value map-options
+                  :options="[ {label:'Lewo', value:'left'}, {label:'Góra', value:'top_center'}, {label:'Prawo', value:'right'} ]" />
+              </div>
+              <div class="col-12">
+                <q-input v-model="adminLogoForm.theme_color" label="Kolor motywu" outlined dense readonly class="cursor-pointer">
+                  <template v-slot:append>
+                    <q-icon name="colorize" class="cursor-pointer" color="primary">
+                      <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+                        <q-color v-model="adminLogoForm.theme_color" no-header-footer />
+                      </q-popup-proxy>
+                    </q-icon>
+                  </template>
+                </q-input>
+              </div>
+              <div class="col-12">
+                <q-checkbox v-model="adminLogoForm.is_default" label="Ustaw jako domyślne" />
+              </div>
+              <div class="col-12">
+                <q-banner dense class="bg-blue-1 text-primary rounded-borders">
+                  Dodanie loga przez admina <b>nie pobiera punktów</b> z konta użytkownika.
+                </q-banner>
+              </div>
+              <div class="col-12">
+                <div class="row justify-end q-gutter-sm">
+                  <q-btn flat label="Anuluj" v-close-popup />
+                  <q-btn label="Dodaj logo" color="primary" unelevated type="submit" :loading="adminLogoLoading" />
+                </div>
+              </div>
+            </div>
+          </q-form>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
+
+    <!-- ===================== DIALOG DODAWANIA PODPISU PRZEZ ADMINA ===================== -->
+    <q-dialog v-model="adminSignatureDialog" persistent>
+      <q-card style="min-width:400px" class="rounded-borders">
+        <q-card-section class="bg-primary text-white row items-center q-pb-none">
+          <div class="text-h6 text-weight-bold">Dodaj podpis użytkownikowi</div>
+          <q-space />
+          <q-btn icon="close" flat round dense v-close-popup />
+        </q-card-section>
+
+        <q-card-section class="q-pt-md" v-if="selectedUser">
+          <div class="q-mb-md bg-blue-1 q-pa-sm rounded-borders text-primary row items-center">
+            <q-icon name="person" class="q-mr-sm" />
+            Dla: <b>{{ selectedUser.display_name }}</b>
+          </div>
+
+          <q-form @submit="handleAdminSignatureSubmit">
+            <div class="row q-col-gutter-md">
+              <div class="col-12">
+                <q-input v-model="adminSignatureForm.name" label="Opis podpisu (np. Jan Kowalski)" outlined dense />
+              </div>
+              <div class="col-12">
+                <q-file v-model="adminSignatureForm.imageFile" label="Plik podpisu/pieczątki" outlined dense accept=".jpg,.jpeg,.png" :rules="[v => !!v || 'Wymagane']">
+                  <template #prepend><q-icon name="draw" /></template>
+                </q-file>
+              </div>
+              <div class="col-6">
+                <q-input v-model.number="adminSignatureForm.width" label="Szerokość (mm)" type="number" outlined dense />
+              </div>
+              <div class="col-6">
+                <q-input v-model.number="adminSignatureForm.height" label="Wysokość (mm)" type="number" outlined dense />
+              </div>
+              <div class="col-12">
+                <q-select v-model="adminSignatureForm.position" label="Pozycja (na dole)" outlined dense emit-value map-options
+                  :options="[ {label:'Lewo', value:'bottom_left'}, {label:'Środek', value:'bottom_center'}, {label:'Prawo', value:'bottom_right'} ]" />
+              </div>
+              <div class="col-12">
+                <q-checkbox v-model="adminSignatureForm.is_default" label="Ustaw jako domyślne" />
+              </div>
+              <div class="col-12">
+                <div class="row justify-end q-gutter-sm">
+                  <q-btn flat label="Anuluj" v-close-popup />
+                  <q-btn label="Dodaj podpis" color="primary" unelevated type="submit" :loading="adminSignatureLoading" />
+                </div>
+              </div>
+            </div>
+          </q-form>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
+
   </q-page>
 </template>
 
@@ -958,20 +1196,46 @@ const revenueSeries = computed(() => {
 })
 
 const trendChartOptions = computed(() => ({
-  chart: { toolbar: { show: false }, zoom: { enabled: false } },
+  chart: { 
+    toolbar: { show: false }, 
+    zoom: { enabled: false },
+    foreColor: $q.dark.isActive ? '#9e9e9e' : '#616161'
+  },
   stroke: { curve: 'smooth', width: 3 },
-  xaxis: { categories: stats.value?.monthly_trends?.map(t => t.label) || [] },
+  xaxis: { 
+    categories: stats.value?.monthly_trends?.map(t => t.label) || [],
+    labels: { style: { colors: $q.dark.isActive ? '#9e9e9e' : '#616161' } }
+  },
+  yaxis: {
+    labels: { style: { colors: $q.dark.isActive ? '#9e9e9e' : '#616161' } }
+  },
+  grid: { borderColor: $q.dark.isActive ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' },
   colors: ['#1565C0', '#F57C00'],
-  markers: { size: 4 }
+  markers: { size: 4 },
+  legend: { labels: { colors: $q.dark.isActive ? '#e0e0e0' : '#424242' } },
+  tooltip: { theme: $q.dark.isActive ? 'dark' : 'light' }
 }))
 
 const revenueChartOptions = computed(() => ({
-  chart: { toolbar: { show: false } },
+  chart: { 
+    toolbar: { show: false },
+    foreColor: $q.dark.isActive ? '#9e9e9e' : '#616161'
+  },
   stroke: { curve: 'area', width: 2 },
-  fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.4, opacityTo: 0.1 } },
-  xaxis: { categories: stats.value?.monthly_trends?.map(t => t.label) || [] },
+  fill: { type: 'solid', opacity: 1 },
+  xaxis: { 
+    categories: stats.value?.monthly_trends?.map(t => t.label) || [],
+    labels: { style: { colors: $q.dark.isActive ? '#9e9e9e' : '#616161' } }
+  },
+  yaxis: { 
+    labels: { 
+      formatter: (v) => formatAmount(v) + ' zł',
+      style: { colors: $q.dark.isActive ? '#9e9e9e' : '#616161' }
+    } 
+  },
+  grid: { borderColor: $q.dark.isActive ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' },
   colors: ['#2E7D32'],
-  yaxis: { labels: { formatter: (v) => formatAmount(v) + ' zł' } }
+  tooltip: { theme: $q.dark.isActive ? 'dark' : 'light' }
 }))
 
 async function fetchStats() {
@@ -1038,6 +1302,8 @@ function openUserDetail(user) {
   userDetailOpen.value = true
   fetchUserTransactions()
   fetchUserInvoices()
+  fetchUserLogos()
+  fetchUserSignatures()
 }
 
 // ---- Transakcje użytkownika ----
@@ -1183,6 +1449,213 @@ async function fetchUserInvoices() {
   } finally {
     userInvLoading.value = false
   }
+}
+
+// ---- Logotypy użytkownika (Zarządzanie przez admina) ----
+const userLogos = ref([])
+const userLogosLoading = ref(false)
+const adminLogoDialog = ref(false)
+const adminLogoLoading = ref(false)
+const adminLogoForm = ref({
+  name: '',
+  imageFile: null,
+  width: 45,
+  height: 20,
+  position: 'right',
+  theme_color: '#1565C0',
+  is_default: false
+})
+
+const userLogoColumns = [
+  { name: 'image', label: 'Podgląd', field: 'image', align: 'center' },
+  { name: 'name', label: 'Nazwa', field: 'name', align: 'left' },
+  { name: 'settings', label: 'Ustawienia (mm/poz)', field: 'id', align: 'left' },
+  { name: 'is_default', label: 'Domyślne', field: 'is_default', align: 'center' },
+  { name: 'logo_actions', label: 'Akcje', field: 'id', align: 'center' },
+]
+
+async function fetchUserLogos() {
+  if (!selectedUser.value) return
+  userLogosLoading.value = true
+  try {
+    const { data } = await api.get(`/auth/admin/users/${selectedUser.value.id}/logos/`)
+    userLogos.value = data
+  } finally {
+    userLogosLoading.value = false
+  }
+}
+
+function openAdminAddLogo() {
+  adminLogoForm.value = {
+    name: '',
+    imageFile: null,
+    width: 45,
+    height: 20,
+    position: 'right',
+    theme_color: '#1565C0',
+    is_default: userLogos.value.length === 0
+  }
+  adminLogoDialog.value = true
+}
+
+async function handleAdminLogoSubmit() {
+  if (!selectedUser.value) return
+  adminLogoLoading.value = true
+  const formData = new FormData()
+  if (adminLogoForm.value.name) formData.append('name', adminLogoForm.value.name)
+  formData.append('image', adminLogoForm.value.imageFile)
+  formData.append('width', adminLogoForm.value.width)
+  formData.append('height', adminLogoForm.value.height)
+  formData.append('position', adminLogoForm.value.position)
+  formData.append('theme_color', adminLogoForm.value.theme_color)
+  formData.append('is_default', adminLogoForm.value.is_default)
+
+  try {
+    await api.post(`/auth/admin/users/${selectedUser.value.id}/logos/`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    })
+    $q.notify({ type: 'positive', message: 'Logo dodane użytkownikowi.', position: 'top' })
+    adminLogoDialog.value = false
+    fetchUserLogos()
+  } catch {
+    $q.notify({ type: 'negative', message: 'Błąd podczas dodawania loga.', position: 'top' })
+  } finally {
+    adminLogoLoading.value = false
+  }
+}
+
+async function deleteUserLogo(logoId) {
+  $q.dialog({
+    title: 'Usuń logo',
+    message: 'Czy na pewno chcesz usunąć to logo użytkownika?',
+    cancel: true,
+    persistent: true,
+    ok: { color: 'negative', label: 'Usuń' }
+  }).onOk(async () => {
+    try {
+      await api.delete(`/auth/logos/${logoId}/`)
+      $q.notify({ type: 'positive', message: 'Logo usunięte.', position: 'top' })
+      fetchUserLogos()
+    } catch {
+      $q.notify({ type: 'negative', message: 'Błąd podczas usuwania loga.', position: 'top' })
+    }
+  })
+}
+
+async function setAdminDefaultLogo(logoId) {
+  try {
+    await api.post(`/auth/logos/${logoId}/set_default/`)
+    $q.notify({ type: 'positive', message: 'Logo ustawione jako domyślne.', position: 'top' })
+    fetchUserLogos()
+  } catch {
+    $q.notify({ type: 'negative', message: 'Błąd podczas ustawiania domyślnego loga.', position: 'top' })
+  }
+}
+
+// ---- Podpisy użytkownika (Zarządzanie przez admina) ----
+const userSignatures = ref([])
+const userSignaturesLoading = ref(false)
+const adminSignatureDialog = ref(false)
+const adminSignatureLoading = ref(false)
+const adminSignatureForm = ref({
+  name: '',
+  imageFile: null,
+  width: 60,
+  height: 30,
+  position: 'bottom_right',
+  is_default: false
+})
+
+const userSignatureColumns = [
+  { name: 'image', label: 'Podgląd', field: 'image', align: 'center' },
+  { name: 'name', label: 'Nazwa/Opis', field: 'name', align: 'left' },
+  { name: 'settings', label: 'Ustawienia (mm/poz)', field: 'id', align: 'left' },
+  { name: 'is_default', label: 'Domyślne', field: 'is_default', align: 'center' },
+  { name: 'sig_actions', label: 'Akcje', field: 'id', align: 'center' },
+]
+
+async function fetchUserSignatures() {
+  if (!selectedUser.value) return
+  userSignaturesLoading.value = true
+  try {
+    const { data } = await api.get(`/auth/admin/users/${selectedUser.value.id}/signatures/`)
+    userSignatures.value = data
+  } finally {
+    userSignaturesLoading.value = false
+  }
+}
+
+function openAdminAddSignature() {
+  adminSignatureForm.value = {
+    name: '',
+    imageFile: null,
+    width: 60,
+    height: 30,
+    position: 'bottom_right',
+    is_default: userSignatures.value.length === 0
+  }
+  adminSignatureDialog.value = true
+}
+
+async function handleAdminSignatureSubmit() {
+  if (!selectedUser.value) return
+  adminSignatureLoading.value = true
+  const formData = new FormData()
+  if (adminSignatureForm.value.name) formData.append('name', adminSignatureForm.value.name)
+  formData.append('image', adminSignatureForm.value.imageFile)
+  formData.append('width', adminSignatureForm.value.width)
+  formData.append('height', adminSignatureForm.value.height)
+  formData.append('position', adminSignatureForm.value.position)
+  formData.append('is_default', adminSignatureForm.value.is_default)
+
+  try {
+    await api.post(`/auth/admin/users/${selectedUser.value.id}/signatures/`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    })
+    $q.notify({ type: 'positive', message: 'Podpis dodany użytkownikowi.', position: 'top' })
+    adminSignatureDialog.value = false
+    fetchUserSignatures()
+  } catch {
+    $q.notify({ type: 'negative', message: 'Błąd podczas dodawania podpisu.', position: 'top' })
+  } finally {
+    adminSignatureLoading.value = false
+  }
+}
+
+async function deleteUserSignature(sigId) {
+  $q.dialog({
+    title: 'Usuń podpis',
+    message: 'Czy na pewno chcesz usunąć ten podpis użytkownika?',
+    cancel: true,
+    persistent: true,
+    ok: { color: 'negative', label: 'Usuń' }
+  }).onOk(async () => {
+    try {
+      await api.delete(`/auth/signatures/${sigId}/`)
+      $q.notify({ type: 'positive', message: 'Podpis usunięty.', position: 'top' })
+      fetchUserSignatures()
+    } catch {
+      $q.notify({ type: 'negative', message: 'Błąd podczas usuwania podpisu.', position: 'top' })
+    }
+  })
+}
+
+async function setAdminDefaultSignature(sigId) {
+  try {
+    await api.post(`/auth/signatures/${sigId}/set_default/`)
+    $q.notify({ type: 'positive', message: 'Podpis ustawiony jako domyślny.', position: 'top' })
+    fetchUserSignatures()
+  } catch {
+    $q.notify({ type: 'negative', message: 'Błąd podczas ustawiania domyślnego podpisu.', position: 'top' })
+  }
+}
+
+function getFullLogoUrl(url) {
+  if (!url) return ''
+  if (url.startsWith('http')) return url
+  const base = api.defaults.baseURL.replace(/\/api\/?$/, '')
+  const path = url.startsWith('/') ? url : '/' + url
+  return `${base}${path}`
 }
 
 // ---- Dialog szczegółów transakcji ----
@@ -1446,6 +1919,22 @@ async function submitEditUser() {
     if (selectedUser.value?.id === data.id) selectedUser.value = data
   } finally {
     editLoading.value = false
+  }
+}
+
+async function updateUserPdfSettings() {
+  if (!selectedUser.value) return
+  try {
+    const { data } = await api.patch(`/auth/admin/users/${selectedUser.value.id}/`, {
+      show_logo_on_pdf: selectedUser.value.show_logo_on_pdf,
+      show_signature_on_pdf: selectedUser.value.show_signature_on_pdf
+    })
+    $q.notify({ type: 'positive', message: 'Zaktualizowano ustawienia PDF użytkownika.', position: 'top', timeout: 1000 })
+    // Aktualizacja w głównej liście
+    const idx = users.value.findIndex(u => u.id === data.id)
+    if (idx !== -1) users.value[idx] = data
+  } catch {
+    $q.notify({ type: 'negative', message: 'Błąd podczas aktualizacji ustawień PDF.', position: 'top' })
   }
 }
 

@@ -74,6 +74,10 @@ class CustomUser(AbstractUser):
     logo_position = models.CharField(max_length=20, choices=LOGO_POSITIONS, default='right', verbose_name="Pozycja loga")
     theme_color = models.CharField(max_length=7, default='#1565C0', verbose_name="Kolor motywu (HEX)")
 
+    # Ustawienia widoczności na PDF
+    show_logo_on_pdf = models.BooleanField(default=True, verbose_name="Pokazuj logo na PDF")
+    show_signature_on_pdf = models.BooleanField(default=True, verbose_name="Pokazuj podpis na PDF")
+
     def __str__(self):
         # Ładne wyświetlanie w panelu admina
         if self.is_company:
@@ -83,3 +87,70 @@ class CustomUser(AbstractUser):
         if full_name:
             return f"[Osoba] {full_name} ({self.email})"
         return f"[Użytkownik] {self.email}"
+
+class UserLogo(models.Model):
+    """Model przechowujący wiele logotypów użytkownika."""
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='logos', verbose_name="Użytkownik")
+    image = models.ImageField(upload_to='user_logos/', verbose_name="Plik loga")
+
+    # Ustawienia specyficzne dla tego loga
+    width = models.IntegerField(default=45, verbose_name="Szerokość (mm)")
+    height = models.IntegerField(default=20, verbose_name="Wysokość (mm)")
+
+    LOGO_POSITIONS = (
+        ('right', 'Po prawej stronie tytułu'),
+        ('left', 'Po lewej stronie tytułu'),
+        ('top_center', 'Wyśrodkowane na górze (nad tytułem)'),
+    )
+    position = models.CharField(max_length=20, choices=LOGO_POSITIONS, default='right', verbose_name="Pozycja")
+    theme_color = models.CharField(max_length=7, default='#1565C0', verbose_name="Kolor motywu (HEX)")
+
+    name = models.CharField(max_length=100, blank=True, verbose_name="Nazwa własna loga (np. marka)")
+    is_default = models.BooleanField(default=False, verbose_name="Domyślne")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Logo użytkownika"
+        verbose_name_plural = "Logotypy użytkownika"
+
+    def __str__(self):
+        return f"Logo {self.name or self.id} - {self.user.email}"
+
+    def save(self, *args, **kwargs):
+        # Jeśli to logo ma być domyślne, odznacz inne loga tego użytkownika
+        if self.is_default:
+            UserLogo.objects.filter(user=self.user, is_default=True).exclude(pk=self.pk).update(is_default=False)
+        super().save(*args, **kwargs)
+
+class UserSignature(models.Model):
+    """Model przechowujący podpisy użytkownika (np. skan podpisu/pieczątki)."""
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='signatures', verbose_name="Użytkownik")
+    image = models.ImageField(upload_to='user_signatures/', verbose_name="Plik podpisu")
+
+    # Ustawienia specyficzne dla tego podpisu
+    width = models.IntegerField(default=60, verbose_name="Szerokość (mm)")
+    height = models.IntegerField(default=30, verbose_name="Wysokość (mm)")
+
+    SIGNATURE_POSITIONS = (
+        ('bottom_right', 'Po prawej na dole'),
+        ('bottom_left', 'Po lewej na dole'),
+        ('bottom_center', 'Wyśrodkowane na dole'),
+    )
+    position = models.CharField(max_length=20, choices=SIGNATURE_POSITIONS, default='bottom_right', verbose_name="Pozycja")
+
+    name = models.CharField(max_length=100, blank=True, verbose_name="Nazwa podpisu (np. Jan Kowalski)")
+    is_default = models.BooleanField(default=False, verbose_name="Domyślne")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Podpis użytkownika"
+        verbose_name_plural = "Podpisy użytkownika"
+
+    def __str__(self):
+        return f"Podpis {self.name or self.id} - {self.user.email}"
+
+    def save(self, *args, **kwargs):
+        # Jeśli ten podpis ma być domyślny, odznacz inne podpisy tego użytkownika
+        if self.is_default:
+            UserSignature.objects.filter(user=self.user, is_default=True).exclude(pk=self.pk).update(is_default=False)
+        super().save(*args, **kwargs)

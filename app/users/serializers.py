@@ -3,12 +3,32 @@ from dj_rest_auth.serializers import UserDetailsSerializer
 from rest_framework import serializers
 from django.db import transaction
 from django.contrib.auth import get_user_model
+from .models import UserLogo, UserSignature
 
 User = get_user_model()
 
+class UserLogoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserLogo
+        fields = (
+            'id', 'image', 'width', 'height', 'position',
+            'theme_color', 'name', 'is_default', 'created_at'
+        )
+        read_only_fields = ('id', 'created_at')
+
+class UserSignatureSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserSignature
+        fields = (
+            'id', 'image', 'width', 'height', 'position',
+            'name', 'is_default', 'created_at'
+        )
+        read_only_fields = ('id', 'created_at')
 
 class CustomUserDetailsSerializer(UserDetailsSerializer):
     """Serializer profilu użytkownika dla GET/PUT/PATCH /auth/user/."""
+    logos = UserLogoSerializer(many=True, read_only=True)
+    signatures = UserSignatureSerializer(many=True, read_only=True)
 
     class Meta(UserDetailsSerializer.Meta):
         model = User
@@ -19,7 +39,7 @@ class CustomUserDetailsSerializer(UserDetailsSerializer):
             'is_staff', 'is_superuser',
             'has_custom_logo', 'custom_logo',
             'logo_width', 'logo_height', 'logo_position',
-            'theme_color',
+            'theme_color', 'show_logo_on_pdf', 'show_signature_on_pdf', 'logos', 'signatures',
         )
         read_only_fields = ('pk', 'email', 'premium', 'is_staff', 'is_superuser', 'has_custom_logo')
 
@@ -89,6 +109,7 @@ class AdminUserListSerializer(serializers.ModelSerializer):
             'premium', 'is_staff', 'is_superuser', 'is_active',
             'date_joined', 'last_login',
             'transaction_count', 'invoice_count',
+            'has_custom_logo', 'show_logo_on_pdf', 'show_signature_on_pdf',
         )
 
     def get_display_name(self, obj):
@@ -137,4 +158,5 @@ class AdminUpdateUserSerializer(serializers.ModelSerializer):
         fields = (
             'first_name', 'last_name', 'is_company', 'company_name', 'nip',
             'address_line', 'postal_code', 'city', 'premium', 'is_active',
+            'show_logo_on_pdf', 'show_signature_on_pdf',
         )

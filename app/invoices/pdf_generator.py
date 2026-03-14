@@ -15,7 +15,7 @@ from datetime import datetime
 PRIMARY = colors.HexColor('#1565C0')
 
 # Rejestracja czcionek wspierających polskie znaki
-FONT_PATH = os.path.join(settings.BASE_DIR, '..', 'public_html', 'fpdf', 'font', 'unifont')
+FONT_PATH = os.path.join(settings.BASE_DIR, 'core', 'fonts')
 pdfmetrics.registerFont(TTFont('DejaVuSans', os.path.join(FONT_PATH, 'DejaVuSans.ttf')))
 pdfmetrics.registerFont(TTFont('DejaVuSans-Bold', os.path.join(FONT_PATH, 'DejaVuSans-Bold.ttf')))
 

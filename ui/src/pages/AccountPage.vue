@@ -58,183 +58,100 @@
           </q-form>
         </q-card>
 
-        <!-- WŁASNE LOGO -->
-        <div class="section-label q-mt-xl">Własne logo na orzeczeniach</div>
+        <!-- WŁASNE LOGOTYPY -->
+        <div class="section-label q-mt-xl">Logotypy na orzeczeniach</div>
         <q-card flat bordered class="shadow-1 q-pa-lg">
-          <div v-if="!userStore.user?.has_custom_logo">
-            <div class="row items-center q-col-gutter-md">
-              <div class="col-12 col-sm-8">
-                <div class="text-subtitle1 text-weight-bold">Personalizacja orzeczeń PDF</div>
-                <div class="text-body2 text-grey-7">
-                  Możesz umieścić własne logo w nagłówku każdego wygenerowanego orzeczenia. 
-                  Koszt aktywacji tej funkcji to jednorazowo <strong>200 punktów premium</strong>.
-                </div>
+          <div class="row q-col-gutter-md items-center q-mb-lg border-bottom q-pb-md">
+            <div class="col-12 col-sm">
+              <div class="text-subtitle1 text-weight-bold">Personalizacja orzeczeń PDF</div>
+              <div class="text-body2 text-grey-7">
+                Możesz posiadać wiele logotypów i wybierać, który ma zostać użyty na orzeczeniu.
+                Każde kolejne logo kosztuje <strong>200 punktów premium</strong>.
               </div>
-              <div class="col-12 col-sm-4 text-center">
-                <q-btn 
-                  label="Aktywuj za 200 pkt" 
-                  color="secondary" 
-                  text-color="primary" 
-                  unelevated 
-                  icon="stars"
-                  class="text-weight-bold full-width"
-                  :loading="activatingLogo"
-                  @click="purchaseLogo"
-                />
+            </div>
+            <div class="col-12 col-sm-auto">
+              <q-btn 
+                label="Dodaj nowe logo (200 pkt)" 
+                color="primary" 
+                unelevated 
+                dense
+                icon="add_photo_alternate"
+                class="q-px-lg"
+                :loading="addingLogo"
+                @click="showAddLogoDialog = true"
+              />
+            </div>
+          </div>
+
+          <!-- USTAWIENIA PDF W SEKCJI LOGOTYPY -->
+          <div class="row q-col-gutter-md q-mb-lg">
+            <div class="col-12">
+              <div class="text-subtitle2 text-weight-bold q-mb-xs">Ustawienia wyświetlania</div>
+              <q-toggle
+                v-model="form.show_logo_on_pdf"
+                label="Pokazuj logo na orzeczeniu PDF"
+                color="primary"
+                left-label
+                class="full-width justify-between border-toggle q-pa-sm rounded-borders"
+                @update:model-value="saveProfile"
+              />
+              <div class="text-caption text-grey-6 q-mt-xs">
+                Opcja ta pozwala na szybkie włączenie lub wyłączenie logotypu na generowanych dokumentach PDF.
               </div>
             </div>
           </div>
 
-          <div v-else>
-            <div class="row q-col-gutter-lg items-center">
-              <div class="col-12 col-sm-4 text-center">
-                <div class="text-caption text-grey-6 q-mb-sm">Aktualne logo:</div>
-                <div class="logo-preview-box border-grey rounded-borders overflow-hidden row items-center justify-center">
-                  <img v-if="userStore.user?.custom_logo" :src="getFullLogoUrl(userStore.user.custom_logo)" class="responsive-img" />
-                  <div v-else class="text-grey-4 column items-center">
-                    <q-icon name="image" size="3rem" />
-                    <span>Brak pliku</span>
-                  </div>
-                </div>
-              </div>
-              <div class="col-12 col-sm-8">
-                <div class="text-subtitle1 text-weight-bold q-mb-sm">Wgraj plik logotypu</div>
-                <q-file
-                  v-model="logoFile"
-                  label="Wybierz plik (PNG, JPG, max 2MB)"
-                  outlined
-                  dense
-                  accept=".jpg, .jpeg, .png"
-                  max-file-size="2097152"
-                  @rejected="onFileRejected"
-                >
-                  <template v-slot:prepend>
-                    <q-icon name="attach_file" />
-                  </template>
-                </q-file>
-                <div class="q-mt-md row q-gutter-sm">
-                  <q-btn 
-                    label="Wyślij na serwer" 
-                    color="primary" 
-                    unelevated 
-                    :loading="uploadingLogo" 
-                    :disable="!logoFile"
-                    @click="uploadLogo" 
-                  />
-                  <q-btn 
-                    v-if="userStore.user?.custom_logo" 
-                    label="Zobacz przykład (PDF)" 
-                    color="secondary" 
-                    text-color="primary"
-                    unelevated 
-                    icon="picture_as_pdf"
-                    :loading="previewingLogo"
-                    @click="previewLogoPdf" 
-                  />
-                  <q-btn 
-                    v-if="userStore.user?.custom_logo" 
-                    label="Usuń logo" 
-                    color="negative" 
-                    flat 
-                    dense 
-                    @click="removeLogo" 
-                  />
-                </div>
-                <p class="text-caption text-grey-6 q-mt-sm">
-                  Zalecany format: poziomy, przeźroczyste tło (PNG). Logo zostanie umieszczone zgodnie z Twoimi ustawieniami poniżej.
-                </p>
-
-                <q-separator class="q-my-lg" />
-
-                <!-- USTAWIENIA WYDRUKU -->
-                <div class="text-subtitle2 text-primary q-mb-md">Parametry wyświetlania na PDF</div>
-                
-                <div class="row q-col-gutter-xl">
-                  <div class="col-12 col-sm-6">
-                    <div class="q-mb-lg">
-                      <div class="text-caption text-grey-7 q-mb-sm">Maksymalna szerokość: <strong>{{ form.logo_width }} mm</strong></div>
-                      <q-slider
-                        v-model="form.logo_width"
-                        :min="20"
-                        :max="120"
-                        :step="5"
-                        label
-                        label-always
-                        color="primary"
-                      />
+          <div v-if="userStore.user?.logos?.length > 0">
+            <div class="row q-col-gutter-md">
+              <div v-for="logo in userStore.user.logos" :key="logo.id" class="col-12 col-sm-6">
+                <q-card flat bordered class="logo-card" :class="{ 'is-default': logo.is_default }">
+                  <q-card-section class="row items-center q-pb-none">
+                    <div class="text-weight-bold text-subtitle2 ellipsis" style="max-width: 150px">
+                      {{ logo.name || 'Bez nazwy' }}
                     </div>
+                    <q-chip v-if="logo.is_default" color="primary" text-color="white" size="xs" dense label="Domyślne" class="q-ml-sm" />
+                    <q-space />
+                    <q-btn icon="more_vert" flat round dense>
+                      <q-menu auto-close>
+                        <q-list style="min-width: 150px">
+                          <q-item clickable @click="editLogo(logo)">
+                            <q-item-section avatar><q-icon name="edit" size="xs" /></q-item-section>
+                            <q-item-section>Edytuj</q-item-section>
+                          </q-item>
+                          <q-item clickable @click="setDefaultLogo(logo.id)" :disable="logo.is_default">
+                            <q-item-section avatar><q-icon name="check_circle" size="xs" /></q-item-section>
+                            <q-item-section>Ustaw domyślne</q-item-section>
+                          </q-item>
+                          <q-item clickable @click="previewLogoPdf(logo.id)">
+                            <q-item-section avatar><q-icon name="picture_as_pdf" size="xs" /></q-item-section>
+                            <q-item-section>Podgląd PDF</q-item-section>
+                          </q-item>
+                          <q-separator />
+                          <q-item clickable @click="deleteLogo(logo.id)" class="text-negative">
+                            <q-item-section avatar><q-icon name="delete" size="xs" color="negative" /></q-item-section>
+                            <q-item-section>Usuń logo</q-item-section>
+                          </q-item>
+                        </q-list>
+                      </q-menu>
+                    </q-btn>
+                  </q-card-section>
 
-                    <div class="q-mb-md">
-                      <div class="text-caption text-grey-7 q-mb-sm">Maksymalna wysokość: <strong>{{ form.logo_height }} mm</strong></div>
-                      <q-slider
-                        v-model="form.logo_height"
-                        :min="10"
-                        :max="60"
-                        :step="5"
-                        label
-                        label-always
-                        color="primary"
-                      />
+                  <q-card-section class="text-center q-pt-sm">
+                    <div class="logo-preview-box rounded-borders overflow-hidden row items-center justify-center">
+                      <img :src="getFullLogoUrl(logo.image)" class="responsive-img" />
                     </div>
-                  </div>
-                  
-                  <div class="col-12 col-sm-6">
-                    <div class="text-caption text-grey-7 q-mb-sm">Wyrównanie / Pozycja:</div>
-                    <q-btn-toggle
-                      v-model="form.logo_position"
-                      spread
-                      no-caps
-                      unelevated
-                      toggle-color="primary"
-                      color="grey-2"
-                      text-color="grey-7"
-                      :options="[
-                        { label: 'Lewo', value: 'left' },
-                        { label: 'Góra', value: 'top_center' },
-                        { label: 'Prawo', value: 'right' }
-                      ]"
-                    />
-                  </div>
-
-                  <div class="col-12 col-sm-6">
-                    <div class="text-caption text-grey-7 q-mb-sm">Kolor motywu dokumentu:</div>
-                    <q-input
-                      v-model="form.theme_color"
-                      outlined
-                      dense
-                      class="cursor-pointer"
-                      readonly
-                    >
-                      <template v-slot:append>
-                        <q-icon name="colorize" class="cursor-pointer" color="primary">
-                          <q-popup-proxy cover transition-show="scale" transition-hide="scale">
-                            <q-color v-model="form.theme_color" no-header-footer />
-                          </q-popup-proxy>
-                        </q-icon>
-                      </template>
-                    </q-input>
-                  </div>
-
-                  <div class="col-12">
-                    <div class="q-mt-md text-caption text-grey-6">
-                      <q-icon name="info" size="xs" class="q-mr-xs" />
-                      Wymiary są traktowane jako <strong>maksymalne ograniczenia</strong>. System zachowa oryginalne proporcje Twojego logotypu. Wybrany kolor motywu zostanie zastosowany do tabel i nagłówków na wydruku.
+                    <div class="q-mt-sm text-caption text-grey-7">
+                      {{ logo.width }}x{{ logo.height }}mm | {{ logo.position }}
                     </div>
-                  </div>
-                </div>
-
-                <div class="q-mt-md row justify-end">
-                  <q-btn 
-                    label="Zapisz ustawienia wydruku" 
-                    color="primary" 
-                    icon="settings" 
-                    unelevated 
-                    :loading="saving"
-                    @click="saveProfile"
-                  />
-                </div>
+                  </q-card-section>
+                </q-card>
               </div>
             </div>
+          </div>
+          <div v-else class="text-center q-pa-xl text-grey-5 border-dashed rounded-borders">
+            <q-icon name="image_not_supported" size="4rem" class="q-mb-md" />
+            <div class="text-h6">Nie masz jeszcze żadnych logotypów</div>
+            <div class="text-body2">Kliknij przycisk powyżej, aby dodać swoje pierwsze logo.</div>
           </div>
         </q-card>
       </div>
@@ -264,7 +181,7 @@
                 </q-item-label>
               </q-item-section>
               <q-item-section side>
-                <q-btn unelevated color="secondary" text-color="primary" label="Doładuj" to="/pricing" no-caps class="text-weight-bold" />
+                <q-btn unelevated color="primary" label="Doładuj" to="/pricing" no-caps class="q-px-xl" />
               </q-item-section>
             </q-item>
           </q-list>
@@ -285,6 +202,98 @@
         </q-card>
       </div>
     </div>
+
+    <!-- DIALOG DODAWANIA / EDYCJI LOGA -->
+    <q-dialog v-model="showAddLogoDialog" persistent>
+      <q-card style="min-width: 400px; max-width: 600px">
+        <q-card-section class="bg-primary text-white row items-center">
+          <div class="text-h6 text-weight-bold">
+            {{ editingLogoId ? 'Edytuj logo' : 'Dodaj nowe logo' }}
+          </div>
+          <q-space />
+          <q-btn icon="close" flat round dense v-close-popup />
+        </q-card-section>
+
+        <q-card-section class="q-pa-md">
+          <q-form @submit="handleLogoSubmit">
+            <div class="row q-col-gutter-md">
+              <div class="col-12">
+                <q-input v-model="logoForm.name" label="Nazwa własna (np. Marka A)" outlined dense />
+              </div>
+              
+              <div class="col-12">
+                <q-file
+                  v-model="logoForm.imageFile"
+                  label="Wybierz plik loga"
+                  outlined
+                  dense
+                  accept=".jpg, .jpeg, .png"
+                  :required="!editingLogoId"
+                >
+                  <template v-slot:prepend>
+                    <q-icon name="attach_file" />
+                  </template>
+                </q-file>
+              </div>
+
+              <div class="col-12 col-sm-6">
+                <div class="text-caption text-grey-7">Szerokość (mm)</div>
+                <q-slider v-model="logoForm.width" :min="20" :max="120" label label-always />
+              </div>
+
+              <div class="col-12 col-sm-6">
+                <div class="text-caption text-grey-7">Wysokość (mm)</div>
+                <q-slider v-model="logoForm.height" :min="10" :max="60" label label-always />
+              </div>
+
+              <div class="col-12">
+                <div class="text-caption text-grey-7 q-mb-xs">Pozycja na orzeczeniu:</div>
+                <q-btn-toggle
+                  v-model="logoForm.position"
+                  spread no-caps unelevated
+                  toggle-color="primary" color="grey-2" text-color="grey-7"
+                  :options="[
+                    { label: 'Lewo', value: 'left' },
+                    { label: 'Góra', value: 'top_center' },
+                    { label: 'Prawo', value: 'right' }
+                  ]"
+                />
+              </div>
+
+              <div class="col-12">
+                <div class="text-caption text-grey-7 q-mb-xs">Kolor motywu dokumentu:</div>
+                <q-input v-model="logoForm.theme_color" outlined dense readonly class="cursor-pointer">
+                  <template v-slot:append>
+                    <q-icon name="colorize" class="cursor-pointer" color="primary" />
+                    <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+                      <q-color v-model="logoForm.theme_color" no-header-footer />
+                    </q-popup-proxy>
+                  </template>
+                </q-input>
+              </div>
+
+              <div class="col-12 q-mt-md" v-if="!editingLogoId">
+                <q-banner dense class="bg-orange-1 text-orange-9 rounded-borders">
+                  <template v-slot:avatar><q-icon name="warning" /></template>
+                  Dodanie nowego logotypu pobierze <strong>200 punktów</strong> z Twojego konta.
+                </q-banner>
+              </div>
+
+              <div class="col-12 row justify-end q-gutter-sm q-mt-md">
+                <q-btn label="Anuluj" flat v-close-popup />
+                <q-btn 
+                  :label="editingLogoId ? 'Zapisz zmiany' : 'Dodaj i zapłać 200 pkt'" 
+                  color="primary" 
+                  unelevated 
+                  type="submit" 
+                  :loading="submittingLogo"
+                />
+              </div>
+            </div>
+          </q-form>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
   </q-page>
 </template>
 
@@ -292,7 +301,7 @@
 import { ref, reactive, watch } from 'vue'
 import { useUserStore } from 'stores/user-store'
 import { api } from 'boot/axios'
-import { Notify } from 'quasar'
+import { Notify, Dialog } from 'quasar'
 
 const userStore = useUserStore()
 const saving = ref(false)
@@ -305,19 +314,18 @@ const form = reactive({
   address_line: '',
   postal_code: '',
   city: '',
-  logo_width: 45,
-  logo_height: 20,
-  logo_position: 'right',
-  theme_color: '#1565C0',
-})
+  show_logo_on_pdf: true,
+  show_signature_on_pdf: true,
+  })
 
-watch(() => userStore.user, (u) => {
+  watch(() => userStore.user, (u) => {
   if (!u) return
   Object.keys(form).forEach(k => { 
-    form[k] = u[k] || (k === 'logo_width' ? 45 : k === 'logo_height' ? 20 : k === 'logo_position' ? 'right' : k === 'theme_color' ? '#1565C0' : '') 
+  if (k in u) {
+    form[k] = u[k]
+  }
   })
-}, { immediate: true })
-
+  }, { immediate: true })
 async function saveProfile () {
   saving.value = true
   try {
@@ -331,94 +339,120 @@ async function saveProfile () {
   }
 }
 
-// --- WŁASNE LOGO ---
-const activatingLogo = ref(false)
-const uploadingLogo = ref(false)
-const previewingLogo = ref(false)
-const logoFile = ref(null)
+// --- ZARZĄDZANIE LOGOTYPAMI ---
+const addingLogo = ref(false)
+const showAddLogoDialog = ref(false)
+const submittingLogo = ref(false)
+const editingLogoId = ref(null)
 
-async function purchaseLogo() {
-  activatingLogo.value = true
-  try {
-    const response = await api.post('/auth/purchase-custom-logo/')
-    userStore.user.has_custom_logo = response.data.has_custom_logo
-    userStore.user.premium = response.data.premium
-    Notify.create({ type: 'positive', message: response.data.message, position: 'top' })
-  } catch (error) {
-    Notify.create({ 
-      type: 'negative', 
-      message: error.response?.data?.detail || 'Błąd podczas aktywacji funkcji.', 
-      position: 'top' 
-    })
-  } finally {
-    activatingLogo.value = false
-  }
+const logoForm = reactive({
+  name: '',
+  imageFile: null,
+  width: 45,
+  height: 20,
+  position: 'right',
+  theme_color: '#1565C0'
+})
+
+function resetLogoForm() {
+  logoForm.name = ''
+  logoForm.imageFile = null
+  logoForm.width = 45
+  logoForm.height = 20
+  logoForm.position = 'right'
+  logoForm.theme_color = '#1565C0'
+  editingLogoId.value = null
 }
 
-async function uploadLogo() {
-  if (!logoFile.value) return
-  uploadingLogo.value = true
-  
+watch(showAddLogoDialog, (val) => {
+  if (!val) resetLogoForm()
+})
+
+function editLogo(logo) {
+  editingLogoId.value = logo.id
+  logoForm.name = logo.name
+  logoForm.width = logo.width
+  logoForm.height = logo.height
+  logoForm.position = logo.position
+  logoForm.theme_color = logo.theme_color
+  showAddLogoDialog.value = true
+}
+
+async function handleLogoSubmit() {
+  submittingLogo.value = true
   const formData = new FormData()
-  formData.append('custom_logo', logoFile.value)
-  
+  if (logoForm.name) formData.append('name', logoForm.name)
+  if (logoForm.imageFile) formData.append('image', logoForm.imageFile)
+  formData.append('width', logoForm.width)
+  formData.append('height', logoForm.height)
+  formData.append('position', logoForm.position)
+  formData.append('theme_color', logoForm.theme_color)
+
   try {
-    const response = await api.post('/auth/upload-logo/', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' }
-    })
-    Notify.create({ type: 'positive', message: response.data.message, position: 'top' })
-    // Odśwież dane użytkownika, aby pobrać nowy URL do logo
+    if (editingLogoId.value) {
+      await api.patch(`/auth/logos/${editingLogoId.value}/`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      })
+      Notify.create({ type: 'positive', message: 'Logo zostało zaktualizowane.' })
+    } else {
+      await api.post('/auth/logos/', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      })
+      Notify.create({ type: 'positive', message: 'Nowe logo zostało dodane.' })
+    }
     await userStore.fetchUser()
-    logoFile.value = null
-  } catch (error) {
+    showAddLogoDialog.value = false
+  } catch (err) {
     Notify.create({ 
       type: 'negative', 
-      message: error.response?.data?.detail || 'Błąd podczas wgrywania pliku.', 
-      position: 'top' 
+      message: err.response?.data?.detail || 'Błąd podczas zapisywania loga.' 
     })
   } finally {
-    uploadingLogo.value = false
+    submittingLogo.value = false
   }
 }
 
-async function removeLogo() {
-  // Możemy to zrobić przez patch na /auth/user/ ustawiając custom_logo na null
-  // lub stworzyć dedykowany endpoint. Dla uproszczenia tutaj:
+async function setDefaultLogo(id) {
   try {
-    const formData = new FormData()
-    formData.append('custom_logo', '') // Django zazwyczaj czyści plik przy pustym stringu lub przez PATCH
-    await api.patch('/auth/user/', { custom_logo: null })
+    await api.post(`/auth/logos/${id}/set_default/`)
     await userStore.fetchUser()
-    Notify.create({ type: 'positive', message: 'Logo zostało usunięte.', position: 'top' })
+    Notify.create({ type: 'positive', message: 'Zmieniono domyślne logo.' })
   } catch {
-    Notify.create({ type: 'negative', message: 'Błąd podczas usuwania loga.', position: 'top' })
+    Notify.create({ type: 'negative', message: 'Błąd podczas ustawiania domyślnego loga.' })
   }
 }
 
-function onFileRejected() {
-  Notify.create({
-    type: 'negative',
-    message: 'Plik jest za duży lub ma niepoprawny format.'
+async function deleteLogo(id) {
+  Dialog.create({
+    title: 'Usuń logo',
+    message: 'Czy na pewno chcesz usunąć to logo? Ta operacja jest nieodwracalna.',
+    cancel: true,
+    persistent: true,
+    ok: { color: 'negative', label: 'Usuń' }
+  }).onOk(async () => {
+    try {
+      await api.delete(`/auth/logos/${id}/`)
+      await userStore.fetchUser()
+      Notify.create({ type: 'positive', message: 'Logo zostało usunięte.' })
+    } catch {
+      Notify.create({ type: 'negative', message: 'Błąd podczas usuwania loga.' })
+    }
   })
 }
 
-async function previewLogoPdf() {
-  previewingLogo.value = true
+async function previewLogoPdf(id) {
   try {
-    const response = await api.get('/auth/logo-preview/', { responseType: 'blob' })
+    const response = await api.get(`/auth/logo-preview/?logo_id=${id}`, { responseType: 'blob' })
     const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }))
     window.open(url, '_blank')
   } catch {
     Notify.create({ type: 'negative', message: 'Nie udało się wygenerować podglądu.', position: 'top' })
-  } finally {
-    previewingLogo.value = false
   }
 }
 
 function getFullLogoUrl(url) {
   if (!url) return ''
   if (url.startsWith('http')) return url
-  // Usuń końcowe / z baseUrl i początkowe / z url, potem połącz
   const base = api.defaults.baseURL.replace(/\/api\/?$/, '')
   const path = url.startsWith('/') ? url : '/' + url
   return `${base}${path}`
@@ -426,19 +460,37 @@ function getFullLogoUrl(url) {
 </script>
 
 <style scoped>
+.logo-card {
+  transition: all 0.3s ease;
+  border: 1px solid rgba(0,0,0,0.12);
+}
+.logo-card.is-default {
+  border: 2px solid var(--q-primary);
+  background: rgba(var(--q-primary-rgb), 0.02);
+}
 .logo-preview-box {
   width: 100%;
   height: 120px;
-  background: #f9f9f9;
+  background: white;
   border: 1px dashed #ccc;
 }
 .responsive-img {
-  max-width: 100%;
-  max-height: 100%;
+  max-width: 90%;
+  max-height: 90%;
   object-fit: contain;
 }
-.border-grey {
+.border-dashed {
+  border: 2px dashed #ccc;
+}
+.border-toggle {
   border: 1px solid rgba(0,0,0,0.12);
+  transition: background 0.3s;
+}
+.border-toggle:hover {
+  background: rgba(0,0,0,0.02);
+}
+.body--dark .border-toggle {
+  border-color: rgba(255,255,255,0.12);
 }
 .body--dark .logo-preview-box {
   background: #1d1d1d;
