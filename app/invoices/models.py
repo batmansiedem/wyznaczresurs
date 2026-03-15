@@ -110,3 +110,28 @@ class PayPalOrder(models.Model):
 
     def __str__(self):
         return f"PayPal {self.paypal_order_id} — {self.user.email} — {self.status}"
+
+
+class BonusPointsCode(models.Model):
+    """Kody promocyjne na darmowe punkty premium."""
+    code = models.CharField(max_length=20, unique=True, verbose_name=_("Kod bonusowy"))
+    points = models.IntegerField(verbose_name=_("Liczba punktów"))
+    is_active = models.BooleanField(default=True, verbose_name=_("Czy aktywny?"))
+    
+    # Jeśli chcemy przypisać kod do konkretnego maila/użytkownika (opcjonalnie)
+    created_at = models.DateTimeField(auto_now_add=True)
+    used_at = models.DateTimeField(null=True, blank=True, verbose_name=_("Data użycia"))
+    used_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True, blank=True,
+        related_name="redeemed_codes",
+        verbose_name=_("Użyty przez")
+    )
+
+    class Meta:
+        verbose_name = _("Kod bonusowy")
+        verbose_name_plural = _("Kody bonusowe")
+
+    def __str__(self):
+        return f"{self.code} ({self.points} pkt) - {'Aktywny' if self.is_active else 'Zużyty'}"

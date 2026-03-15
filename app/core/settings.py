@@ -67,6 +67,7 @@ INSTALLED_APPS = [
     'specialists',              # Nowa aplikacja dla specjalistów (konserwatorów)
     'contacts',                 # Nowa aplikacja dla formularza kontaktowego
     'invoices',                 # Nowa aplikacja do faktur i punktów
+    'notifications',            # Nowa aplikacja do powiadomień
 ]
 
 # Wymagane przez django.contrib.sites i allauth

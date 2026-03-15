@@ -9,11 +9,57 @@ from rest_framework import viewsets, permissions, status, views
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from .models import Invoice, PayPalOrder, PAYPAL_PACKAGES
+from .models import Invoice, PayPalOrder, PAYPAL_PACKAGES, BonusPointsCode
 from .serializers import InvoiceSerializer, CreateInvoiceSerializer, UserSimpleSerializer
 from .pdf_generator import generate_invoice_pdf
 from .paypal_client import create_order as paypal_create_order, capture_order as paypal_capture_order
 from .ksef_service import submit as ksef_submit
+from django.utils import timezone
+
+class BonusRedeemView(views.APIView):
+    """
+    POST /api/billing/redeem-code/
+    Body: { "code": "ABC-123" }
+    Realizuje kod bonusowy i dodaje punkty do konta użytkownika.
+    """
+    permission_classes = [permissions.IsAuthenticated]
+
+    @transaction.atomic
+    def post(self, request):
+        code_str = request.data.get("code", "").strip().upper()
+        if not code_str:
+            return Response({"detail": "Podaj kod bonusowy."}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            # Szukamy aktywnego kodu
+            bonus_code = BonusPointsCode.objects.select_for_update().get(
+                code=code_str, 
+                is_active=True
+            )
+        except BonusPointsCode.DoesNotExist:
+            return Response(
+                {"detail": "Kod jest nieprawidłowy lub został już wykorzystany."}, 
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        user = request.user
+        points_to_add = bonus_code.points
+        
+        # Dodaj punkty użytkownikowi
+        user.premium += points_to_add
+        user.save()
+
+        # Oznacz kod jako zużyty
+        bonus_code.is_active = False
+        bonus_code.used_at = timezone.now()
+        bonus_code.used_by = user
+        bonus_code.save()
+
+        return Response({
+            "detail": f"Pomyślnie doładowano konto o {points_to_add} pkt!",
+            "points_added": points_to_add,
+            "new_balance": user.premium
+        }, status=status.HTTP_200_OK)
 
 User = get_user_model()
 

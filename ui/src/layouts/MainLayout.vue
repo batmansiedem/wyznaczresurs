@@ -91,6 +91,11 @@
           <q-item-section class="text-weight-medium">Cennik i punkty</q-item-section>
         </q-item>
 
+        <q-item clickable to="/invoices" active-class="text-primary bg-primary-opacity" class="rounded-borders">
+          <q-item-section avatar><q-icon name="receipt_long" /></q-item-section>
+          <q-item-section class="text-weight-medium">Transakcje i faktury</q-item-section>
+        </q-item>
+
         <!-- Panel admina — tylko dla superusera -->
         <template v-if="userStore.user?.is_superuser">
           <q-separator class="q-my-sm" />
@@ -98,6 +103,10 @@
           <q-item clickable to="/admin" active-class="text-red-7 bg-red-opacity" class="rounded-borders">
             <q-item-section avatar><q-icon name="admin_panel_settings" color="red-7" /></q-item-section>
             <q-item-section class="text-weight-bold text-red-7">Panel administratora</q-item-section>
+          </q-item>
+          <q-item clickable to="/notifications" active-class="text-primary bg-primary-opacity" class="rounded-borders">
+            <q-item-section avatar><q-icon name="mail" color="primary" /></q-item-section>
+            <q-item-section class="text-weight-bold text-primary">Powiadomienia / E-maile</q-item-section>
           </q-item>
         </template>
 

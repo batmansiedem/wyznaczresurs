@@ -67,6 +67,11 @@ const routes = [
         component: () => import('pages/InvoicesPage.vue')
       },
       {
+        path: 'notifications',
+        meta: { breadcrumbs: [{ label: 'Powiadomienia' }], requiresSuperuser: true },
+        component: () => import('pages/NotificationsPage.vue')
+      },
+      {
         path: 'admin',
         meta: { breadcrumbs: [{ label: 'Panel administratora' }], requiresSuperuser: true },
         component: () => import('pages/AdminPage.vue')

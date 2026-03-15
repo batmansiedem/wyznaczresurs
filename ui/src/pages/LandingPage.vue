@@ -178,6 +178,56 @@
       </div>
     </section>
 
+    <!-- ===== DZIENNIK EKSPLOATACJI ===== -->
+    <section class="q-py-xl bg-primary text-white overflow-hidden relative-position">
+      <div class="lc q-mx-auto q-px-md relative-position" style="z-index:2">
+        <div class="row items-center q-col-gutter-xl">
+          <div class="col-12 col-md-6">
+            <div class="eyebrow eyebrow--light">Darmowe narzędzie</div>
+            <h2 class="section-h2 text-white">Dziennik eksploatacji UTB</h2>
+            <p class="section-sub text-white opacity-70 q-mb-xl">
+              Pobierz bezpłatnie profesjonalnie przygotowany arkusz do rejestracji przebiegu eksploatacji. 
+              Niezbędny dokument do poprawnego monitorowania resursu Twojego urządzenia.
+            </p>
+            <q-list class="q-mb-xl">
+              <q-item class="q-px-none">
+                <q-item-section avatar>
+                  <q-icon name="check_circle" color="white" />
+                </q-item-section>
+                <q-item-section>Zgodny z wymaganiami Rozporządzenia MPiT</q-item-section>
+              </q-item>
+              <q-item class="q-px-none">
+                <q-item-section avatar>
+                  <q-icon name="check_circle" color="white" />
+                </q-item-section>
+                <q-item-section>Przejrzysty układ tabelaryczny</q-item-section>
+              </q-item>
+              <q-item class="q-px-none">
+                <q-item-section avatar>
+                  <q-icon name="check_circle" color="white" />
+                </q-item-section>
+                <q-item-section>Miejsce na dane eksploatującego i parametry pracy</q-item-section>
+              </q-item>
+            </q-list>
+            <q-btn unelevated size="lg" color="white" text-color="primary" 
+              label="Pobierz dziennik (PDF)" icon="picture_as_pdf" 
+              @click="showLogbookDialog = true" class="text-weight-bold" />
+          </div>
+          <div class="col-12 col-md-6 flex flex-center">
+            <div class="logbook-preview shadow-24">
+              <div class="logbook-header">Dziennik Eksploatacji</div>
+              <div class="logbook-lines">
+                <div v-for="n in 12" :key="n" class="logbook-line"></div>
+              </div>
+              <div class="logbook-stamp">PDF</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Dekoracja tła -->
+      <q-icon name="menu_book" class="bg-icon-deco" />
+    </section>
+
     <!-- ===== OBSŁUGIWANE URZĄDZENIA ===== -->
     <section class="devices-section q-py-xl">
       <div class="lc q-mx-auto q-px-md">
@@ -371,12 +421,101 @@
       </div>
     </section>
 
+    <!-- ===== DIALOG DZIENNIKA ===== -->
+    <q-dialog v-model="showLogbookDialog">
+      <q-card style="width: 500px; max-width: 90vw;" class="rounded-borders">
+        <q-card-section class="bg-primary text-white row items-center">
+          <div class="text-h6 text-weight-bold">Pobierz Dziennik Eksploatacji</div>
+          <q-space />
+          <q-btn icon="close" flat round dense v-close-popup />
+        </q-card-section>
+
+        <q-card-section class="q-pa-md">
+          <p class="text-grey-7 q-mb-md">
+            Wprowadź dane urządzenia, aby wygenerować spersonalizowany nagłówek dziennika.
+          </p>
+          <q-form @submit="downloadLogbook" class="row q-col-gutter-md">
+            <div class="col-12">
+              <q-input v-model="logbookForm.email" label="Twój adres e-mail" outlined dense required type="email" />
+            </div>
+            <div class="col-12">
+              <q-input v-model="logbookForm.rodzaj_urzadzenia" label="Rodzaj urządzenia (np. Suwnica)" outlined dense required />
+            </div>
+            <div class="col-12 col-sm-6">
+              <q-input v-model="logbookForm.nr_fabryczny" label="Numer fabryczny" outlined dense required />
+            </div>
+            <div class="col-12 col-sm-6">
+              <q-input v-model="logbookForm.nr_udt" label="Numer ewidencyjny UDT" outlined dense required />
+            </div>
+            <div class="col-12 col-sm-6">
+              <q-input v-model="logbookForm.rok_budowy" label="Rok budowy" outlined dense required />
+            </div>
+            <div class="col-12 col-sm-6">
+              <q-input v-model="logbookForm.rok_dop" label="Rok dopuszczenia" outlined dense required />
+            </div>
+            
+            <div class="col-12 q-mt-md">
+              <q-banner dense class="bg-blue-1 text-primary rounded-borders q-mb-md">
+                <template v-slot:avatar>
+                  <q-icon name="info" />
+                </template>
+                Pobierając dziennik, akceptujesz regulamin serwisu.
+              </q-banner>
+              <q-btn type="submit" color="primary" label="Generuj i pobierz PDF" 
+                class="full-width" :loading="downloadingLogbook" icon="download" />
+            </div>
+          </q-form>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
+
   </q-page>
 </template>
 
 <script setup>
+import { ref } from 'vue'
 import { useUserStore } from 'stores/user-store'
+import { api } from 'boot/axios'
+import { useQuasar, exportFile } from 'quasar'
+
 const userStore = useUserStore()
+const $q = useQuasar()
+
+const showLogbookDialog = ref(false)
+const downloadingLogbook = ref(false)
+const logbookForm = ref({
+  email: '',
+  rodzaj_urzadzenia: '',
+  nr_fabryczny: '',
+  nr_udt: '',
+  rok_budowy: '',
+  rok_dop: ''
+})
+
+const downloadLogbook = async () => {
+  downloadingLogbook.value = true
+  try {
+    const response = await api.post('/calculators/generate-logbook/', logbookForm.value, {
+      responseType: 'blob'
+    })
+    
+    const status = exportFile(
+      `dziennik_${logbookForm.value.nr_fabryczny || 'utb'}.pdf`,
+      response.data,
+      'application/pdf'
+    )
+
+    if (status === true) {
+      $q.notify({ color: 'positive', message: 'Dziennik został pobrany.' })
+      showLogbookDialog.value = false
+    }
+  } catch (error) {
+    console.error('Błąd pobierania dziennika:', error)
+    $q.notify({ color: 'negative', message: 'Nie udało się wygenerować dziennika.' })
+  } finally {
+    downloadingLogbook.value = false
+  }
+}
 
 const complianceSpecs = [
   { code: '22', label: 'Typy urządzeń', desc: 'Pełny zakres UTB' },
@@ -857,5 +996,70 @@ const premiumFeatures = [
   font-size: 1.05rem;
   color: rgba(white, 0.5);
   margin: 0;
+}
+
+// ────────────────────────────────────────
+// Dziennik Eksploatacji
+// ────────────────────────────────────────
+.logbook-preview {
+  width: 300px;
+  height: 400px;
+  background: white;
+  border-radius: 4px;
+  padding: 30px 20px;
+  position: relative;
+  color: #334155;
+  transform: rotate(3deg);
+  transition: transform 0.3s;
+  &:hover { transform: rotate(0deg) scale(1.05); }
+}
+
+.logbook-header {
+  font-weight: 800;
+  font-size: 1.1rem;
+  text-align: center;
+  border-bottom: 2px solid $primary;
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+  text-transform: uppercase;
+}
+
+.logbook-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.logbook-line {
+  height: 1px;
+  background: rgba(0,0,0,0.1);
+  width: 100%;
+}
+
+.logbook-stamp {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  width: 60px;
+  height: 60px;
+  border: 3px double $primary;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  color: $primary;
+  opacity: 0.4;
+  transform: rotate(-15deg);
+}
+
+.bg-icon-deco {
+  position: absolute;
+  right: -50px;
+  top: -50px;
+  font-size: 300px;
+  color: white;
+  opacity: 0.05;
+  pointer-events: none;
 }
 </style>

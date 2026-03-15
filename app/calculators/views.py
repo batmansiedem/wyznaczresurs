@@ -1,4 +1,5 @@
 from decimal import Decimal
+import rest_framework.views
 from rest_framework import viewsets, mixins, status
 from rest_framework.response import Response
 from rest_framework.decorators import action
@@ -206,4 +207,29 @@ class CalculatorResultViewSet(
         response = HttpResponse(pdf_bytes, content_type='application/pdf')
         slug = result.calculator_definition.slug
         response['Content-Disposition'] = f'attachment; filename="resurs_{slug}_{result.id}.pdf"'
+        return response
+
+class GenerateLogbookView(rest_framework.views.APIView):
+    """Widok do generowania PDF Dziennika Eksploatacji (Logbook)."""
+    # Publiczny dostęp (jak w starej wersji), ale z walidacją email w request
+    permission_classes = [] 
+
+    def post(self, request):
+        from django.http import HttpResponse
+        from .book_generator import generate_logbook_pdf
+        
+        data = request.data
+        # Prosta walidacja (opcjonalnie można dodać serializer)
+        required = ['email', 'rodzaj_urzadzenia', 'nr_fabryczny', 'nr_udt', 'rok_budowy', 'rok_dop']
+        for field in required:
+            if not data.get(field):
+                return Response({"detail": f"Pole {field} jest wymagane."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Logowanie pobrania (opcjonalnie, można tu dodać zapis do bazy jak w PHP)
+        # ...
+
+        pdf_bytes = generate_logbook_pdf(data)
+        response = HttpResponse(pdf_bytes, content_type='application/pdf')
+        filename = f"dziennik_eksploatacji_{data.get('nr_fabryczny', 'utb')}.pdf"
+        response['Content-Disposition'] = f'attachment; filename="{filename}"'
         return response

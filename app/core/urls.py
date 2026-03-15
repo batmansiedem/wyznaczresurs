@@ -26,6 +26,7 @@ urlpatterns = [
     path('api/specialists/', include('specialists.urls')), # Endpointy dla specjalistów
     path('api/contacts/', include('contacts.urls')),       # Endpointy dla formularza kontaktowego
     path('api/billing/', include('invoices.urls')),        # Endpointy dla faktur i punktów
+    path('api/notifications/', include('notifications.urls')), # Powiadomienia email
 ]
 
 if settings.DEBUG:

@@ -332,6 +332,39 @@
       </div>
 
     </div>
+
+    <!-- ======= REALIZACJA KODU BONUSOWEGO ======= -->
+    <div class="row q-mt-lg">
+      <div class="col-12">
+        <q-card flat bordered class="rounded-borders shadow-1 bg-blue-grey-1">
+          <q-card-section class="row items-center q-gutter-md">
+            <q-avatar icon="confirmation_number" color="primary" text-color="white" size="md" />
+            <div class="col">
+              <div class="text-subtitle1 text-weight-bold text-primary">Masz kod bonusowy?</div>
+              <div class="text-caption text-grey-7">Wprowadź otrzymany kod, aby otrzymać darmowe punkty premium.</div>
+            </div>
+            <div class="col-12 col-sm-auto row q-gutter-sm items-center">
+              <q-input
+                v-model="bonusCode"
+                label="Twój kod"
+                outlined
+                dense
+                bg-color="white"
+                style="min-width: 200px"
+                @keyup.enter="redeemCode"
+              />
+              <q-btn
+                label="Zrealizuj"
+                color="primary"
+                unelevated
+                :loading="redeeming"
+                @click="redeemCode"
+              />
+            </div>
+          </q-card-section>
+        </q-card>
+      </div>
+    </div>
   </q-page>
 </template>
 
@@ -344,6 +377,33 @@ import PricingCards from 'components/shared/PricingCards.vue'
 
 const $q = useQuasar()
 const userStore = useUserStore()
+
+// --- Kody bonusowe ---
+const bonusCode = ref('')
+const redeeming = ref(false)
+
+const redeemCode = async () => {
+  if (!bonusCode.value) return
+  redeeming.value = true
+  try {
+    const res = await api.post('/billing/redeem-code/', { code: bonusCode.value })
+    $q.notify({
+      color: 'positive',
+      icon: 'check_circle',
+      message: res.data.detail
+    })
+    bonusCode.value = ''
+    await userStore.fetchUser()
+  } catch (e) {
+    $q.notify({
+      color: 'negative',
+      icon: 'error',
+      message: e.response?.data?.detail || 'Błąd podczas realizacji kodu.'
+    })
+  } finally {
+    redeeming.value = false
+  }
+}
 
 // ─── Dane statyczne ────────────────────────────────────────────────────────
 const pointsSteps = [

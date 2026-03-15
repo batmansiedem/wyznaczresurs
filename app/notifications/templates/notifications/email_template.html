@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@500;700&family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100% !important;
+            background-color: #f4f7fa;
+            font-family: 'Roboto', 'Segoe UI', Arial, sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .email-wrapper {
+            width: 100%;
+            background-color: #f4f7fa;
+            padding: 40px 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 12px 40px rgba(10, 25, 41, 0.12);
+        }
+
+        /* HERO SECTION - Spójny z Landing Page Hero */
+        .hero {
+            background: #1565C0;
+            background: linear-gradient(145deg, #1565C0 0%, #0c3c73 100%);
+            color: #ffffff;
+            padding: 55px 40px;
+            text-align: center;
+        }
+
+        .hero-logo {
+            font-size: 32px;
+            font-weight: 900;
+            letter-spacing: -1px;
+            text-decoration: none;
+            color: #ffffff;
+        }
+
+        .hero-logo span {
+            color: #1976D2; /* Zgodny z Twoim $secondary */
+        }
+
+        .hero-sub {
+            margin-top: 15px;
+            font-size: 16px;
+            opacity: 0.85;
+            font-weight: 400;
+        }
+
+        /* COMPLIANCE STRIP - Ciemny granat z Landing Page */
+        .compliance-strip {
+            background-color: #0A1929;
+            color: #ffffff;
+            padding: 15px 20px;
+            text-align: center;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 11px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            border-bottom: 2px solid #1976D2;
+        }
+
+        .content {
+            padding: 45px 40px;
+            color: #334155;
+            line-height: 1.8;
+        }
+
+        /* TWOJA FORMULA Z LANDING PAGE (Kdr = Σ...) */
+        .formula-box {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 13px;
+            background-color: rgba(25, 118, 210, 0.06); /* Na bazie $secondary */
+            border-left: 4px solid #1976D2;
+            padding: 16px 20px;
+            border-radius: 0 6px 6px 0;
+            color: #1565C0;
+            margin: 25px 0;
+            word-break: break-all;
+        }
+
+        h2 {
+            font-size: 24px;
+            font-weight: 900;
+            color: #0A1929;
+            margin-top: 0;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+
+        /* PRZYCISK - Styl Quasar / Landing */
+        .btn-container {
+            margin-top: 35px;
+            text-align: center;
+        }
+
+        .btn {
+            display: inline-block;
+            background-color: #1565C0;
+            color: #ffffff !important;
+            padding: 16px 36px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 16px;
+            box-shadow: 0 4px 15px rgba(21, 101, 192, 0.3);
+        }
+
+        .footer {
+            background-color: #0A1929;
+            padding: 40px;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 12px;
+        }
+
+        .footer-logo {
+            font-weight: 700;
+            color: #ffffff;
+            font-size: 14px;
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        .footer a {
+            color: #1976D2;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-wrapper">
+        <div class="container">
+            <div class="hero">
+                <a href="https://wyznaczresurs.com" class="hero-logo">wyznacz<span>resurs</span>.com</a>
+                {% if subject %}
+                <div class="hero-sub">{{ subject }}</div>
+                {% endif %}
+            </div>
+
+            <div class="compliance-strip">
+                FEM 9.511 &bull; ISO 4301 &bull; ROZP. MPiT 2018 &bull; UDT
+            </div>
+
+            <div class="content">
+                {{ content|safe }}
+                
+                {% if bonus_code %}
+                <div style="margin-top: 40px; text-align: center; border: 2px dashed #1976D2; padding: 30px; border-radius: 8px; background-color: #f8fbff;">
+                    <div style="font-size: 14px; color: #1565C0; font-weight: 700; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px;">
+                        Twój kod bonusowy na punkty premium
+                    </div>
+                    <div style="font-family: 'Roboto Mono', monospace; font-size: 28px; font-weight: 900; color: #0A1929; letter-spacing: 3px; margin-bottom: 10px;">
+                        {{ bonus_code }}
+                    </div>
+                    <div style="font-size: 16px; color: #1976D2; font-weight: 700;">
+                        +{{ bonus_points }} pkt PREMIUM
+                    </div>
+                    <div style="font-size: 12px; color: #64748B; margin-top: 15px;">
+                        Kod możesz zrealizować w zakładce "Transakcje i faktury" po zalogowaniu do serwisu.
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="footer">
+                <span class="footer-logo">wyznaczresurs.com</span>
+                Profesjonalny system wyznaczania resursu UTB.<br>
+                Zgodność z normami FEM/ISO i wymogami UDT.<br><br>
+                &copy; {{ year }} Wszystkie prawa zastrzeżone.
+            </div>
+        </div>
+    </div>
+</body>
+</html>
