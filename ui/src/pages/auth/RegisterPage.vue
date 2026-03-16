@@ -95,11 +95,10 @@
 import { reactive, ref } from 'vue'
 import { useUserStore } from 'stores/user-store'
 import { useRouter } from 'vue-router'
-import { useQuasar } from 'quasar'
+import { Notify } from 'quasar'
 
 const userStore = useUserStore()
 const router = useRouter()
-const $q = useQuasar()
 const loading = ref(false)
 
 const form = reactive({
@@ -112,7 +111,7 @@ const onSubmit = async () => {
   loading.value = true
   try {
     await userStore.register({ ...form, re_password: form.passwordConfirm })
-    $q.notify({ type: 'positive', message: 'Konto utworzone! Zaloguj się.' })
+    Notify.create({ type: 'positive', message: 'Konto utworzone! Zaloguj się.', position: 'top' })
     router.push('/login')
   } catch {
     // Błąd obsłużony przez Axios

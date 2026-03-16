@@ -506,12 +506,12 @@ const downloadLogbook = async () => {
     )
 
     if (status === true) {
-      $q.notify({ color: 'positive', message: 'Dziennik został pobrany.' })
+      $q.notify({ type: 'positive', message: 'Dziennik został pobrany.', position: 'top' })
       showLogbookDialog.value = false
     }
   } catch (error) {
     console.error('Błąd pobierania dziennika:', error)
-    $q.notify({ color: 'negative', message: 'Nie udało się wygenerować dziennika.' })
+    $q.notify({ type: 'negative', message: 'Nie udało się wygenerować dziennika.', position: 'top' })
   } finally {
     downloadingLogbook.value = false
   }

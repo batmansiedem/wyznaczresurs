@@ -388,17 +388,19 @@ const redeemCode = async () => {
   try {
     const res = await api.post('/billing/redeem-code/', { code: bonusCode.value })
     $q.notify({
-      color: 'positive',
+      type: 'positive',
       icon: 'check_circle',
-      message: res.data.detail
+      message: res.data.detail,
+      position: 'top'
     })
     bonusCode.value = ''
     await userStore.fetchUser()
   } catch (e) {
     $q.notify({
-      color: 'negative',
+      type: 'negative',
       icon: 'error',
-      message: e.response?.data?.detail || 'Błąd podczas realizacji kodu.'
+      message: e.response?.data?.detail || 'Błąd podczas realizacji kodu.',
+      position: 'top'
     })
   } finally {
     redeeming.value = false
@@ -483,23 +485,25 @@ const initPaypal = async () => {
           const invoice = res.data.invoice
           await userStore.fetchUser()
           $q.notify({
-            color:   'positive',
+            type:    'positive',
             icon:    'check_circle',
             timeout: 7000,
+            position: 'top',
             message: `Dodano ${selectedPkg.value.pts} punktów premium!`,
             caption: `Faktura ${invoice.invoice_number} • status KSeF: ${invoice.ksef_status}`,
           })
         } catch (e) {
           $q.notify({
-            color:   'negative',
+            type:    'negative',
             icon:    'error',
+            position: 'top',
             message: e.response?.data?.detail || 'Błąd podczas finalizacji płatności.'
           })
         }
       },
 
       onCancel: () => {
-        $q.notify({ color: 'info', icon: 'info', message: 'Płatność anulowana.' })
+        $q.notify({ type: 'info', icon: 'info', message: 'Płatność anulowana.', position: 'top' })
       },
 
       onError: (err) => {

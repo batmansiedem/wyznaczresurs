@@ -5,7 +5,7 @@ from django.views.decorators.csrf import ensure_csrf_cookie
 from django.db.models import Count, Q, Sum
 from django.contrib.auth import get_user_model
 from django.utils import timezone
-from rest_framework import viewsets, status
+from rest_framework import viewsets, status, permissions, parsers
 from rest_framework.decorators import api_view, permission_classes, action
 from rest_framework.permissions import AllowAny, IsAdminUser
 from rest_framework.response import Response
@@ -13,10 +13,13 @@ from rest_framework.views import APIView
 
 from calculators.models import CalculatorResult
 from calculators.serializers import CalculatorResultSerializer
+from .models import UserLogo, UserSignature
 from .serializers import (
     AdminUserListSerializer,
     AdminUpdateUserSerializer,
     AdminCreateUserSerializer,
+    UserLogoSerializer,
+    UserSignatureSerializer,
 )
 
 User = get_user_model()
@@ -31,19 +34,6 @@ def set_csrf_token(request):
     Niezbędne dla SPA przed próbą logowania.
     """
     return JsonResponse({'message': 'CSRF cookie set'})
-
-
-from rest_framework import permissions, parsers
-from .models import UserLogo, UserSignature
-from .serializers import (
-    AdminUserListSerializer,
-    AdminUpdateUserSerializer,
-    AdminCreateUserSerializer,
-    UserLogoSerializer,
-    UserSignatureSerializer,
-)
-
-User = get_user_model()
 
 class UserLogoViewSet(viewsets.ModelViewSet):
     """Widok do zarządzania logotypami użytkownika."""

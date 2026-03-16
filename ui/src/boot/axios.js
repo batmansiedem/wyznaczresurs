@@ -6,6 +6,7 @@ import { useUserStore } from 'stores/user-store'
 const api = axios.create({
   baseURL: process.env.API_BASE_URL || 'http://localhost:8000/api',
   withCredentials: true,
+  timeout: 30000,
   headers: {
     'Content-Type': 'application/json',
   }
@@ -50,6 +51,12 @@ export default boot(async ({ app, router, store }) => {
         }
       }
 
+      // --- TIMEOUT ---
+      if (error.code === 'ECONNABORTED') {
+        Notify.create({ type: 'negative', message: 'Brak odpowiedzi serwera. Sprawdź połączenie.', position: 'top', timeout: 5000 })
+        return Promise.reject(error)
+      }
+
       // --- GLOBALNE BŁĘDY (pomiń jeśli komponent obsługuje sam przez skipGlobalNotify) ---
       if (
         error.response &&
@@ -57,17 +64,9 @@ export default boot(async ({ app, router, store }) => {
         error.response.status !== 404 &&
         !originalRequest.skipGlobalNotify
       ) {
-         let msg = 'Błąd serwera.'
-         const data = error.response.data
-         if (data && typeof data === 'object') {
-            const keys = Object.keys(data)
-            if (keys.length > 0) {
-               const firstKey = keys[0]
-               const val = Array.isArray(data[firstKey]) ? data[firstKey][0] : data[firstKey]
-               msg = (firstKey === 'non_field_errors' || firstKey === 'detail') ? val : `${firstKey}: ${val}`
-            }
-         }
-         Notify.create({ type: 'negative', message: msg, position: 'top', timeout: 4000 })
+        // Backend zawsze zwraca {"detail": "..."} dzięki custom_exception_handler
+        const msg = error.response.data?.detail || 'Błąd serwera.'
+        Notify.create({ type: 'negative', message: msg, position: 'top', timeout: 4000 })
       }
 
       return Promise.reject(error)

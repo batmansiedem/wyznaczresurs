@@ -2,6 +2,17 @@ from .models import Unit
 from django.core.exceptions import ValidationError
 from decimal import Decimal
 
+
+def decimals_to_float(obj):
+    """Rekurencyjnie konwertuje wartości Decimal na float dla serializacji JSON."""
+    if isinstance(obj, dict):
+        return {k: decimals_to_float(v) for k, v in obj.items()}
+    if isinstance(obj, list):
+        return [decimals_to_float(v) for v in obj]
+    if isinstance(obj, Decimal):
+        return float(obj)
+    return obj
+
 def convert_unit(value, from_unit_symbol, to_unit_symbol):
     """
     Converts a value from one unit to another.

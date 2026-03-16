@@ -333,7 +333,7 @@
 
             <q-card v-if="selectedSavedResult" flat bordered class="q-mt-lg shadow-5 border-primary overflow-hidden">
               <q-card-section class="row items-center bg-primary text-white">
-                <div class="text-h6">Szczegóły z dnia {{ new Date(selectedSavedResult.created_at).toLocaleDateString() }}</div>
+                <div class="text-h6">Szczegóły z dnia {{ new Date(selectedSavedResult.created_at).toLocaleDateString('pl-PL') }}</div>
                 <q-space />
                 <q-btn flat dense icon="close" @click="selectedSavedResult = null" color="white" />
               </q-card-section>
@@ -512,7 +512,7 @@ const activeSections = computed(() => {
 })
 
 const savedResultsColumns = [
-  { name: 'created_at', label: 'Data', align: 'left', field: 'created_at', sortable: true, format: val => new Date(val).toLocaleString() },
+  { name: 'created_at', label: 'Data', align: 'left', field: 'created_at', sortable: true, format: val => new Date(val).toLocaleString('pl-PL') },
   { name: 'resurs', label: 'Zużycie [%]', align: 'left', field: row => row.is_locked ? null : `${row.output_data?.resurs_wykorzystanie ?? row.output_data?.resurs ?? 0}%`, sortable: true },
   { name: 'status', label: 'Status', align: 'center' },
   { name: 'actions', label: 'Akcje', align: 'center' }
@@ -536,7 +536,7 @@ function calculatePreviewCycles() {
   const shifts = { jednozmianowy: 1, dwuzmianowy: 2, trzyzmianowy: 3 }
   const lata = getLataPracy()
   const val = Math.round((cycleHelper.cykle_zmiana || 0) * (shifts[cycleHelper.tryb_pracy] || 1) * (cycleHelper.dni_robocze || 0) * lata)
-  return val.toLocaleString()
+  return val.toLocaleString('pl-PL')
 }
 
 function calculateClientCycles() {
@@ -591,7 +591,7 @@ const kpiBlockClass = computed(() => {
 function formatOutputValue(value, fieldDef) {
   if (value === null || value === undefined) return '-'
   if (fieldDef.type === 'percentage') return `${value}%`
-  if (fieldDef.type === 'date') return new Date(value).toLocaleDateString()
+  if (fieldDef.type === 'date') return new Date(value).toLocaleDateString('pl-PL')
   if (fieldDef.type === 'number' && fieldDef.unit) return `${value} ${fieldDef.unit}`
   return String(value)
 }
@@ -661,7 +661,7 @@ async function fetchDeviceResults() {
   for (const slug of parentSlugs) {
     try {
       const res = await api.get('/calculators/results/for_calculator/', { params: { slug } })
-      all.push(...res.data.map(r => ({ ...r, label: `${calculatorFields[slug]?.name || slug} — ${new Date(r.created_at).toLocaleDateString()}` })))
+      all.push(...res.data.map(r => ({ ...r, label: `${calculatorFields[slug]?.name || slug} — ${new Date(r.created_at).toLocaleDateString('pl-PL')}` })))
     } catch (error) {
       console.error(error)
     }

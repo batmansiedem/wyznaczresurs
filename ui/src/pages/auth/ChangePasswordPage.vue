@@ -17,14 +17,13 @@
 <script setup>
 import { ref } from 'vue'
 import { api } from 'boot/axios'
-import { useQuasar } from 'quasar'
+import { Notify } from 'quasar'
 import { useRouter } from 'vue-router'
 
 const oldPassword = ref('')
 const newPassword = ref('')
 const confirmPassword = ref('')
 const loading = ref(false)
-const $q = useQuasar()
 const router = useRouter()
 
 const onSubmit = async () => {
@@ -35,7 +34,7 @@ const onSubmit = async () => {
       new_password1: newPassword.value,
       new_password2: confirmPassword.value
     })
-    $q.notify({ type: 'positive', message: 'Hasło zmienione' })
+    Notify.create({ type: 'positive', message: 'Hasło zostało zmienione.', position: 'top' })
     router.push('/')
   } catch { // <--- ZMIANA: Usunięto (e)
     // Błąd obsłużony przez Axios

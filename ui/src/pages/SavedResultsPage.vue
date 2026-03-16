@@ -171,6 +171,7 @@ import { Notify, Dialog } from 'quasar'
 import calculatorFields from 'src/data/calculator_fields.json'
 import calculatorOutputFields from 'src/data/calculator_output_fields.json'
 import { useUserStore } from 'stores/user-store'
+import { downloadBlob } from 'src/utils/download'
 
 const downloadingPdf = ref(false)
 
@@ -182,19 +183,18 @@ const selectedResult = ref(null)
 const unlocking = ref(false)
 
 async function downloadPdf(row) {
-  if (row.is_locked) { Notify.create({ type: 'warning', message: 'Odblokuj wyniki, aby pobrać PDF.' }); return }
+  if (row.is_locked) { Notify.create({ type: 'warning', message: 'Odblokuj wyniki, aby pobrać PDF.', position: 'top' }); return }
   downloadingPdf.value = true
   try {
     const res = await api.get(`/calculators/results/${row.id}/pdf/`, { responseType: 'blob' })
-    const url = URL.createObjectURL(new Blob([res.data], { type: 'application/pdf' }))
-    const a = document.createElement('a'); a.href = url; a.download = `resurs_${row.id}.pdf`; a.click()
-  } catch { Notify.create({ type: 'negative', message: 'Błąd pobierania PDF.' }) }
+    downloadBlob(res.data, `resurs_${row.id}.pdf`)
+  } catch { Notify.create({ type: 'negative', message: 'Błąd pobierania PDF.', position: 'top' }) }
   finally { downloadingPdf.value = false }
 }
 
 const columns = [
   { name: 'calculator_name', required: true, label: 'Urządzenie', align: 'left', field: 'calculator_name', sortable: true },
-  { name: 'created_at', label: 'Data obliczeń', align: 'left', field: 'created_at', sortable: true, format: val => new Date(val).toLocaleDateString() },
+  { name: 'created_at', label: 'Data obliczeń', align: 'left', field: 'created_at', sortable: true, format: val => new Date(val).toLocaleDateString('pl-PL') },
   { name: 'status', label: 'Status', align: 'center', field: 'is_locked' },
   { name: 'actions', label: 'Dostępne akcje', align: 'center' }
 ]
@@ -220,7 +220,7 @@ function formatValue(value, fieldDef) {
   switch (fieldDef.type) {
     case 'number': return `${value} ${fieldDef.unit || ''}`.trim();
     case 'percentage': return `${value}%`.trim();
-    case 'date': return new Date(value).toLocaleDateString();
+    case 'date': return new Date(value).toLocaleDateString('pl-PL');
     case 'boolean': return value ? 'Tak' : 'Nie';
     default: return String(value);
   }
@@ -232,7 +232,7 @@ async function fetchResults() {
     const response = await api.get('/calculators/results/')
     results.value = response.data
   } catch {
-    Notify.create({ type: 'negative', message: 'Nie udało się załadować wyników.' })
+    Notify.create({ type: 'negative', message: 'Nie udało się załadować wyników.', position: 'top' })
   } finally {
     loading.value = false
   }
@@ -254,9 +254,9 @@ function confirmDelete(row) {
     try {
       await api.delete(`/calculators/results/${row.id}/`)
       results.value = results.value.filter(r => r.id !== row.id)
-      Notify.create({ type: 'positive', message: 'Wynik został usunięty.' })
+      Notify.create({ type: 'positive', message: 'Wynik został usunięty.', position: 'top' })
     } catch {
-      Notify.create({ type: 'negative', message: 'Błąd podczas usuwania.' })
+      Notify.create({ type: 'negative', message: 'Błąd podczas usuwania.', position: 'top' })
     }
   })
 }
@@ -275,9 +275,9 @@ async function unlockResult(row) {
     if (res.data.remaining_premium !== undefined && userStore.user) {
       userStore.user.premium = res.data.remaining_premium
     }
-    Notify.create({ type: 'positive', message: 'Wyniki odblokowane pomyślnie!' })
+    Notify.create({ type: 'positive', message: 'Wyniki odblokowane pomyślnie!', position: 'top' })
   } catch (error) {
-    Notify.create({ type: 'negative', message: error.response?.data?.detail || error.response?.data?.[0] || 'Błąd odblokowania.' })
+    Notify.create({ type: 'negative', message: error.response?.data?.detail || 'Błąd odblokowania.', position: 'top' })
   } finally { unlocking.value = false }
 }
 

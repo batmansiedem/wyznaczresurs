@@ -95,10 +95,10 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import { api } from 'boot/axios'
-import { useQuasar } from 'quasar'
+import { Notify } from 'quasar'
 import { useUserStore } from 'stores/user-store'
+import { downloadBlob } from 'src/utils/download'
 
-const $q = useQuasar()
 const userStore = useUserStore()
 const isAdmin = computed(() => userStore.user?.is_staff || userStore.user?.is_superuser)
 
@@ -137,7 +137,7 @@ const fetchInvoices = async () => {
     const response = await api.get('/billing/invoices/')
     invoices.value = response.data
   } catch {
-    $q.notify({ color: 'negative', message: 'Błąd podczas pobierania faktur' })
+    // Błąd obsłużony przez interceptor axios
   } finally {
     loading.value = false
   }
@@ -153,16 +153,9 @@ const downloadInvoice = async (invoice) => {
     const response = await api.get(`/billing/invoices/${invoice.id}/download_pdf/`, {
       responseType: 'blob'
     })
-    const url = window.URL.createObjectURL(new Blob([response.data]))
-    const link = document.createElement('a')
-    link.href = url
-    link.setAttribute('download', `Faktura_${invoice.invoice_number.replace(/\//g, '_')}.pdf`)
-    document.body.appendChild(link)
-    link.click()
-    link.remove()
-    window.URL.revokeObjectURL(url)
+    downloadBlob(response.data, `Faktura_${invoice.invoice_number.replace(/\//g, '_')}.pdf`)
   } catch {
-    $q.notify({ color: 'negative', message: 'Błąd podczas pobierania pliku PDF' })
+    Notify.create({ type: 'negative', message: 'Błąd podczas pobierania pliku PDF.', position: 'top' })
   }
 }
 

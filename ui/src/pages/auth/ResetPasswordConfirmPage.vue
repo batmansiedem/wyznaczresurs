@@ -16,14 +16,13 @@
 <script setup>
 import { ref } from 'vue'
 import { api } from 'boot/axios'
-import { useQuasar } from 'quasar'
+import { Notify } from 'quasar'
 import { useRouter } from 'vue-router'
 
 const props = defineProps(['uid', 'token'])
 const pass1 = ref('')
 const pass2 = ref('')
 const loading = ref(false)
-const $q = useQuasar()
 const router = useRouter()
 
 const onSubmit = async () => {
@@ -35,12 +34,10 @@ const onSubmit = async () => {
       new_password1: pass1.value,
       new_password2: pass2.value
     })
-    $q.notify({ type: 'positive', message: 'Zaloguj się nowym hasłem.' })
+    Notify.create({ type: 'positive', message: 'Hasło zmienione. Zaloguj się nowym hasłem.', position: 'top' })
     router.push('/login')
-  } catch { // <--- ZMIANA: Usunięto (e)
-    // Tu możemy zostawić customowy komunikat, jeśli Axios nie pokrywa tego przypadku idealnie
-    // ale zazwyczaj axios to obsłuży. Jeśli chcemy "nadpisać" komunikat:
-    // $q.notify({ type: 'negative', message: 'Link wygasł lub jest nieprawidłowy' })
+  } catch {
+    // Błąd obsłużony przez interceptor axios
   } finally {
     loading.value = false
   }

@@ -44,7 +44,7 @@ class ContactFormView(APIView):
                     fail_silently=False,
                 )
                 return Response({"detail": "Wiadomość została wysłana pomyślnie."}, status=status.HTTP_200_OK)
-            except Exception as e:
-                return Response({"detail": f"Wystąpił błąd podczas wysyłania wiadomości: {e}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            except Exception:
+                return Response({"detail": "Wystąpił błąd podczas wysyłania wiadomości. Spróbuj ponownie."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

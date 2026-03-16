@@ -229,9 +229,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { api } from 'boot/axios'
-import { useQuasar } from 'quasar'
-
-const $q = useQuasar()
+import { Notify } from 'quasar'
 
 const formData = ref({
   all_users: false,
@@ -255,7 +253,7 @@ const fetchUsers = async () => {
     filteredUserOptions.value = response.data
   } catch (error) {
     console.error('Błąd pobierania użytkowników:', error)
-    $q.notify({ color: 'negative', message: 'Nie udało się pobrać listy użytkowników' })
+    Notify.create({ type: 'negative', message: 'Nie udało się pobrać listy użytkowników.', position: 'top' })
   }
 }
 
@@ -313,7 +311,7 @@ const sendEmail = async () => {
     }
   } catch (error) {
     const errorMsg = error.response?.data?.detail || 'Wystąpił nieoczekiwany błąd podczas wysyłki.'
-    $q.notify({ color: 'negative', message: errorMsg })
+    Notify.create({ type: 'negative', message: errorMsg, position: 'top' })
     resultData.value = error.response?.data
   } finally {
     sending.value = false

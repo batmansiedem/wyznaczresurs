@@ -1,4 +1,3 @@
-from decimal import Decimal
 import rest_framework.views
 from rest_framework import viewsets, mixins, status
 from rest_framework.response import Response
@@ -6,21 +5,12 @@ from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from .models import CalculatorDefinition, CalculatorResult, Unit
 from .serializers import CalculatorDefinitionSerializer, CalculatorResultSerializer, UnitSerializer
-from .utils import convert_unit
+from .utils import convert_unit, decimals_to_float
 from . import calculation_logic
 from django.db import transaction
 from django.shortcuts import get_object_or_404
 from django.core.exceptions import ValidationError as DjangoValidationError
 from rest_framework.exceptions import ValidationError as DRFValidationError, PermissionDenied
-
-
-def _decimals_to_float(obj):
-    """Rekurencyjnie konwertuje wartości Decimal na float dla serializacji JSON."""
-    if isinstance(obj, dict):
-        return {k: _decimals_to_float(v) for k, v in obj.items()}
-    if isinstance(obj, Decimal):
-        return float(obj)
-    return obj
 
 
 class CalculatorDefinitionViewSet(viewsets.ReadOnlyModelViewSet):
@@ -45,7 +35,7 @@ class CalculatorDefinitionViewSet(viewsets.ReadOnlyModelViewSet):
 
         try:
             calculator_instance = calculation_logic.CalculatorFactory.get_calculator(slug, input_data)
-            output_data = _decimals_to_float(calculator_instance.calculate())
+            output_data = decimals_to_float(calculator_instance.calculate())
 
             with transaction.atomic():
                 if has_points and cost > 0 and not user.is_superuser:
@@ -101,7 +91,12 @@ class CalculatorResultViewSet(
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return CalculatorResult.objects.filter(user=self.request.user).order_by('-created_at')
+        return (
+            CalculatorResult.objects
+            .filter(user=self.request.user)
+            .select_related('calculator_definition')
+            .order_by('-created_at')
+        )
 
     def perform_destroy(self, instance):
         if instance.user != self.request.user:

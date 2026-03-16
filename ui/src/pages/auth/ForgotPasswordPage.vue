@@ -16,17 +16,16 @@
 <script setup>
 import { ref } from 'vue'
 import { api } from 'boot/axios'
-import { useQuasar } from 'quasar'
+import { Notify } from 'quasar'
 
 const email = ref('')
 const loading = ref(false)
-const $q = useQuasar()
 
 const onSubmit = async () => {
   loading.value = true
   try {
     await api.post('/auth/password/reset/', { email: email.value })
-    $q.notify({ type: 'positive', message: 'Sprawdź email' })
+    Notify.create({ type: 'positive', message: 'Link do resetu hasła został wysłany. Sprawdź skrzynkę email.', position: 'top' })
   } catch { // <--- ZMIANA: Usunięto (e)
      // Błąd obsłużony przez Axios
   } finally {

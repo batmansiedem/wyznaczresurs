@@ -95,7 +95,7 @@
                 <q-item-label caption class="row q-gutter-x-sm">
                   <span v-if="r.input_data?.nr_fabryczny">Nr: <strong>{{ r.input_data.nr_fabryczny }}</strong></span>
                 </q-item-label>
-                <q-item-label caption>{{ new Date(r.created_at).toLocaleDateString() }}</q-item-label>
+                <q-item-label caption>{{ new Date(r.created_at).toLocaleDateString('pl-PL') }}</q-item-label>
               </q-item-section>
 
               <!-- TRZY WSKAŹNIKI (ŚRODEK) -->
@@ -205,7 +205,7 @@ function getWorkData(r) {
 function getForecast(r) {
   const date = r.output_data?.data_prognoza
   if (!date) return 'brak danych'
-  return new Date(date).toLocaleDateString()
+  return new Date(date).toLocaleDateString('pl-PL')
 }
 
 const filteredResults = computed(() => {
@@ -226,8 +226,8 @@ onMounted(async () => {
     const response = await api.get('/calculators/results/')
     allResults.value = response.data
     resultsCount.value = allResults.value.length
-  } catch {
-    // Silent
+  } catch (e) {
+    if (e.response?.status !== 401) console.error('[Dashboard] Błąd pobierania wyników:', e)
   }
 })
 </script>

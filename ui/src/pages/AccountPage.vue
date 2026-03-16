@@ -302,6 +302,7 @@ import { ref, reactive, watch } from 'vue'
 import { useUserStore } from 'stores/user-store'
 import { api } from 'boot/axios'
 import { Notify, Dialog } from 'quasar'
+import { openBlobInTab } from 'src/utils/download'
 
 const userStore = useUserStore()
 const saving = ref(false)
@@ -443,8 +444,7 @@ async function deleteLogo(id) {
 async function previewLogoPdf(id) {
   try {
     const response = await api.get(`/auth/logo-preview/?logo_id=${id}`, { responseType: 'blob' })
-    const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }))
-    window.open(url, '_blank')
+    openBlobInTab(response.data)
   } catch {
     Notify.create({ type: 'negative', message: 'Nie udało się wygenerować podglądu.', position: 'top' })
   }
