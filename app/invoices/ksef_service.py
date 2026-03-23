@@ -33,3 +33,17 @@ def submit(invoice) -> None:
     # Krok 3: Punkty doładowywane dopiero po akceptacji KSeF
     invoice.user.premium += invoice.points_added
     invoice.user.save(update_fields=["premium"])
+
+
+def submit_correction(correction_invoice) -> None:
+    """
+    Wysyła fakturę korygującą do KSeF.
+    Korekta nie zmienia salda punktów.
+    """
+    correction_invoice.ksef_status = "sent"
+    correction_invoice.save(update_fields=["ksef_status"])
+
+    ksef_ref = f"KSEF-KOR-{timezone.now().strftime('%Y%m%d')}-{str(uuid.uuid4())[:8].upper()}"
+    correction_invoice.ksef_status = "accepted"
+    correction_invoice.ksef_reference_number = ksef_ref
+    correction_invoice.save(update_fields=["ksef_status", "ksef_reference_number"])

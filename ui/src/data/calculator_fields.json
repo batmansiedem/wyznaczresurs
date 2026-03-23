@@ -5,7 +5,7 @@
     "fields": {
       "wykonawca": {
         "type": "text",
-        "label": "Wykonawca badania",
+        "label": "Wykonawca",
         "required": false
       },
       "uwagi": {
@@ -36,7 +36,7 @@
       },
       "lata_pracy": {
         "type": "number",
-        "label": "Lata pracy",
+        "label": "Ilość przepracowanych lat",
         "required": true,
         "unit_type": "time",
         "default_unit": "lata"
@@ -52,26 +52,26 @@
         ]
       },
       "cykle_zmiana": {
-        "label": "Cykli na zmianę",
+        "label": "Ilość cykli przypadających na zmianę",
         "type": "number",
         "required": true
       },
       "dni_robocze": {
-        "label": "Dni roboczych w roku",
+        "label": "Ilość dni roboczych w roku",
         "type": "number",
         "required": true,
         "default_value": 250
       },
       "ilosc_cykli": {
         "type": "number",
-        "label": "Ilość cykli",
+        "label": "Ilość odbytych cykli",
         "required": true,
         "unit_type": "dimensionless",
         "default_unit": "cykl"
       },
       "sposob_rejestracji": {
         "type": "select",
-        "label": "Sposób rejestracji",
+        "label": "Sposób rejestracji przez eksploatującego warunków eksploatacji urządzenia",
         "required": true,
         "options": [
           "Rejestrowanie przyrządami",
@@ -84,35 +84,35 @@
       },
       "h_max": {
         "type": "number",
-        "label": "Maks. wysokość podnoszenia h_max",
+        "label": "Maksymalna wysokość podnoszenia h_max [m]",
         "required": false,
         "unit_type": "length",
         "default_unit": "m"
       },
       "v_pod": {
         "type": "number",
-        "label": "Prędkość podnoszenia v_pod",
+        "label": "Prędkość podnoszenia/opuszczania v_pod [m/min]",
         "required": false,
         "unit_type": "speed",
         "default_unit": "m/min"
       },
       "q_max": {
         "type": "number",
-        "label": "Qmax (Maksymalny udźwig)",
+        "label": "Udźwig maksymalny Q_max [kg]",
         "required": true,
         "unit_type": "mass",
         "default_unit": "kg"
       },
       "max_cykle_prod": {
         "type": "number",
-        "label": "Maksymalna liczba cykli (wg producenta)",
+        "label": "Graniczna ilość cykli określona przez producenta",
         "required": false,
         "unit_type": "dimensionless",
         "default_unit": "cycle"
       },
       "konstrukcja": {
         "type": "inspection_status",
-        "label": "Stan konstrukcji",
+        "label": "Czy konstrukcja stalowa jest zdeformowana i/lub pojawiły się pęknięcia w złączach spawanych?",
         "required": true,
         "options": [
           "Brak uszkodzeń",
@@ -122,7 +122,7 @@
       },
       "automatyka": {
         "type": "inspection_status",
-        "label": "Stan automatyki",
+        "label": "Czy automatyka sterująca i/lub zabezpieczająca jest sprawna i aktywna?",
         "required": true,
         "options": [
           "Brak uszkodzeń",
@@ -132,7 +132,7 @@
       },
       "sworznie": {
         "type": "inspection_status",
-        "label": "Stan sworzni i połączeń",
+        "label": "Czy sworznie oraz połączenia rozłączne są właściwie zmontowane i w dobrym stanie technicznym?",
         "required": true,
         "options": [
           "Prawidłowy",
@@ -141,7 +141,7 @@
       },
       "ciegna": {
         "type": "inspection_status",
-        "label": "Stan cięgien (liny, łańcuchy)",
+        "label": "Czy cięgna (łańcuchy, liny) są w dobrym stanie technicznym?",
         "required": true,
         "options": [
           "Prawidłowy",
@@ -151,7 +151,7 @@
       },
       "eksploatacja": {
         "type": "inspection_status",
-        "label": "Warunki eksploatacji",
+        "label": "Czy urządzenie eksploatowane jest zgodnie z przeznaczeniem i instrukcją eksploatacji?",
         "required": true,
         "options": [
           "Zgodne z instrukcją",
@@ -161,7 +161,7 @@
       },
       "szczelnosc": {
         "type": "inspection_status",
-        "label": "Szczelność układu hydraulicznego",
+        "label": "Czy układ hydrauliczny jest szczelny, a zawory zwrotne sprawne?",
         "required": true,
         "options": [
           "Szczelny",
@@ -171,7 +171,7 @@
       },
       "nakretka": {
         "type": "inspection_status",
-        "label": "Nakrętka bezpieczeństwa",
+        "label": "Czy nakrętka kontrująca oraz bolec zabezpieczający są w dobrym stanie technicznym?",
         "required": true,
         "options": [
           "Sprawna",
@@ -245,7 +245,7 @@
     "fields": {
       "wykonawca": {
         "type": "text",
-        "label": "Wykonawca badania",
+        "label": "Wykonawca",
         "required": false
       },
       "uwagi": {
@@ -265,7 +265,7 @@
       },
       "lata_pracy": {
         "type": "number",
-        "label": "Lata pracy",
+        "label": "Ilość przepracowanych lat",
         "required": true,
         "unit_type": "time",
         "default_unit": "lata"
@@ -281,26 +281,26 @@
         ]
       },
       "cykle_zmiana": {
-        "label": "Cykli na zmianę",
+        "label": "Ilość cykli przypadających na zmianę",
         "type": "number",
         "required": true
       },
       "dni_robocze": {
-        "label": "Dni roboczych w roku",
+        "label": "Ilość dni roboczych w roku",
         "type": "number",
         "required": true,
         "default_value": 250
       },
       "ilosc_cykli": {
         "type": "number",
-        "label": "Ilość cykli",
+        "label": "Ilość odbytych cykli",
         "required": true,
         "unit_type": "dimensionless",
         "default_unit": "cykl"
       },
       "sposob_rejestracji": {
         "type": "select",
-        "label": "Sposób rejestracji",
+        "label": "Sposób rejestracji przez eksploatującego warunków eksploatacji urządzenia",
         "required": true,
         "options": [
           "Rejestrowanie przyrządami",
@@ -324,21 +324,21 @@
       },
       "max_cykle_prod": {
         "type": "number",
-        "label": "Maksymalna liczba cykli (wg producenta)",
+        "label": "Graniczna ilość cykli określona przez producenta",
         "required": false,
         "unit_type": "dimensionless",
         "default_unit": "cycle"
       },
       "h_max": {
         "type": "number",
-        "label": "Maksymalna wysokość podnoszenia (Hmax)",
+        "label": "Maksymalna wysokość podnoszenia h_max [m]",
         "required": true,
         "unit_type": "length",
         "default_unit": "m"
       },
       "spec": {
         "type": "select",
-        "label": "Resurs po pierwszym przeglądzie specjalnym",
+        "label": "Czy chcesz wyznaczyć resurs po pierwszym przeglądzie specjalnym?",
         "required": true,
         "options": [
           "Nie",
@@ -347,7 +347,7 @@
       },
       "ponowny_resurs": {
         "type": "select",
-        "label": "Ponowny resurs",
+        "label": "Czy chcesz wykonać ponowne wyznaczenie resursu?",
         "required": true,
         "options": [
           "Nie",
@@ -356,7 +356,7 @@
       },
       "ostatni_resurs": {
         "type": "number",
-        "label": "Ostatni resurs",
+        "label": "Procent wykorzystania z ostatnich obliczeń resursu [%]",
         "required": false,
         "show_if": {
           "field": "ponowny_resurs",
@@ -366,7 +366,7 @@
       },
       "data_resurs": {
         "type": "date",
-        "label": "Data poprzedniego resursu",
+        "label": "Data wyznaczenia ostatniego resursu",
         "required": false,
         "show_if": {
           "field": "ponowny_resurs",
@@ -380,14 +380,14 @@
       },
       "q_max": {
         "type": "number",
-        "label": "Qmax (Maksymalny udźwig)",
+        "label": "Udźwig maksymalny Q_max [kg]",
         "required": true,
         "unit_type": "mass",
         "default_unit": "kg"
       },
       "konstrukcja": {
         "type": "inspection_status",
-        "label": "Stan konstrukcji",
+        "label": "Czy konstrukcja stalowa jest zdeformowana i/lub pojawiły się pęknięcia w złączach spawanych?",
         "required": true,
         "options": [
           "Brak uszkodzeń",
@@ -397,7 +397,7 @@
       },
       "automatyka": {
         "type": "inspection_status",
-        "label": "Stan automatyki",
+        "label": "Czy automatyka sterująca i/lub zabezpieczająca jest sprawna i aktywna?",
         "required": true,
         "options": [
           "Brak uszkodzeń",
@@ -407,7 +407,7 @@
       },
       "sworznie": {
         "type": "inspection_status",
-        "label": "Stan sworzni i połączeń",
+        "label": "Czy sworznie oraz połączenia rozłączne są właściwie zmontowane i w dobrym stanie technicznym?",
         "required": true,
         "options": [
           "Prawidłowy",
@@ -416,7 +416,7 @@
       },
       "ciegna": {
         "type": "inspection_status",
-        "label": "Stan cięgien",
+        "label": "Czy cięgna (łańcuchy, liny) są w dobrym stanie technicznym?",
         "required": true,
         "options": [
           "Brak uszkodzeń",
@@ -426,7 +426,7 @@
       },
       "eksploatacja": {
         "type": "inspection_status",
-        "label": "Warunki eksploatacji",
+        "label": "Czy urządzenie eksploatowane jest zgodnie z przeznaczeniem i instrukcją eksploatacji?",
         "required": true,
         "options": [
           "Zgodne",
@@ -436,7 +436,7 @@
       },
       "szczelnosc": {
         "type": "inspection_status",
-        "label": "Szczelność układu hydraulicznego",
+        "label": "Czy układ hydrauliczny jest szczelny, a zawory zwrotne sprawne?",
         "required": true,
         "options": [
           "Szczelny",
@@ -446,7 +446,7 @@
       },
       "hamulce": {
         "type": "inspection_status",
-        "label": "Hamulce",
+        "label": "Czy układ hamulcowy jest sprawny?",
         "required": true,
         "options": [
           "Sprawne",
@@ -538,7 +538,7 @@
     "fields": {
       "wykonawca": {
         "type": "text",
-        "label": "Wykonawca badania",
+        "label": "Wykonawca",
         "required": false
       },
       "uwagi": {
@@ -567,7 +567,7 @@
       },
       "lata_pracy": {
         "type": "number",
-        "label": "Lata pracy",
+        "label": "Ilość przepracowanych lat",
         "required": true,
         "unit_type": "time",
         "default_unit": "lata"
@@ -583,26 +583,26 @@
         ]
       },
       "cykle_zmiana": {
-        "label": "Cykli na zmianę",
+        "label": "Ilość cykli przypadających na zmianę",
         "type": "number",
         "required": true
       },
       "dni_robocze": {
-        "label": "Dni roboczych w roku",
+        "label": "Ilość dni roboczych w roku",
         "type": "number",
         "required": true,
         "default_value": 250
       },
       "ilosc_cykli": {
         "type": "number",
-        "label": "Ilość cykli",
+        "label": "Ilość odbytych cykli",
         "required": true,
         "unit_type": "dimensionless",
         "default_unit": "cykl"
       },
       "sposob_rejestracji": {
         "type": "select",
-        "label": "Sposób rejestracji",
+        "label": "Sposób rejestracji przez eksploatującego warunków eksploatacji urządzenia",
         "required": true,
         "options": [
           "Rejestrowanie przyrządami",
@@ -615,14 +615,14 @@
       },
       "max_cykle_prod": {
         "type": "number",
-        "label": "Maksymalna liczba cykli (wg producenta)",
+        "label": "Graniczna ilość cykli określona przez producenta",
         "required": false,
         "unit_type": "dimensionless",
         "default_unit": "cycle"
       },
       "spec": {
         "type": "select",
-        "label": "Resurs po pierwszym przeglądzie specjalnym",
+        "label": "Czy chcesz wyznaczyć resurs po pierwszym przeglądzie specjalnym?",
         "required": true,
         "options": [
           "Nie",
@@ -631,7 +631,7 @@
       },
       "ponowny_resurs": {
         "type": "select",
-        "label": "Ponowny resurs",
+        "label": "Czy chcesz wykonać ponowne wyznaczenie resursu?",
         "required": true,
         "options": [
           "Nie",
@@ -640,7 +640,7 @@
       },
       "ostatni_resurs": {
         "type": "number",
-        "label": "Ostatni resurs",
+        "label": "Procent wykorzystania z ostatnich obliczeń resursu [%]",
         "required": false,
         "show_if": {
           "field": "ponowny_resurs",
@@ -650,7 +650,7 @@
       },
       "data_resurs": {
         "type": "date",
-        "label": "Data poprzedniego resursu",
+        "label": "Data wyznaczenia ostatniego resursu",
         "required": false,
         "show_if": {
           "field": "ponowny_resurs",
@@ -659,14 +659,14 @@
       },
       "q_max": {
         "type": "number",
-        "label": "Qmax (Maksymalny udźwig)",
+        "label": "Udźwig maksymalny Q_max [kg]",
         "required": true,
         "unit_type": "mass",
         "default_unit": "kg"
       },
       "konstrukcja": {
         "type": "inspection_status",
-        "label": "Stan konstrukcji",
+        "label": "Czy konstrukcja stalowa jest zdeformowana i/lub pojawiły się pęknięcia w złączach spawanych?",
         "required": true,
         "options": [
           "Brak uszkodzeń",
@@ -676,7 +676,7 @@
       },
       "automatyka": {
         "type": "inspection_status",
-        "label": "Stan automatyki",
+        "label": "Czy automatyka sterująca i/lub zabezpieczająca jest sprawna i aktywna?",
         "required": true,
         "options": [
           "Brak uszkodzeń",
@@ -686,7 +686,7 @@
       },
       "sworznie": {
         "type": "inspection_status",
-        "label": "Stan sworzni i połączeń",
+        "label": "Czy sworznie oraz połączenia rozłączne są właściwie zmontowane i w dobrym stanie technicznym?",
         "required": true,
         "options": [
           "Prawidłowy",
@@ -695,7 +695,7 @@
       },
       "ciegna": {
         "type": "inspection_status",
-        "label": "Stan cięgien",
+        "label": "Czy cięgna (łańcuchy, liny) są w dobrym stanie technicznym?",
         "required": true,
         "options": [
           "Brak uszkodzeń",
@@ -705,7 +705,7 @@
       },
       "eksploatacja": {
         "type": "inspection_status",
-        "label": "Warunki eksploatacji",
+        "label": "Czy urządzenie eksploatowane jest zgodnie z przeznaczeniem i instrukcją eksploatacji?",
         "required": true,
         "options": [
           "Zgodne",
@@ -715,7 +715,7 @@
       },
       "szczelnosc": {
         "type": "inspection_status",
-        "label": "Szczelność układu hydraulicznego",
+        "label": "Czy układ hydrauliczny jest szczelny, a zawory zwrotne sprawne?",
         "required": true,
         "options": [
           "Szczelny",
@@ -797,7 +797,7 @@
     "fields": {
       "wykonawca": {
         "type": "text",
-        "label": "Wykonawca badania",
+        "label": "Wykonawca",
         "required": false
       },
       "uwagi": {
@@ -817,22 +817,22 @@
       },
       "rok_budowy": {
         "type": "number",
-        "label": "Rok budowy",
+        "label": "Rok budowy dźwigu",
         "required": true
       },
       "lata_pracy": {
         "type": "number",
-        "label": "Lata pracy",
+        "label": "Ilość przepracowanych lat",
         "required": true
       },
       "cykle_dzwig": {
         "type": "number",
-        "label": "Ilość cykli dźwigu",
+        "label": "Ilość jazd dźwigu",
         "required": false
       },
       "pyt_motogodzin": {
         "type": "select",
-        "label": "Pytanie o motogodziny",
+        "label": "Czy dźwig posiada licznik motogodzin?",
         "required": true,
         "options": [
           {
@@ -847,7 +847,7 @@
       },
       "licznik_pracy": {
         "type": "number",
-        "label": "Licznik pracy",
+        "label": "Łączna ilość motogodzin [h]",
         "required": false,
         "show_if": {
           "field": "pyt_motogodzin",
@@ -857,7 +857,7 @@
       },
       "dni_robocze": {
         "type": "number",
-        "label": "Dni robocze",
+        "label": "Ilość dni roboczych w roku",
         "required": true
       },
       "zakres_godzin_1": {
@@ -916,26 +916,26 @@
       },
       "v_jaz": {
         "type": "number",
-        "label": "Prędkość jazdy (m/s)",
+        "label": "Prędkość jazdy kabiny",
         "required": true,
         "unit_type": "velocity",
         "default_unit": "m/min"
       },
       "h_pod": {
         "type": "number",
-        "label": "Wysokość podnoszenia (m)",
+        "label": "Wysokość podnoszenia kabiny [m]",
         "required": true,
         "unit_type": "length",
         "default_unit": "m"
       },
       "przystanki": {
         "type": "number",
-        "label": "Liczba przystanków",
+        "label": "Ilość przystanków",
         "required": true
       },
       "budynek": {
         "type": "select",
-        "label": "Typ budynku",
+        "label": "Miejsce zabudowy",
         "required": true,
         "options": [
           "budowa",
@@ -949,7 +949,7 @@
       },
       "operator": {
         "type": "select",
-        "label": "Typ operatora",
+        "label": "Rodzaj obsługi",
         "required": true,
         "options": [
           "bez prawa jazdy w kabinie",
@@ -959,7 +959,7 @@
       },
       "przeznaczenie": {
         "type": "select",
-        "label": "Przeznaczenie",
+        "label": "Przeznaczenie dźwigu",
         "required": true,
         "options": [
           "dźwig osobowy",
@@ -970,12 +970,12 @@
       },
       "liczba_dzwigow": {
         "type": "number",
-        "label": "Liczba dźwigów",
+        "label": "Liczba dźwigów obsługujących daną ilość przystanków",
         "required": true
       },
       "q_max": {
         "type": "number",
-        "label": "Qmax (Maksymalny udźwig)",
+        "label": "Udźwig maksymalny Q_max [kg]",
         "required": true,
         "unit_type": "mass",
         "default_unit": "kg"
@@ -1481,7 +1481,7 @@
     "fields": {
       "wykonawca": {
         "type": "text",
-        "label": "Wykonawca badania",
+        "label": "Wykonawca",
         "required": false
       },
       "uwagi": {
@@ -1529,7 +1529,7 @@
       },
       "lata_pracy": {
         "type": "number",
-        "label": "Lata pracy",
+        "label": "Ilość przepracowanych lat",
         "required": true,
         "unit_type": "time",
         "default_unit": "lata"
@@ -1545,26 +1545,26 @@
         ]
       },
       "cykle_zmiana": {
-        "label": "Cykli na zmianę",
+        "label": "Ilość cykli przypadających na zmianę",
         "type": "number",
         "required": true
       },
       "dni_robocze": {
-        "label": "Dni roboczych w roku",
+        "label": "Ilość dni roboczych w roku",
         "type": "number",
         "required": true,
         "default_value": 250
       },
       "ilosc_cykli": {
         "type": "number",
-        "label": "Ilość cykli",
+        "label": "Ilość odbytych cykli",
         "required": true,
         "unit_type": "dimensionless",
         "default_unit": "cykl"
       },
       "sposob_rejestracji": {
         "type": "select",
-        "label": "Sposób rejestracji",
+        "label": "Sposób rejestracji przez eksploatującego warunków eksploatacji urządzenia",
         "required": true,
         "options": [
           "Rejestrowanie przyrządami",
@@ -1592,14 +1592,14 @@
       },
       "q_max": {
         "type": "number",
-        "label": "Qmax (Maksymalny udźwig)",
+        "label": "Udźwig maksymalny Q_max [kg]",
         "required": true,
         "unit_type": "mass",
         "default_unit": "kg"
       },
       "spec": {
         "type": "select",
-        "label": "Resurs po pierwszym przeglądzie specjalnym",
+        "label": "Czy chcesz wyznaczyć resurs po pierwszym przeglądzie specjalnym?",
         "required": true,
         "options": [
           "Nie",
@@ -1608,7 +1608,7 @@
       },
       "ponowny_resurs": {
         "type": "select",
-        "label": "Ponowny resurs",
+        "label": "Czy chcesz wykonać ponowne wyznaczenie resursu?",
         "required": true,
         "options": [
           "Nie",
@@ -1617,7 +1617,7 @@
       },
       "ostatni_resurs": {
         "type": "number",
-        "label": "Ostatni resurs",
+        "label": "Procent wykorzystania z ostatnich obliczeń resursu [%]",
         "required": false,
         "show_if": {
           "field": "ponowny_resurs",
@@ -1627,7 +1627,7 @@
       },
       "data_resurs": {
         "type": "date",
-        "label": "Data poprzedniego resursu",
+        "label": "Data wyznaczenia ostatniego resursu",
         "required": false,
         "show_if": {
           "field": "ponowny_resurs",
@@ -1636,7 +1636,7 @@
       },
       "konstrukcja": {
         "type": "inspection_status",
-        "label": "Stan konstrukcji",
+        "label": "Czy konstrukcja stalowa jest zdeformowana i/lub pojawiły się pęknięcia w złączach spawanych?",
         "required": true,
         "options": [
           "Brak uszkodzeń",
@@ -1645,7 +1645,7 @@
       },
       "automatyka": {
         "type": "inspection_status",
-        "label": "Stan automatyki",
+        "label": "Czy automatyka sterująca i/lub zabezpieczająca jest sprawna i aktywna?",
         "required": true,
         "options": [
           "Sprawna",
@@ -1654,7 +1654,7 @@
       },
       "sworznie": {
         "type": "inspection_status",
-        "label": "Stan sworzni i połączeń",
+        "label": "Czy sworznie oraz połączenia rozłączne są właściwie zmontowane i w dobrym stanie technicznym?",
         "required": true,
         "options": [
           "Prawidłowy",
@@ -1663,7 +1663,7 @@
       },
       "ciegna": {
         "type": "inspection_status",
-        "label": "Stan cięgien",
+        "label": "Czy cięgna (łańcuchy, liny) są w dobrym stanie technicznym?",
         "required": true,
         "options": [
           "Brak uszkodzeń",
@@ -1672,7 +1672,7 @@
       },
       "eksploatacja": {
         "type": "inspection_status",
-        "label": "Warunki eksploatacji",
+        "label": "Czy urządzenie eksploatowane jest zgodnie z przeznaczeniem i instrukcją eksploatacji?",
         "required": true,
         "options": [
           "Zgodne",
@@ -1759,7 +1759,7 @@
     "fields": {
       "wykonawca": {
         "type": "text",
-        "label": "Wykonawca badania",
+        "label": "Wykonawca",
         "required": false
       },
       "uwagi": {
@@ -1795,7 +1795,7 @@
       },
       "lata_pracy": {
         "type": "number",
-        "label": "Lata pracy",
+        "label": "Ilość przepracowanych lat",
         "required": true,
         "unit_type": "time",
         "default_unit": "lata"
@@ -1811,26 +1811,26 @@
         ]
       },
       "cykle_zmiana": {
-        "label": "Cykli na zmianę",
+        "label": "Ilość cykli przypadających na zmianę",
         "type": "number",
         "required": true
       },
       "dni_robocze": {
-        "label": "Dni roboczych w roku",
+        "label": "Ilość dni roboczych w roku",
         "type": "number",
         "required": true,
         "default_value": 250
       },
       "ilosc_cykli": {
         "type": "number",
-        "label": "Ilość cykli",
+        "label": "Ilość odbytych cykli",
         "required": true,
         "unit_type": "dimensionless",
         "default_unit": "cykl"
       },
       "sposob_rejestracji": {
         "type": "select",
-        "label": "Sposób rejestracji",
+        "label": "Sposób rejestracji przez eksploatującego warunków eksploatacji urządzenia",
         "required": true,
         "options": [
           "Rejestrowanie przyrządami",
@@ -1858,14 +1858,14 @@
       },
       "q_max": {
         "type": "number",
-        "label": "Qmax (Maksymalny udźwig)",
+        "label": "Udźwig maksymalny Q_max [kg]",
         "required": true,
         "unit_type": "mass",
         "default_unit": "kg"
       },
       "spec": {
         "type": "select",
-        "label": "Resurs po pierwszym przeglądzie specjalnym",
+        "label": "Czy chcesz wyznaczyć resurs po pierwszym przeglądzie specjalnym?",
         "required": true,
         "options": [
           "Nie",
@@ -1874,7 +1874,7 @@
       },
       "ponowny_resurs": {
         "type": "select",
-        "label": "Ponowny resurs",
+        "label": "Czy chcesz wykonać ponowne wyznaczenie resursu?",
         "required": true,
         "options": [
           "Nie",
@@ -1883,7 +1883,7 @@
       },
       "ostatni_resurs": {
         "type": "number",
-        "label": "Ostatni resurs",
+        "label": "Procent wykorzystania z ostatnich obliczeń resursu [%]",
         "required": false,
         "show_if": {
           "field": "ponowny_resurs",
@@ -1893,7 +1893,7 @@
       },
       "data_resurs": {
         "type": "date",
-        "label": "Data poprzedniego resursu",
+        "label": "Data wyznaczenia ostatniego resursu",
         "required": false,
         "show_if": {
           "field": "ponowny_resurs",
@@ -1902,7 +1902,7 @@
       },
       "konstrukcja": {
         "type": "inspection_status",
-        "label": "Stan konstrukcji",
+        "label": "Czy konstrukcja stalowa jest zdeformowana i/lub pojawiły się pęknięcia w złączach spawanych?",
         "required": true,
         "options": [
           "Brak uszkodzeń",
@@ -1911,7 +1911,7 @@
       },
       "automatyka": {
         "type": "inspection_status",
-        "label": "Stan automatyki",
+        "label": "Czy automatyka sterująca i/lub zabezpieczająca jest sprawna i aktywna?",
         "required": true,
         "options": [
           "Sprawna",
@@ -1920,7 +1920,7 @@
       },
       "sworznie": {
         "type": "inspection_status",
-        "label": "Stan sworzni i połączeń",
+        "label": "Czy sworznie oraz połączenia rozłączne są właściwie zmontowane i w dobrym stanie technicznym?",
         "required": true,
         "options": [
           "Prawidłowy",
@@ -1929,7 +1929,7 @@
       },
       "ciegna": {
         "type": "inspection_status",
-        "label": "Stan cięgien",
+        "label": "Czy cięgna (łańcuchy, liny) są w dobrym stanie technicznym?",
         "required": true,
         "options": [
           "Brak uszkodzeń",
@@ -1938,7 +1938,7 @@
       },
       "eksploatacja": {
         "type": "inspection_status",
-        "label": "Warunki eksploatacji",
+        "label": "Czy urządzenie eksploatowane jest zgodnie z przeznaczeniem i instrukcją eksploatacji?",
         "required": true,
         "options": [
           "Zgodne",
@@ -2025,7 +2025,7 @@
     "fields": {
       "wykonawca": {
         "type": "text",
-        "label": "Wykonawca badania",
+        "label": "Wykonawca",
         "required": false
       },
       "uwagi": {
@@ -2057,7 +2057,7 @@
       },
       "lata_pracy": {
         "type": "number",
-        "label": "Lata pracy",
+        "label": "Ilość przepracowanych lat",
         "required": true,
         "unit_type": "time",
         "default_unit": "lata"
@@ -2073,26 +2073,26 @@
         ]
       },
       "cykle_zmiana": {
-        "label": "Cykli na zmianę",
+        "label": "Ilość cykli przypadających na zmianę",
         "type": "number",
         "required": true
       },
       "dni_robocze": {
-        "label": "Dni roboczych w roku",
+        "label": "Ilość dni roboczych w roku",
         "type": "number",
         "required": true,
         "default_value": 250
       },
       "ilosc_cykli": {
         "type": "number",
-        "label": "Ilość cykli",
+        "label": "Ilość odbytych cykli",
         "required": true,
         "unit_type": "dimensionless",
         "default_unit": "cykl"
       },
       "sposob_rejestracji": {
         "type": "select",
-        "label": "Sposób rejestracji",
+        "label": "Sposób rejestracji przez eksploatującego warunków eksploatacji urządzenia",
         "required": true,
         "options": [
           "Rejestrowanie przyrządami",
@@ -2120,14 +2120,14 @@
       },
       "q_max": {
         "type": "number",
-        "label": "Qmax (Maksymalny udźwig)",
+        "label": "Udźwig maksymalny Q_max [kg]",
         "required": true,
         "unit_type": "mass",
         "default_unit": "kg"
       },
       "spec": {
         "type": "select",
-        "label": "Resurs po pierwszym przeglądzie specjalnym",
+        "label": "Czy chcesz wyznaczyć resurs po pierwszym przeglądzie specjalnym?",
         "required": true,
         "options": [
           "Nie",
@@ -2136,7 +2136,7 @@
       },
       "ponowny_resurs": {
         "type": "select",
-        "label": "Ponowny resurs",
+        "label": "Czy chcesz wykonać ponowne wyznaczenie resursu?",
         "required": true,
         "options": [
           "Nie",
@@ -2145,7 +2145,7 @@
       },
       "ostatni_resurs": {
         "type": "number",
-        "label": "Ostatni resurs",
+        "label": "Procent wykorzystania z ostatnich obliczeń resursu [%]",
         "required": false,
         "show_if": {
           "field": "ponowny_resurs",
@@ -2155,7 +2155,7 @@
       },
       "data_resurs": {
         "type": "date",
-        "label": "Data poprzedniego resursu",
+        "label": "Data wyznaczenia ostatniego resursu",
         "required": false,
         "show_if": {
           "field": "ponowny_resurs",
@@ -2164,7 +2164,7 @@
       },
       "konstrukcja": {
         "type": "inspection_status",
-        "label": "Stan konstrukcji",
+        "label": "Czy konstrukcja stalowa jest zdeformowana i/lub pojawiły się pęknięcia w złączach spawanych?",
         "required": true,
         "options": [
           "Brak uszkodzeń",
@@ -2173,7 +2173,7 @@
       },
       "automatyka": {
         "type": "inspection_status",
-        "label": "Stan automatyki",
+        "label": "Czy automatyka sterująca i/lub zabezpieczająca jest sprawna i aktywna?",
         "required": true,
         "options": [
           "Sprawna",
@@ -2182,7 +2182,7 @@
       },
       "sworznie": {
         "type": "inspection_status",
-        "label": "Stan sworzni i połączeń",
+        "label": "Czy sworznie oraz połączenia rozłączne są właściwie zmontowane i w dobrym stanie technicznym?",
         "required": true,
         "options": [
           "Prawidłowy",
@@ -2191,7 +2191,7 @@
       },
       "ciegna": {
         "type": "inspection_status",
-        "label": "Stan cięgien",
+        "label": "Czy cięgna (łańcuchy, liny) są w dobrym stanie technicznym?",
         "required": true,
         "options": [
           "Brak uszkodzeń",
@@ -2200,7 +2200,7 @@
       },
       "eksploatacja": {
         "type": "inspection_status",
-        "label": "Warunki eksploatacji",
+        "label": "Czy urządzenie eksploatowane jest zgodnie z przeznaczeniem i instrukcją eksploatacji?",
         "required": true,
         "options": [
           "Zgodne",
@@ -2287,7 +2287,7 @@
     "fields": {
       "wykonawca": {
         "type": "text",
-        "label": "Wykonawca badania",
+        "label": "Wykonawca",
         "required": false
       },
       "uwagi": {
@@ -2345,7 +2345,7 @@
       },
       "lata_pracy": {
         "type": "number",
-        "label": "Lata pracy",
+        "label": "Ilość przepracowanych lat",
         "required": true,
         "unit_type": "time",
         "default_unit": "lata"
@@ -2361,26 +2361,26 @@
         ]
       },
       "cykle_zmiana": {
-        "label": "Cykli na zmianę",
+        "label": "Ilość cykli przypadających na zmianę",
         "type": "number",
         "required": true
       },
       "dni_robocze": {
-        "label": "Dni roboczych w roku",
+        "label": "Ilość dni roboczych w roku",
         "type": "number",
         "required": true,
         "default_value": 250
       },
       "ilosc_cykli": {
         "type": "number",
-        "label": "Ilość cykli",
+        "label": "Ilość odbytych cykli",
         "required": true,
         "unit_type": "dimensionless",
         "default_unit": "cykl"
       },
       "sposob_rejestracji": {
         "type": "select",
-        "label": "Sposób rejestracji",
+        "label": "Sposób rejestracji przez eksploatującego warunków eksploatacji urządzenia",
         "required": true,
         "options": [
           "Rejestrowanie przyrządami",
@@ -2428,7 +2428,7 @@
       },
       "q_max": {
         "type": "number",
-        "label": "Qmax (Maksymalny udźwig)",
+        "label": "Udźwig maksymalny Q_max [kg]",
         "required": true,
         "unit_type": "mass",
         "default_unit": "kg"
@@ -2442,7 +2442,7 @@
       },
       "spec": {
         "type": "select",
-        "label": "Resurs po pierwszym przeglądzie specjalnym",
+        "label": "Czy chcesz wyznaczyć resurs po pierwszym przeglądzie specjalnym?",
         "required": true,
         "options": [
           "Nie",
@@ -2451,7 +2451,7 @@
       },
       "ponowny_resurs": {
         "type": "select",
-        "label": "Ponowny resurs",
+        "label": "Czy chcesz wykonać ponowne wyznaczenie resursu?",
         "required": true,
         "options": [
           "Nie",
@@ -2460,7 +2460,7 @@
       },
       "ostatni_resurs": {
         "type": "number",
-        "label": "Ostatni resurs",
+        "label": "Procent wykorzystania z ostatnich obliczeń resursu [%]",
         "required": false,
         "show_if": {
           "field": "ponowny_resurs",
@@ -2470,7 +2470,7 @@
       },
       "data_resurs": {
         "type": "date",
-        "label": "Data poprzedniego resursu",
+        "label": "Data wyznaczenia ostatniego resursu",
         "required": false,
         "show_if": {
           "field": "ponowny_resurs",
@@ -2479,7 +2479,7 @@
       },
       "konstrukcja": {
         "type": "inspection_status",
-        "label": "Stan konstrukcji",
+        "label": "Czy konstrukcja stalowa jest zdeformowana i/lub pojawiły się pęknięcia w złączach spawanych?",
         "required": true,
         "options": [
           "Brak uszkodzeń",
@@ -2488,7 +2488,7 @@
       },
       "automatyka": {
         "type": "inspection_status",
-        "label": "Stan automatyki",
+        "label": "Czy automatyka sterująca i/lub zabezpieczająca jest sprawna i aktywna?",
         "required": true,
         "options": [
           "Sprawna",
@@ -2497,7 +2497,7 @@
       },
       "sworznie": {
         "type": "inspection_status",
-        "label": "Stan sworzni i połączeń",
+        "label": "Czy sworznie oraz połączenia rozłączne są właściwie zmontowane i w dobrym stanie technicznym?",
         "required": true,
         "options": [
           "Prawidłowy",
@@ -2506,7 +2506,7 @@
       },
       "ciegna": {
         "type": "inspection_status",
-        "label": "Stan cięgien",
+        "label": "Czy cięgna (łańcuchy, liny) są w dobrym stanie technicznym?",
         "required": true,
         "options": [
           "Brak uszkodzeń",
@@ -2515,7 +2515,7 @@
       },
       "eksploatacja": {
         "type": "inspection_status",
-        "label": "Warunki eksploatacji",
+        "label": "Czy urządzenie eksploatowane jest zgodnie z przeznaczeniem i instrukcją eksploatacji?",
         "required": true,
         "options": [
           "Zgodne",
@@ -2605,7 +2605,7 @@
     "fields": {
       "wykonawca": {
         "type": "text",
-        "label": "Wykonawca badania",
+        "label": "Wykonawca",
         "required": false
       },
       "uwagi": {
@@ -2625,7 +2625,7 @@
       },
       "h_max": {
         "type": "number",
-        "label": "Maks. wysokość podnoszenia h_max",
+        "label": "Maksymalna wysokość podnoszenia h_max [m]",
         "required": false,
         "unit_type": "length",
         "default_unit": "m"
@@ -2639,7 +2639,7 @@
       },
       "v_pod": {
         "type": "number",
-        "label": "Prędkość podnoszenia v_pod",
+        "label": "Prędkość podnoszenia/opuszczania v_pod [m/min]",
         "required": false,
         "unit_type": "speed",
         "default_unit": "m/min"
@@ -2653,7 +2653,7 @@
       },
       "lata_pracy": {
         "type": "number",
-        "label": "Lata pracy",
+        "label": "Ilość przepracowanych lat",
         "required": true,
         "unit_type": "time",
         "default_unit": "lata"
@@ -2669,26 +2669,26 @@
         ]
       },
       "cykle_zmiana": {
-        "label": "Cykli na zmianę",
+        "label": "Ilość cykli przypadających na zmianę",
         "type": "number",
         "required": true
       },
       "dni_robocze": {
-        "label": "Dni roboczych w roku",
+        "label": "Ilość dni roboczych w roku",
         "type": "number",
         "required": true,
         "default_value": 250
       },
       "ilosc_cykli": {
         "type": "number",
-        "label": "Ilość cykli",
+        "label": "Ilość odbytych cykli",
         "required": true,
         "unit_type": "dimensionless",
         "default_unit": "cykl"
       },
       "sposob_rejestracji": {
         "type": "select",
-        "label": "Sposób rejestracji",
+        "label": "Sposób rejestracji przez eksploatującego warunków eksploatacji urządzenia",
         "required": true,
         "options": [
           "Rejestrowanie przyrządami",
@@ -2701,14 +2701,14 @@
       },
       "q_max": {
         "type": "number",
-        "label": "Qmax (Maksymalny udźwig)",
+        "label": "Udźwig maksymalny Q_max [kg]",
         "required": true,
         "unit_type": "mass",
         "default_unit": "kg"
       },
       "spec": {
         "type": "select",
-        "label": "Resurs po pierwszym przeglądzie specjalnym",
+        "label": "Czy chcesz wyznaczyć resurs po pierwszym przeglądzie specjalnym?",
         "required": true,
         "options": [
           "Nie",
@@ -2717,7 +2717,7 @@
       },
       "ponowny_resurs": {
         "type": "select",
-        "label": "Ponowny resurs",
+        "label": "Czy chcesz wykonać ponowne wyznaczenie resursu?",
         "required": true,
         "options": [
           "Nie",
@@ -2726,7 +2726,7 @@
       },
       "ostatni_resurs": {
         "type": "number",
-        "label": "Ostatni resurs",
+        "label": "Procent wykorzystania z ostatnich obliczeń resursu [%]",
         "required": false,
         "show_if": {
           "field": "ponowny_resurs",
@@ -2736,7 +2736,7 @@
       },
       "data_resurs": {
         "type": "date",
-        "label": "Data poprzedniego resursu",
+        "label": "Data wyznaczenia ostatniego resursu",
         "required": false,
         "show_if": {
           "field": "ponowny_resurs",
@@ -2768,7 +2768,7 @@
       },
       "konstrukcja": {
         "type": "inspection_status",
-        "label": "Stan konstrukcji",
+        "label": "Czy konstrukcja stalowa jest zdeformowana i/lub pojawiły się pęknięcia w złączach spawanych?",
         "required": true,
         "options": [
           "Brak uszkodzeń",
@@ -2777,7 +2777,7 @@
       },
       "automatyka": {
         "type": "inspection_status",
-        "label": "Stan automatyki",
+        "label": "Czy automatyka sterująca i/lub zabezpieczająca jest sprawna i aktywna?",
         "required": true,
         "options": [
           "Sprawna",
@@ -2786,7 +2786,7 @@
       },
       "sworznie": {
         "type": "inspection_status",
-        "label": "Stan sworzni i połączeń",
+        "label": "Czy sworznie oraz połączenia rozłączne są właściwie zmontowane i w dobrym stanie technicznym?",
         "required": true,
         "options": [
           "Prawidłowy",
@@ -2795,7 +2795,7 @@
       },
       "ciegna": {
         "type": "inspection_status",
-        "label": "Stan cięgien",
+        "label": "Czy cięgna (łańcuchy, liny) są w dobrym stanie technicznym?",
         "required": true,
         "options": [
           "Brak uszkodzeń",
@@ -2804,7 +2804,7 @@
       },
       "eksploatacja": {
         "type": "inspection_status",
-        "label": "Warunki eksploatacji",
+        "label": "Czy urządzenie eksploatowane jest zgodnie z przeznaczeniem i instrukcją eksploatacji?",
         "required": true,
         "options": [
           "Zgodne",
@@ -2813,7 +2813,7 @@
       },
       "szczelnosc": {
         "type": "inspection_status",
-        "label": "Szczelność układu hydraulicznego",
+        "label": "Czy układ hydrauliczny jest szczelny, a zawory zwrotne sprawne?",
         "required": true,
         "options": [
           "Szczelny",
@@ -2822,7 +2822,7 @@
       },
       "hamulce": {
         "type": "inspection_status",
-        "label": "Hamulce",
+        "label": "Czy układ hamulcowy jest sprawny?",
         "required": true,
         "options": [
           "Sprawne",
@@ -2922,7 +2922,7 @@
     "fields": {
       "wykonawca": {
         "type": "text",
-        "label": "Wykonawca badania",
+        "label": "Wykonawca",
         "required": false
       },
       "uwagi": {
@@ -2942,7 +2942,7 @@
       },
       "lata_pracy": {
         "type": "number",
-        "label": "Lata pracy",
+        "label": "Ilość przepracowanych lat",
         "required": true,
         "unit_type": "time",
         "default_unit": "lata"
@@ -2958,26 +2958,26 @@
         ]
       },
       "cykle_zmiana": {
-        "label": "Cykli na zmianę",
+        "label": "Ilość cykli przypadających na zmianę",
         "type": "number",
         "required": true
       },
       "dni_robocze": {
-        "label": "Dni roboczych w roku",
+        "label": "Ilość dni roboczych w roku",
         "type": "number",
         "required": true,
         "default_value": 250
       },
       "ilosc_cykli": {
         "type": "number",
-        "label": "Ilość cykli",
+        "label": "Ilość odbytych cykli",
         "required": true,
         "unit_type": "dimensionless",
         "default_unit": "cykl"
       },
       "sposob_rejestracji": {
         "type": "select",
-        "label": "Sposób rejestracji",
+        "label": "Sposób rejestracji przez eksploatującego warunków eksploatacji urządzenia",
         "required": true,
         "options": [
           "Rejestrowanie przyrządami",
@@ -2990,7 +2990,7 @@
       },
       "ponowny_resurs": {
         "type": "select",
-        "label": "Ponowny resurs",
+        "label": "Czy chcesz wykonać ponowne wyznaczenie resursu?",
         "required": true,
         "options": [
           "Nie",
@@ -3064,7 +3064,7 @@
       },
       "data_resurs": {
         "type": "date",
-        "label": "Data poprzedniego resursu",
+        "label": "Data wyznaczenia ostatniego resursu",
         "required": false,
         "show_if": {
           "field": "ponowny_resurs",
@@ -3073,7 +3073,7 @@
       },
       "spec": {
         "type": "select",
-        "label": "Resurs po pierwszym przeglądzie specjalnym",
+        "label": "Czy chcesz wyznaczyć resurs po pierwszym przeglądzie specjalnym?",
         "required": true,
         "options": [
           "Nie",
@@ -3133,13 +3133,13 @@
       },
       "licznik_pracy": {
         "type": "number",
-        "label": "Licznik pracy",
+        "label": "Łączna ilość motogodzin [h]",
         "required": true,
         "default_unit": "mth"
       },
       "h_max": {
         "type": "number",
-        "label": "Maksymalna wysokość podnoszenia (Hmax)",
+        "label": "Maksymalna wysokość podnoszenia h_max [m]",
         "required": true,
         "unit_type": "length",
         "default_unit": "m"
@@ -3198,7 +3198,7 @@
       },
       "q_max": {
         "type": "number",
-        "label": "Qmax (Maksymalny udźwig)",
+        "label": "Udźwig maksymalny Q_max [kg]",
         "required": true,
         "unit_type": "mass",
         "default_unit": "kg"
@@ -3212,7 +3212,7 @@
       },
       "konstrukcja": {
         "type": "inspection_status",
-        "label": "Stan konstrukcji",
+        "label": "Czy konstrukcja stalowa jest zdeformowana i/lub pojawiły się pęknięcia w złączach spawanych?",
         "required": true,
         "options": [
           "Brak uszkodzeń",
@@ -3221,7 +3221,7 @@
       },
       "automatyka": {
         "type": "inspection_status",
-        "label": "Stan automatyki",
+        "label": "Czy automatyka sterująca i/lub zabezpieczająca jest sprawna i aktywna?",
         "required": true,
         "options": [
           "Sprawna",
@@ -3230,7 +3230,7 @@
       },
       "sworznie": {
         "type": "inspection_status",
-        "label": "Stan sworzni i połączeń",
+        "label": "Czy sworznie oraz połączenia rozłączne są właściwie zmontowane i w dobrym stanie technicznym?",
         "required": true,
         "options": [
           "Prawidłowy",
@@ -3239,7 +3239,7 @@
       },
       "ciegna": {
         "type": "inspection_status",
-        "label": "Stan cięgien",
+        "label": "Czy cięgna (łańcuchy, liny) są w dobrym stanie technicznym?",
         "required": true,
         "options": [
           "Brak uszkodzeń",
@@ -3248,7 +3248,7 @@
       },
       "eksploatacja": {
         "type": "inspection_status",
-        "label": "Warunki eksploatacji",
+        "label": "Czy urządzenie eksploatowane jest zgodnie z przeznaczeniem i instrukcją eksploatacji?",
         "required": true,
         "options": [
           "Zgodne",
@@ -3346,7 +3346,7 @@
     "fields": {
       "wykonawca": {
         "type": "text",
-        "label": "Wykonawca badania",
+        "label": "Wykonawca",
         "required": false
       },
       "uwagi": {
@@ -3386,7 +3386,7 @@
       },
       "h_max": {
         "type": "number",
-        "label": "Maks. wysokość podnoszenia h_max",
+        "label": "Maksymalna wysokość podnoszenia h_max [m]",
         "required": true,
         "unit_type": "length",
         "default_unit": "m"
@@ -3421,7 +3421,7 @@
       },
       "q_max": {
         "type": "number",
-        "label": "Qmax (Maksymalny udźwig)",
+        "label": "Udźwig maksymalny Q_max [kg]",
         "required": true,
         "unit_type": "mass",
         "default_unit": "kg"
@@ -3446,7 +3446,7 @@
       },
       "lata_pracy": {
         "type": "number",
-        "label": "Lata pracy",
+        "label": "Ilość przepracowanych lat",
         "required": true,
         "unit_type": "time",
         "default_unit": "lata"
@@ -3462,26 +3462,26 @@
         ]
       },
       "cykle_zmiana": {
-        "label": "Cykli na zmianę",
+        "label": "Ilość cykli przypadających na zmianę",
         "type": "number",
         "required": true
       },
       "dni_robocze": {
-        "label": "Dni roboczych w roku",
+        "label": "Ilość dni roboczych w roku",
         "type": "number",
         "required": true,
         "default_value": 250
       },
       "ilosc_cykli": {
         "type": "number",
-        "label": "Ilość cykli",
+        "label": "Ilość odbytych cykli",
         "required": true,
         "unit_type": "dimensionless",
         "default_unit": "cykl"
       },
       "sposob_rejestracji": {
         "type": "select",
-        "label": "Sposób rejestracji",
+        "label": "Sposób rejestracji przez eksploatującego warunków eksploatacji urządzenia",
         "required": true,
         "options": [
           "Rejestrowanie przyrządami",
@@ -3494,7 +3494,7 @@
       },
       "spec": {
         "type": "select",
-        "label": "Resurs po pierwszym przeglądzie specjalnym",
+        "label": "Czy chcesz wyznaczyć resurs po pierwszym przeglądzie specjalnym?",
         "required": true,
         "options": [
           "Nie",
@@ -3503,7 +3503,7 @@
       },
       "ponowny_resurs": {
         "type": "select",
-        "label": "Ponowny resurs",
+        "label": "Czy chcesz wykonać ponowne wyznaczenie resursu?",
         "required": true,
         "options": [
           "Nie",
@@ -3512,7 +3512,7 @@
       },
       "ostatni_resurs": {
         "type": "number",
-        "label": "Ostatni resurs",
+        "label": "Procent wykorzystania z ostatnich obliczeń resursu [%]",
         "required": false,
         "show_if": {
           "field": "ponowny_resurs",
@@ -3522,7 +3522,7 @@
       },
       "data_resurs": {
         "type": "date",
-        "label": "Data poprzedniego resursu",
+        "label": "Data wyznaczenia ostatniego resursu",
         "required": false,
         "show_if": {
           "field": "ponowny_resurs",
@@ -3531,7 +3531,7 @@
       },
       "konstrukcja": {
         "type": "inspection_status",
-        "label": "Stan konstrukcji",
+        "label": "Czy konstrukcja stalowa jest zdeformowana i/lub pojawiły się pęknięcia w złączach spawanych?",
         "required": true,
         "options": [
           "Brak uszkodzeń",
@@ -3540,7 +3540,7 @@
       },
       "automatyka": {
         "type": "inspection_status",
-        "label": "Stan automatyki",
+        "label": "Czy automatyka sterująca i/lub zabezpieczająca jest sprawna i aktywna?",
         "required": true,
         "options": [
           "Sprawna",
@@ -3549,7 +3549,7 @@
       },
       "sworznie": {
         "type": "inspection_status",
-        "label": "Stan sworzni i połączeń",
+        "label": "Czy sworznie oraz połączenia rozłączne są właściwie zmontowane i w dobrym stanie technicznym?",
         "required": true,
         "options": [
           "Prawidłowy",
@@ -3558,7 +3558,7 @@
       },
       "ciegna": {
         "type": "inspection_status",
-        "label": "Stan cięgien",
+        "label": "Czy cięgna (łańcuchy, liny) są w dobrym stanie technicznym?",
         "required": true,
         "options": [
           "Brak uszkodzeń",
@@ -3567,7 +3567,7 @@
       },
       "eksploatacja": {
         "type": "inspection_status",
-        "label": "Warunki eksploatacji",
+        "label": "Czy urządzenie eksploatowane jest zgodnie z przeznaczeniem i instrukcją eksploatacji?",
         "required": true,
         "options": [
           "Zgodne",
@@ -3655,7 +3655,7 @@
     "fields": {
       "wykonawca": {
         "type": "text",
-        "label": "Wykonawca badania",
+        "label": "Wykonawca",
         "required": false
       },
       "uwagi": {
@@ -3694,7 +3694,7 @@
       },
       "lata_pracy": {
         "type": "number",
-        "label": "Lata pracy",
+        "label": "Ilość przepracowanych lat",
         "required": true
       },
       "tryb_pracy": {
@@ -3708,24 +3708,24 @@
         ]
       },
       "cykle_zmiana": {
-        "label": "Cykli na zmianę",
+        "label": "Ilość cykli przypadających na zmianę",
         "type": "number",
         "required": true
       },
       "dni_robocze": {
-        "label": "Dni roboczych w roku",
+        "label": "Ilość dni roboczych w roku",
         "type": "number",
         "required": true,
         "default_value": 250
       },
       "ilosc_cykli": {
         "type": "number",
-        "label": "Ilość cykli",
+        "label": "Ilość odbytych cykli",
         "required": true
       },
       "sposob_rejestracji": {
         "type": "select",
-        "label": "Sposób rejestracji",
+        "label": "Sposób rejestracji przez eksploatującego warunków eksploatacji urządzenia",
         "required": true,
         "options": [
           "Rejestrowanie przyrządami",
@@ -3743,7 +3743,7 @@
       },
       "q_max": {
         "type": "number",
-        "label": "Qmax (Maksymalny udźwig)",
+        "label": "Udźwig maksymalny Q_max [kg]",
         "required": true,
         "unit_type": "mass",
         "default_unit": "kg"
@@ -3786,7 +3786,7 @@
       },
       "konstrukcja": {
         "type": "inspection_status",
-        "label": "Stan konstrukcji",
+        "label": "Czy konstrukcja stalowa jest zdeformowana i/lub pojawiły się pęknięcia w złączach spawanych?",
         "options": [
           "Brak uszkodzeń",
           "Uszkodzenia"
@@ -3794,7 +3794,7 @@
       },
       "automatyka": {
         "type": "inspection_status",
-        "label": "Stan automatyki",
+        "label": "Czy automatyka sterująca i/lub zabezpieczająca jest sprawna i aktywna?",
         "options": [
           "Sprawna",
           "Niesprawna"
@@ -3810,7 +3810,7 @@
       },
       "eksploatacja": {
         "type": "inspection_status",
-        "label": "Warunki eksploatacji",
+        "label": "Czy urządzenie eksploatowane jest zgodnie z przeznaczeniem i instrukcją eksploatacji?",
         "options": [
           "Zgodne",
           "Niezgodne"
@@ -3826,7 +3826,7 @@
       },
       "hamulce": {
         "type": "inspection_status",
-        "label": "Hamulce",
+        "label": "Czy układ hamulcowy jest sprawny?",
         "options": [
           "Sprawne",
           "Niesprawne"
@@ -3913,7 +3913,7 @@
     "fields": {
       "wykonawca": {
         "type": "text",
-        "label": "Wykonawca badania",
+        "label": "Wykonawca",
         "required": false
       },
       "uwagi": {
@@ -3943,7 +3943,7 @@
       },
       "lata_pracy": {
         "type": "number",
-        "label": "Lata pracy",
+        "label": "Ilość przepracowanych lat",
         "required": true,
         "unit_type": "time",
         "default_unit": "lata"
@@ -3959,26 +3959,26 @@
         ]
       },
       "cykle_zmiana": {
-        "label": "Cykli na zmianę",
+        "label": "Ilość cykli przypadających na zmianę",
         "type": "number",
         "required": true
       },
       "dni_robocze": {
-        "label": "Dni roboczych w roku",
+        "label": "Ilość dni roboczych w roku",
         "type": "number",
         "required": true,
         "default_value": 250
       },
       "ilosc_cykli": {
         "type": "number",
-        "label": "Ilość cykli",
+        "label": "Ilość odbytych cykli",
         "required": true,
         "unit_type": "dimensionless",
         "default_unit": "cykl"
       },
       "sposob_rejestracji": {
         "type": "select",
-        "label": "Sposób rejestracji",
+        "label": "Sposób rejestracji przez eksploatującego warunków eksploatacji urządzenia",
         "required": true,
         "options": [
           "Rejestrowanie przyrządami",
@@ -4006,14 +4006,14 @@
       },
       "q_max": {
         "type": "number",
-        "label": "Qmax (Maksymalny udźwig)",
+        "label": "Udźwig maksymalny Q_max [kg]",
         "required": true,
         "unit_type": "mass",
         "default_unit": "kg"
       },
       "spec": {
         "type": "select",
-        "label": "Resurs po pierwszym przeglądzie specjalnym",
+        "label": "Czy chcesz wyznaczyć resurs po pierwszym przeglądzie specjalnym?",
         "required": true,
         "options": [
           "Nie",
@@ -4022,7 +4022,7 @@
       },
       "ponowny_resurs": {
         "type": "select",
-        "label": "Ponowny resurs",
+        "label": "Czy chcesz wykonać ponowne wyznaczenie resursu?",
         "required": true,
         "options": [
           "Nie",
@@ -4031,7 +4031,7 @@
       },
       "ostatni_resurs": {
         "type": "number",
-        "label": "Ostatni resurs",
+        "label": "Procent wykorzystania z ostatnich obliczeń resursu [%]",
         "required": false,
         "show_if": {
           "field": "ponowny_resurs",
@@ -4041,7 +4041,7 @@
       },
       "data_resurs": {
         "type": "date",
-        "label": "Data poprzedniego resursu",
+        "label": "Data wyznaczenia ostatniego resursu",
         "required": false,
         "show_if": {
           "field": "ponowny_resurs",
@@ -4050,7 +4050,7 @@
       },
       "konstrukcja": {
         "type": "inspection_status",
-        "label": "Stan konstrukcji",
+        "label": "Czy konstrukcja stalowa jest zdeformowana i/lub pojawiły się pęknięcia w złączach spawanych?",
         "required": true,
         "options": [
           "Brak uszkodzeń",
@@ -4059,7 +4059,7 @@
       },
       "automatyka": {
         "type": "inspection_status",
-        "label": "Stan automatyki",
+        "label": "Czy automatyka sterująca i/lub zabezpieczająca jest sprawna i aktywna?",
         "required": true,
         "options": [
           "Sprawna",
@@ -4068,7 +4068,7 @@
       },
       "sworznie": {
         "type": "inspection_status",
-        "label": "Stan sworzni i połączeń",
+        "label": "Czy sworznie oraz połączenia rozłączne są właściwie zmontowane i w dobrym stanie technicznym?",
         "required": true,
         "options": [
           "Prawidłowy",
@@ -4077,7 +4077,7 @@
       },
       "ciegna": {
         "type": "inspection_status",
-        "label": "Stan cięgien",
+        "label": "Czy cięgna (łańcuchy, liny) są w dobrym stanie technicznym?",
         "required": true,
         "options": [
           "Brak uszkodzeń",
@@ -4086,7 +4086,7 @@
       },
       "eksploatacja": {
         "type": "inspection_status",
-        "label": "Warunki eksploatacji",
+        "label": "Czy urządzenie eksploatowane jest zgodnie z przeznaczeniem i instrukcją eksploatacji?",
         "required": true,
         "options": [
           "Zgodne",
@@ -4176,7 +4176,7 @@
     "fields": {
       "wykonawca": {
         "type": "text",
-        "label": "Wykonawca badania",
+        "label": "Wykonawca",
         "required": false
       },
       "uwagi": {
@@ -4208,12 +4208,12 @@
       },
       "lata_pracy": {
         "type": "number",
-        "label": "Lata pracy",
+        "label": "Ilość przepracowanych lat",
         "required": true
       },
       "ilosc_cykli": {
         "type": "number",
-        "label": "Ilość cykli",
+        "label": "Ilość odbytych cykli",
         "required": true
       },
       "czas_cykle": {
@@ -4233,7 +4233,7 @@
       },
       "sposob_rejestracji": {
         "type": "select",
-        "label": "Sposób rejestracji",
+        "label": "Sposób rejestracji przez eksploatującego warunków eksploatacji urządzenia",
         "required": true,
         "options": [
           "Rejestrowanie przyrządami",
@@ -4261,14 +4261,14 @@
       },
       "q_max": {
         "type": "number",
-        "label": "Qmax (Maksymalny udźwig)",
+        "label": "Udźwig maksymalny Q_max [kg]",
         "required": true,
         "unit_type": "mass",
         "default_unit": "kg"
       },
       "spec": {
         "type": "select",
-        "label": "Resurs po pierwszym przeglądzie specjalnym",
+        "label": "Czy chcesz wyznaczyć resurs po pierwszym przeglądzie specjalnym?",
         "required": true,
         "options": [
           "Nie",
@@ -4277,7 +4277,7 @@
       },
       "ponowny_resurs": {
         "type": "select",
-        "label": "Ponowny resurs",
+        "label": "Czy chcesz wykonać ponowne wyznaczenie resursu?",
         "required": true,
         "options": [
           "Nie",
@@ -4286,7 +4286,7 @@
       },
       "ostatni_resurs": {
         "type": "number",
-        "label": "Ostatni resurs",
+        "label": "Procent wykorzystania z ostatnich obliczeń resursu [%]",
         "required": false,
         "show_if": {
           "field": "ponowny_resurs",
@@ -4296,7 +4296,7 @@
       },
       "data_resurs": {
         "type": "date",
-        "label": "Data poprzedniego resursu",
+        "label": "Data wyznaczenia ostatniego resursu",
         "required": false,
         "show_if": {
           "field": "ponowny_resurs",
@@ -4373,7 +4373,7 @@
     "fields": {
       "wykonawca": {
         "type": "text",
-        "label": "Wykonawca badania",
+        "label": "Wykonawca",
         "required": false
       },
       "uwagi": {
@@ -4405,12 +4405,12 @@
       },
       "lata_pracy": {
         "type": "number",
-        "label": "Lata pracy",
+        "label": "Ilość przepracowanych lat",
         "required": true
       },
       "ilosc_cykli": {
         "type": "number",
-        "label": "Ilość cykli",
+        "label": "Ilość odbytych cykli",
         "required": true
       },
       "czas_cykle": {
@@ -4430,7 +4430,7 @@
       },
       "sposob_rejestracji": {
         "type": "select",
-        "label": "Sposób rejestracji",
+        "label": "Sposób rejestracji przez eksploatującego warunków eksploatacji urządzenia",
         "required": true,
         "options": [
           "Rejestrowanie przyrządami",
@@ -4458,14 +4458,14 @@
       },
       "q_max": {
         "type": "number",
-        "label": "Qmax (Maksymalny udźwig)",
+        "label": "Udźwig maksymalny Q_max [kg]",
         "required": true,
         "unit_type": "mass",
         "default_unit": "kg"
       },
       "spec": {
         "type": "select",
-        "label": "Resurs po pierwszym przeglądzie specjalnym",
+        "label": "Czy chcesz wyznaczyć resurs po pierwszym przeglądzie specjalnym?",
         "required": true,
         "options": [
           "Nie",
@@ -4474,7 +4474,7 @@
       },
       "ponowny_resurs": {
         "type": "select",
-        "label": "Ponowny resurs",
+        "label": "Czy chcesz wykonać ponowne wyznaczenie resursu?",
         "required": true,
         "options": [
           "Nie",
@@ -4483,7 +4483,7 @@
       },
       "ostatni_resurs": {
         "type": "number",
-        "label": "Ostatni resurs",
+        "label": "Procent wykorzystania z ostatnich obliczeń resursu [%]",
         "required": false,
         "show_if": {
           "field": "ponowny_resurs",
@@ -4493,7 +4493,7 @@
       },
       "data_resurs": {
         "type": "date",
-        "label": "Data poprzedniego resursu",
+        "label": "Data wyznaczenia ostatniego resursu",
         "required": false,
         "show_if": {
           "field": "ponowny_resurs",
@@ -4570,7 +4570,7 @@
     "fields": {
       "wykonawca": {
         "type": "text",
-        "label": "Wykonawca badania",
+        "label": "Wykonawca",
         "required": false
       },
       "uwagi": {
@@ -4602,12 +4602,12 @@
       },
       "lata_pracy": {
         "type": "number",
-        "label": "Lata pracy",
+        "label": "Ilość przepracowanych lat",
         "required": true
       },
       "ilosc_cykli": {
         "type": "number",
-        "label": "Ilość cykli",
+        "label": "Ilość odbytych cykli",
         "required": true
       },
       "czas_cykle": {
@@ -4627,7 +4627,7 @@
       },
       "sposob_rejestracji": {
         "type": "select",
-        "label": "Sposób rejestracji",
+        "label": "Sposób rejestracji przez eksploatującego warunków eksploatacji urządzenia",
         "required": true,
         "options": [
           "Rejestrowanie przyrządami",
@@ -4655,14 +4655,14 @@
       },
       "q_max": {
         "type": "number",
-        "label": "Qmax (Maksymalny udźwig)",
+        "label": "Udźwig maksymalny Q_max [kg]",
         "required": true,
         "unit_type": "mass",
         "default_unit": "kg"
       },
       "spec": {
         "type": "select",
-        "label": "Resurs po pierwszym przeglądzie specjalnym",
+        "label": "Czy chcesz wyznaczyć resurs po pierwszym przeglądzie specjalnym?",
         "required": true,
         "options": [
           "Nie",
@@ -4671,7 +4671,7 @@
       },
       "ponowny_resurs": {
         "type": "select",
-        "label": "Ponowny resurs",
+        "label": "Czy chcesz wykonać ponowne wyznaczenie resursu?",
         "required": true,
         "options": [
           "Nie",
@@ -4680,7 +4680,7 @@
       },
       "ostatni_resurs": {
         "type": "number",
-        "label": "Ostatni resurs",
+        "label": "Procent wykorzystania z ostatnich obliczeń resursu [%]",
         "required": false,
         "show_if": {
           "field": "ponowny_resurs",
@@ -4690,7 +4690,7 @@
       },
       "data_resurs": {
         "type": "date",
-        "label": "Data poprzedniego resursu",
+        "label": "Data wyznaczenia ostatniego resursu",
         "required": false,
         "show_if": {
           "field": "ponowny_resurs",
@@ -4770,7 +4770,7 @@
     "fields": {
       "wykonawca": {
         "type": "text",
-        "label": "Wykonawca badania",
+        "label": "Wykonawca",
         "required": false
       },
       "uwagi": {
@@ -4802,12 +4802,12 @@
       },
       "lata_pracy": {
         "type": "number",
-        "label": "Lata pracy",
+        "label": "Ilość przepracowanych lat",
         "required": true
       },
       "ilosc_cykli": {
         "type": "number",
-        "label": "Ilość cykli",
+        "label": "Ilość odbytych cykli",
         "required": true
       },
       "czas_cykle": {
@@ -4827,7 +4827,7 @@
       },
       "sposob_rejestracji": {
         "type": "select",
-        "label": "Sposób rejestracji",
+        "label": "Sposób rejestracji przez eksploatującego warunków eksploatacji urządzenia",
         "required": true,
         "options": [
           "Rejestrowanie przyrządami",
@@ -4855,14 +4855,14 @@
       },
       "q_max": {
         "type": "number",
-        "label": "Qmax (Maksymalny udźwig)",
+        "label": "Udźwig maksymalny Q_max [kg]",
         "required": true,
         "unit_type": "mass",
         "default_unit": "kg"
       },
       "spec": {
         "type": "select",
-        "label": "Resurs po pierwszym przeglądzie specjalnym",
+        "label": "Czy chcesz wyznaczyć resurs po pierwszym przeglądzie specjalnym?",
         "required": true,
         "options": [
           "Nie",
@@ -4871,7 +4871,7 @@
       },
       "ponowny_resurs": {
         "type": "select",
-        "label": "Ponowny resurs",
+        "label": "Czy chcesz wykonać ponowne wyznaczenie resursu?",
         "required": true,
         "options": [
           "Nie",
@@ -4880,7 +4880,7 @@
       },
       "ostatni_resurs": {
         "type": "number",
-        "label": "Ostatni resurs",
+        "label": "Procent wykorzystania z ostatnich obliczeń resursu [%]",
         "required": false,
         "show_if": {
           "field": "ponowny_resurs",
@@ -4890,7 +4890,7 @@
       },
       "data_resurs": {
         "type": "date",
-        "label": "Data poprzedniego resursu",
+        "label": "Data wyznaczenia ostatniego resursu",
         "required": false,
         "show_if": {
           "field": "ponowny_resurs",
@@ -4967,7 +4967,7 @@
     "fields": {
       "wykonawca": {
         "type": "text",
-        "label": "Wykonawca badania",
+        "label": "Wykonawca",
         "required": false
       },
       "uwagi": {
@@ -4999,12 +4999,12 @@
       },
       "lata_pracy": {
         "type": "number",
-        "label": "Lata pracy",
+        "label": "Ilość przepracowanych lat",
         "required": true
       },
       "ilosc_cykli": {
         "type": "number",
-        "label": "Ilość cykli",
+        "label": "Ilość odbytych cykli",
         "required": true
       },
       "czas_cykle": {
@@ -5024,7 +5024,7 @@
       },
       "sposob_rejestracji": {
         "type": "select",
-        "label": "Sposób rejestracji",
+        "label": "Sposób rejestracji przez eksploatującego warunków eksploatacji urządzenia",
         "required": true,
         "options": [
           "Rejestrowanie przyrządami",
@@ -5052,14 +5052,14 @@
       },
       "q_max": {
         "type": "number",
-        "label": "Qmax (Maksymalny udźwig)",
+        "label": "Udźwig maksymalny Q_max [kg]",
         "required": true,
         "unit_type": "mass",
         "default_unit": "kg"
       },
       "spec": {
         "type": "select",
-        "label": "Resurs po pierwszym przeglądzie specjalnym",
+        "label": "Czy chcesz wyznaczyć resurs po pierwszym przeglądzie specjalnym?",
         "required": true,
         "options": [
           "Nie",
@@ -5068,7 +5068,7 @@
       },
       "ponowny_resurs": {
         "type": "select",
-        "label": "Ponowny resurs",
+        "label": "Czy chcesz wykonać ponowne wyznaczenie resursu?",
         "required": true,
         "options": [
           "Nie",
@@ -5077,7 +5077,7 @@
       },
       "ostatni_resurs": {
         "type": "number",
-        "label": "Ostatni resurs",
+        "label": "Procent wykorzystania z ostatnich obliczeń resursu [%]",
         "required": false,
         "show_if": {
           "field": "ponowny_resurs",
@@ -5087,7 +5087,7 @@
       },
       "data_resurs": {
         "type": "date",
-        "label": "Data poprzedniego resursu",
+        "label": "Data wyznaczenia ostatniego resursu",
         "required": false,
         "show_if": {
           "field": "ponowny_resurs",
@@ -5164,7 +5164,7 @@
     "fields": {
       "wykonawca": {
         "type": "text",
-        "label": "Wykonawca badania",
+        "label": "Wykonawca",
         "required": false
       },
       "uwagi": {
@@ -5196,12 +5196,12 @@
       },
       "lata_pracy": {
         "type": "number",
-        "label": "Lata pracy",
+        "label": "Ilość przepracowanych lat",
         "required": true
       },
       "ilosc_cykli": {
         "type": "number",
-        "label": "Ilość cykli",
+        "label": "Ilość odbytych cykli",
         "required": true
       },
       "czas_cykle": {
@@ -5221,7 +5221,7 @@
       },
       "sposob_rejestracji": {
         "type": "select",
-        "label": "Sposób rejestracji",
+        "label": "Sposób rejestracji przez eksploatującego warunków eksploatacji urządzenia",
         "required": true,
         "options": [
           "Rejestrowanie przyrządami",
@@ -5249,14 +5249,14 @@
       },
       "q_max": {
         "type": "number",
-        "label": "Qmax (Maksymalny udźwig)",
+        "label": "Udźwig maksymalny Q_max [kg]",
         "required": true,
         "unit_type": "mass",
         "default_unit": "kg"
       },
       "spec": {
         "type": "select",
-        "label": "Resurs po pierwszym przeglądzie specjalnym",
+        "label": "Czy chcesz wyznaczyć resurs po pierwszym przeglądzie specjalnym?",
         "required": true,
         "options": [
           "Nie",
@@ -5265,7 +5265,7 @@
       },
       "ponowny_resurs": {
         "type": "select",
-        "label": "Ponowny resurs",
+        "label": "Czy chcesz wykonać ponowne wyznaczenie resursu?",
         "required": true,
         "options": [
           "Nie",
@@ -5274,7 +5274,7 @@
       },
       "ostatni_resurs": {
         "type": "number",
-        "label": "Ostatni resurs",
+        "label": "Procent wykorzystania z ostatnich obliczeń resursu [%]",
         "required": false,
         "show_if": {
           "field": "ponowny_resurs",
@@ -5284,7 +5284,7 @@
       },
       "data_resurs": {
         "type": "date",
-        "label": "Data poprzedniego resursu",
+        "label": "Data wyznaczenia ostatniego resursu",
         "required": false,
         "show_if": {
           "field": "ponowny_resurs",
@@ -5358,7 +5358,7 @@
     "fields": {
       "wykonawca": {
         "type": "text",
-        "label": "Wykonawca badania",
+        "label": "Wykonawca",
         "required": false
       },
       "uwagi": {
@@ -5393,7 +5393,7 @@
       },
       "lata_pracy": {
         "type": "number",
-        "label": "Lata pracy",
+        "label": "Ilość przepracowanych lat",
         "required": true
       },
       "tryb_pracy": {
@@ -5407,24 +5407,24 @@
         ]
       },
       "cykle_zmiana": {
-        "label": "Cykli na zmianę",
+        "label": "Ilość cykli przypadających na zmianę",
         "type": "number",
         "required": true
       },
       "dni_robocze": {
-        "label": "Dni roboczych w roku",
+        "label": "Ilość dni roboczych w roku",
         "type": "number",
         "required": true,
         "default_value": 250
       },
       "ilosc_cykli": {
         "type": "number",
-        "label": "Ilość cykli",
+        "label": "Ilość odbytych cykli",
         "required": true
       },
       "sposob_rejestracji": {
         "type": "select",
-        "label": "Sposób rejestracji",
+        "label": "Sposób rejestracji przez eksploatującego warunków eksploatacji urządzenia",
         "required": true,
         "options": [
           "Rejestrowanie przyrządami",
@@ -5475,7 +5475,7 @@
       },
       "q_max": {
         "type": "number",
-        "label": "Qmax (Maksymalny udźwig)",
+        "label": "Udźwig maksymalny Q_max [kg]",
         "required": true,
         "unit_type": "mass",
         "default_unit": "kg"
@@ -5507,7 +5507,7 @@
       },
       "spec": {
         "type": "select",
-        "label": "Resurs po pierwszym przeglądzie specjalnym",
+        "label": "Czy chcesz wyznaczyć resurs po pierwszym przeglądzie specjalnym?",
         "required": true,
         "options": [
           "Nie",
@@ -5516,7 +5516,7 @@
       },
       "ponowny_resurs": {
         "type": "select",
-        "label": "Ponowny resurs",
+        "label": "Czy chcesz wykonać ponowne wyznaczenie resursu?",
         "required": true,
         "options": [
           "Nie",
@@ -5525,7 +5525,7 @@
       },
       "ostatni_resurs": {
         "type": "number",
-        "label": "Ostatni resurs",
+        "label": "Procent wykorzystania z ostatnich obliczeń resursu [%]",
         "required": false,
         "show_if": {
           "field": "ponowny_resurs",
@@ -5535,7 +5535,7 @@
       },
       "data_resurs": {
         "type": "date",
-        "label": "Data poprzedniego resursu",
+        "label": "Data wyznaczenia ostatniego resursu",
         "required": false,
         "show_if": {
           "field": "ponowny_resurs",
@@ -5586,7 +5586,7 @@
       },
       "konstrukcja": {
         "type": "inspection_status",
-        "label": "Stan konstrukcji",
+        "label": "Czy konstrukcja stalowa jest zdeformowana i/lub pojawiły się pęknięcia w złączach spawanych?",
         "options": [
           "Brak uszkodzeń",
           "Uszkodzenia"
@@ -5594,7 +5594,7 @@
       },
       "automatyka": {
         "type": "inspection_status",
-        "label": "Stan automatyki",
+        "label": "Czy automatyka sterująca i/lub zabezpieczająca jest sprawna i aktywna?",
         "options": [
           "Sprawna",
           "Niesprawna"
@@ -5602,7 +5602,7 @@
       },
       "sworznie": {
         "type": "inspection_status",
-        "label": "Stan sworzni i połączeń",
+        "label": "Czy sworznie oraz połączenia rozłączne są właściwie zmontowane i w dobrym stanie technicznym?",
         "options": [
           "Prawidłowy",
           "Nieprawidłowy"
@@ -5610,7 +5610,7 @@
       },
       "ciegna": {
         "type": "inspection_status",
-        "label": "Stan cięgien",
+        "label": "Czy cięgna (łańcuchy, liny) są w dobrym stanie technicznym?",
         "options": [
           "Brak uszkodzeń",
           "Uszkodzenia"
@@ -5618,7 +5618,7 @@
       },
       "eksploatacja": {
         "type": "inspection_status",
-        "label": "Warunki eksploatacji",
+        "label": "Czy urządzenie eksploatowane jest zgodnie z przeznaczeniem i instrukcją eksploatacji?",
         "options": [
           "Zgodne",
           "Niezgodne"
@@ -5634,7 +5634,7 @@
       },
       "hamulce": {
         "type": "inspection_status",
-        "label": "Hamulce",
+        "label": "Czy układ hamulcowy jest sprawny?",
         "options": [
           "Sprawne",
           "Niesprawne"
@@ -5744,7 +5744,7 @@
     "fields": {
       "wykonawca": {
         "type": "text",
-        "label": "Wykonawca badania",
+        "label": "Wykonawca",
         "required": false
       },
       "uwagi": {
@@ -5773,7 +5773,7 @@
       },
       "lata_pracy": {
         "type": "number",
-        "label": "Lata pracy",
+        "label": "Ilość przepracowanych lat",
         "required": true
       },
       "tryb_pracy": {
@@ -5787,24 +5787,24 @@
         ]
       },
       "cykle_zmiana": {
-        "label": "Cykli na zmianę",
+        "label": "Ilość cykli przypadających na zmianę",
         "type": "number",
         "required": true
       },
       "dni_robocze": {
-        "label": "Dni roboczych w roku",
+        "label": "Ilość dni roboczych w roku",
         "type": "number",
         "required": true,
         "default_value": 250
       },
       "ilosc_cykli": {
         "type": "number",
-        "label": "Ilość cykli",
+        "label": "Ilość odbytych cykli",
         "required": true
       },
       "sposob_rejestracji": {
         "type": "select",
-        "label": "Sposób rejestracji",
+        "label": "Sposób rejestracji przez eksploatującego warunków eksploatacji urządzenia",
         "required": true,
         "options": [
           "Rejestrowanie przyrządami",
@@ -5822,14 +5822,14 @@
       },
       "q_max": {
         "type": "number",
-        "label": "Qmax (Maksymalny udźwig)",
+        "label": "Udźwig maksymalny Q_max [kg]",
         "required": true,
         "unit_type": "mass",
         "default_unit": "kg"
       },
       "ponowny_resurs": {
         "type": "select",
-        "label": "Ponowny resurs",
+        "label": "Czy chcesz wykonać ponowne wyznaczenie resursu?",
         "required": true,
         "options": [
           "Nie",
@@ -5838,7 +5838,7 @@
       },
       "ostatni_resurs": {
         "type": "number",
-        "label": "Ostatni resurs",
+        "label": "Procent wykorzystania z ostatnich obliczeń resursu [%]",
         "required": false,
         "show_if": {
           "field": "ponowny_resurs",
@@ -5848,7 +5848,7 @@
       },
       "data_resurs": {
         "type": "date",
-        "label": "Data poprzedniego resursu",
+        "label": "Data wyznaczenia ostatniego resursu",
         "required": false,
         "show_if": {
           "field": "ponowny_resurs",
@@ -5857,7 +5857,7 @@
       },
       "konstrukcja": {
         "type": "inspection_status",
-        "label": "Stan konstrukcji",
+        "label": "Czy konstrukcja stalowa jest zdeformowana i/lub pojawiły się pęknięcia w złączach spawanych?",
         "options": [
           "Brak uszkodzeń",
           "Uszkodzenia"
@@ -5865,7 +5865,7 @@
       },
       "automatyka": {
         "type": "inspection_status",
-        "label": "Stan automatyki",
+        "label": "Czy automatyka sterująca i/lub zabezpieczająca jest sprawna i aktywna?",
         "options": [
           "Sprawna",
           "Niesprawna"
@@ -5873,7 +5873,7 @@
       },
       "sworznie": {
         "type": "inspection_status",
-        "label": "Stan sworzni i połączeń",
+        "label": "Czy sworznie oraz połączenia rozłączne są właściwie zmontowane i w dobrym stanie technicznym?",
         "options": [
           "Prawidłowy",
           "Nieprawidłowy"
@@ -5881,7 +5881,7 @@
       },
       "ciegna": {
         "type": "inspection_status",
-        "label": "Stan cięgien",
+        "label": "Czy cięgna (łańcuchy, liny) są w dobrym stanie technicznym?",
         "options": [
           "Brak uszkodzeń",
           "Uszkodzenia"
@@ -5889,7 +5889,7 @@
       },
       "eksploatacja": {
         "type": "inspection_status",
-        "label": "Warunki eksploatacji",
+        "label": "Czy urządzenie eksploatowane jest zgodnie z przeznaczeniem i instrukcją eksploatacji?",
         "options": [
           "Zgodne",
           "Niezgodne"
@@ -5905,7 +5905,7 @@
       },
       "hamulce": {
         "type": "inspection_status",
-        "label": "Hamulce",
+        "label": "Czy układ hamulcowy jest sprawny?",
         "options": [
           "Sprawne",
           "Niesprawne"
@@ -5985,7 +5985,7 @@
     "fields": {
       "wykonawca": {
         "type": "text",
-        "label": "Wykonawca badania",
+        "label": "Wykonawca",
         "required": false
       },
       "uwagi": {
@@ -6015,7 +6015,7 @@
       },
       "lata_pracy": {
         "type": "number",
-        "label": "Lata pracy",
+        "label": "Ilość przepracowanych lat",
         "required": true
       },
       "tryb_pracy": {
@@ -6029,24 +6029,24 @@
         ]
       },
       "cykle_zmiana": {
-        "label": "Cykli na zmianę",
+        "label": "Ilość cykli przypadających na zmianę",
         "type": "number",
         "required": true
       },
       "dni_robocze": {
-        "label": "Dni roboczych w roku",
+        "label": "Ilość dni roboczych w roku",
         "type": "number",
         "required": true,
         "default_value": 250
       },
       "ilosc_cykli": {
         "type": "number",
-        "label": "Ilość cykli",
+        "label": "Ilość odbytych cykli",
         "required": true
       },
       "sposob_rejestracji": {
         "type": "select",
-        "label": "Sposób rejestracji",
+        "label": "Sposób rejestracji przez eksploatującego warunków eksploatacji urządzenia",
         "required": true,
         "options": [
           "Rejestrowanie przyrządami",
@@ -6064,14 +6064,14 @@
       },
       "q_max": {
         "type": "number",
-        "label": "Qmax (Maksymalny udźwig)",
+        "label": "Udźwig maksymalny Q_max [kg]",
         "required": true,
         "unit_type": "mass",
         "default_unit": "kg"
       },
       "ponowny_resurs": {
         "type": "select",
-        "label": "Ponowny resurs",
+        "label": "Czy chcesz wykonać ponowne wyznaczenie resursu?",
         "required": true,
         "options": [
           "Nie",
@@ -6080,7 +6080,7 @@
       },
       "ostatni_resurs": {
         "type": "number",
-        "label": "Ostatni resurs",
+        "label": "Procent wykorzystania z ostatnich obliczeń resursu [%]",
         "required": false,
         "show_if": {
           "field": "ponowny_resurs",
@@ -6090,7 +6090,7 @@
       },
       "data_resurs": {
         "type": "date",
-        "label": "Data poprzedniego resursu",
+        "label": "Data wyznaczenia ostatniego resursu",
         "required": false,
         "show_if": {
           "field": "ponowny_resurs",
@@ -6099,7 +6099,7 @@
       },
       "konstrukcja": {
         "type": "inspection_status",
-        "label": "Stan konstrukcji",
+        "label": "Czy konstrukcja stalowa jest zdeformowana i/lub pojawiły się pęknięcia w złączach spawanych?",
         "options": [
           "Brak uszkodzeń",
           "Uszkodzenia"
@@ -6107,7 +6107,7 @@
       },
       "automatyka": {
         "type": "inspection_status",
-        "label": "Stan automatyki",
+        "label": "Czy automatyka sterująca i/lub zabezpieczająca jest sprawna i aktywna?",
         "options": [
           "Sprawna",
           "Niesprawna"
@@ -6115,7 +6115,7 @@
       },
       "sworznie": {
         "type": "inspection_status",
-        "label": "Stan sworzni i połączeń",
+        "label": "Czy sworznie oraz połączenia rozłączne są właściwie zmontowane i w dobrym stanie technicznym?",
         "options": [
           "Prawidłowy",
           "Nieprawidłowy"
@@ -6123,7 +6123,7 @@
       },
       "ciegna": {
         "type": "inspection_status",
-        "label": "Stan cięgien",
+        "label": "Czy cięgna (łańcuchy, liny) są w dobrym stanie technicznym?",
         "options": [
           "Brak uszkodzeń",
           "Uszkodzenia"
@@ -6131,7 +6131,7 @@
       },
       "eksploatacja": {
         "type": "inspection_status",
-        "label": "Warunki eksploatacji",
+        "label": "Czy urządzenie eksploatowane jest zgodnie z przeznaczeniem i instrukcją eksploatacji?",
         "options": [
           "Zgodne",
           "Niezgodne"
@@ -6147,7 +6147,7 @@
       },
       "nakretka": {
         "type": "inspection_status",
-        "label": "Nakrętka bezpieczeństwa",
+        "label": "Czy nakrętka kontrująca oraz bolec zabezpieczający są w dobrym stanie technicznym?",
         "options": [
           "Sprawna",
           "Niesprawna"

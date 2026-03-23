@@ -38,3 +38,8 @@ class CreateInvoiceSerializer(serializers.Serializer):
         if not User.objects.filter(id=value).exists():
             raise serializers.ValidationError("Użytkownik o podanym ID nie istnieje.")
         return value
+
+
+class CreateCorrectionSerializer(serializers.Serializer):
+    net_amount = serializers.DecimalField(max_digits=10, decimal_places=2)
+    reason = serializers.CharField(max_length=500)

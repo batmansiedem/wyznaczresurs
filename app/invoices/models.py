@@ -57,6 +57,17 @@ class Invoice(models.Model):
     recipient_name    = models.CharField(max_length=255, blank=True, verbose_name=_("Nazwa odbiorcy"))
     recipient_address = models.TextField(blank=True, verbose_name=_("Adres odbiorcy"))
 
+    # Korekta
+    is_correction = models.BooleanField(default=False, verbose_name=_("Korekta"))
+    corrected_invoice = models.ForeignKey(
+        'self',
+        null=True, blank=True,
+        on_delete=models.SET_NULL,
+        related_name='corrections',
+        verbose_name=_("Korygowana faktura"),
+    )
+    correction_reason = models.TextField(blank=True, verbose_name=_("Powód korekty"))
+
     # Warunki płatności
     PAYMENT_TERM_CHOICES = (
         ("paid", "Zapłacono przelewem"),

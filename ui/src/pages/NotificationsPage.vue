@@ -135,26 +135,48 @@
       <div class="col-12 col-md-5">
         <div class="section-label">Podgląd stylu e-maila</div>
         <q-card flat bordered class="rounded-borders shadow-1 overflow-hidden email-preview-card" style="min-height: 400px;">
-          <!-- Hero Section (Backend style) -->
-          <div style="background: linear-gradient(145deg, #1565C0 0%, #0c3c73 100%); color: #ffffff; padding: 40px 20px; text-align: center;">
-            <div style="font-size: 28px; font-weight: 900; letter-spacing: -1px;">
-              wyznacz<span style="color: #1976D2;">resurs</span>.com
-            </div>
-            <div v-if="formData.subject" style="margin-top: 10px; font-size: 14px; opacity: 0.85; font-weight: 400;">
-              {{ formData.subject }}
+
+          <!-- Hero — nawiązuje do landing page -->
+          <div class="email-hero">
+            <!-- Siatka techniczna (SVG jak na landing) -->
+            <svg class="email-hero-grid" viewBox="0 0 600 160" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <defs>
+                <pattern id="ep-minor" width="20" height="20" patternUnits="userSpaceOnUse">
+                  <path d="M20 0L0 0 0 20" fill="none" stroke="white" stroke-width="0.3" stroke-opacity="0.12"/>
+                </pattern>
+                <pattern id="ep-major" width="100" height="100" patternUnits="userSpaceOnUse">
+                  <rect width="100" height="100" fill="url(#ep-minor)"/>
+                  <path d="M100 0L0 0 0 100" fill="none" stroke="white" stroke-width="0.6" stroke-opacity="0.18"/>
+                </pattern>
+              </defs>
+              <rect width="100%" height="100%" fill="url(#ep-major)"/>
+              <g transform="translate(540,80)" stroke="white" fill="none" stroke-opacity="0.13">
+                <circle r="130" stroke-width="0.5"/>
+                <circle r="90"  stroke-width="0.6"/>
+                <circle r="50"  stroke-width="0.5"/>
+                <line x1="-140" x2="140" y1="0" y2="0" stroke-width="0.5"/>
+                <line x1="0" x2="0" y1="-140" y2="140" stroke-width="0.5"/>
+              </g>
+            </svg>
+
+            <div class="email-hero-content">
+              <!-- Logo -->
+              <div class="email-logo">
+                wyznacz<span class="email-logo-accent">resurs</span>.com
+              </div>
+
+              <!-- Temat jako podtytuł -->
+              <div v-if="formData.subject" class="email-subject">
+                {{ formData.subject }}
+              </div>
             </div>
           </div>
 
-          <!-- Compliance Strip -->
-          <div style="background-color: #0A1929; color: #ffffff; padding: 10px 15px; text-align: center; font-family: monospace; font-size: 9px; letter-spacing: 1px; text-transform: uppercase; border-bottom: 2px solid #1976D2;">
-            FEM 9.511 &bull; ISO 4301 &bull; ROZP. MPiT 2018 &bull; UDT
-          </div>
-          
-          <!-- Content Container -->
+          <!-- Treść -->
           <div class="email-content-wrapper">
             <div class="email-body">
-              <div v-html="formData.content || '<p class=\'text-grey-5\'>Wprowadź treść wiadomości, aby zobaczyć podgląd...</p>'"></div>
-              
+              <div v-html="formData.content || '<p style=\'color:#94a3b8;font-style:italic\'>Wprowadź treść wiadomości, aby zobaczyć podgląd...</p>'"></div>
+
               <!-- Bonus Code Preview -->
               <div v-if="formData.include_bonus_code && formData.bonus_points" class="bonus-code-box">
                 <div style="font-size: 11px; color: #1565C0; font-weight: 700; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px;">
@@ -172,15 +194,15 @@
               </div>
             </div>
           </div>
-          
+
           <!-- Footer -->
-          <div style="background-color: #0A1929; padding: 30px 20px; text-align: center; color: rgba(255, 255, 255, 0.5); font-size: 10px;">
-            <div style="font-weight: 700; color: #ffffff; font-size: 12px; margin-bottom: 8px;">
-              wyznaczresurs.com
+          <div class="email-footer">
+            <div class="email-footer-logo">wyznaczresurs.com</div>
+            <div class="email-footer-text">
+              Profesjonalny system wyznaczania resursu UTB<br>
+              Zgodność z normami FEM 9.511 / ISO 4301 &bull; Wymogi UDT
             </div>
-            Profesjonalny system wyznaczania resursu UTB.<br>
-            Zgodność z normami FEM/ISO i wymogami UDT.<br><br>
-            &copy; {{ new Date().getFullYear() }} Wszystkie prawa zastrzeżone.
+            <div class="email-footer-copy">&copy; {{ new Date().getFullYear() }} Wszystkie prawa zastrzeżone.</div>
           </div>
         </q-card>
 
@@ -197,29 +219,31 @@
 
     <!-- Dialog po wysyłce -->
     <q-dialog v-model="showResultDialog" persistent>
-      <q-card style="min-width: 350px">
-        <q-card-section class="row items-center">
-          <q-avatar icon="check_circle" color="positive" text-color="white" v-if="resultData?.success_count > 0" />
-          <q-avatar icon="error" color="negative" text-color="white" v-else />
-          <span class="q-ml-sm text-h6">Status wysyłki</span>
+      <q-card style="min-width: 380px">
+        <q-card-section class="bg-primary text-white row items-center">
+          <q-icon
+            :name="resultData?.success_count > 0 ? 'check_circle' : 'error'"
+            size="sm"
+            class="q-mr-sm"
+          />
+          <div class="text-h6 text-weight-bold col">Status wysyłki</div>
+          <q-btn icon="close" flat round dense v-close-popup />
         </q-card-section>
 
-        <q-card-section class="q-pt-none">
-          <p v-if="resultData">
-            {{ resultData.detail }}
-          </p>
-          <div v-if="resultData?.errors && resultData.errors.length" class="q-mt-md">
-            <div class="text-weight-bold text-negative">Wystąpiły błędy:</div>
-            <q-scroll-area style="height: 100px;">
-              <ul class="q-pl-md">
+        <q-card-section v-if="resultData">
+          <p class="q-mb-none">{{ resultData.detail }}</p>
+          <div v-if="resultData.errors?.length" class="q-mt-md">
+            <div class="text-weight-bold text-negative q-mb-xs">Wystąpiły błędy:</div>
+            <q-scroll-area style="height: 100px">
+              <ul class="q-pl-md q-mb-none">
                 <li v-for="(err, idx) in resultData.errors" :key="idx" class="text-caption">{{ err }}</li>
               </ul>
             </q-scroll-area>
           </div>
         </q-card-section>
 
-        <q-card-actions align="right">
-          <q-btn flat label="Zamknij" color="primary" v-close-popup />
+        <q-card-actions align="right" class="q-pa-md">
+          <q-btn flat label="Zamknij" color="grey-7" v-close-popup no-caps />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -350,33 +374,121 @@ onMounted(() => {
 }
 
 .email-preview-card {
-  background: #f4f7f9;
-  .body--dark & {
-    background: #0d1b2a;
-  }
+  background: #f1f5f9;
+  .body--dark & { background: #0d1b2a; }
 }
 
+// ── Hero (landing page style) ──────────────────────────
+.email-hero {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(145deg, #1565C0 0%, #0c3472 100%);
+  padding: 36px 24px 30px;
+}
+
+.email-hero-grid {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.email-hero-content {
+  position: relative;
+  z-index: 1;
+}
+
+.email-norm-chips {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.email-norm-chip {
+  font-family: 'Roboto Mono', monospace;
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  padding: 2px 8px;
+  border: 1px solid rgba(255, 255, 255, 0.32);
+  border-radius: 3px;
+  color: rgba(255, 255, 255, 0.75);
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.email-logo {
+  font-size: 1.6rem;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  color: #ffffff;
+  line-height: 1;
+  margin-bottom: 10px;
+}
+
+.email-logo-accent {
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.email-subject {
+  font-size: 0.88rem;
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 400;
+  line-height: 1.4;
+  max-width: 420px;
+}
+
+// ── Body ───────────────────────────────────────────────
 .email-content-wrapper {
-  padding: 30px 25px;
-  margin: 0 15px;
+  padding: 24px 20px;
 }
 
 .email-body {
-  background: white;
-  padding: 30px;
-  border-radius: 4px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-  color: #334155;
-  line-height: 1.6;
-  min-height: 200px;
+  background: #ffffff;
+  padding: 28px 26px;
+  border-radius: 6px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
+  color: #1e293b;
+  line-height: 1.65;
+  font-size: 0.9rem;
+  min-height: 140px;
+  border: 1px solid #e2e8f0;
 }
 
 .bonus-code-box {
-  margin-top: 30px;
+  margin-top: 28px;
   text-align: center;
   border: 2px dashed #1976D2;
   padding: 20px;
   border-radius: 8px;
   background-color: #f8fbff;
+}
+
+// ── Footer ─────────────────────────────────────────────
+.email-footer {
+  background: #0A1929;
+  padding: 24px 20px;
+  text-align: center;
+}
+
+.email-footer-logo {
+  font-weight: 800;
+  color: #ffffff;
+  font-size: 0.85rem;
+  letter-spacing: -0.01em;
+  margin-bottom: 8px;
+}
+
+.email-footer-text {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.45);
+  line-height: 1.6;
+  margin-bottom: 10px;
+}
+
+.email-footer-copy {
+  font-size: 0.65rem;
+  color: rgba(255, 255, 255, 0.25);
 }
 </style>

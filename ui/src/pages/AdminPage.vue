@@ -490,9 +490,14 @@
                       <q-chip v-if="props.row.is_proforma" color="grey-7" text-color="white" size="sm" dense class="text-weight-bold">
                         PROFORMA
                       </q-chip>
-                      <q-chip v-else :color="ksefColor(props.row.ksef_status)" text-color="white" size="sm" dense class="text-weight-bold">
-                        {{ ksefLabel(props.row.ksef_status) }}
-                      </q-chip>
+                      <template v-else>
+                        <q-chip v-if="props.row.is_correction" color="orange-8" text-color="white" size="sm" dense class="text-weight-bold q-mr-xs">
+                          KOREKTA
+                        </q-chip>
+                        <q-chip :color="ksefColor(props.row.ksef_status)" text-color="white" size="sm" dense class="text-weight-bold">
+                          {{ ksefLabel(props.row.ksef_status) }}
+                        </q-chip>
+                      </template>
                     </q-td>
                   </template>
                   <template #body-cell-gross_amount="props">
@@ -505,6 +510,12 @@
                       <q-btn v-if="props.row.is_proforma" flat round dense icon="check_circle" color="positive" size="sm"
                         @click="approveProforma(props.row)">
                         <q-tooltip>Zatwierdź i wyślij do KSeF</q-tooltip>
+                      </q-btn>
+                      <q-btn
+                        v-if="!props.row.is_proforma && props.row.ksef_status === 'accepted' && !props.row.is_correction"
+                        flat round dense icon="receipt" color="warning" size="sm"
+                        @click="startCorrection(props.row)">
+                        <q-tooltip>Wystaw fakturę korygującą</q-tooltip>
                       </q-btn>
                       <q-btn flat round dense icon="picture_as_pdf" color="primary" size="sm"
                         @click="downloadInvoicePdf(props.row)">
@@ -729,6 +740,69 @@
                 <div class="row justify-end q-gutter-sm">
                   <q-btn flat label="Anuluj" v-close-popup />
                   <q-btn label="Wystaw i doładuj punkty" color="primary" unelevated type="submit" :loading="invoiceLoading" />
+                </div>
+              </div>
+            </div>
+          </q-form>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
+
+    <!-- ===================== DIALOG FAKTURY KORYGUJĄCEJ ===================== -->
+    <q-dialog v-model="correctionDialog" persistent>
+      <q-card style="min-width:480px" class="rounded-borders">
+        <q-card-section class="bg-warning text-white row items-center">
+          <q-icon name="receipt" size="sm" class="q-mr-sm" />
+          <div class="text-h6 text-weight-bold col">Faktura korygująca</div>
+          <q-btn icon="close" flat round dense v-close-popup />
+        </q-card-section>
+
+        <q-card-section class="q-pt-md" v-if="correctionInvoice">
+          <div class="q-mb-md bg-orange-1 q-pa-sm rounded-borders text-warning row items-center">
+            <q-icon name="info" class="q-mr-sm" />
+            Korekta do: <b class="q-ml-xs">{{ correctionInvoice.invoice_number }}</b>
+            &nbsp;({{ formatAmount(correctionInvoice.gross_amount) }} PLN brutto)
+          </div>
+
+          <q-form @submit="submitCorrection">
+            <div class="row q-col-gutter-md">
+              <div class="col-12">
+                <q-input
+                  v-model.number="correctionForm.net_amount"
+                  label="Skorygowana kwota netto (PLN) *"
+                  outlined dense type="number" min="0" step="0.01" suffix="PLN"
+                  hint="Wpisz kwotę po korekcie (nie różnicę)"
+                  :rules="[v => v >= 0 || 'Kwota nie może być ujemna']"
+                />
+              </div>
+              <div class="col-12" v-if="correctionForm.net_amount !== null && correctionForm.net_amount >= 0">
+                <div class="bg-grey-2 q-pa-sm rounded-borders text-caption text-grey-8">
+                  <div class="row justify-between">
+                    <span>VAT (23%):</span><span>{{ formatAmount(correctionForm.net_amount * 0.23) }} PLN</span>
+                  </div>
+                  <div class="row justify-between text-weight-bold text-dark q-mt-xs">
+                    <span>Brutto po korekcie:</span><span>{{ formatAmount(correctionForm.net_amount * 1.23) }} PLN</span>
+                  </div>
+                </div>
+              </div>
+              <div class="col-12">
+                <q-input
+                  v-model="correctionForm.reason"
+                  label="Powód korekty *"
+                  outlined dense type="textarea" rows="3"
+                  :rules="[v => !!v || 'Podaj powód korekty']"
+                />
+              </div>
+              <div class="col-12">
+                <q-banner dense class="bg-orange-1 text-warning rounded-borders">
+                  <template #avatar><q-icon name="warning" color="warning" /></template>
+                  Faktura korygująca zostanie wysłana do <strong>KSeF</strong> jako dokument ustrukturyzowany FA(2).
+                </q-banner>
+              </div>
+              <div class="col-12">
+                <div class="row justify-end q-gutter-sm">
+                  <q-btn flat label="Anuluj" v-close-popup />
+                  <q-btn label="Zatwierdź i wyślij do KSeF" color="warning" unelevated type="submit" :loading="correctionLoading" icon="send" />
                 </div>
               </div>
             </div>
@@ -1427,6 +1501,51 @@ async function approveProforma(inv) {
       selectedUser.value = data
     } catch {
       $q.notify({ type: 'negative', message: 'Błąd podczas zatwierdzania faktury.', position: 'top' })
+    }
+  })
+}
+
+// ---- Faktura korygująca ----
+const correctionDialog = ref(false)
+const correctionInvoice = ref(null)
+const correctionLoading = ref(false)
+const correctionForm = ref({ net_amount: null, reason: '' })
+
+function startCorrection(inv) {
+  $q.dialog({
+    title: 'Faktura korygująca',
+    message: `Czy chcesz wystawić fakturę korygującą do <b>${inv.invoice_number}</b>?`,
+    html: true,
+    cancel: true,
+    persistent: true
+  }).onOk(() => {
+    correctionInvoice.value = inv
+    correctionForm.value = { net_amount: null, reason: '' }
+    correctionDialog.value = true
+  })
+}
+
+async function submitCorrection() {
+  $q.dialog({
+    title: 'Potwierdź wysyłkę do KSeF',
+    message: 'Czy na pewno wysłać fakturę korygującą do KSeF? Operacja jest nieodwracalna.',
+    cancel: true,
+    persistent: true,
+    ok: { label: 'Wyślij do KSeF', color: 'warning', unelevated: true }
+  }).onOk(async () => {
+    correctionLoading.value = true
+    try {
+      await api.post(`/billing/invoices/${correctionInvoice.value.id}/issue_correction/`, {
+        net_amount: correctionForm.value.net_amount,
+        reason: correctionForm.value.reason
+      })
+      $q.notify({ type: 'positive', message: 'Faktura korygująca wystawiona i wysłana do KSeF.', position: 'top' })
+      correctionDialog.value = false
+      fetchUserInvoices()
+    } catch (e) {
+      $q.notify({ type: 'negative', message: e.response?.data?.detail || 'Błąd wystawiania korekty.', position: 'top' })
+    } finally {
+      correctionLoading.value = false
     }
   })
 }

@@ -163,7 +163,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, nextTick } from 'vue'
 
 const props = defineProps({ data: { type: Object, required: true } })
 const emit = defineEmits(['kg-to-t'])
@@ -181,8 +181,12 @@ const initUnit = (() => {
 })()
 const massUnit = ref(initUnit)
 
+// Flaga: true gdy zmiana jednostki pochodzi od rodzica (applyUnit) — nie emitujemy wtedy kg-to-t
+let _parentControlled = false
+
 // Gdy user zmieni kg→t w SchemKd, powiadom rodzica (UniversalCalculator)
 watch(massUnit, (newVal, oldVal) => {
+  if (_parentControlled) return
   if (oldVal === 'kg' && newVal === 't') emit('kg-to-t')
 })
 
@@ -206,7 +210,9 @@ function setNum(key, rawVal) {
 }
 
 // Przy zmianie jednostki zaktualizuj unit we wszystkich q_i (wartości bez konwersji)
+// Wywołane z rodzica — ustawia flagę żeby watcher nie emitował kg-to-t (zapobiega podwójnemu dialogowi)
 function applyUnit(newUnit) {
+  _parentControlled = true
   massUnit.value = newUnit
   for (let i = 1; i <= 5; i++) {
     const v = d[`q_${i}`]
@@ -216,6 +222,8 @@ function applyUnit(newUnit) {
       d[`q_${i}`] = { value: v, unit: newUnit }
     }
   }
+  // Reset po następnym cyklu reaktywności — watcher już się wykonał z flagą
+  nextTick(() => { _parentControlled = false })
 }
 
 // Eksponuj applyUnit dla rodzica (gdy "Zmień wszędzie" z innego pola)

@@ -10,10 +10,10 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from .models import Invoice, PayPalOrder, PAYPAL_PACKAGES, BonusPointsCode
-from .serializers import InvoiceSerializer, CreateInvoiceSerializer, UserSimpleSerializer
+from .serializers import InvoiceSerializer, CreateInvoiceSerializer, UserSimpleSerializer, CreateCorrectionSerializer
 from .pdf_generator import generate_invoice_pdf
 from .paypal_client import create_order as paypal_create_order, capture_order as paypal_capture_order
-from .ksef_service import submit as ksef_submit
+from .ksef_service import submit as ksef_submit, submit_correction as ksef_submit_correction
 from django.utils import timezone
 
 class BonusRedeemView(views.APIView):
@@ -193,6 +193,72 @@ class InvoiceViewSet(viewsets.ModelViewSet):
             ksef_submit(invoice)
 
         return Response(InvoiceSerializer(invoice).data, status=status.HTTP_201_CREATED)
+
+    @action(detail=True, methods=["post"])
+    @transaction.atomic
+    def issue_correction(self, request, pk=None):
+        """Wystawia ustrukturyzowaną fakturę korygującą (FA(2)) i wysyła do KSeF."""
+        if not request.user.is_staff:
+            return Response({"detail": "Brak uprawnień."}, status=status.HTTP_403_FORBIDDEN)
+
+        original = self.get_object()
+
+        if original.is_proforma:
+            return Response(
+                {"detail": "Nie można wystawić korekty do proformy."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        if original.ksef_status != "accepted":
+            return Response(
+                {"detail": "Korektę można wystawić tylko do faktury zaakceptowanej przez KSeF."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        if original.is_correction:
+            return Response(
+                {"detail": "Nie można wystawić korekty do faktury korygującej."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        if original.corrections.filter(ksef_status="accepted").exists():
+            return Response(
+                {"detail": "Do tej faktury istnieje już zaakceptowana korekta."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        serializer = CreateCorrectionSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        data = serializer.validated_data
+
+        net = data["net_amount"]
+        vat = (net * Decimal("0.23")).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+        gross = net + vat
+
+        now = datetime.datetime.now()
+        correction_number = f"KOR/{now.year}/{now.month:02d}/{str(uuid.uuid4())[:8].upper()}"
+
+        correction = Invoice.objects.create(
+            user=original.user,
+            invoice_number=correction_number,
+            net_amount=net,
+            vat_amount=vat,
+            gross_amount=gross,
+            is_proforma=False,
+            is_correction=True,
+            corrected_invoice=original,
+            service_name=original.service_name,
+            points_added=0,
+            ksef_status="pending",
+            buyer_name=original.buyer_name,
+            buyer_nip=original.buyer_nip,
+            buyer_address=original.buyer_address,
+            recipient_name=original.recipient_name,
+            recipient_address=original.recipient_address,
+            payment_terms=original.payment_terms,
+            correction_reason=data["reason"],
+        )
+
+        ksef_submit_correction(correction)
+
+        return Response(InvoiceSerializer(correction).data, status=status.HTTP_201_CREATED)
 
 
 # ---------------------------------------------------------------------------
