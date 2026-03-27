@@ -20,7 +20,7 @@
         <h1 class="text-h4 text-weight-bolder text-primary q-my-none">
           {{ currentCalculatorDefinition.name }}
         </h1>
-        <p class="text-subtitle1 text-grey-7 q-mb-none">{{ currentCalculatorDefinition.description }}</p>
+        <p class="text-subtitle1 opacity-80 q-mb-none">{{ currentCalculatorDefinition.description }}</p>
       </div>
 
       <q-tabs v-model="activeTab" align="left" class="text-primary q-mb-md" active-color="primary" indicator-color="primary" narrow-indicator>
@@ -147,7 +147,7 @@
               <div class="q-px-lg q-pb-lg">
                 <q-separator class="q-mb-lg" />
                 <div class="row q-gutter-md">
-                  <q-btn label="Oblicz resurs" type="submit" color="primary" :loading="calculating" icon="calculate" unelevated size="lg" class="q-px-xl" />
+                  <q-btn :label="`Oblicz wyznaczenie resursu (${currentCost} pkt)`" type="submit" color="primary" :loading="calculating" icon="calculate" unelevated size="lg" class="q-px-xl" />
                   <q-btn label="Wyczyść arkusz" flat color="grey-7" icon="clear" no-caps @click="initializeFormData" />
                 </div>
               </div>
@@ -156,116 +156,22 @@
             <div ref="resultsRef"></div>
 
             <template v-if="calculatedResult">
-              <div class="calc-section-bar">
-                <q-icon name="assessment" size="14px" />
-                Wyniki analizy technicznej
+              <div class="calc-section-bar q-mt-xl">
+                <q-icon name="assessment" size="18px" />
+                Wyniki analizy technicznej i resursu
               </div>
 
-              <!-- Wyniki ZABLOKOWANE -->
-              <q-card-section v-if="calculatedResult.is_locked" class="q-pa-xl text-center">
-                <q-icon name="lock" size="4em" color="warning" class="q-mb-md" />
-                <div class="text-h6 text-weight-bold q-mb-sm">Wyniki zablokowane</div>
-                <div class="text-body2 text-grey-7 q-mb-lg">
-                  Obliczenie zostało wykonane, ale wyświetlenie wyników wymaga
-                  <strong>{{ calculatedResult.premium_cost ?? 80 }} punktów premium</strong>.
-                  Masz teraz <strong>{{ calculatedResult.remaining_premium ?? userStore.user?.premium ?? 0 }}</strong> pkt.
-                </div>
-                <div class="row justify-center q-gutter-md">
-                  <q-btn
-                    v-if="(userStore.user?.premium ?? 0) >= (calculatedResult.premium_cost ?? 80)"
-                    label="Odblokuj wyniki"
-                    icon="lock_open"
-                    color="primary"
-                    unelevated
-                    no-caps
-                    :loading="unlocking"
-                    @click="unlockResult"
-                  />
-                  <q-btn
-                    v-else
-                    label="Doładuj konto"
-                    icon="add_circle"
-                    color="primary"
-                    unelevated
-                    no-caps
-                    to="/pricing"
-                  />
-                </div>
-              </q-card-section>
-
-              <!-- Wyniki ODBLOKOWANE -->
-              <q-card-section v-else class="q-pa-lg">
-                <div class="row q-col-gutter-sm q-mb-lg no-print items-center">
-                  <div class="text-subtitle2 text-weight-bold q-mr-md">Akcje:</div>
-                  
-                  <!-- Wybór loga (jeśli użytkownik ma ich wiele) -->
-                  <template v-if="userStore.user?.logos?.length > 1">
-                    <q-select
-                      v-model="selectedLogoId"
-                      :options="userStore.user.logos"
-                      option-label="name"
-                      option-value="id"
-                      emit-value
-                      map-options
-                      outlined
-                      dense
-                      label="Wybierz logo na PDF"
-                      class="q-mr-md"
-                      style="min-width: 200px"
-                    >
-                      <template v-slot:option="scope">
-                        <q-item v-bind="scope.itemProps">
-                          <q-item-section avatar>
-                            <img :src="getFullLogoUrl(scope.opt.image)" style="height: 20px; width: 40px; object-fit: contain" />
-                          </q-item-section>
-                          <q-item-section>
-                            <q-item-label>{{ scope.opt.name || 'Bez nazwy' }}</q-item-label>
-                            <q-item-label caption v-if="scope.opt.is_default">Domyślne</q-item-label>
-                          </q-item-section>
-                        </q-item>
-                      </template>
-                    </q-select>
-                  </template>
-
-                  <q-btn icon="picture_as_pdf" label="Pobierz PDF" color="primary" unelevated no-caps :loading="downloadingPdf" @click="downloadPdf()" />
-                  <q-btn icon="print" label="Drukuj" color="grey-7" flat no-caps @click="printPage" />
-                </div>
-
-                <div :class="['kpi-block shadow-1', kpiBlockClass]">
-                  <div>
-                    <div class="text-overline opacity-70">Zużycie resursu</div>
-                    <div class="kpi-number text-h2 text-weight-bolder">
-                      {{ calculatedResult.output_data.resurs_wykorzystanie ?? '-' }}%
-                    </div>
-                  </div>
-                  <q-separator vertical inset class="q-mx-md gt-xs" />
-                  <div class="col">
-                    <div class="text-h6 text-weight-bold">{{ calculatedResult.output_data.resurs_message }}</div>
-                    <div v-if="calculatedResult.output_data.resurs_prognoza_dni != null" class="text-subtitle2 opacity-80">
-                      Prognoza 100%: <span class="text-weight-bolder">{{ formatOutputValue(calculatedResult.output_data.data_prognoza, {type:'date'}) }}</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="row q-col-gutter-xl">
-                  <div class="col-12 col-md-6">
-                    <div class="section-label">Szczegóły techniczne</div>
-                    <q-card flat bordered class="overflow-hidden">
-                      <q-list separator dense>
-                        <template v-for="(fieldDef, key) in outputFieldDefinitions" :key="key">
-                          <q-item v-if="calculatedResult.output_data[key] !== undefined && !['resurs_message','data_prognoza','resurs_prognoza_dni','resurs_wykorzystanie'].includes(key)" class="q-py-sm">
-                            <q-item-section><q-item-label class="opacity-70">{{ fieldDef.label }}</q-item-label></q-item-section>
-                            <q-item-section side><q-item-label class="text-weight-bold text-primary result-value">{{ formatOutputValue(calculatedResult.output_data[key], fieldDef) }}</q-item-label></q-item-section>
-                          </q-item>
-                        </template>
-                      </q-list>
-                    </q-card>
-                  </div>
-                  <div class="col-12 col-md-6 text-center">
-                    <div class="section-label">Wykres wykorzystania</div>
-                    <VueApexCharts type="pie" :options="pieChartOptions" :series="pieChartSeries" height="250" />
-                  </div>
-                </div>
+              <q-card-section class="q-pa-lg">
+                <CalculationResultReport
+                  :result="calculatedResult"
+                  :user-premium="userStore.user?.premium ?? 0"
+                  :unlocking="unlocking"
+                  :downloading-pdf="downloadingPdf"
+                  :logos="userStore.user?.logos"
+                  v-model:selected-logo-id="selectedLogoId"
+                  @unlock="unlockResult"
+                  @download-pdf="downloadPdf()"
+                />
               </q-card-section>
             </template>
           </q-card>
@@ -279,7 +185,7 @@
 
           <q-card flat bordered v-else-if="!savedResults.length" class="q-pa-xl text-center shadow-1 hover-primary">
             <q-icon name="history" size="4em" color="grey-4" />
-            <div class="text-h6 text-grey-7 q-mt-md">Brak zapisanych wyników.</div>
+            <div class="text-h6 opacity-80 q-mt-md">Brak zapisanych wyników.</div>
           </q-card>
 
           <template v-else>
@@ -333,48 +239,25 @@
 
             <q-card v-if="selectedSavedResult" flat bordered class="q-mt-lg shadow-5 border-primary overflow-hidden">
               <q-card-section class="row items-center bg-primary text-white">
-                <div class="text-h6">Szczegóły z dnia {{ new Date(selectedSavedResult.created_at).toLocaleDateString('pl-PL') }}</div>
+                <div class="text-subtitle1 text-weight-bolder">
+                  Urządzenie nr fabr. {{ getSavedFieldValue(selectedSavedResult.input_data, 'nr_fabryczny') || '?' }} 
+                  &nbsp;•&nbsp; 
+                  Obliczenia z dnia {{ new Date(selectedSavedResult.created_at).toLocaleDateString('pl-PL') }}
+                </div>
                 <q-space />
                 <q-btn flat dense icon="close" @click="selectedSavedResult = null" color="white" />
               </q-card-section>
               <q-card-section class="q-pa-lg">
-                <!-- Zablokowany wynik -->
-                <div v-if="selectedSavedResult.is_locked" class="text-center q-pa-xl">
-                  <q-icon name="lock" size="4em" color="warning" class="q-mb-md" />
-                  <div class="text-h6 text-weight-bold q-mb-sm">Wyniki zablokowane</div>
-                  <div class="text-body2 text-grey-7 q-mb-lg">
-                    Odblokowanie wymaga <strong>{{ selectedSavedResult.calculator_definition?.premium_cost ?? '?' }} pkt</strong>.
-                    Masz <strong>{{ userStore.user?.premium ?? 0 }} pkt</strong> na koncie.
-                  </div>
-                  <div class="row justify-center q-gutter-md">
-                    <q-btn
-                      v-if="(userStore.user?.premium ?? 0) >= (selectedSavedResult.calculator_definition?.premium_cost ?? 0)"
-                      label="Odblokuj wyniki" icon="lock_open" color="primary" unelevated no-caps
-                      :loading="unlocking" @click="unlockSavedResult(selectedSavedResult)"
-                    />
-                    <q-btn v-else label="Doładuj konto" icon="add_circle" color="primary" unelevated no-caps to="/pricing" />
-                  </div>
-                </div>
-
-                <!-- Odblokowany wynik -->
-                <div v-else class="row q-col-gutter-lg">
-                  <div class="col-12 col-md-6">
-                    <div class="text-overline text-primary q-mb-md">Parametry wejściowe</div>
-                    <q-list dense separator bordered class="rounded-borders">
-                      <q-item v-for="(fieldDef, key) in inputFieldDefinitions" :key="key">
-                        <q-item-section><q-item-label caption>{{ fieldDef.label }}</q-item-label></q-item-section>
-                        <q-item-section side><q-item-label class="text-weight-bold">{{ formatSavedInputValue(selectedSavedResult.input_data[key]) }}</q-item-label></q-item-section>
-                      </q-item>
-                    </q-list>
-                  </div>
-                  <div class="col-12 col-md-6 text-center">
-                    <div class="text-overline text-primary q-mb-md">Wynik analizy</div>
-                    <div class="kpi-number text-h2 text-weight-bolder text-primary q-mb-md">
-                      {{ (selectedSavedResult.output_data.resurs_wykorzystanie ?? selectedSavedResult.output_data.resurs) }}%
-                    </div>
-                    <VueApexCharts type="pie" :options="pieChartOptions" :series="selectedPieChartSeries" height="250" />
-                  </div>
-                </div>
+                <CalculationResultReport
+                  :result="selectedSavedResult"
+                  :user-premium="userStore.user?.premium ?? 0"
+                  :unlocking="unlocking"
+                  :downloading-pdf="downloadingPdf"
+                  :logos="userStore.user?.logos"
+                  v-model:selected-logo-id="selectedLogoId"
+                  @unlock="unlockSavedResult(selectedSavedResult)"
+                  @download-pdf="downloadPdf(selectedSavedResult.id)"
+                />
               </q-card-section>
             </q-card>
           </template>
@@ -389,15 +272,15 @@ import { ref, reactive, onMounted, computed, watch, nextTick } from 'vue'
 import { useRoute } from 'vue-router'
 import { api } from 'boot/axios'
 import { useQuasar, Notify, Dialog } from 'quasar'
-import VueApexCharts from 'vue3-apexcharts'
 import CalculatorField from 'components/CalculatorField.vue'
+import CalculationResultReport from 'components/CalculationResultReport.vue'
 import SchemLdr from 'components/SchemLdr.vue'
 import SchemHdr from 'components/SchemHdr.vue'
 import SchemKd from 'components/SchemKd.vue'
 import SchemAd from 'components/SchemAd.vue'
 import calculatorFields from 'src/data/calculator_fields.json'
-import calculatorOutputFields from 'src/data/calculator_output_fields.json'
 import { useUserStore } from 'stores/user-store'
+import { downloadBlob } from 'src/utils/download'
 
 const route = useRoute()
 const $q = useQuasar()
@@ -407,24 +290,42 @@ const resultsRef = ref(null)
 const activeTab = ref('calculator')
 const formData = ref({})
 
-// spec i ponowny_resurs są wzajemnie wykluczające — Tak na jednym zeruje drugie
+// spec i ponowny_resurs są wzajemnie wykluczające
 watch(() => formData.value.spec, v => { if (v === 'Tak') formData.value.ponowny_resurs = 'Nie' })
 watch(() => formData.value.ponowny_resurs, v => { if (v === 'Tak') formData.value.spec = 'Nie' })
 
 const calculatedResult = ref(null)
-const units = ref({})
 const loading = ref(true)
 const calculating = ref(false)
 const downloadingPdf = ref(false)
 const unlocking = ref(false)
+const currentResultId = ref(null)
+
+const currentCost = ref(0)
+const canAfford = ref(true)
+
+// Pobiera koszt obliczenia dla aktualnych danych (reaguje na ponowny_resurs)
+async function fetchCurrentCost() {
+  if (!calculatorSlug.value) return
+  try {
+    const res = await api.post(`/calculators/definitions/${calculatorSlug.value}/get_cost/`, {
+      input_data: formData.value
+    })
+    currentCost.value = res.data.cost
+    canAfford.value = res.data.can_afford
+  } catch (e) {
+    console.error('Błąd pobierania kosztu:', e)
+  }
+}
+
+// Reaguj na zmiany w formData, które wpływają na koszt (głównie ponowny_resurs)
+watch(() => formData.value.ponowny_resurs, () => {
+  fetchCurrentCost()
+})
 
 const savedResults = ref([])
 const loadingResults = ref(false)
 const selectedSavedResult = ref(null)
-
-const deviceResults = ref([])
-const selectedDeviceResult = ref(null)
-
 const selectedLogoId = ref(null)
 
 watch(() => userStore.user?.logos, (logos) => {
@@ -434,22 +335,25 @@ watch(() => userStore.user?.logos, (logos) => {
   }
 }, { immediate: true })
 
-const MECH_PARENT_DEVICES = {
-  mech_podnoszenia: ['suwnica', 'wciagarka', 'wciagnik', 'zuraw'],
-  mech_jazdy_suwnicy: ['suwnica'],
-  mech_jazdy_wciagarki: ['wciagarka'],
-  mech_jazdy_zurawia: ['zuraw'],
-  mech_zmiany_wysiegu: ['zuraw'],
-  mech_zmiany_obrotu: ['zuraw'],
-}
-
-const isMechanism = computed(() => !!MECH_PARENT_DEVICES[calculatorSlug.value])
 const calculatorSlug = computed(() => route.params.slug)
 const currentCalculatorDefinition = computed(() => calculatorFields[calculatorSlug.value] || null)
-const inputFieldDefinitions = computed(() => currentCalculatorDefinition.value?.fields || null)
-const outputFieldDefinitions = computed(() => calculatorOutputFields[calculatorSlug.value]?.fields || null)
 
-// Wykrywanie zmiany kg → t w polach masy — pytanie o zmianę wszędzie
+const units = ref({})
+const deviceResults = ref([])
+const selectedDeviceResult = ref(null)
+
+const MECH_PARENT_DEVICES = {
+  mech_podnoszenia: ['wciagarka', 'wciagnik', 'suwnica', 'zuraw', 'zuraw_przeladunkowy', 'ukladnica_magazynowa'],
+  mech_jazdy_suwnicy: ['suwnica'],
+  mech_jazdy_wciagarki: ['wciagarka'],
+  mech_jazdy_zurawia: ['zuraw', 'zuraw_przeladunkowy'],
+  mech_zmiany_wysiegu: ['zuraw', 'zuraw_przeladunkowy'],
+  mech_zmiany_obrotu: ['zuraw', 'zuraw_przeladunkowy'],
+}
+
+const isMechanism = computed(() => calculatorSlug.value in MECH_PARENT_DEVICES)
+
+// Wykrywanie zmiany kg → t w polach masy
 const massFieldUnits = computed(() => {
   const result = {}
   const fields = currentCalculatorDefinition.value?.fields || {}
@@ -462,6 +366,7 @@ const massFieldUnits = computed(() => {
   }
   return result
 })
+
 const schemKdRef = ref(null)
 let askingMassUnit = false
 
@@ -480,13 +385,11 @@ function showMassUnitDialog() {
         formData.value[k] = { ...formData.value[k], unit: 't' }
       }
     }
-    // ref w v-for → tablica; bierzemy pierwszy (jedyny) element
     const kd = Array.isArray(schemKdRef.value) ? schemKdRef.value[0] : schemKdRef.value
     kd?.applyUnit?.('t')
   }).onDismiss(() => { askingMassUnit = false })
 }
 
-// Zmiana kg→t w regularnym polu formularza
 watch(massFieldUnits, (newUnits, oldUnits) => {
   if (askingMassUnit) return
   for (const key in newUnits) {
@@ -497,7 +400,6 @@ watch(massFieldUnits, (newUnits, oldUnits) => {
   }
 })
 
-// Zmiana kg→t w SchemKd (widmo obciążeń)
 function onSchemKdKgToT() {
   if (askingMassUnit) return
   showMassUnitDialog()
@@ -518,7 +420,6 @@ const savedResultsColumns = [
   { name: 'actions', label: 'Akcje', align: 'center' }
 ]
 
-// Pola kalkulatora pomocniczego cykli — filtrowane z renderowania sekcji
 const CYCLE_HELPER_KEYS = ['tryb_pracy', 'cykle_zmiana', 'dni_robocze']
 const hasCycleHelper = computed(() =>
   CYCLE_HELPER_KEYS.every(k => currentCalculatorDefinition.value?.fields[k])
@@ -552,56 +453,101 @@ function fieldColClass(field) {
   return 'col-12 col-sm-6'
 }
 
-watch(currentCalculatorDefinition, (newDef) => {
-  if (newDef) {
-    initializeFormData()
-    calculatedResult.value = null
-    selectedSavedResult.value = null
-    savedResults.value = []
-    fetchSavedResults()
-    fetchDeviceResults()
-  }
-}, { immediate: true })
 
-function makeChartData(outputData) {
-  if (!outputData) return { pie: [0, 100], bar: [] }
-  const utilization = parseFloat(outputData.resurs_wykorzystanie ?? outputData.resurs)
-  return { pie: [utilization, 100 - utilization], bar: [] }
+
+
+async function fetchSavedResults() {
+  loadingResults.value = true
+  try {
+    const response = await api.get('/calculators/results/for_calculator/', {
+      params: { slug: calculatorSlug.value }
+    })
+    savedResults.value = response.data
+  } catch {
+    Notify.create({ type: 'negative', message: 'Błąd pobierania historii.', position: 'top' })
+  } finally {
+    loadingResults.value = false
+  }
 }
 
-const pieChartOptions = computed(() => ({
-  chart: { type: 'pie', background: 'transparent' },
-  theme: { mode: $q.dark.isActive ? 'dark' : 'light' },
-  labels: ['Zużycie', 'Pozostało'],
-  colors: [getComputedStyle(document.body).getPropertyValue('--q-primary') || '#1565C0', '#B0BEC5'],
-  legend: { position: 'bottom' },
-  stroke: { show: false }
-}))
+function selectSavedResult(row) { selectedSavedResult.value = selectedSavedResult.value?.id === row.id ? null : row }
 
-const pieChartSeries = computed(() => makeChartData(calculatedResult.value?.output_data).pie)
-const selectedPieChartSeries = computed(() => makeChartData(selectedSavedResult.value?.output_data).pie)
 
-const kpiBlockClass = computed(() => {
-  const v = parseFloat(calculatedResult.value?.output_data?.resurs_wykorzystanie ?? 0)
-  if (v >= 100) return 'kpi-block-danger'
-  if (v >= 80) return 'kpi-block-warn'
-  return 'kpi-block-ok'
+function loadResultToForm(row) {
+  formData.value = JSON.parse(JSON.stringify(row.input_data))
+  currentResultId.value = row.id
+  activeTab.value = 'calculator'
+  Notify.create({ type: 'info', message: 'Dane zostały wczytane do formularza.', position: 'top', timeout: 2000 })
+}
+
+function confirmDelete(row) {
+  Dialog.create({
+    title: 'Usunąć wynik?',
+    message: `Czy na pewno chcesz usunąć wynik z dnia ${new Date(row.created_at).toLocaleDateString()}?`,
+    cancel: { label: 'Anuluj', flat: true },
+    ok: { label: 'Usuń', color: 'negative' },
+    persistent: true
+  }).onOk(async () => {
+    try {
+      await api.delete(`/calculators/results/${row.id}/`)
+      savedResults.value = savedResults.value.filter(r => r.id !== row.id)
+      if (selectedSavedResult.value?.id === row.id) selectedSavedResult.value = null
+      Notify.create({ type: 'positive', message: 'Wynik usunięty.', position: 'top' })
+    } catch {
+      Notify.create({ type: 'negative', message: 'Błąd podczas usuwania.', position: 'top' })
+    }
+  })
+}
+
+async function downloadPdf(resultId = null) {
+  const id = resultId || calculatedResult.value?.id
+  if (!id) return
+  downloadingPdf.value = true
+  try {
+    const params = {}
+    if (selectedLogoId.value) params.logo_id = selectedLogoId.value
+    const response = await api.get(`/calculators/results/${id}/pdf/`, { 
+      params,
+      responseType: 'blob' 
+    })
+    downloadBlob(response.data, `resurs_${id}.pdf`)
+  } catch {
+    Notify.create({ type: 'negative', message: 'Błąd podczas generowania PDF.', position: 'top' })
+  } finally {
+    downloadingPdf.value = false
+  }
+}
+
+function getSavedFieldValue(input_data, key) {
+  if (!input_data) return ''
+  const val = input_data[key]
+  if (val === null || val === undefined) return ''
+  if (typeof val === 'object' && val.value !== undefined) return val.value
+  return val
+}
+
+
+
+onMounted(async () => {
+  await fetchUnits()
+  initializeFormData()
+  fetchDeviceResults()
+  if (route.query.result_id) {
+    await loadSingleResult(route.query.result_id)
+  }
+  loading.value = false
 })
 
-function formatOutputValue(value, fieldDef) {
-  if (value === null || value === undefined) return '-'
-  if (fieldDef.type === 'percentage') return `${value}%`
-  if (fieldDef.type === 'date') return new Date(value).toLocaleDateString('pl-PL')
-  if (fieldDef.type === 'number' && fieldDef.unit) return `${value} ${fieldDef.unit}`
-  return String(value)
-}
+watch(calculatorSlug, async () => {
+  await fetchUnits()
+  initializeFormData()
+  fetchDeviceResults()
+  if (activeTab.value === 'results') fetchSavedResults()
+})
 
-function formatSavedInputValue(value) {
-  if (value === null || value === undefined) return '-'
-  if (typeof value === 'object' && value.value !== undefined) return `${value.value}${value.unit ? ' ' + value.unit : ''}`
-  return String(value)
-}
-
+watch(activeTab, (newTab) => {
+  if (newTab === 'results') fetchSavedResults()
+})
 async function fetchUnits() {
   try {
     const res = await api.get('/calculators/units/')
@@ -617,6 +563,7 @@ async function fetchUnits() {
 
 function initializeFormData() {
   if (!currentCalculatorDefinition.value?.fields) return
+  currentResultId.value = null
   const data = {}
   for (const key in currentCalculatorDefinition.value.fields) {
     const f = currentCalculatorDefinition.value.fields[key]
@@ -644,15 +591,6 @@ function isFieldVisible(key) {
   return f.show_if.negate ? !matched : matched
 }
 
-async function fetchSavedResults() {
-  loadingResults.value = true
-  try {
-    const res = await api.get('/calculators/results/for_calculator/', { params: { slug: calculatorSlug.value } })
-    savedResults.value = res.data
-  } catch (error) {
-    console.error(error)
-  } finally { loadingResults.value = false }
-}
 
 async function fetchDeviceResults() {
   const parentSlugs = MECH_PARENT_DEVICES[calculatorSlug.value] || []
@@ -671,29 +609,24 @@ async function fetchDeviceResults() {
 
 function loadFromDevice(result) {
   if (!result?.input_data) return
-  Object.keys(currentCalculatorDefinition.value.fields).forEach(k => { if (k in result.input_data) formData.value[k] = result.input_data[k] })
-  Notify.create({ type: 'positive', message: 'Wczytano dane urządzenia.' })
-}
-
-function selectSavedResult(row) { selectedSavedResult.value = selectedSavedResult.value?.id === row.id ? null : row }
-function loadResultToForm(res) { formData.value = JSON.parse(JSON.stringify(res.input_data)); activeTab.value = 'calculator' }
-
-function confirmDelete(row) {
-  Dialog.create({ title: 'Usuń wynik', message: 'Czy na pewno?', cancel: true, persistent: true }).onOk(async () => {
-    try {
-      await api.delete(`/calculators/results/${row.id}/`)
-      savedResults.value = savedResults.value.filter(r => r.id !== row.id)
-      Notify.create({ type: 'positive', message: 'Usunięto.' })
-    } catch (error) {
-      console.error(error)
-    }
+  // Pola nie wczytywane z urządzenia: widmo Kd (obliczane osobno dla mechanizmu)
+  const SKIP_FIELDS = new Set(['diagram_kd', 'q_1', 'q_2', 'q_3', 'q_4', 'q_5', 'c_1', 'c_2', 'c_3', 'c_4', 'c_5'])
+  Object.keys(currentCalculatorDefinition.value.fields).forEach(k => {
+    if (!SKIP_FIELDS.has(k) && k in result.input_data) formData.value[k] = result.input_data[k]
   })
+  Notify.create({ type: 'positive', message: 'Wczytano dane urządzenia (nr fabr., parametry). Kd wymaga osobnego obliczenia.' })
 }
+
 
 async function submitCalculation() {
   calculating.value = true
   try {
-    const res = await api.post(`/calculators/definitions/${calculatorSlug.value}/calculate/`, { input_data: formData.value })
+    let res
+    if (currentResultId.value) {
+      res = await api.patch(`/calculators/results/${currentResultId.value}/`, { input_data: formData.value })
+    } else {
+      res = await api.post(`/calculators/definitions/${calculatorSlug.value}/calculate/`, { input_data: formData.value })
+    }
     calculatedResult.value = res.data
     if (res.data.remaining_premium !== undefined && userStore.user) {
       userStore.user.premium = res.data.remaining_premium
@@ -704,10 +637,10 @@ async function submitCalculation() {
     if (res.data.is_locked) {
       Notify.create({ type: 'warning', message: 'Obliczono, ale wyniki są zablokowane — brak punktów premium.' })
     } else {
-      Notify.create({ type: 'positive', message: 'Obliczono!' })
+      Notify.create({ type: 'positive', message: currentResultId.value ? 'Zaktualizowano!' : 'Obliczono!' })
     }
   } catch (error) {
-    console.error(error)
+    Notify.create({ type: 'negative', message: error.response?.data?.detail || 'Błąd zapisu.' })
   } finally { calculating.value = false }
 }
 
@@ -747,33 +680,6 @@ async function unlockSavedResult(row) {
   } finally { unlocking.value = false }
 }
 
-function printPage() { window.print() }
-async function downloadPdf(id = null) {
-  const rid = id ?? calculatedResult.value?.result_id
-  if (!rid) return
-  downloadingPdf.value = true
-  try {
-    const params = {}
-    if (selectedLogoId.value) params.logo_id = selectedLogoId.value
-    
-    const res = await api.get(`/calculators/results/${rid}/pdf/`, { 
-      params,
-      responseType: 'blob' 
-    })
-    const url = URL.createObjectURL(new Blob([res.data], { type: 'application/pdf' }))
-    const a = document.createElement('a'); a.href = url; a.download = `resurs_${calculatorSlug.value}.pdf`; a.click()
-  } catch (error) {
-    console.error(error)
-  } finally { downloadingPdf.value = false }
-}
-
-function getFullLogoUrl(url) {
-  if (!url) return ''
-  if (url.startsWith('http')) return url
-  const base = api.defaults.baseURL.replace(/\/api\/?$/, '')
-  const path = url.startsWith('/') ? url : '/' + url
-  return `${base}${path}`
-}
 
 async function loadSingleResult(resultId) {
   try {
@@ -796,9 +702,12 @@ async function loadSingleResult(resultId) {
 
 onMounted(async () => {
   await fetchUnits()
+  initializeFormData()
+  fetchDeviceResults()
   if (route.query.result_id) {
     await loadSingleResult(route.query.result_id)
   }
+  await fetchCurrentCost()
   loading.value = false
 })
 </script>

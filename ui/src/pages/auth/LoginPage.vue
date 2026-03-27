@@ -36,7 +36,7 @@
           <ul class="auth-features">
             <li><q-icon name="check_circle" size="18px" color="white" style="opacity:0.7" />22 typy urządzeń transportu bliskiego</li>
             <li><q-icon name="check_circle" size="18px" color="white" style="opacity:0.7" />Metodologia FEM 9.511 / ISO 4301</li>
-            <li><q-icon name="check_circle" size="18px" color="white" style="opacity:0.7" />Orzeczenie PDF akceptowane przez UDT</li>
+            <li><q-icon name="check_circle" size="18px" color="white" style="opacity:0.7" />Wyznaczenie resursu PDF akceptowane przez UDT</li>
             <li><q-icon name="check_circle" size="18px" color="white" style="opacity:0.7" />Archiwizacja i aktualizacja wyników</li>
           </ul>
           <div class="auth-norm-row">

@@ -70,7 +70,7 @@
             <ul class="hero-spec-list q-mb-xl">
               <li>22 typy urządzeń: suwnicy, żurawie, podesty, wózki, układnice</li>
               <li>Metoda cykli pracy wg FEM 9.511 i normy ISO 4301</li>
-              <li>Orzeczenie PDF akceptowane przez UDT</li>
+              <li>Wyznaczenie resursu PDF akceptowane przez UDT</li>
               <li>Archiwizacja i aktualizacja wyników w kolejnych latach</li>
             </ul>
             <q-separator class="q-mb-lg"/>
@@ -521,7 +521,7 @@ const complianceSpecs = [
   { code: '22', label: 'Typy urządzeń', desc: 'Pełny zakres UTB' },
   { code: 'FEM', label: '9.511 / ISO 4301', desc: 'Standard obliczeń' },
   { code: 'UDT', label: 'Rozp. MPiT 2018', desc: 'Zgodność z prawem' },
-  { code: 'PDF', label: 'Orzeczenie resursu', desc: 'Gotowy do złożenia' }
+  { code: 'PDF', label: 'Wyznaczenie resursu', desc: 'Gotowy do złożenia' }
 ]
 
 const methodology = [
@@ -589,7 +589,7 @@ const steps = [
   },
   {
     icon: 'picture_as_pdf',
-    title: 'Pobierz orzeczenie PDF',
+    title: 'Pobierz wyznaczenie resursu PDF',
     text: 'Wynik zawiera pełne obliczenia, klasę stanu technicznego L1–L4, wykres zużycia i prognozę resursu. Gotowy do złożenia w UDT.'
   }
 ]
@@ -598,7 +598,7 @@ const standardFeatures = [
   'Kalkulator zgodny z FEM 9.511',
   'Archiwizacja wyników',
   'Aktualizacja w kolejnych latach',
-  'Orzeczenie PDF z tabelami i wykresem'
+  'Wyznaczenie resursu PDF z tabelami i wykresem'
 ]
 
 const premiumFeatures = [

@@ -74,7 +74,7 @@ const standardFeatures = [
   'Kalkulator zgodny z FEM 9.511 / ISO 4301',
   'Archiwizacja wyników w chmurze',
   'Aktualizacja danych w kolejnych latach',
-  'Orzeczenie PDF z tabelami i wykresem'
+  'Wyznaczenie resursu PDF z tabelami i wykresem'
 ]
 const premiumFeatures = [
   'Priorytetowe wsparcie techniczne',

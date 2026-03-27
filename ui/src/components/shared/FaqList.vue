@@ -38,7 +38,7 @@ const faqItems = [
   {
     icon: 'verified_user',
     q: 'Czy obliczenia są zgodne z UDT?',
-    a: `<p style="margin:0;line-height:1.7">Tak. Wszystkie algorytmy opracowano na podstawie Rozporządzenia MPiT z dnia 30 października 2018 r. oraz wytycznych FEM 9.511 i normy ISO 4301. Orzeczenie PDF jest akceptowane przez Urząd Dozoru Technicznego.</p>`
+    a: `<p style="margin:0;line-height:1.7">Tak. Wszystkie algorytmy opracowano na podstawie Rozporządzenia MPiT z dnia 30 października 2018 r. oraz wytycznych FEM 9.511 i normy ISO 4301. Wyznaczenie resursu PDF jest akceptowane przez Urząd Dozoru Technicznego.</p>`
   },
   {
     icon: 'picture_as_pdf',

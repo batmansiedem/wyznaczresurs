@@ -38,7 +38,7 @@
             </q-td>
           </template>
           <template v-slot:body-cell-actions="props">
-            <q-td :props="props" class="q-gutter-x-sm">
+            <q-td :props="props" class="q-gutter-x-sm text-center">
               <q-btn icon="visibility" label="Szczegóły" color="primary" flat dense
                 @click="showDetails(props.row)" no-caps />
               <q-btn
@@ -55,9 +55,6 @@
               >
                 <q-tooltip>Odblokuj ({{ props.row.calculator_definition?.premium_cost ?? '?' }} pkt)</q-tooltip>
               </q-btn>
-              <q-btn v-else icon="add_circle" color="warning" flat dense to="/pricing">
-                <q-tooltip>Brak punktów — doładuj konto</q-tooltip>
-              </q-btn>
               <q-btn icon="delete" color="negative" flat dense
                 @click="confirmDelete(props.row)" />
             </q-td>
@@ -67,97 +64,35 @@
     </template>
 
     <!-- Dialog szczegółów -->
-    <q-dialog v-model="showDetailsDialog">
-      <q-card style="min-width: 600px; border-radius: 12px;">
-        <q-card-section class="row items-center q-pb-none">
-          <div class="text-h6 text-weight-bold text-primary">Szczegóły obliczeń</div>
+    <q-dialog v-model="showDetailsDialog" :maximized="$q.screen.lt.md" @show="() => window.dispatchEvent(new Event('resize'))">
+      <q-card class="result-dialog-card">
+        <q-card-section class="row items-center bg-primary text-white no-wrap">
+          <div class="text-h6 text-weight-bold ellipsis">
+            {{ selectedResult?.calculator_name }} — Szczegóły obliczeń
+          </div>
           <q-space />
-          <q-btn icon="close" flat round dense v-close-popup />
+          <q-btn icon="close" flat round dense v-close-popup color="white" class="q-ml-sm flex-shrink-0" />
         </q-card-section>
 
-        <q-card-section v-if="selectedResult" class="q-pt-lg">
-          <div class="row q-col-gutter-md q-mb-lg">
-            <div class="col-12 col-sm-6">
-              <div class="text-overline text-grey-6">Kalkulator</div>
-              <div class="text-subtitle1 text-weight-bold">{{ selectedResult.calculator_name }}</div>
-            </div>
-            <div class="col-12 col-sm-6 text-right">
-              <div class="text-overline text-grey-6">Data wykonania</div>
-              <div class="text-subtitle1 text-weight-medium">{{ new Date(selectedResult.created_at).toLocaleString() }}</div>
-            </div>
+        <q-card-section v-if="selectedResult" class="q-pa-md q-pa-lg-lg result-dialog-body">
+          <div class="row items-center justify-between q-mb-md text-caption text-grey-6">
+            <span>Data: <b class="text-grey-8">{{ new Date(selectedResult.created_at).toLocaleString('pl-PL') }}</b></span>
+            <span>ID: <b class="text-grey-8">{{ selectedResult.id }}</b></span>
           </div>
-
-          <q-separator class="q-mb-lg" />
-          
-          <div class="row q-col-gutter-lg">
-            <div v-if="inputFieldDefinitions" class="col-12 col-md-6">
-              <div class="text-overline text-primary q-mb-md">Dane wejściowe</div>
-              <q-list dense>
-                <q-item v-for="(fieldDef, key) in inputFieldDefinitions" :key="key" class="q-px-none min-height-unset">
-                  <q-item-section>
-                    <q-item-label class="text-grey-7">{{ fieldDef.label }}</q-item-label>
-                  </q-item-section>
-                  <q-item-section side>
-                    <q-item-label class="text-weight-bold">{{ formatValue(selectedResult.input_data[key], fieldDef) }}</q-item-label>
-                  </q-item-section>
-                </q-item>
-              </q-list>
-            </div>
-
-            <div class="col-12 col-md-6">
-              <div class="text-overline text-secondary q-mb-md">Wyniki analizy</div>
-              <template v-if="selectedResult?.is_locked">
-                <div class="text-center q-pa-lg">
-                  <q-icon name="lock" size="3em" color="warning" class="q-mb-sm" />
-                  <div class="text-body2 text-grey-7 q-mb-sm">Wyniki zablokowane — wymagają punktów premium.</div>
-                  <div class="text-caption text-grey-6 q-mb-md">
-                    Koszt odblokowania: <strong>{{ selectedResult.calculator_definition?.premium_cost ?? '?' }} pkt</strong>
-                    &nbsp;·&nbsp; Twoje saldo: <strong>{{ userStore.user?.premium ?? 0 }} pkt</strong>
-                  </div>
-                  <q-btn
-                    v-if="(userStore.user?.premium ?? 0) >= (selectedResult.calculator_definition?.premium_cost ?? 0)"
-                    label="Odblokuj wyniki"
-                    icon="lock_open"
-                    color="primary"
-                    unelevated no-caps
-                    :loading="unlocking"
-                    @click="unlockResult(selectedResult)"
-                  />
-                  <q-btn
-                    v-else
-                    label="Doładuj konto"
-                    icon="add_circle"
-                    color="primary"
-                    unelevated no-caps
-                    to="/pricing"
-                    v-close-popup
-                  />
-                </div>
-              </template>
-              <q-card v-else-if="outputFieldDefinitions" flat bordered :class="$q.dark.isActive ? 'bg-grey-9' : 'bg-grey-1'">
-                <q-list dense>
-                  <q-item v-for="(fieldDef, key) in outputFieldDefinitions" :key="key" class="q-py-sm">
-                    <q-item-section>
-                      <q-item-label class="text-grey-8">{{ fieldDef.label }}</q-item-label>
-                    </q-item-section>
-                    <q-item-section side>
-                      <q-item-label class="text-weight-bolder text-primary">{{ formatValue(selectedResult.output_data[key], fieldDef) }}</q-item-label>
-                    </q-item-section>
-                  </q-item>
-                </q-list>
-              </q-card>
-            </div>
-          </div>
+          <CalculationResultReport
+            :result="selectedResult"
+            :user-premium="userStore.user?.premium ?? 0"
+            :unlocking="unlocking"
+            :downloading-pdf="downloadingPdf"
+            :logos="userStore.user?.logos"
+            v-model:selected-logo-id="selectedLogoId"
+            @unlock="unlockResult(selectedResult)"
+            @download-pdf="downloadPdf(selectedResult)"
+          />
         </q-card-section>
 
-        <q-card-actions align="right" class="q-pa-md">
+        <q-card-actions align="right" class="q-pa-sm q-px-md border-top flex-shrink-0">
           <q-btn flat label="Zamknij" color="grey-7" v-close-popup no-caps />
-          <q-btn unelevated label="Pobierz PDF" color="primary" icon="picture_as_pdf" no-caps
-            :loading="downloadingPdf" :disable="selectedResult?.is_locked"
-            @click="downloadPdf(selectedResult)"
-          >
-            <q-tooltip v-if="selectedResult?.is_locked">Odblokuj wyniki, aby pobrać PDF</q-tooltip>
-          </q-btn>
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -165,32 +100,29 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { api } from 'boot/axios'
-import { Notify, Dialog } from 'quasar'
-import calculatorFields from 'src/data/calculator_fields.json'
-import calculatorOutputFields from 'src/data/calculator_output_fields.json'
+import { useQuasar, Notify, Dialog } from 'quasar'
+import CalculationResultReport from 'components/CalculationResultReport.vue'
 import { useUserStore } from 'stores/user-store'
 import { downloadBlob } from 'src/utils/download'
 
-const downloadingPdf = ref(false)
-
+const $q = useQuasar()
 const userStore = useUserStore()
 const results = ref([])
 const loading = ref(true)
 const showDetailsDialog = ref(false)
 const selectedResult = ref(null)
 const unlocking = ref(false)
+const downloadingPdf = ref(false)
+const selectedLogoId = ref(null)
 
-async function downloadPdf(row) {
-  if (row.is_locked) { Notify.create({ type: 'warning', message: 'Odblokuj wyniki, aby pobrać PDF.', position: 'top' }); return }
-  downloadingPdf.value = true
-  try {
-    const res = await api.get(`/calculators/results/${row.id}/pdf/`, { responseType: 'blob' })
-    downloadBlob(res.data, `resurs_${row.id}.pdf`)
-  } catch { Notify.create({ type: 'negative', message: 'Błąd pobierania PDF.', position: 'top' }) }
-  finally { downloadingPdf.value = false }
-}
+watch(() => userStore.user?.logos, (logos) => {
+  if (logos?.length && !selectedLogoId.value) {
+    const def = logos.find(l => l.is_default) || logos[0]
+    selectedLogoId.value = def.id
+  }
+}, { immediate: true })
 
 const columns = [
   { name: 'calculator_name', required: true, label: 'Urządzenie', align: 'left', field: 'calculator_name', sortable: true },
@@ -198,33 +130,6 @@ const columns = [
   { name: 'status', label: 'Status', align: 'center', field: 'is_locked' },
   { name: 'actions', label: 'Dostępne akcje', align: 'center' }
 ]
-
-const inputFieldDefinitions = computed(() => {
-  if (selectedResult.value && selectedResult.value.calculator_definition) {
-    const slug = selectedResult.value.calculator_definition.slug;
-    return calculatorFields[slug] ? calculatorFields[slug].fields : null;
-  }
-  return null;
-});
-
-const outputFieldDefinitions = computed(() => {
-  if (selectedResult.value && selectedResult.value.calculator_definition) {
-    const slug = selectedResult.value.calculator_definition.slug;
-    return calculatorOutputFields[slug] ? calculatorOutputFields[slug].fields : null;
-  }
-  return null;
-});
-
-function formatValue(value, fieldDef) {
-  if (value === null || value === undefined) return '-';
-  switch (fieldDef.type) {
-    case 'number': return `${value} ${fieldDef.unit || ''}`.trim();
-    case 'percentage': return `${value}%`.trim();
-    case 'date': return new Date(value).toLocaleDateString('pl-PL');
-    case 'boolean': return value ? 'Tak' : 'Nie';
-    default: return String(value);
-  }
-}
 
 async function fetchResults() {
   loading.value = true
@@ -281,10 +186,50 @@ async function unlockResult(row) {
   } finally { unlocking.value = false }
 }
 
+async function downloadPdf(row) {
+  if (row.is_locked) { Notify.create({ type: 'warning', message: 'Odblokuj wyniki, aby pobrać PDF.', position: 'top' }); return }
+  downloadingPdf.value = true
+  try {
+    const params = {}
+    if (selectedLogoId.value) params.logo_id = selectedLogoId.value
+    const res = await api.get(`/calculators/results/${row.id}/pdf/`, { params, responseType: 'blob' })
+    downloadBlob(res.data, `resurs_${row.id}.pdf`)
+  } catch { Notify.create({ type: 'negative', message: 'Błąd pobierania PDF.', position: 'top' }) }
+  finally { downloadingPdf.value = false }
+}
+
 onMounted(fetchResults)
 </script>
 
 <style scoped>
-.bg-card { background-color: var(--q-bg-color); }
 .min-height-unset { min-height: unset; }
+
+.result-dialog-card {
+  width: 980px;
+  max-width: 98vw;
+  height: 92vh;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.result-dialog-body {
+  flex: 1 1 0;
+  overflow: auto;
+}
+
+.border-top {
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.body--dark .border-top {
+  border-top-color: rgba(255, 255, 255, 0.08);
+}
+
+/* Pełny ekran na mobile – nadpisz border-radius */
+:deep(.q-dialog--maximized) .result-dialog-card {
+  border-radius: 0;
+  max-height: 100vh;
+}
 </style>

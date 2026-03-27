@@ -3,7 +3,7 @@ from .models import CalculatorDefinition, CalculatorResult, Unit
 
 @admin.register(CalculatorDefinition)
 class CalculatorDefinitionAdmin(admin.ModelAdmin):
-    list_display = ('name', 'slug', 'is_active', 'premium_cost')
+    list_display = ('name', 'slug', 'is_active', 'premium_cost', 'premium_cost_recurring')
     prepopulated_fields = {'slug': ('name',)}
     search_fields = ('name', 'description')
 

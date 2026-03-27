@@ -38,7 +38,7 @@
             <li><q-icon name="check_circle" size="18px" color="white" style="opacity:0.7" />Rejestracja bezpłatna — bez karty</li>
             <li><q-icon name="check_circle" size="18px" color="white" style="opacity:0.7" />22 typy urządzeń transportu bliskiego</li>
             <li><q-icon name="check_circle" size="18px" color="white" style="opacity:0.7" />Metodologia FEM 9.511 / ISO 4301</li>
-            <li><q-icon name="check_circle" size="18px" color="white" style="opacity:0.7" />Orzeczenie PDF akceptowane przez UDT</li>
+            <li><q-icon name="check_circle" size="18px" color="white" style="opacity:0.7" />Wyznaczenie resursu PDF akceptowane przez UDT</li>
           </ul>
           <div class="auth-norm-row">
             <span class="auth-norm">FEM 9.511</span>
@@ -55,34 +55,52 @@
             Masz już konto?
             <q-btn flat no-caps dense label="Zaloguj się" color="primary" to="/login" class="q-pa-none" />
           </p>
-          <q-form @submit="onSubmit" class="q-gutter-md">
-            <div class="account-type-toggle">
-              <q-toggle v-model="form.is_company" label="Konto firmowe" color="primary" />
-            </div>
-
-            <q-input v-model="form.email" label="Adres email" outlined
-              :rules="[val => !!val || 'Wymagane']" />
-
-            <template v-if="form.is_company">
-              <q-input v-model="form.company_name" label="Nazwa firmy" outlined
-                :rules="[val => !!val || 'Wymagane']" />
-              <q-input v-model="form.nip" label="NIP" outlined mask="##########"
-                :rules="[val => !!val || 'Wymagane', val => val.length === 10 || '10 cyfr']" />
-            </template>
-            <template v-else>
-              <div class="row q-col-gutter-sm">
-                <div class="col-6"><q-input v-model="form.first_name" label="Imię" outlined /></div>
-                <div class="col-6"><q-input v-model="form.last_name" label="Nazwisko" outlined /></div>
+          <q-form @submit="onSubmit">
+            <div class="row q-col-gutter-md">
+              <div class="col-12">
+                <div class="account-type-toggle">
+                  <q-toggle v-model="form.is_company" label="Konto firmowe" color="primary" />
+                </div>
               </div>
-            </template>
 
-            <q-input v-model="form.password" label="Hasło" type="password" outlined
-              :rules="[val => !!val || 'Wymagane', val => val.length >= 8 || 'Min 8 znaków']" />
-            <q-input v-model="form.passwordConfirm" label="Powtórz hasło" type="password" outlined
-              :rules="[val => val === form.password || 'Hasła muszą być identyczne']" />
+              <div class="col-12">
+                <q-input v-model="form.email" label="Adres email" outlined
+                  :rules="[val => !!val || 'Wymagane']" />
+              </div>
 
-            <q-btn label="Załóż konto" type="submit" color="primary"
-              class="full-width auth-submit" :loading="loading" unelevated size="lg" />
+              <template v-if="form.is_company">
+                <div class="col-12">
+                  <q-input v-model="form.company_name" label="Nazwa firmy" outlined
+                    :rules="[val => !!val || 'Wymagane']" />
+                </div>
+                <div class="col-12">
+                  <q-input v-model="form.nip" label="NIP" outlined mask="##########"
+                    :rules="[val => !!val || 'Wymagane', val => val.length === 10 || '10 cyfr']" />
+                </div>
+              </template>
+              <template v-else>
+                <div class="col-12 col-sm-6">
+                  <q-input v-model="form.first_name" label="Imię" outlined />
+                </div>
+                <div class="col-12 col-sm-6">
+                  <q-input v-model="form.last_name" label="Nazwisko" outlined />
+                </div>
+              </template>
+
+              <div class="col-12">
+                <q-input v-model="form.password" label="Hasło" type="password" outlined
+                  :rules="[val => !!val || 'Wymagane', val => val.length >= 8 || 'Min 8 znaków']" />
+              </div>
+              <div class="col-12">
+                <q-input v-model="form.passwordConfirm" label="Powtórz hasło" type="password" outlined
+                  :rules="[val => val === form.password || 'Hasła muszą być identyczne']" />
+              </div>
+
+              <div class="col-12">
+                <q-btn label="Załóż konto" type="submit" color="primary"
+                  class="full-width auth-submit" :loading="loading" unelevated size="lg" />
+              </div>
+            </div>
           </q-form>
         </div>
       </div>
@@ -110,7 +128,12 @@ const form = reactive({
 const onSubmit = async () => {
   loading.value = true
   try {
-    await userStore.register({ ...form, re_password: form.passwordConfirm })
+    // dj-rest-auth RegisterSerializer expects password1 and password2
+    await userStore.register({ 
+      ...form, 
+      password1: form.password,
+      password2: form.passwordConfirm 
+    })
     Notify.create({ type: 'positive', message: 'Konto utworzone! Zaloguj się.', position: 'top' })
     router.push('/login')
   } catch {

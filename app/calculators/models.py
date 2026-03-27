@@ -13,8 +13,12 @@ class CalculatorDefinition(models.Model):
     
     # Premium cost for using this calculator (if applicable)
     premium_cost = models.DecimalField(
-        max_digits=10, decimal_places=2, default=0.00,
-        verbose_name=_("Koszt premium (punktów)")
+        max_digits=10, decimal_places=2, default=100.00,
+        verbose_name=_("Koszt premium (nowy resurs)")
+    )
+    premium_cost_recurring = models.DecimalField(
+        max_digits=10, decimal_places=2, default=80.00,
+        verbose_name=_("Koszt premium (ponowny resurs)")
     )
 
     class Meta:

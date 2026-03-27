@@ -122,15 +122,16 @@ _WOZEK_MAX_TABLE = {
 # Współczynniki konwersji do jednostek bazowych kalkulatora:
 # masa → tony (t), czas → lata, długość → metry (m), prędkość → m/min
 _UNIT_CONVERSION = {
-    # masa
+    # masa — baza: tony (t)
     'kg':    Decimal('0.001'),    # 1 kg = 0.001 t
     't':     Decimal('1.0'),
     'ton':   Decimal('1.0'),      # alias (z migracji 0003)
     # czas — baza: lata
     'h':     Decimal('0.000114155'),   # 1 h ≈ 1/8766 roku
     'hour':  Decimal('0.000114155'),   # alias (z migracji 0003)
-    'mth':   Decimal('0.000114155'),   # motogodziny = godziny
+    'mth':   Decimal('1.0'),           # motogodziny — wartość surowa (bez konwersji)
     'lata':  Decimal('1.0'),
+    'miesiące': Decimal('0.08333333'), # 1 miesiąc = 1/12 roku
     'year':  Decimal('1.0'),      # alias (z migracji 0003)
     'day':   Decimal('0.00273973'),    # 1 dzień = 1/365 roku
     # długość — baza: m
@@ -140,6 +141,7 @@ _UNIT_CONVERSION = {
     # prędkość — baza: m/min
     'm/s':   Decimal('60.0'),
     'm/min': Decimal('1.0'),
+    'm/h':   Decimal('0.01666667'),   # 1 m/h = 1/60 m/min
     # bezjednostkowe
     'cycle': Decimal('1.0'),
     'cycle_per_shift': Decimal('1.0'),
@@ -191,10 +193,18 @@ class BaseCalculator(ABC):
         """Helper to get and convert values from input_data."""
         return get_val_from_input(self.input_data, field_name, default_value)
     
+    def _get_kg_val(self, field_name):
+        """Pobiera wartość pola masowego zawsze w kg (obsługuje unit_options kg/t)."""
+        raw = self.input_data.get(field_name)
+        if isinstance(raw, dict):
+            val = Decimal(str(raw.get('value') or 0))
+            return val * 1000 if raw.get('unit') == 't' else val
+        return Decimal(str(raw or 0))
+
     def _calculate_wsp_kdr(self, ilosc_cykli):
         """Oblicza współczynnik widma obciążeń na podstawie q_max, q_1..q_5, c_1..c_5."""
-        q_max = self._get_val('q_max')
-        q_vals = [self._get_val(f'q_{i}') for i in range(1, 6)]
+        q_max = self._get_kg_val('q_max')   # zawsze w kg
+        q_vals = [self._get_kg_val(f'q_{i}') for i in range(1, 6)]  # zawsze w kg (jak q_max)
         c_vals = [self._get_val(f'c_{i}') for i in range(1, 6)]
         return calculate_wsp_kdr(ilosc_cykli, q_max, q_vals, c_vals)
 
@@ -204,6 +214,24 @@ class BaseCalculator(ABC):
         if isinstance(raw, dict):
             raw = raw.get('value', default_value)
         return str(raw) if raw is not None else default_value
+
+    def _apply_technical_state_logic(self, component_fields, resurs_message, resurs_wykorzystanie):
+        """
+        Applies the logic: if any technical checklist field contains a problem string,
+        force resurs to 100% and update the message.
+        """
+        has_technical_problems = False
+        resurs_wykorzystanie_dec = Decimal(str(resurs_wykorzystanie))
+        
+        for field in component_fields:
+            if self._get_str(field) in _PROBLEM_STRINGS:
+                if not has_technical_problems:
+                    resurs_message = "Resurs został osiągnięty ze względu na stan techniczny urządzenia. Zaleca się wykonanie przeglądu specjalnego."
+                    resurs_wykorzystanie_dec = Decimal('100.00')
+                    has_technical_problems = True
+                resurs_message += f" {_COMPONENT_MESSAGES.get(field, '')}"
+        
+        return resurs_message.strip(), resurs_wykorzystanie_dec, has_technical_problems
 
     def _extract_and_process_common_inputs(self):
         """Extracts and processes common inputs for resurs calculations."""
@@ -234,7 +262,7 @@ class BaseCalculator(ABC):
         ilosc_cykli_rok = (ilosc_cykli * F_X) / lata_pracy if lata_pracy > 0 else Decimal(0)
 
         if U_WSK <= 0:
-            raise ValidationError("Nie można obliczyć resursu — U_WSK wynosi 0. Sprawdź dane wejściowe.")
+            raise ValidationError("Nie można obliczyć resursu — U<sub>WSK</sub> wynosi 0. Sprawdź dane wejściowe.")
 
         resurs_wykorzystanie = round(((ilosc_cykli * F_X) / U_WSK) * 100, 2)
         if ponowny_resurs == 1:
@@ -310,17 +338,21 @@ class DzwignikCalculator(BaseCalculator):
         resurs_prognosis_data = self._calculate_resurs_prognosis(U_WSK, F_X, ilosc_cykli, lata_pracy, ponowny_resurs, ostatni_resurs)
 
         resurs_message = resurs_prognosis_data['resurs_message']
+        resurs_wykorzystanie = resurs_prognosis_data['resurs_wykorzystanie']
+        
         # --- Component checks ---
         component_fields = ['konstrukcja', 'automatyka', 'sworznie', 'ciegna', 'eksploatacja', 'szczelnosc', 'hamulce']
-        for field in component_fields:
-            if self._get_str(field) in _PROBLEM_STRINGS:
-                resurs_message += f" {_COMPONENT_MESSAGES[field]}"
+        resurs_message, resurs_wykorzystanie, has_technical_problems = self._apply_technical_state_logic(
+            component_fields, resurs_message, resurs_wykorzystanie
+        )
 
         self.output_data.update({
             **resurs_prognosis_data,
+            'resurs_wykorzystanie': resurs_wykorzystanie,
             'hdr': hdr,
             'wsp_kdr': wsp_kdr,
             'resurs_message': resurs_message,
+            'technical_state_reached': has_technical_problems
         })
         return self.output_data
 
@@ -339,9 +371,9 @@ class ZurawCalculator(BaseCalculator):
         kss = self._get_kss()
 
         # Żuraw: Kd uwzględnia masę osprzętu Q_o → Kd = Σ[ci/100 * ((Qi + Q_o) / Qmax)^3]
-        q_max = self._get_val('q_max')
-        q_o = self._get_val('q_o')
-        q_vals = [self._get_val(f'q_{i}') for i in range(1, 6)]
+        q_max = self._get_kg_val('q_max')     # zawsze w kg
+        q_o = self._get_kg_val('q_o')         # zawsze w kg
+        q_vals = [self._get_val(f'q_{i}') for i in range(1, 6)]  # z diagramu, zawsze kg
         c_vals = [self._get_val(f'c_{i}') for i in range(1, 6)]
         if q_o > 0:
             q_vals = [q + q_o for q in q_vals]
@@ -375,17 +407,21 @@ class ZurawCalculator(BaseCalculator):
         resurs_prognosis_data = self._calculate_resurs_prognosis(U_WSK, F_X, ilosc_cykli, lata_pracy, ponowny_resurs, ostatni_resurs)
 
         resurs_message = resurs_prognosis_data['resurs_message']
+        resurs_wykorzystanie = resurs_prognosis_data['resurs_wykorzystanie']
+
         # --- Component checks ---
         component_fields = ['konstrukcja', 'automatyka', 'sworznie', 'ciegna', 'eksploatacja']
-        for field in component_fields:
-            if self._get_str(field) in _PROBLEM_STRINGS:
-                resurs_message += f" {_COMPONENT_MESSAGES[field]}"
+        resurs_message, resurs_wykorzystanie, has_technical_problems = self._apply_technical_state_logic(
+            component_fields, resurs_message, resurs_wykorzystanie
+        )
 
         self.output_data.update({
             **resurs_prognosis_data,
+            'resurs_wykorzystanie': resurs_wykorzystanie,
             'wsp_kdr': wsp_kdr,
             'stan_obciazenia': stan_obciazenia,
             'resurs_message': resurs_message,
+            'technical_state_reached': has_technical_problems,
             'recalculated_gnp': gnp if gnp_check else None,
             'U_DOW': U_DOW,
         })
@@ -414,15 +450,29 @@ class DzwigCalculator(BaseCalculator):
         if cykle_dzwig > 0:
             ilosc_cykli = cykle_dzwig
         else:
-            v_jaz = self._get_val('v_jaz')
+            # v_jaz: odczyt z obsługą unit_options [m/s, m/min, m/h], normalizacja do m/s
+            v_jaz_raw = self.input_data.get('v_jaz')
+            if isinstance(v_jaz_raw, dict):
+                v_jaz_val = Decimal(str(v_jaz_raw.get('value') or 0))
+                v_jaz_unit = v_jaz_raw.get('unit', 'm/s')
+                if v_jaz_unit == 'm/min':
+                    v_jaz = v_jaz_val / Decimal('60')
+                elif v_jaz_unit == 'm/h':
+                    v_jaz = v_jaz_val / Decimal('3600')
+                else:  # m/s
+                    v_jaz = v_jaz_val
+            else:
+                v_jaz = Decimal(str(v_jaz_raw or 0))  # dane sprzed unit_options: przyjmowane jako m/s
+
             h_pod = self._get_val('h_pod')
             przystanki = self._get_val('przystanki')
             budynek = self._get_str('budynek')
             operator = self._get_str('operator')
             przeznaczenie = self._get_str('przeznaczenie')
             liczba_dzwigow = self._get_val('liczba_dzwigow')
-            
-            ilosc_cykli = (((60 * v_jaz * Decimal('0.5')) * 1 * licznik_godzin * Decimal('0.5')) / h_pod)
+
+            # Wzór: (60 * v_m_s * 0.5) * L_h * 0.5 / h_m (jak w PHP)
+            ilosc_cykli = (((Decimal('60') * v_jaz * Decimal('0.5')) * licznik_godzin * Decimal('0.5')) / h_pod)
             ilosc_cykli *= (1 + 1 / (przystanki + 1))
             
             k_bud_map = {"budowa": Decimal('0.95'), "magazyn": Decimal('0.85'), "budynek mieszkalny": Decimal('1.0'), "budynek firmowy": Decimal('0.75'), "budynek administracji publicznej": Decimal('0.6'), "budynek użyteczności publicznej": Decimal('0.55'), "pojazd": Decimal('0.15')}
@@ -484,9 +534,11 @@ class DzwigCalculator(BaseCalculator):
         }
         for field, add_val in component_resurs_add.items():
             state = self._get_val(field)
-            if state == 1: # Assuming 1 means "good" state
+            if state == 1: # Bez zastrzeżeń
                 resurs += Decimal(add_val)
-            elif state == 0: # Assuming 0 means "bad" state, additional penalty
+            elif state == 0.5: # Wymagający remontu/wymiany w ciągu 5 lat
+                resurs += Decimal(add_val) * Decimal('0.75')
+            elif state == 0: # Wymagający remontu/wymiany w ciągu 1-2 lat
                  resurs += Decimal('1.5')
 
         resurs = round(resurs, 2)
@@ -504,10 +556,12 @@ class DzwigCalculator(BaseCalculator):
         }
         for field, penalty in component_prognoza_penalty.items():
             state = self._get_val(field)
-            if state == 0: # If component is in bad state
+            if state == 0: # Wymagający remontu/wymiany w ciągu 1-2 lat
                 prognoza += Decimal(penalty)
-            elif state == 1: # If component is in good state
-                prognoza += Decimal('2') # Reduced prognosis if good, as per PHP logic
+            elif state == 0.5: # Wymagający remontu/wymiany w ciągu 5 lat
+                prognoza += (Decimal(penalty) + Decimal('2')) / 2
+            elif state == 1: # Bez zastrzeżeń
+                prognoza += Decimal('2')
 
         if prognoza == 0:
             prognoza = Decimal('-0.25') * resurs + Decimal('25')
@@ -586,17 +640,20 @@ class AutotransporterCalculator(BaseCalculator):
         resurs_prognosis_data = self._calculate_resurs_prognosis(U_WSK, F_X, ilosc_cykli, lata_pracy, ponowny_resurs, ostatni_resurs)
 
         resurs_message = resurs_prognosis_data['resurs_message']
+        resurs_wykorzystanie = resurs_prognosis_data['resurs_wykorzystanie']
         # --- Component checks ---
         component_fields = ['konstrukcja', 'automatyka', 'sworznie', 'ciegna', 'eksploatacja', 'szczelnosc', 'nakretka']
-        for field in component_fields:
-            if self._get_str(field) in _PROBLEM_STRINGS:
-                resurs_message += f" {_COMPONENT_MESSAGES[field]}"
+        resurs_message, resurs_wykorzystanie, has_technical_problems = self._apply_technical_state_logic(
+            component_fields, resurs_message, resurs_wykorzystanie
+        )
 
         self.output_data.update({
             **resurs_prognosis_data,
+            'resurs_wykorzystanie': resurs_wykorzystanie,
             'wsp_kdr': wsp_kdr,
             'stan_obciazenia': stan_obciazenia,
             'resurs_message': resurs_message,
+            'technical_state_reached': has_technical_problems,
         })
         return self.output_data
 
@@ -633,17 +690,20 @@ class HakowiecCalculator(BaseCalculator):
         resurs_prognosis_data = self._calculate_resurs_prognosis(U_WSK, F_X, ilosc_cykli, lata_pracy, ponowny_resurs, ostatni_resurs)
 
         resurs_message = resurs_prognosis_data['resurs_message']
+        resurs_wykorzystanie = resurs_prognosis_data['resurs_wykorzystanie']
         # --- Component checks ---
         component_fields = ['konstrukcja', 'automatyka', 'sworznie', 'ciegna', 'eksploatacja', 'szczelnosc']
-        for field in component_fields:
-            if self._get_str(field) in _PROBLEM_STRINGS:
-                resurs_message += f" {_COMPONENT_MESSAGES[field]}"
+        resurs_message, resurs_wykorzystanie, has_technical_problems = self._apply_technical_state_logic(
+            component_fields, resurs_message, resurs_wykorzystanie
+        )
 
         self.output_data.update({
             **resurs_prognosis_data,
+            'resurs_wykorzystanie': resurs_wykorzystanie,
             'wsp_kdr': wsp_kdr,
             'stan_obciazenia': stan_obciazenia,
             'resurs_message': resurs_message,
+            'technical_state_reached': has_technical_problems,
         })
         return self.output_data
 
@@ -707,20 +767,44 @@ class MechJazdySuwnicyCalculator(TimeBasedCalculator):
             'L4-bardzo ciężki': {'M1': 200, 'M2': 200, 'M3': 400, 'M4': 800, 'M5': 1600, 'M6': 3200, 'M7': 6300, 'M8': 12500}
         }
         T_WSK = Decimal(T_WSK_matrix.get(stan_obciazenia, {}).get(gnp, 0))
+        if T_WSK <= 0:
+            raise ValidationError("Nie można obliczyć resursu — T_WSK = 0. Sprawdź grupę natężenia pracy (GNP M1-M8).")
         T_WSK *= kss
 
         F_X = _FX_STANDARD.get(sposob_rejestracji, Decimal('1.0'))
 
-        czas_cykle = self._get_val('czas_cykle')
-        jednostka = self._get_str('jednostka')
-        
-        czas_uzytkowania_mech = ilosc_cykli * czas_cykle
-        if jednostka == 's':
-            czas_uzytkowania_mech /= 3600
-        elif jednostka == 'min':
-            czas_uzytkowania_mech /= 60
-        
-        czas_uzytkowania_mech *= F_X
+        # Kd / stan obciążenia — ostrzeżenie jeśli widmo puste
+        if wsp_km == 0:
+            self.output_data['warning_kd'] = 'Widmo obciążeń Kd nie zostało wypełnione — przyjęto L1-lekki (może być nieprawidłowe).'
+
+        # Czy podano motogodziny bezpośrednio?
+        ilosc_mth_raw = self.input_data.get('ilosc_mth')
+        if isinstance(ilosc_mth_raw, dict):
+            ilosc_mth = Decimal(str(ilosc_mth_raw.get('value') or 0))
+        else:
+            ilosc_mth = Decimal(str(ilosc_mth_raw or 0))
+
+        if ilosc_mth > 0:
+            # Motogodziny jako bezpośrednie wejście (mth = godziny)
+            czas_uzytkowania_mech = ilosc_mth * F_X
+        else:
+            # Oblicz z cykli × czas cyklu
+            czas_cykle_raw = self.input_data.get('czas_cykle')
+            if isinstance(czas_cykle_raw, dict):
+                czas_cykle = Decimal(str(czas_cykle_raw.get('value') or 0))
+                jednostka = czas_cykle_raw.get('unit', 's')
+            else:
+                czas_cykle = self._get_val('czas_cykle')
+                jednostka = self._get_str('jednostka', 's')  # kompatybilność wsteczna
+
+            if jednostka == 's':
+                czas_cykle_h = czas_cykle / 3600
+            elif jednostka == 'min':
+                czas_cykle_h = czas_cykle / 60
+            else:  # 'h'
+                czas_cykle_h = czas_cykle
+
+            czas_uzytkowania_mech = ilosc_cykli * czas_cykle_h * F_X
 
         prognosis_data = self._calculate_time_based_prognosis(T_WSK, czas_uzytkowania_mech, lata_pracy, ponowny_resurs, ostatni_resurs)
 
@@ -870,18 +954,21 @@ class PodestRuchomyCalculator(BaseCalculator):
                 common_inputs['ponowny_resurs'], common_inputs['ostatni_resurs']
             )
 
-        resurs_message = "Resurs został osiągnięty. Zaleca się wykonanie przeglądu specjalnego." if prognosis_data['resurs_wykorzystanie'] >= 100 else "Resurs nie został osiągnięty."
+        resurs_message = prognosis_data.get('resurs_message', "Resurs został osiągnięty. Zaleca się wykonanie przeglądu specjalnego." if prognosis_data['resurs_wykorzystanie'] >= 100 else "Resurs nie został osiągnięty.")
+        resurs_wykorzystanie = prognosis_data['resurs_wykorzystanie']
         
-        # Component checks
+        # --- Component checks ---
         component_fields = ['konstrukcja', 'automatyka', 'sworznie', 'ciegna', 'eksploatacja', 'szczelnosc', 'hamulce']
-        for field in component_fields:
-            if self._get_str(field) in _PROBLEM_STRINGS:
-                resurs_message += f" {_COMPONENT_MESSAGES[field]}"
+        resurs_message, resurs_wykorzystanie, has_technical_problems = self._apply_technical_state_logic(
+            component_fields, resurs_message, resurs_wykorzystanie
+        )
 
         self.output_data.update({
             **prognosis_data,
             **extra_data,
+            'resurs_wykorzystanie': resurs_wykorzystanie,
             'resurs_message': resurs_message,
+            'technical_state_reached': has_technical_problems,
         })
         return self.output_data
 
@@ -909,15 +996,19 @@ class PodestZaladowczyCalculator(BaseCalculator):
         prognosis_data = self._calculate_resurs_prognosis(U_WSK, F_X, ilosc_cykli, lata_pracy, ponowny_resurs, ostatni_resurs)
         
         resurs_message = prognosis_data['resurs_message']
+        resurs_wykorzystanie = prognosis_data['resurs_wykorzystanie']
+        # --- Component checks ---
         component_fields = ['konstrukcja', 'automatyka', 'sworznie', 'ciegna', 'eksploatacja', 'szczelnosc', 'hamulce']
-        for field in component_fields:
-            if self._get_str(field) in _PROBLEM_STRINGS:
-                resurs_message += f" {_COMPONENT_MESSAGES[field]}"
+        resurs_message, resurs_wykorzystanie, has_technical_problems = self._apply_technical_state_logic(
+            component_fields, resurs_message, resurs_wykorzystanie
+        )
 
         self.output_data.update({
             **prognosis_data,
+            'resurs_wykorzystanie': resurs_wykorzystanie,
             'wsp_kdr': wsp_kdr,
             'resurs_message': resurs_message,
+            'technical_state_reached': has_technical_problems,
         })
         return self.output_data
 
@@ -945,15 +1036,19 @@ class PodnosnikSamochodowyCalculator(BaseCalculator):
         prognosis_data = self._calculate_resurs_prognosis(U_WSK, F_X, ilosc_cykli, lata_pracy, ponowny_resurs, ostatni_resurs)
         
         resurs_message = prognosis_data['resurs_message']
+        resurs_wykorzystanie = prognosis_data['resurs_wykorzystanie']
+        # --- Component checks ---
         component_fields = ['konstrukcja', 'automatyka', 'sworznie', 'ciegna', 'eksploatacja', 'szczelnosc', 'nakretka']
-        for field in component_fields:
-            if self._get_str(field) in _PROBLEM_STRINGS:
-                resurs_message += f" {_COMPONENT_MESSAGES[field]}"
+        resurs_message, resurs_wykorzystanie, has_technical_problems = self._apply_technical_state_logic(
+            component_fields, resurs_message, resurs_wykorzystanie
+        )
 
         self.output_data.update({
             **prognosis_data,
+            'resurs_wykorzystanie': resurs_wykorzystanie,
             'wsp_kdr': wsp_kdr,
             'resurs_message': resurs_message,
+            'technical_state_reached': has_technical_problems,
         })
         return self.output_data
 
@@ -984,21 +1079,26 @@ class SuwnicaCalculator(BaseCalculator):
         resurs_prognosis_data = self._calculate_resurs_prognosis(U_WSK, F_X, ilosc_cykli, lata_pracy, ponowny_resurs, ostatni_resurs)
 
         resurs_message = resurs_prognosis_data['resurs_message']
+        resurs_wykorzystanie = resurs_prognosis_data['resurs_wykorzystanie']
         # --- Component checks ---
         component_fields = ['konstrukcja', 'automatyka', 'sworznie', 'ciegna', 'eksploatacja']
-        for field in component_fields:
-            if self._get_str(field) in _PROBLEM_STRINGS:
-                resurs_message += f" {_COMPONENT_MESSAGES[field]}"
+        resurs_message, resurs_wykorzystanie, has_technical_problems = self._apply_technical_state_logic(
+            component_fields, resurs_message, resurs_wykorzystanie
+        )
 
         self.output_data.update({
             **resurs_prognosis_data,
+            'resurs_wykorzystanie': resurs_wykorzystanie,
             'wsp_kdr': wsp_kdr,
             'stan_obciazenia': stan_obciazenia,
             'resurs_message': resurs_message,
+            'technical_state_reached': has_technical_problems,
         })
         return self.output_data
 
 class UkladnicaMagazynowaCalculator(BaseCalculator):
+# ... (rest of UkladnicaMagazynowaCalculator)
+
     slug = 'ukladnica_magazynowa'
 
     def _calculate_pod_mechanism(self, lata_pracy, F_X, max_t, EDS_factor):
@@ -1092,19 +1192,23 @@ class UkladnicaMagazynowaCalculator(BaseCalculator):
         prz_results = self._calculate_prz_mechanism(common_inputs['lata_pracy'], F_X, max_t)
 
         resurs_message = overall_prognosis['resurs_message']
+        resurs_wykorzystanie = overall_prognosis['resurs_wykorzystanie']
+        # --- Component checks ---
         component_fields = ['konstrukcja', 'automatyka', 'sworznie', 'ciegna', 'eksploatacja']
-        for field in component_fields:
-            if self._get_str(field) in _PROBLEM_STRINGS:
-                resurs_message += f" {_COMPONENT_MESSAGES[field]}"
+        resurs_message, resurs_wykorzystanie, has_technical_problems = self._apply_technical_state_logic(
+            component_fields, resurs_message, resurs_wykorzystanie
+        )
 
         self.output_data.update({
             **overall_prognosis,
             **pod_results,
             **jaz_results,
             **prz_results,
+            'resurs_wykorzystanie': resurs_wykorzystanie,
             'wsp_kdr': wsp_kdr,
             'EDS_factor': EDS_factor,
             'resurs_message': resurs_message,
+            'technical_state_reached': has_technical_problems,
         })
         return self.output_data
 
@@ -1137,15 +1241,21 @@ class WindaDekarskaCalculator(BaseCalculator):
         t_max = Decimal('3000') # Base value for both "elektryczny" and "hydrauliczny"
         t_max_pod = t_max * k_w
         
-        v_pod = self._get_val('v_pod')
         h_max = self._get_val('h_max')
-        jednostka_v = self._get_str('jednostka')
-        
-        v_pod_j = v_pod
-        if jednostka_v == "[m/s]":
-            v_pod_j *= 3600
-        elif jednostka_v == "[m/min]":
-            v_pod_j *= 60
+        # v_pod jako dict (unit_options: m/s / m/min / m/h) → konwertuj do m/h
+        v_pod_raw = self.input_data.get('v_pod')
+        if isinstance(v_pod_raw, dict):
+            v_pod_val = Decimal(str(v_pod_raw.get('value') or 0))
+            v_pod_unit = v_pod_raw.get('unit', 'm/min')
+            if v_pod_unit == 'm/s':
+                v_pod_j = v_pod_val * 3600
+            elif v_pod_unit == 'm/min':
+                v_pod_j = v_pod_val * 60
+            else:  # m/h
+                v_pod_j = v_pod_val
+        else:
+            # stare dane: plain number zakładamy m/min (domyślna jednostka)
+            v_pod_j = Decimal(str(v_pod_raw or 0)) * 60
             
         t_sum_pod = (h_max / v_pod_j) * F_X * ilosc_cykli if v_pod_j > 0 else Decimal(0)
         t_sum_pod = t_sum_pod.to_integral_value(rounding='ROUND_FLOOR')
@@ -1166,14 +1276,18 @@ class WindaDekarskaCalculator(BaseCalculator):
         prognosis_data = self._calculate_resurs_prognosis(U_WSK, F_X, ilosc_cykli, lata_pracy, "Nie", 0) # ponowny_resurs not supported for this calc
 
         resurs_message = prognosis_data['resurs_message']
+        resurs_wykorzystanie = prognosis_data['resurs_wykorzystanie']
+        # --- Component checks ---
         component_fields = ['konstrukcja', 'automatyka', 'sworznie', 'eksploatacja', 'szczelnosc', 'hamulce']
-        for field in component_fields:
-            if self._get_str(field) in _PROBLEM_STRINGS:
-                resurs_message += f" {_COMPONENT_MESSAGES[field]}"
+        resurs_message, resurs_wykorzystanie, has_technical_problems = self._apply_technical_state_logic(
+            component_fields, resurs_message, resurs_wykorzystanie
+        )
 
         self.output_data.update({
             **prognosis_data,
+            'resurs_wykorzystanie': resurs_wykorzystanie,
             'resurs_message': resurs_message,
+            'technical_state_reached': has_technical_problems,
             'k_k': k_k,
             'k_w': k_w,
             't_max_pod': t_max_pod,
@@ -1258,12 +1372,13 @@ class WozekJezdniowyCalculator(BaseCalculator):
         # Overall Resurs and Prognosis
         resurs_prognosis_data_overall = self._calculate_resurs_prognosis(U_WSK_overall, F_X, ilosc_cykli, lata_pracy, ponowny_resurs, ostatni_resurs)
         resurs_message_overall = resurs_prognosis_data_overall['resurs_message']
+        resurs_wykorzystanie_overall = resurs_prognosis_data_overall['resurs_wykorzystanie']
         
         # Component checks - for overall resurs
         component_fields = ['konstrukcja', 'automatyka', 'sworznie', 'ciegna', 'eksploatacja']
-        for field in component_fields:
-            if self._get_str(field) in _PROBLEM_STRINGS:
-                resurs_message_overall += f" {_COMPONENT_MESSAGES[field]}"
+        resurs_message_overall, resurs_wykorzystanie_overall, has_technical_problems_initial = self._apply_technical_state_logic(
+            component_fields, resurs_message_overall, resurs_wykorzystanie_overall
+        )
 
         # --- Calculations for individual mechanisms ---
         # 1. Mech podnoszenia (lifting mechanism)
@@ -1460,17 +1575,17 @@ class WozekJezdniowyCalculator(BaseCalculator):
             data_prognoza_overall = resurs_prognosis_data_overall['data_prognoza']
 
         # Component checks - for overall resurs
-        resurs_message_overall = resurs_prognosis_data_overall['resurs_message']
-        component_fields = ['konstrukcja', 'automatyka', 'sworznie', 'ciegna', 'eksploatacja']
-        for field in component_fields:
-            if self._get_str(field) in _PROBLEM_STRINGS:
-                resurs_message_overall += f" {_COMPONENT_MESSAGES[field]}"
+        resurs_message_overall, resurs_wykorzystanie_overall, has_technical_problems = self._apply_technical_state_logic(
+            component_fields, resurs_message_overall, resurs_wykorzystanie_overall
+        )
 
         self.output_data.update({
             **resurs_prognosis_data_overall,
+            'resurs_wykorzystanie': resurs_wykorzystanie_overall,
             'wsp_kdr': wsp_kdr,
             'stan_obciazenia': stan_obciazenia,
             'resurs_message': resurs_message_overall,
+            'technical_state_reached': has_technical_problems or has_technical_problems_initial,
             'k_wid': k_wid,
             'k_oper': k_oper,
             'kss': kss,
@@ -1578,12 +1693,21 @@ class WozekSpecjalizowanyCalculator(BaseCalculator):
             final_data = {**prognosis_data, 'resurs_message': resurs}
 
         # Common component checks
+        resurs_message = final_data.get('resurs_message', '')
+        resurs_wykorzystanie = final_data.get('resurs_wykorzystanie', 0)
         component_fields = ['konstrukcja', 'automatyka', 'sworznie', 'eksploatacja', 'szczelnosc']
-        for field in component_fields:
-            if self._get_str(field) in _PROBLEM_STRINGS:
-                final_data['resurs_message'] += f" {_COMPONENT_MESSAGES[field]}"
+        resurs_message, resurs_wykorzystanie, has_technical_problems = self._apply_technical_state_logic(
+            component_fields, resurs_message, resurs_wykorzystanie
+        )
+        final_data['resurs_message'] = resurs_message
+        final_data['resurs_wykorzystanie'] = resurs_wykorzystanie
         
-        self.output_data.update({**final_data, 'wsp_kdr': wsp_kdr, 'ldr': ldr})
+        self.output_data.update({
+            **final_data, 
+            'wsp_kdr': wsp_kdr, 
+            'ldr': ldr,
+            'technical_state_reached': has_technical_problems
+        })
         return self.output_data
 
 class ZurawPrzeladunkowyCalculator(BaseCalculator):
@@ -1631,19 +1755,22 @@ class ZurawPrzeladunkowyCalculator(BaseCalculator):
         resurs_prognosis_data = self._calculate_resurs_prognosis(U_WSK, F_X, ilosc_cykli, lata_pracy, ponowny_resurs, ostatni_resurs)
 
         resurs_message = resurs_prognosis_data['resurs_message']
+        resurs_wykorzystanie = resurs_prognosis_data['resurs_wykorzystanie']
         # --- Component checks ---
         component_fields = ['konstrukcja', 'automatyka', 'sworznie', 'ciegna', 'eksploatacja', 'szczelnosc', 'hamulce']
-        for field in component_fields:
-            if self._get_str(field) in _PROBLEM_STRINGS:
-                resurs_message += f" {_COMPONENT_MESSAGES[field]}"
+        resurs_message, resurs_wykorzystanie, has_technical_problems = self._apply_technical_state_logic(
+            component_fields, resurs_message, resurs_wykorzystanie
+        )
 
         self.output_data.update({
             **resurs_prognosis_data,
+            'resurs_wykorzystanie': resurs_wykorzystanie,
             'wsp_kdr': wsp_kdr,
             'stan_obciazenia': stan_obciazenia,
             'ldr': ldr,
             'ss_factor': ss_factor,
             'resurs_message': resurs_message,
+            'technical_state_reached': has_technical_problems,
         })
         return self.output_data
 

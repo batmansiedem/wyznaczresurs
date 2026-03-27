@@ -4,13 +4,13 @@ from .models import CalculatorDefinition, CalculatorResult, Unit
 class CalculatorDefinitionSerializer(serializers.ModelSerializer):
     class Meta:
         model = CalculatorDefinition
-        fields = ['id', 'name', 'slug', 'description', 'is_active', 'premium_cost']
+        fields = ['id', 'name', 'slug', 'description', 'is_active', 'premium_cost', 'premium_cost_recurring']
 
 class CalculatorDefinitionMinimalSerializer(serializers.ModelSerializer):
     """Minimalny serializer definicji — do osadzania w wynikach."""
     class Meta:
         model = CalculatorDefinition
-        fields = ['id', 'name', 'slug', 'premium_cost']
+        fields = ['id', 'name', 'slug', 'premium_cost', 'premium_cost_recurring']
 
 
 class CalculatorResultSerializer(serializers.ModelSerializer):

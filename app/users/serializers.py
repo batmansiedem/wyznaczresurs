@@ -36,12 +36,13 @@ class CustomUserDetailsSerializer(UserDetailsSerializer):
             'pk', 'email', 'first_name', 'last_name',
             'is_company', 'company_name', 'nip',
             'address_line', 'postal_code', 'city', 'premium',
+            'discount_percent',
             'is_staff', 'is_superuser',
             'has_custom_logo', 'custom_logo',
             'logo_width', 'logo_height', 'logo_position',
             'theme_color', 'show_logo_on_pdf', 'show_signature_on_pdf', 'logos', 'signatures',
         )
-        read_only_fields = ('pk', 'email', 'premium', 'is_staff', 'is_superuser', 'has_custom_logo')
+        read_only_fields = ('pk', 'email', 'premium', 'discount_percent', 'is_staff', 'is_superuser', 'has_custom_logo')
 
 class CustomRegisterSerializer(RegisterSerializer):
     # 1. ZABEZPIECZENIE: Wyłączamy username w serializerze
@@ -106,7 +107,7 @@ class AdminUserListSerializer(serializers.ModelSerializer):
             'id', 'email', 'first_name', 'last_name', 'display_name',
             'is_company', 'company_name', 'nip',
             'address_line', 'postal_code', 'city',
-            'premium', 'is_staff', 'is_superuser', 'is_active',
+            'premium', 'discount_percent', 'is_staff', 'is_superuser', 'is_active',
             'date_joined', 'last_login',
             'transaction_count', 'invoice_count',
             'has_custom_logo', 'show_logo_on_pdf', 'show_signature_on_pdf',
@@ -138,6 +139,7 @@ class AdminCreateUserSerializer(serializers.Serializer):
     city = serializers.CharField(max_length=100, required=False, allow_blank=True, default='')
     password = serializers.CharField(min_length=8, write_only=True, required=False, default='')
     premium = serializers.IntegerField(default=0, min_value=0)
+    discount_percent = serializers.IntegerField(default=0, min_value=0, max_value=100)
 
     def validate_email(self, value):
         if User.objects.filter(email=value).exists():
@@ -157,6 +159,6 @@ class AdminUpdateUserSerializer(serializers.ModelSerializer):
         model = User
         fields = (
             'first_name', 'last_name', 'is_company', 'company_name', 'nip',
-            'address_line', 'postal_code', 'city', 'premium', 'is_active',
+            'address_line', 'postal_code', 'city', 'premium', 'discount_percent', 'is_active',
             'show_logo_on_pdf', 'show_signature_on_pdf',
         )

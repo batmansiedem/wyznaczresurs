@@ -7,9 +7,9 @@ from django.utils.translation import gettext_lazy as _
 # Pakiety doładowania — źródło prawdy dla backendu i frontendu
 PAYPAL_PACKAGES = {
     "100":  {"points": 100,  "gross": Decimal("100.00")},
-    "250":  {"points": 250,  "gross": Decimal("230.00")},
-    "500":  {"points": 500,  "gross": Decimal("440.00")},
-    "1000": {"points": 1000, "gross": Decimal("800.00")},
+    "250":  {"points": 250,  "gross": Decimal("250.00")},
+    "500":  {"points": 500,  "gross": Decimal("500.00")},
+    "1000": {"points": 1000, "gross": Decimal("1000.00")},
 }
 
 

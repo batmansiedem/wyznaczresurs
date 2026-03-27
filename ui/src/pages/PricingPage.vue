@@ -412,14 +412,15 @@ const pointsSteps = [
   { num: '01', icon: 'person_add',             title: 'Załóż konto',   text: 'Rejestracja bezpłatna — bez karty.' },
   { num: '02', icon: 'account_balance_wallet', title: 'Kup punkty',    text: 'Przelew lub PayPal. 1 pkt ≈ 1 PLN.' },
   { num: '03', icon: 'calculate',              title: 'Oblicz resurs', text: '80 pkt za obliczenie. Wynik od razu.' },
-  { num: '04', icon: 'picture_as_pdf',         title: 'Pobierz PDF',   text: 'Orzeczenie gotowe do złożenia w UDT.' }
+  { num: '04', icon: 'picture_as_pdf',         title: 'Pobierz PDF',   text: 'Wyznaczenie resursu gotowe do złożenia w UDT.' }
 ]
 
 // Stałe pakiety PayPal — zgodne z PAYPAL_PACKAGES w models.py
 const fixedPackages = [
   { key: '100', pts: 100,  price: 100 },
-  { key: '250', pts: 250,  price: 230 },
-  { key: '500', pts: 500,  price: 440 },
+  { key: '250', pts: 250,  price: 250 },
+  { key: '500', pts: 500,  price: 500 },
+  { key: '1000', pts: 1000, price: 1000 },
 ]
 
 // ─── PayPal ────────────────────────────────────────────────────────────────

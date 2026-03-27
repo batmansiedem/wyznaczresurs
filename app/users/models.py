@@ -78,6 +78,9 @@ class CustomUser(AbstractUser):
     show_logo_on_pdf = models.BooleanField(default=True, verbose_name="Pokazuj logo na PDF")
     show_signature_on_pdf = models.BooleanField(default=True, verbose_name="Pokazuj podpis na PDF")
 
+    # Zniżki i ceny (Admin)
+    discount_percent = models.IntegerField(default=0, verbose_name="Zniżka procentowa (%)")
+
     def __str__(self):
         # Ładne wyświetlanie w panelu admina
         if self.is_company:

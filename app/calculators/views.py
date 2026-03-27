@@ -13,13 +13,68 @@ from django.core.exceptions import ValidationError as DjangoValidationError
 from rest_framework.exceptions import ValidationError as DRFValidationError, PermissionDenied
 
 
-class CalculatorDefinitionViewSet(viewsets.ReadOnlyModelViewSet):
+class CalculatorDefinitionViewSet(viewsets.ModelViewSet):
     """
-    API endpoint that allows CalculatorDefinitions to be viewed.
+    API endpoint that allows CalculatorDefinitions to be viewed and edited by admins.
     """
-    queryset = CalculatorDefinition.objects.filter(is_active=True)
+    queryset = CalculatorDefinition.objects.all()
     serializer_class = CalculatorDefinitionSerializer
-    lookup_field = 'slug' # Use slug for lookup instead of pk
+    lookup_field = 'slug'
+
+    def get_permissions(self):
+        if self.action in ['update', 'partial_update', 'update_prices']:
+            return [IsAuthenticated(), rest_framework.permissions.IsAdminUser()]
+        return [IsAuthenticated()]
+
+    @action(detail=False, methods=['post'], permission_classes=[IsAuthenticated, rest_framework.permissions.IsAdminUser])
+    def update_prices(self, request):
+        """Masowa aktualizacja cen kalkulatorów."""
+        prices = request.data.get('prices', []) # List of {id, premium_cost, premium_cost_recurring}
+        if not prices:
+            return Response({"detail": "Brak danych."}, status=400)
+        
+        updated_count = 0
+        with transaction.atomic():
+            for p in prices:
+                try:
+                    calc = CalculatorDefinition.objects.get(id=p['id'])
+                    calc.premium_cost = p['premium_cost']
+                    calc.premium_cost_recurring = p['premium_cost_recurring']
+                    calc.save()
+                    updated_count += 1
+                except (CalculatorDefinition.DoesNotExist, KeyError):
+                    continue
+        
+        return Response({"detail": f"Zaktualizowano {updated_count} kalkulatorów."})
+
+    @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated])
+    def get_cost(self, request, slug=None):
+        """Zwraca koszt obliczenia dla danego użytkownika i danych wejściowych."""
+        calculator_definition = self.get_object()
+        user = request.user
+        input_data = request.data.get('input_data', {})
+        
+        cost = self._calculate_actual_cost(user, calculator_definition, input_data)
+        return Response({
+            "cost": float(cost),
+            "user_premium": float(user.premium),
+            "can_afford": user.is_superuser or user.premium >= cost
+        })
+
+    def _calculate_actual_cost(self, user, calculator_definition, input_data):
+        """Pomocnicza metoda do wyliczania kosztu po zniżkach."""
+        from decimal import Decimal
+        
+        is_recurring = input_data.get('ponowny_resurs') == 'Tak'
+        base_cost = calculator_definition.premium_cost_recurring if is_recurring else calculator_definition.premium_cost
+        
+        # Zastosuj zniżkę procentową użytkownika
+        if hasattr(user, 'discount_percent') and user.discount_percent > 0:
+            actual_cost = base_cost * (Decimal(100 - user.discount_percent) / Decimal(100))
+        else:
+            actual_cost = base_cost
+        
+        return actual_cost.quantize(Decimal('0.01'))
 
     @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated])
     def calculate(self, request, slug=None):
@@ -30,7 +85,7 @@ class CalculatorDefinitionViewSet(viewsets.ReadOnlyModelViewSet):
         if not input_data:
             raise DRFValidationError("Brak danych wejściowych do obliczeń.")
 
-        cost = calculator_definition.premium_cost
+        cost = self._calculate_actual_cost(user, calculator_definition, input_data)
         has_points = user.is_superuser or cost == 0 or user.premium >= cost
 
         try:
@@ -83,10 +138,11 @@ class UnitViewSet(viewsets.ReadOnlyModelViewSet):
 class CalculatorResultViewSet(
     mixins.ListModelMixin,
     mixins.RetrieveModelMixin,
+    mixins.UpdateModelMixin,
     mixins.DestroyModelMixin,
     viewsets.GenericViewSet,
 ):
-    """Wyniki obliczeń — tylko odczyt i usuwanie (tworzenie przez endpoint /calculate)."""
+    """Wyniki obliczeń — odczyt, aktualizacja i usuwanie."""
     serializer_class = CalculatorResultSerializer
     permission_classes = [IsAuthenticated]
 
@@ -97,6 +153,63 @@ class CalculatorResultViewSet(
             .select_related('calculator_definition')
             .order_by('-created_at')
         )
+
+    def perform_update(self, serializer):
+        instance = self.get_object()
+        user = self.request.user
+        input_data = self.request.data.get('input_data')
+        
+        if not input_data:
+            return # Standard serializer update if no input_data provided
+
+        # 1. Sprawdź pola krytyczne: nr_fabryczny, lata_pracy
+        def get_val(v):
+            if isinstance(v, dict): return v.get('value')
+            return v
+
+        old_nr = get_val(instance.input_data.get('nr_fabryczny'))
+        new_nr = get_val(input_data.get('nr_fabryczny'))
+        old_lata = get_val(instance.input_data.get('lata_pracy'))
+        new_lata = get_val(input_data.get('lata_pracy'))
+
+        if old_nr != new_nr or old_lata != new_lata:
+            raise DRFValidationError("Zmiana numeru fabrycznego lub lat pracy wymaga utworzenia nowego resursu (użyj przycisku Oblicz).")
+
+        # 2. Oblicz koszt aktualizacji (80 pkt lub wg definicji ponownego resursu)
+        calc_def = instance.calculator_definition
+        # Używamy ceny ponownego resursu dla aktualizacji
+        cost = self._calculate_update_cost(user, calc_def)
+        
+        if not user.is_superuser and user.premium < cost:
+            raise DRFValidationError(f"Brak punktów na aktualizację (potrzeba {float(cost)} pkt).")
+
+        # 3. Wykonaj nowe obliczenia
+        try:
+            calculator_instance = calculation_logic.CalculatorFactory.get_calculator(calc_def.slug, input_data)
+            output_data = decimals_to_float(calculator_instance.calculate())
+            
+            with transaction.atomic():
+                if not user.is_superuser and cost > 0:
+                    user.premium -= cost
+                    user.save()
+                serializer.save(output_data=output_data)
+        except DjangoValidationError as e:
+            raise DRFValidationError(e.messages[0] if e.messages else str(e))
+        except Exception as e:
+            raise DRFValidationError(f"Błąd podczas aktualizacji obliczeń: {e}")
+
+    def _calculate_update_cost(self, user, calculator_definition):
+        """Koszt aktualizacji to cena ponownego resursu (z uwzględnieniem zniżek)."""
+        from decimal import Decimal
+        
+        base_cost = calculator_definition.premium_cost_recurring
+        
+        if hasattr(user, 'discount_percent') and user.discount_percent > 0:
+            actual_cost = base_cost * (Decimal(100 - user.discount_percent) / Decimal(100))
+        else:
+            actual_cost = base_cost
+        
+        return actual_cost.quantize(Decimal('0.01'))
 
     def perform_destroy(self, instance):
         if instance.user != self.request.user:

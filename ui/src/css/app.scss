@@ -89,15 +89,93 @@ body {
 // TŁO IKON (MAŁE KWADRATOWE)
 // =============================================
 
-.icon-bg {
-  background-color: rgba(var(--q-primary-rgb), 0.07);
-  padding: 10px;
-  border-radius: 8px;
+// =============================================
+// BLOKI WYNIKÓW KALKULATORA
+// =============================================
+
+.calc-section-bar {
+  background: #f8f9fa;
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+  padding: 10px 16px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #616161;
   display: flex;
   align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
+  gap: 8px;
+
+  .body--dark & {
+    background: rgba(white, 0.03);
+    color: #bdbdbd;
+  }
 }
+
+.kpi-block {
+  display: flex;
+  align-items: center;
+  padding: 24px;
+  border-radius: 8px;
+  margin-bottom: 24px;
+  border: 1px solid rgba(0,0,0,0.1);
+  
+  .kpi-number {
+    line-height: 1;
+    font-family: inherit;
+  }
+
+  &.kpi-block-ok {
+    background: #f1f8e9;
+    border-color: #8bc34a;
+    color: #33691e;
+    .body--dark & { background: rgba(139, 195, 74, 0.1); color: #8bc34a; }
+  }
+
+  &.kpi-block-warn {
+    background: #fff3e0;
+    border-color: #ffb74d;
+    color: #e65100;
+    .body--dark & { background: rgba(255, 183, 77, 0.1); color: #ffb74d; }
+  }
+
+  &.kpi-block-danger {
+    background: #ffebee;
+    border-color: #ef5350;
+    color: #b71c1c;
+    .body--dark & { background: rgba(239, 83, 80, 0.1); color: #ef5350; }
+  }
+}
+
+.result-card {
+  background: #f5f5f5;
+  border-radius: 8px;
+  .body--dark & { background: rgba(255,255,255,0.05); }
+
+  .result-label {
+    font-size: 0.75rem;
+    color: #757575;
+    .body--dark & { color: #bdbdbd; }
+  }
+  .result-value {
+    font-size: 1.1rem;
+    font-weight: 700;
+  }
+}
+
+.section-label {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--q-primary);
+  margin-bottom: 12px;
+  padding-bottom: 4px;
+  border-bottom: 2px solid rgba(var(--q-primary-rgb), 0.1);
+}
+
+.eng-value {
+  font-family: 'JetBrains Mono', 'Roboto Mono', monospace;
+}
+
 
 .body--dark .icon-bg {
   background-color: rgba(var(--q-primary-rgb), 0.15);
@@ -705,4 +783,54 @@ body {
     font-size: 0.9rem;
     color: rgba(white, 0.75);
   }
+}
+
+// =============================================
+// NOWOCZESNY SCROLLBAR (Webkit + Firefox)
+// =============================================
+
+// Globalny — cienki, zanikający
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba($primary, 0.25);
+  border-radius: 10px;
+  transition: background 0.2s;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba($primary, 0.55);
+}
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+// Firefox
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba($primary, 0.25) transparent;
+}
+
+// Dark mode
+.body--dark {
+  ::-webkit-scrollbar-thumb {
+    background: rgba(white, 0.15);
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(white, 0.35);
+  }
+  * {
+    scrollbar-color: rgba(white, 0.15) transparent;
+  }
+}
+
+// Scroll wewnątrz dialogów i paneli — nieco szerszy żeby był widoczny
+.result-dialog-body,
+.q-drawer__content,
+.q-tab-panel {
+  &::-webkit-scrollbar { width: 5px; height: 5px; }
 }

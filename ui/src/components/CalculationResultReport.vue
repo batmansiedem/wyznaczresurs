@@ -1,0 +1,552 @@
+<template>
+  <div class="calculation-result-report">
+
+    <!-- ==================== ZABLOKOWANE ==================== -->
+    <div v-if="result.is_locked" class="locked-state">
+      <div class="locked-icon-wrap">
+        <q-icon name="lock" size="40px" color="warning" />
+      </div>
+      <div class="text-h5 text-weight-bolder q-mb-xs">Wyniki są zablokowane</div>
+      <div class="text-body1 text-grey-7 q-mb-lg locked-desc">
+        Obliczenie zostało wykonane pomyślnie. Wyświetlenie wyników i wygenerowanie protokołu PDF
+        wymaga <span class="text-weight-bold text-primary">{{ result.calculator_definition?.premium_cost ?? 80 }} pkt&nbsp;premium</span>.
+      </div>
+      <q-btn
+        v-if="userPremium >= (result.calculator_definition?.premium_cost ?? 80)"
+        label="Odblokuj wyniki"
+        icon="lock_open"
+        color="primary"
+        unelevated
+        class="q-px-xl"
+        :loading="unlocking"
+        @click="$emit('unlock')"
+      />
+      <q-btn
+        v-else
+        label="Doładuj punkty premium"
+        icon="add_circle"
+        color="primary"
+        unelevated
+        class="q-px-xl"
+        to="/pricing"
+      />
+    </div>
+
+    <!-- ==================== ODBLOKOWANE ==================== -->
+    <div v-else>
+
+      <!-- Baner krytyczny -->
+      <div v-if="result.output_data?.technical_state_reached" class="technical-banner q-mb-md">
+        <q-icon name="report_problem" size="28px" class="flex-shrink-0" />
+        <div>
+          <div class="text-subtitle2 text-weight-bolder">URZĄDZENIE WYMAGA PRZEGLĄDU SPECJALNEGO</div>
+          <div class="text-caption opacity-90 q-mt-xs">Krytyczne wady techniczne powodują natychmiastowe wyczerpanie resursu.</div>
+        </div>
+      </div>
+
+      <!-- KPI Hero -->
+      <div :class="['kpi-hero', kpiClass, 'q-mb-lg']">
+        <div class="kpi-main">
+          <div class="kpi-label">Wykorzystanie resursu</div>
+          <div class="kpi-number">{{ resursValue }}<span class="kpi-pct">%</span></div>
+        </div>
+        <div class="kpi-divider" />
+        <div class="kpi-details">
+          <div class="text-weight-bold q-mb-xs kpi-message">
+            <span v-html="result.output_data?.resurs_message || '—'"></span>
+          </div>
+          <div v-if="result.output_data?.resurs_prognoza_dni != null && !result.output_data?.technical_state_reached" class="text-caption kpi-sub">
+            Prognoza wyczerpania:
+            <strong>{{ formatValue(result.output_data.data_prognoza, { type: 'date' }) }}</strong>
+          </div>
+          <div class="text-caption kpi-meta q-mt-xs">
+            {{ result.calculator_definition?.name || '' }}<template v-if="nrFabryczny"> &middot; nr {{ nrFabryczny }}</template>
+          </div>
+        </div>
+        <q-icon :name="kpiIcon" size="56px" class="kpi-bg-icon" />
+      </div>
+
+      <!-- Główna siatka -->
+      <div class="row q-col-gutter-lg">
+
+        <!-- LEWA: Parametry wejściowe + wyniki techniczne -->
+        <div class="col-12 col-lg-6">
+
+          <!-- Parametry wejściowe -->
+          <q-card flat bordered class="overflow-hidden q-mb-lg shadow-1">
+            <div class="calc-section-bar">
+              <q-icon name="input" size="14px" />
+              Parametry wejściowe
+            </div>
+            <div class="params-table">
+              <template v-for="(fieldDef, key) in inputFields" :key="key">
+                <div v-if="result.input_data?.[key] !== undefined" class="params-row">
+                  <div class="params-label" v-html="fieldDef.label" />
+                  <div class="params-value">{{ formatValue(result.input_data[key], fieldDef) }}</div>
+                </div>
+              </template>
+            </div>
+          </q-card>
+
+          <!-- Wyniki obliczeń -->
+          <q-card flat bordered class="overflow-hidden shadow-1">
+            <div class="calc-section-bar">
+              <q-icon name="analytics" size="14px" />
+              Wyniki obliczeń
+            </div>
+            <div class="params-table">
+              <template v-for="(fieldDef, key) in outputFields" :key="key">
+                <div
+                  v-if="result.output_data?.[key] !== undefined && !SUMMARY_KEYS.includes(key)"
+                  class="params-row"
+                >
+                  <div class="params-label" v-html="fieldDef.label" />
+                  <div class="params-value params-value--accent eng-value">{{ formatValue(result.output_data[key], fieldDef) }}</div>
+                </div>
+              </template>
+            </div>
+          </q-card>
+
+        </div>
+
+        <!-- PRAWA: Wykresy + PDF -->
+        <div class="col-12 col-lg-6">
+
+          <!-- Wykres radialny -->
+          <q-card flat bordered class="q-mb-lg shadow-1" style="overflow: visible">
+            <div class="calc-section-bar" style="overflow: hidden; border-radius: inherit">
+              <q-icon name="donut_large" size="14px" />
+              Stopień zużycia resursu
+            </div>
+            <VueApexCharts
+              type="radialBar"
+              :options="radialChartOptions"
+              :series="[resursValue]"
+              height="280"
+            />
+          </q-card>
+
+          <!-- Wykres słupkowy -->
+          <q-card v-if="barChartSeries.length" flat bordered class="q-mb-lg shadow-1">
+            <div class="calc-section-bar">
+              <q-icon name="bar_chart" size="14px" />
+              Zestawienie pracy
+            </div>
+            <VueApexCharts
+              type="bar"
+              :options="barChartOptions"
+              :series="barChartSeries"
+              height="210"
+            />
+          </q-card>
+
+          <!-- PDF -->
+          <template v-if="showPdfActions">
+            <q-card flat bordered class="overflow-hidden shadow-1">
+              <div class="calc-section-bar">
+                <q-icon name="picture_as_pdf" size="14px" />
+                Protokół PDF
+              </div>
+              <div class="q-pa-md">
+                <q-select
+                  v-if="logos && logos.length > 0"
+                  :model-value="selectedLogoId"
+                  @update:model-value="$emit('update:selectedLogoId', $event)"
+                  :options="[{ id: null, name: 'Brak logotypu (tylko tekst)' }, ...logos]"
+                  option-label="name"
+                  option-value="id"
+                  emit-value
+                  map-options
+                  outlined
+                  dense
+                  label="Logo na PDF"
+                  class="q-mb-md"
+                >
+                  <template v-slot:option="scope">
+                    <q-item v-bind="scope.itemProps">
+                      <q-item-section avatar v-if="scope.opt.image">
+                        <img :src="getFullLogoUrl(scope.opt.image)" style="height:20px;width:40px;object-fit:contain" />
+                      </q-item-section>
+                      <q-item-section avatar v-else>
+                        <q-icon name="block" color="grey-7" size="sm" />
+                      </q-item-section>
+                      <q-item-section>
+                        <q-item-label>{{ scope.opt.name || 'Bez nazwy' }}</q-item-label>
+                      </q-item-section>
+                    </q-item>
+                  </template>
+                </q-select>
+                <q-btn
+                  icon="picture_as_pdf"
+                  label="Pobierz protokół PDF"
+                  color="primary"
+                  unelevated
+                  size="md"
+                  :loading="downloadingPdf"
+                  @click="$emit('download-pdf')"
+                  class="full-width"
+                />
+              </div>
+            </q-card>
+          </template>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { computed, onMounted, nextTick } from 'vue'
+import { useQuasar } from 'quasar'
+import VueApexCharts from 'vue3-apexcharts'
+import calculatorFields from 'src/data/calculator_fields.json'
+import calculatorOutputFields from 'src/data/calculator_output_fields.json'
+
+const SUMMARY_KEYS = ['resurs_message', 'data_prognoza', 'resurs_prognoza_dni', 'resurs_wykorzystanie', 'technical_state_reached', 'resurs']
+
+const props = defineProps({
+  result: { type: Object, required: true },
+  userPremium: { type: Number, default: 0 },
+  unlocking: { type: Boolean, default: false },
+  downloadingPdf: { type: Boolean, default: false },
+  showPdfActions: { type: Boolean, default: true },
+  logos: { type: Array, default: () => [] },
+  selectedLogoId: { type: [Number, String], default: null }
+})
+
+defineEmits(['unlock', 'download-pdf', 'update:selectedLogoId'])
+
+onMounted(async () => {
+  await nextTick()
+  window.dispatchEvent(new Event('resize'))
+})
+
+const $q = useQuasar()
+
+const slug = computed(() => props.result.calculator_definition?.slug || props.result.calculator_slug)
+const inputFields = computed(() => calculatorFields[slug.value]?.fields || {})
+const outputFields = computed(() => calculatorOutputFields[slug.value]?.fields || {})
+
+const resursValue = computed(() => {
+  const v = props.result.output_data?.resurs_wykorzystanie ?? props.result.output_data?.resurs ?? 0
+  return parseFloat(v) || 0
+})
+
+const kpiClass = computed(() => {
+  if (resursValue.value >= 100) return 'kpi-hero--danger'
+  if (resursValue.value >= 80) return 'kpi-hero--warn'
+  return 'kpi-hero--ok'
+})
+
+const kpiIcon = computed(() => {
+  if (resursValue.value >= 100) return 'dangerous'
+  if (resursValue.value >= 80) return 'warning'
+  return 'check_circle'
+})
+
+const nrFabryczny = computed(() => {
+  const v = props.result.input_data?.nr_fabryczny
+  if (!v) return null
+  return typeof v === 'object' ? v.value : v
+})
+
+function formatValue(value, fieldDef) {
+  if (value === null || value === undefined) return '-'
+  if (!fieldDef) return String(value)
+  const rawValue = (typeof value === 'object' && value !== null) ? value.value : value
+  const unit = (typeof value === 'object' && value !== null) ? value.unit : fieldDef.unit
+  switch (fieldDef.type) {
+    case 'number': return unit ? `${rawValue} ${unit}` : String(rawValue)
+    case 'percentage': return `${rawValue}%`
+    case 'date': return rawValue ? new Date(rawValue).toLocaleDateString('pl-PL') : '-'
+    case 'boolean': return (rawValue === 'Tak' || rawValue === true) ? 'Tak' : 'Nie'
+    default: return String(rawValue)
+  }
+}
+
+function getFullLogoUrl(url) {
+  if (!url) return ''
+  if (url.startsWith('http')) return url
+  return url.startsWith('/') ? url : '/' + url
+}
+
+// --- Wykresy ---
+
+const primaryColor = computed(() =>
+  getComputedStyle(document.body).getPropertyValue('--q-primary').trim() || '#1565C0'
+)
+
+const accentColor = computed(() => {
+  if (resursValue.value >= 100) return '#d32f2f'
+  if (resursValue.value >= 80) return '#f57c00'
+  return primaryColor.value
+})
+
+const radialChartOptions = computed(() => ({
+  chart: { type: 'radialBar', background: 'transparent' },
+  theme: { mode: $q.dark.isActive ? 'dark' : 'light' },
+  plotOptions: {
+    radialBar: {
+      startAngle: -135,
+      endAngle: 135,
+      hollow: { size: '68%' },
+      track: {
+        background: $q.dark.isActive ? 'rgba(255,255,255,0.06)' : '#f0f0f0',
+        strokeWidth: '67%'
+      },
+      dataLabels: {
+        name: {
+          show: true,
+          color: $q.dark.isActive ? '#bdbdbd' : '#9e9e9e',
+          offsetY: -12,
+          fontSize: '12px',
+          fontWeight: 600
+        },
+        value: {
+          show: true,
+          color: $q.dark.isActive ? '#ffffff' : '#212121',
+          offsetY: 10,
+          fontSize: '30px',
+          fontWeight: 800,
+          formatter: (val) => val + '%'
+        }
+      }
+    }
+  },
+  fill: { type: 'solid', colors: [accentColor.value] },
+  stroke: { lineCap: 'round' },
+  labels: ['Stopień zużycia']
+}))
+
+const barChartSeries = computed(() => {
+  const out = props.result?.output_data
+  const inp = props.result?.input_data
+  if (!out) return []
+  const fx = parseFloat(out.F_X ?? 1)
+  let val1, val2, limit, unit
+  if (out.U_WSK !== undefined) {
+    val1 = parseFloat(inp?.ilosc_cykli?.value ?? inp?.ilosc_cykli ?? 0)
+    limit = parseFloat(out.U_WSK)
+    val2 = Math.round(val1 * fx)
+    unit = 'cykli'
+  } else if (out.T_WSK !== undefined) {
+    val1 = parseFloat(out.suma_godzin ?? 0) || parseFloat(inp?.ilosc_godzin?.value ?? inp?.ilosc_godzin ?? 0)
+    limit = parseFloat(out.T_WSK)
+    val2 = Math.round(val1 * fx * 100) / 100
+    unit = 'h'
+  } else {
+    return []
+  }
+  return [{
+    name: 'Wartość',
+    data: [
+      { x: `Limit (${unit})`, y: limit },
+      { x: 'Bez F\u2093', y: val1 },
+      { x: 'Z F\u2093', y: val2 }
+    ]
+  }]
+})
+
+const barChartOptions = computed(() => ({
+  chart: { type: 'bar', toolbar: { show: false }, background: 'transparent' },
+  theme: { mode: $q.dark.isActive ? 'dark' : 'light' },
+  plotOptions: {
+    bar: { horizontal: false, columnWidth: '52%', borderRadius: 6, distributed: true, dataLabels: { position: 'top' } }
+  },
+  colors: ['#9e9e9e', primaryColor.value, accentColor.value],
+  dataLabels: {
+    enabled: true,
+    formatter: (val) => val.toLocaleString('pl-PL'),
+    offsetY: -18,
+    style: { fontSize: '11px', colors: [$q.dark.isActive ? '#eeeeee' : '#424242'], fontWeight: 'bold' }
+  },
+  xaxis: {
+    categories: barChartSeries.value[0]?.data.map(d => d.x) || [],
+    axisBorder: { show: false },
+    axisTicks: { show: false },
+    labels: { style: { fontWeight: 600, fontSize: '11px' } }
+  },
+  yaxis: { show: false },
+  grid: { show: false },
+  tooltip: { y: { formatter: (val) => val.toLocaleString('pl-PL') } },
+  legend: { show: false }
+}))
+</script>
+
+<style scoped>
+/* ==============================
+   Stan zablokowany
+   ============================== */
+.locked-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 56px 24px;
+}
+.locked-icon-wrap {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  background: rgba(255, 183, 77, 0.1);
+  border: 2px solid rgba(255, 183, 77, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+.locked-desc {
+  max-width: 480px;
+}
+.body--dark .locked-icon-wrap {
+  background: rgba(255, 183, 77, 0.07);
+}
+
+/* ==============================
+   Baner krytyczny
+   ============================== */
+.technical-banner {
+  background: linear-gradient(135deg, #d32f2f 0%, #b71c1c 100%);
+  color: white;
+  padding: 14px 20px;
+  border-radius: 10px;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+.flex-shrink-0 { flex-shrink: 0; }
+
+/* ==============================
+   KPI Hero block
+   ============================== */
+.kpi-hero {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+  padding: 24px 28px;
+  border-radius: 14px;
+  border: 1px solid transparent;
+  position: relative;
+  overflow: hidden;
+}
+.kpi-hero--ok {
+  background: linear-gradient(to right, rgba(76, 175, 80, 0.07), transparent);
+  border-color: rgba(76, 175, 80, 0.25);
+  color: #2e7d32;
+}
+.kpi-hero--warn {
+  background: linear-gradient(to right, rgba(245, 124, 0, 0.07), transparent);
+  border-color: rgba(245, 124, 0, 0.25);
+  color: #e65100;
+}
+.kpi-hero--danger {
+  background: linear-gradient(to right, rgba(211, 47, 47, 0.07), transparent);
+  border-color: rgba(211, 47, 47, 0.25);
+  color: #b71c1c;
+}
+.body--dark .kpi-hero--ok    { background: linear-gradient(to right, rgba(76, 175, 80, 0.12), transparent); color: #66bb6a; }
+.body--dark .kpi-hero--warn  { background: linear-gradient(to right, rgba(245, 124, 0, 0.12), transparent); color: #ffa726; }
+.body--dark .kpi-hero--danger { background: linear-gradient(to right, rgba(211, 47, 47, 0.12), transparent); color: #ef5350; }
+
+.kpi-main {
+  flex-shrink: 0;
+}
+.kpi-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  opacity: 0.65;
+  margin-bottom: 2px;
+}
+.kpi-number {
+  font-size: 3.2rem;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -2px;
+  font-family: 'Roboto Mono', monospace;
+}
+.kpi-pct {
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: -1px;
+  opacity: 0.7;
+  margin-left: 2px;
+}
+.kpi-divider {
+  width: 1px;
+  height: 56px;
+  background: currentColor;
+  opacity: 0.15;
+  flex-shrink: 0;
+}
+@media (max-width: 479px) {
+  .kpi-divider { display: none; }
+}
+.kpi-details {
+  flex: 1;
+  min-width: 180px;
+}
+.kpi-message {
+  font-size: 1rem;
+  line-height: 1.35;
+}
+.kpi-sub {
+  opacity: 0.8;
+  margin-top: 2px;
+}
+.kpi-meta {
+  opacity: 0.5;
+}
+.kpi-bg-icon {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 0.07;
+  pointer-events: none;
+}
+
+/* ==============================
+   Tabela parametrów
+   ============================== */
+.params-table {
+  display: flex;
+  flex-direction: column;
+}
+.params-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  padding: 9px 16px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  font-size: 0.85rem;
+}
+.params-row:last-child {
+  border-bottom: none;
+}
+.body--dark .params-row {
+  border-bottom-color: rgba(255, 255, 255, 0.05);
+}
+.params-label {
+  color: #616161;
+  font-weight: 500;
+  flex: 1;
+  min-width: 120px;
+}
+.params-value {
+  font-weight: 700;
+  text-align: right;
+  word-break: break-word;
+}
+.params-value--accent {
+  color: var(--q-primary);
+}
+.body--dark .params-label {
+  color: #9e9e9e;
+}
+</style>

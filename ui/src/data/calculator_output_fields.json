@@ -16,16 +16,16 @@
         "type": "date"
       },
       "resurs_prognoza_dni": {
-        "label": "Prognoza (dni)",
+        "label": "Prognoza",
         "type": "number",
         "unit": "dni"
       },
       "U_WSK": {
-        "label": "Wartość U_WSK",
+        "label": "Wartość U<sub>WSK</sub>",
         "type": "number"
       },
       "F_X": {
-        "label": "Współczynnik F_X",
+        "label": "Współczynnik F<sub>X</sub>",
         "type": "number"
       },
       "ilosc_cykli": {
@@ -59,16 +59,16 @@
         "type": "date"
       },
       "resurs_prognoza_dni": {
-        "label": "Prognoza (dni)",
+        "label": "Prognoza",
         "type": "number",
         "unit": "dni"
       },
       "U_WSK": {
-        "label": "Wartość U_WSK",
+        "label": "Wartość U<sub>WSK</sub>",
         "type": "number"
       },
       "F_X": {
-        "label": "Współczynnik F_X",
+        "label": "Współczynnik F<sub>X</sub>",
         "type": "number"
       },
       "ilosc_cykli": {
@@ -102,16 +102,16 @@
         "type": "date"
       },
       "resurs_prognoza_dni": {
-        "label": "Prognoza (dni)",
+        "label": "Prognoza",
         "type": "number",
         "unit": "dni"
       },
       "U_WSK": {
-        "label": "Wartość U_WSK",
+        "label": "Wartość U<sub>WSK</sub>",
         "type": "number"
       },
       "F_X": {
-        "label": "Współczynnik F_X",
+        "label": "Współczynnik F<sub>X</sub>",
         "type": "number"
       },
       "ilosc_cykli": {
@@ -141,7 +141,7 @@
         "type": "text"
       },
       "prognoza": {
-        "label": "Prognoza (lata)",
+        "label": "Prognoza",
         "type": "number",
         "unit": "lata"
       },
@@ -168,7 +168,7 @@
         "unit": "h"
       },
       "ilosc_motogodzin_dzien": {
-        "label": "Motogodziny (dzień)",
+        "label": "Motogodziny / dzień",
         "type": "number",
         "unit": "h"
       }
@@ -191,16 +191,16 @@
         "type": "date"
       },
       "resurs_prognoza_dni": {
-        "label": "Prognoza (dni)",
+        "label": "Prognoza",
         "type": "number",
         "unit": "dni"
       },
       "U_WSK": {
-        "label": "Wartość U_WSK",
+        "label": "Wartość U<sub>WSK</sub>",
         "type": "number"
       },
       "F_X": {
-        "label": "Współczynnik F_X",
+        "label": "Współczynnik F<sub>X</sub>",
         "type": "number"
       },
       "ilosc_cykli": {
@@ -234,16 +234,16 @@
         "type": "date"
       },
       "resurs_prognoza_dni": {
-        "label": "Prognoza (dni)",
+        "label": "Prognoza",
         "type": "number",
         "unit": "dni"
       },
       "U_WSK": {
-        "label": "Wartość U_WSK",
+        "label": "Wartość U<sub>WSK</sub>",
         "type": "number"
       },
       "F_X": {
-        "label": "Współczynnik F_X",
+        "label": "Współczynnik F<sub>X</sub>",
         "type": "number"
       },
       "ilosc_cykli": {
@@ -277,16 +277,16 @@
         "type": "date"
       },
       "resurs_prognoza_dni": {
-        "label": "Prognoza (dni)",
+        "label": "Prognoza",
         "type": "number",
         "unit": "dni"
       },
       "U_WSK": {
-        "label": "Wartość U_WSK",
+        "label": "Wartość U<sub>WSK</sub>",
         "type": "number"
       },
       "F_X": {
-        "label": "Współczynnik F_X",
+        "label": "Współczynnik F<sub>X</sub>",
         "type": "number"
       },
       "ilosc_cykli": {
@@ -320,16 +320,16 @@
         "type": "date"
       },
       "resurs_prognoza_dni": {
-        "label": "Prognoza (dni)",
+        "label": "Prognoza",
         "type": "number",
         "unit": "dni"
       },
       "U_WSK": {
-        "label": "Wartość U_WSK",
+        "label": "Wartość U<sub>WSK</sub>",
         "type": "number"
       },
       "F_X": {
-        "label": "Współczynnik F_X",
+        "label": "Współczynnik F<sub>X</sub>",
         "type": "number"
       },
       "ilosc_cykli": {
@@ -363,16 +363,16 @@
         "type": "date"
       },
       "resurs_prognoza_dni": {
-        "label": "Prognoza (dni)",
+        "label": "Prognoza",
         "type": "number",
         "unit": "dni"
       },
       "U_WSK": {
-        "label": "Wartość U_WSK",
+        "label": "Wartość U<sub>WSK</sub>",
         "type": "number"
       },
       "F_X": {
-        "label": "Współczynnik F_X",
+        "label": "Współczynnik F<sub>X</sub>",
         "type": "number"
       },
       "ilosc_cykli": {
@@ -414,16 +414,16 @@
         "type": "date"
       },
       "resurs_prognoza_dni": {
-        "label": "Prognoza (dni, całkowity)",
+        "label": "Prognoza (całkowity)",
         "type": "number",
         "unit": "dni"
       },
       "U_WSK": {
-        "label": "Wartość U_WSK (całkowity)",
+        "label": "Wartość U<sub>WSK</sub> (całkowity)",
         "type": "number"
       },
       "F_X": {
-        "label": "Współczynnik F_X",
+        "label": "Współczynnik F<sub>X</sub>",
         "type": "number"
       },
       "ilosc_cykli": {
@@ -444,7 +444,7 @@
         "unit": "%"
       },
       "resurs_prog_pod": {
-        "label": "Prognoza (mech. podnoszenia, dni)",
+        "label": "Prognoza (mech. podnoszenia)",
         "type": "number",
         "unit": "dni"
       },
@@ -458,7 +458,7 @@
         "unit": "%"
       },
       "resurs_prog_jaz": {
-        "label": "Prognoza (mech. jazdy, dni)",
+        "label": "Prognoza (mech. jazdy)",
         "type": "number",
         "unit": "dni"
       },
@@ -472,7 +472,7 @@
         "unit": "%"
       },
       "resurs_prog_prz": {
-        "label": "Prognoza (mech. przesuwu, dni)",
+        "label": "Prognoza (mech. przesuwu)",
         "type": "number",
         "unit": "dni"
       },
@@ -486,7 +486,7 @@
         "unit": "%"
       },
       "resurs_prog_mas": {
-        "label": "Prognoza (mech. masztu, dni)",
+        "label": "Prognoza (mech. masztu)",
         "type": "number",
         "unit": "dni"
       },
@@ -526,7 +526,7 @@
         "unit": "h"
       },
       "F_X": {
-        "label": "Wsp. niepewności rejestracji F_X",
+        "label": "Wsp. niepewności rejestracji F<sub>X</sub>",
         "type": "number"
       },
       "czas_uzytkowania_mech": {
@@ -576,7 +576,7 @@
         "unit": "h"
       },
       "F_X": {
-        "label": "Wsp. niepewności rejestracji F_X",
+        "label": "Wsp. niepewności rejestracji F<sub>X</sub>",
         "type": "number"
       },
       "czas_uzytkowania_mech": {
@@ -626,7 +626,7 @@
         "unit": "h"
       },
       "F_X": {
-        "label": "Wsp. niepewności rejestracji F_X",
+        "label": "Wsp. niepewności rejestracji F<sub>X</sub>",
         "type": "number"
       },
       "czas_uzytkowania_mech": {
@@ -676,7 +676,7 @@
         "unit": "h"
       },
       "F_X": {
-        "label": "Wsp. niepewności rejestracji F_X",
+        "label": "Wsp. niepewności rejestracji F<sub>X</sub>",
         "type": "number"
       },
       "czas_uzytkowania_mech": {
@@ -726,7 +726,7 @@
         "unit": "h"
       },
       "F_X": {
-        "label": "Wsp. niepewności rejestracji F_X",
+        "label": "Wsp. niepewności rejestracji F<sub>X</sub>",
         "type": "number"
       },
       "czas_uzytkowania_mech": {
@@ -776,7 +776,7 @@
         "unit": "h"
       },
       "F_X": {
-        "label": "Wsp. niepewności rejestracji F_X",
+        "label": "Wsp. niepewności rejestracji F<sub>X</sub>",
         "type": "number"
       },
       "czas_uzytkowania_mech": {

@@ -39,7 +39,11 @@
         "label": "Ilość przepracowanych lat",
         "required": true,
         "unit_type": "time",
-        "default_unit": "lata"
+        "default_unit": "lata",
+        "unit_options": [
+          "lata",
+          "miesiące"
+        ]
       },
       "tryb_pracy": {
         "label": "Tryb pracy",
@@ -84,31 +88,41 @@
       },
       "h_max": {
         "type": "number",
-        "label": "Maksymalna wysokość podnoszenia h_max [m]",
+        "label": "Maksymalna wysokość podnoszenia h<sub>max</sub>",
         "required": false,
         "unit_type": "length",
         "default_unit": "m"
       },
       "v_pod": {
         "type": "number",
-        "label": "Prędkość podnoszenia/opuszczania v_pod [m/min]",
+        "label": "Prędkość podnoszenia/opuszczania v<sub>pod</sub>",
         "required": false,
         "unit_type": "speed",
-        "default_unit": "m/min"
+        "default_unit": "m/min",
+        "unit_options": [
+          "m/s",
+          "m/min",
+          "m/h"
+        ]
       },
       "q_max": {
         "type": "number",
-        "label": "Udźwig maksymalny Q_max [kg]",
+        "label": "Udźwig maksymalny Q<sub>max</sub>",
         "required": true,
         "unit_type": "mass",
-        "default_unit": "kg"
+        "default_unit": "kg",
+        "unit_options": [
+          "kg",
+          "t"
+        ]
       },
       "max_cykle_prod": {
         "type": "number",
         "label": "Graniczna ilość cykli określona przez producenta",
         "required": false,
         "unit_type": "dimensionless",
-        "default_unit": "cycle"
+        "default_unit": "cycle",
+        "hint": "jeśli znane"
       },
       "konstrukcja": {
         "type": "inspection_status",
@@ -181,7 +195,7 @@
       },
       "diagram_kd": {
         "type": "diagram",
-        "label": "Widmo obciążeń Kd",
+        "label": "Widmo obciążeń K<sub>d</sub>",
         "svg": "schemat_kd"
       }
     },
@@ -217,7 +231,7 @@
       },
       {
         "id": "kd",
-        "title": "Za pomocą kalkulatora wyznacz współczynnik Kd",
+        "title": "Za pomocą kalkulatora wyznacz współczynnik K<sub>d</sub>",
         "icon": "balance",
         "fields": [
           "diagram_kd"
@@ -268,7 +282,11 @@
         "label": "Ilość przepracowanych lat",
         "required": true,
         "unit_type": "time",
-        "default_unit": "lata"
+        "default_unit": "lata",
+        "unit_options": [
+          "lata",
+          "miesiące"
+        ]
       },
       "tryb_pracy": {
         "label": "Tryb pracy",
@@ -327,11 +345,12 @@
         "label": "Graniczna ilość cykli określona przez producenta",
         "required": false,
         "unit_type": "dimensionless",
-        "default_unit": "cycle"
+        "default_unit": "cycle",
+        "hint": "jeśli znane"
       },
       "h_max": {
         "type": "number",
-        "label": "Maksymalna wysokość podnoszenia h_max [m]",
+        "label": "Maksymalna wysokość podnoszenia h<sub>max</sub>",
         "required": true,
         "unit_type": "length",
         "default_unit": "m"
@@ -356,7 +375,7 @@
       },
       "ostatni_resurs": {
         "type": "number",
-        "label": "Procent wykorzystania z ostatnich obliczeń resursu [%]",
+        "label": "Procent wykorzystania resursu z ostatnich obliczeń",
         "required": false,
         "show_if": {
           "field": "ponowny_resurs",
@@ -380,10 +399,14 @@
       },
       "q_max": {
         "type": "number",
-        "label": "Udźwig maksymalny Q_max [kg]",
+        "label": "Udźwig maksymalny Q<sub>max</sub>",
         "required": true,
         "unit_type": "mass",
-        "default_unit": "kg"
+        "default_unit": "kg",
+        "unit_options": [
+          "kg",
+          "t"
+        ]
       },
       "konstrukcja": {
         "type": "inspection_status",
@@ -456,7 +479,7 @@
       },
       "diagram_kd": {
         "type": "diagram",
-        "label": "Widmo obciążeń Kd",
+        "label": "Widmo obciążeń K<sub>d</sub>",
         "svg": "schemat_kd"
       }
     },
@@ -502,7 +525,7 @@
       },
       {
         "id": "kd",
-        "title": "Za pomocą kalkulatora wyznacz współczynnik Kd",
+        "title": "Za pomocą kalkulatora wyznacz współczynnik K<sub>d</sub>",
         "icon": "balance",
         "fields": [
           "diagram_kd"
@@ -570,7 +593,11 @@
         "label": "Ilość przepracowanych lat",
         "required": true,
         "unit_type": "time",
-        "default_unit": "lata"
+        "default_unit": "lata",
+        "unit_options": [
+          "lata",
+          "miesiące"
+        ]
       },
       "tryb_pracy": {
         "label": "Tryb pracy",
@@ -618,7 +645,8 @@
         "label": "Graniczna ilość cykli określona przez producenta",
         "required": false,
         "unit_type": "dimensionless",
-        "default_unit": "cycle"
+        "default_unit": "cycle",
+        "hint": "jeśli znane"
       },
       "spec": {
         "type": "select",
@@ -640,7 +668,7 @@
       },
       "ostatni_resurs": {
         "type": "number",
-        "label": "Procent wykorzystania z ostatnich obliczeń resursu [%]",
+        "label": "Procent wykorzystania resursu z ostatnich obliczeń",
         "required": false,
         "show_if": {
           "field": "ponowny_resurs",
@@ -659,10 +687,14 @@
       },
       "q_max": {
         "type": "number",
-        "label": "Udźwig maksymalny Q_max [kg]",
+        "label": "Udźwig maksymalny Q<sub>max</sub>",
         "required": true,
         "unit_type": "mass",
-        "default_unit": "kg"
+        "default_unit": "kg",
+        "unit_options": [
+          "kg",
+          "t"
+        ]
       },
       "konstrukcja": {
         "type": "inspection_status",
@@ -725,7 +757,7 @@
       },
       "diagram_kd": {
         "type": "diagram",
-        "label": "Widmo obciążeń Kd",
+        "label": "Widmo obciążeń K<sub>d</sub>",
         "svg": "schemat_kd"
       }
     },
@@ -770,7 +802,7 @@
       },
       {
         "id": "kd",
-        "title": "Za pomocą kalkulatora wyznacz współczynnik Kd",
+        "title": "Za pomocą kalkulatora wyznacz współczynnik K<sub>d</sub>",
         "icon": "balance",
         "fields": [
           "diagram_kd"
@@ -823,7 +855,12 @@
       "lata_pracy": {
         "type": "number",
         "label": "Ilość przepracowanych lat",
-        "required": true
+        "required": true,
+        "unit_options": [
+          "lata",
+          "miesiące"
+        ],
+        "default_unit": "lata"
       },
       "cykle_dzwig": {
         "type": "number",
@@ -847,7 +884,7 @@
       },
       "licznik_pracy": {
         "type": "number",
-        "label": "Łączna ilość motogodzin [h]",
+        "label": "Łączna ilość motogodzin",
         "required": false,
         "show_if": {
           "field": "pyt_motogodzin",
@@ -919,11 +956,16 @@
         "label": "Prędkość jazdy kabiny",
         "required": true,
         "unit_type": "velocity",
-        "default_unit": "m/min"
+        "default_unit": "m/s",
+        "unit_options": [
+          "m/s",
+          "m/min",
+          "m/h"
+        ]
       },
       "h_pod": {
         "type": "number",
-        "label": "Wysokość podnoszenia kabiny [m]",
+        "label": "Maksymalna wysokość podnoszenia",
         "required": true,
         "unit_type": "length",
         "default_unit": "m"
@@ -975,10 +1017,14 @@
       },
       "q_max": {
         "type": "number",
-        "label": "Udźwig maksymalny Q_max [kg]",
+        "label": "Udźwig maksymalny Q<sub>max</sub>",
         "required": true,
         "unit_type": "mass",
-        "default_unit": "kg"
+        "default_unit": "kg",
+        "unit_options": [
+          "kg",
+          "t"
+        ]
       },
       "liny_nosne": {
         "type": "inspection_status",
@@ -986,12 +1032,16 @@
         "required": true,
         "options": [
           {
-            "label": "Stan dobry",
+            "label": "Bez zastrzeżeń",
             "value": "1"
           },
           {
-            "label": "Stan zly",
+            "label": "Wymagający remontu/wymiany w ciągu 1-2 lat",
             "value": "0"
+          },
+          {
+            "label": "Wymagający remontu/wymiany w ciągu 5 lat",
+            "value": "0.5"
           },
           {
             "label": "Nie dotyczy",
@@ -1005,12 +1055,16 @@
         "required": true,
         "options": [
           {
-            "label": "Stan dobry",
+            "label": "Bez zastrzeżeń",
             "value": "1"
           },
           {
-            "label": "Stan zly",
+            "label": "Wymagający remontu/wymiany w ciągu 1-2 lat",
             "value": "0"
+          },
+          {
+            "label": "Wymagający remontu/wymiany w ciągu 5 lat",
+            "value": "0.5"
           },
           {
             "label": "Nie dotyczy",
@@ -1024,12 +1078,16 @@
         "required": true,
         "options": [
           {
-            "label": "Stan dobry",
+            "label": "Bez zastrzeżeń",
             "value": "1"
           },
           {
-            "label": "Stan zly",
+            "label": "Wymagający remontu/wymiany w ciągu 1-2 lat",
             "value": "0"
+          },
+          {
+            "label": "Wymagający remontu/wymiany w ciągu 5 lat",
+            "value": "0.5"
           },
           {
             "label": "Nie dotyczy",
@@ -1043,12 +1101,16 @@
         "required": true,
         "options": [
           {
-            "label": "Stan dobry",
+            "label": "Bez zastrzeżeń",
             "value": "1"
           },
           {
-            "label": "Stan zly",
+            "label": "Wymagający remontu/wymiany w ciągu 1-2 lat",
             "value": "0"
+          },
+          {
+            "label": "Wymagający remontu/wymiany w ciągu 5 lat",
+            "value": "0.5"
           },
           {
             "label": "Nie dotyczy",
@@ -1062,12 +1124,16 @@
         "required": true,
         "options": [
           {
-            "label": "Stan dobry",
+            "label": "Bez zastrzeżeń",
             "value": "1"
           },
           {
-            "label": "Stan zly",
+            "label": "Wymagający remontu/wymiany w ciągu 1-2 lat",
             "value": "0"
+          },
+          {
+            "label": "Wymagający remontu/wymiany w ciągu 5 lat",
+            "value": "0.5"
           },
           {
             "label": "Nie dotyczy",
@@ -1081,12 +1147,16 @@
         "required": true,
         "options": [
           {
-            "label": "Stan dobry",
+            "label": "Bez zastrzeżeń",
             "value": "1"
           },
           {
-            "label": "Stan zly",
+            "label": "Wymagający remontu/wymiany w ciągu 1-2 lat",
             "value": "0"
+          },
+          {
+            "label": "Wymagający remontu/wymiany w ciągu 5 lat",
+            "value": "0.5"
           },
           {
             "label": "Nie dotyczy",
@@ -1100,12 +1170,16 @@
         "required": true,
         "options": [
           {
-            "label": "Stan dobry",
+            "label": "Bez zastrzeżeń",
             "value": "1"
           },
           {
-            "label": "Stan zly",
+            "label": "Wymagający remontu/wymiany w ciągu 1-2 lat",
             "value": "0"
+          },
+          {
+            "label": "Wymagający remontu/wymiany w ciągu 5 lat",
+            "value": "0.5"
           },
           {
             "label": "Nie dotyczy",
@@ -1119,12 +1193,16 @@
         "required": true,
         "options": [
           {
-            "label": "Stan dobry",
+            "label": "Bez zastrzeżeń",
             "value": "1"
           },
           {
-            "label": "Stan zly",
+            "label": "Wymagający remontu/wymiany w ciągu 1-2 lat",
             "value": "0"
+          },
+          {
+            "label": "Wymagający remontu/wymiany w ciągu 5 lat",
+            "value": "0.5"
           },
           {
             "label": "Nie dotyczy",
@@ -1138,12 +1216,16 @@
         "required": true,
         "options": [
           {
-            "label": "Stan dobry",
+            "label": "Bez zastrzeżeń",
             "value": "1"
           },
           {
-            "label": "Stan zly",
+            "label": "Wymagający remontu/wymiany w ciągu 1-2 lat",
             "value": "0"
+          },
+          {
+            "label": "Wymagający remontu/wymiany w ciągu 5 lat",
+            "value": "0.5"
           },
           {
             "label": "Nie dotyczy",
@@ -1157,12 +1239,16 @@
         "required": true,
         "options": [
           {
-            "label": "Stan dobry",
+            "label": "Bez zastrzeżeń",
             "value": "1"
           },
           {
-            "label": "Stan zly",
+            "label": "Wymagający remontu/wymiany w ciągu 1-2 lat",
             "value": "0"
+          },
+          {
+            "label": "Wymagający remontu/wymiany w ciągu 5 lat",
+            "value": "0.5"
           },
           {
             "label": "Nie dotyczy",
@@ -1176,12 +1262,16 @@
         "required": true,
         "options": [
           {
-            "label": "Stan dobry",
+            "label": "Bez zastrzeżeń",
             "value": "1"
           },
           {
-            "label": "Stan zly",
+            "label": "Wymagający remontu/wymiany w ciągu 1-2 lat",
             "value": "0"
+          },
+          {
+            "label": "Wymagający remontu/wymiany w ciągu 5 lat",
+            "value": "0.5"
           },
           {
             "label": "Nie dotyczy",
@@ -1195,12 +1285,16 @@
         "required": true,
         "options": [
           {
-            "label": "Stan dobry",
+            "label": "Bez zastrzeżeń",
             "value": "1"
           },
           {
-            "label": "Stan zly",
+            "label": "Wymagający remontu/wymiany w ciągu 1-2 lat",
             "value": "0"
+          },
+          {
+            "label": "Wymagający remontu/wymiany w ciągu 5 lat",
+            "value": "0.5"
           },
           {
             "label": "Nie dotyczy",
@@ -1214,12 +1308,16 @@
         "required": true,
         "options": [
           {
-            "label": "Stan dobry",
+            "label": "Bez zastrzeżeń",
             "value": "1"
           },
           {
-            "label": "Stan zly",
+            "label": "Wymagający remontu/wymiany w ciągu 1-2 lat",
             "value": "0"
+          },
+          {
+            "label": "Wymagający remontu/wymiany w ciągu 5 lat",
+            "value": "0.5"
           },
           {
             "label": "Nie dotyczy",
@@ -1233,12 +1331,16 @@
         "required": true,
         "options": [
           {
-            "label": "Stan dobry",
+            "label": "Bez zastrzeżeń",
             "value": "1"
           },
           {
-            "label": "Stan zly",
+            "label": "Wymagający remontu/wymiany w ciągu 1-2 lat",
             "value": "0"
+          },
+          {
+            "label": "Wymagający remontu/wymiany w ciągu 5 lat",
+            "value": "0.5"
           },
           {
             "label": "Nie dotyczy",
@@ -1252,12 +1354,16 @@
         "required": true,
         "options": [
           {
-            "label": "Stan dobry",
+            "label": "Bez zastrzeżeń",
             "value": "1"
           },
           {
-            "label": "Stan zly",
+            "label": "Wymagający remontu/wymiany w ciągu 1-2 lat",
             "value": "0"
+          },
+          {
+            "label": "Wymagający remontu/wymiany w ciągu 5 lat",
+            "value": "0.5"
           },
           {
             "label": "Nie dotyczy",
@@ -1271,12 +1377,16 @@
         "required": true,
         "options": [
           {
-            "label": "Stan dobry",
+            "label": "Bez zastrzeżeń",
             "value": "1"
           },
           {
-            "label": "Stan zly",
+            "label": "Wymagający remontu/wymiany w ciągu 1-2 lat",
             "value": "0"
+          },
+          {
+            "label": "Wymagający remontu/wymiany w ciągu 5 lat",
+            "value": "0.5"
           },
           {
             "label": "Nie dotyczy",
@@ -1290,12 +1400,16 @@
         "required": true,
         "options": [
           {
-            "label": "Stan dobry",
+            "label": "Bez zastrzeżeń",
             "value": "1"
           },
           {
-            "label": "Stan zly",
+            "label": "Wymagający remontu/wymiany w ciągu 1-2 lat",
             "value": "0"
+          },
+          {
+            "label": "Wymagający remontu/wymiany w ciągu 5 lat",
+            "value": "0.5"
           },
           {
             "label": "Nie dotyczy",
@@ -1309,12 +1423,16 @@
         "required": true,
         "options": [
           {
-            "label": "Stan dobry",
+            "label": "Bez zastrzeżeń",
             "value": "1"
           },
           {
-            "label": "Stan zly",
+            "label": "Wymagający remontu/wymiany w ciągu 1-2 lat",
             "value": "0"
+          },
+          {
+            "label": "Wymagający remontu/wymiany w ciągu 5 lat",
+            "value": "0.5"
           },
           {
             "label": "Nie dotyczy",
@@ -1328,12 +1446,16 @@
         "required": true,
         "options": [
           {
-            "label": "Stan dobry",
+            "label": "Bez zastrzeżeń",
             "value": "1"
           },
           {
-            "label": "Stan zly",
+            "label": "Wymagający remontu/wymiany w ciągu 1-2 lat",
             "value": "0"
+          },
+          {
+            "label": "Wymagający remontu/wymiany w ciągu 5 lat",
+            "value": "0.5"
           },
           {
             "label": "Nie dotyczy",
@@ -1347,12 +1469,16 @@
         "required": true,
         "options": [
           {
-            "label": "Stan dobry",
+            "label": "Bez zastrzeżeń",
             "value": "1"
           },
           {
-            "label": "Stan zly",
+            "label": "Wymagający remontu/wymiany w ciągu 1-2 lat",
             "value": "0"
+          },
+          {
+            "label": "Wymagający remontu/wymiany w ciągu 5 lat",
+            "value": "0.5"
           },
           {
             "label": "Nie dotyczy",
@@ -1366,12 +1492,16 @@
         "required": true,
         "options": [
           {
-            "label": "Stan dobry",
+            "label": "Bez zastrzeżeń",
             "value": "1"
           },
           {
-            "label": "Stan zly",
+            "label": "Wymagający remontu/wymiany w ciągu 1-2 lat",
             "value": "0"
+          },
+          {
+            "label": "Wymagający remontu/wymiany w ciągu 5 lat",
+            "value": "0.5"
           },
           {
             "label": "Nie dotyczy",
@@ -1385,12 +1515,16 @@
         "required": true,
         "options": [
           {
-            "label": "Stan dobry",
+            "label": "Bez zastrzeżeń",
             "value": "1"
           },
           {
-            "label": "Stan zly",
+            "label": "Wymagający remontu/wymiany w ciągu 1-2 lat",
             "value": "0"
+          },
+          {
+            "label": "Wymagający remontu/wymiany w ciągu 5 lat",
+            "value": "0.5"
           },
           {
             "label": "Nie dotyczy",
@@ -1400,8 +1534,42 @@
       },
       "diagram_kd": {
         "type": "diagram",
-        "label": "Widmo obciążeń Kd",
+        "label": "Widmo obciążeń K<sub>d</sub>",
         "svg": "schemat_kd"
+      },
+      "ponowny_resurs": {
+        "label": "Czy chcesz wykonać ponowne wyznaczenie resursu?",
+        "type": "select",
+        "options": [
+          "Tak",
+          "Nie"
+        ],
+        "default_value": "Nie"
+      },
+      "ostatni_resurs": {
+        "label": "Procent resursu z ostatnich obliczeń [%]",
+        "type": "number",
+        "show_if": {
+          "field": "ponowny_resurs",
+          "value": "Tak"
+        }
+      },
+      "data_resurs": {
+        "label": "Data wyznaczenia ostatniego resursu",
+        "type": "date",
+        "show_if": {
+          "field": "ponowny_resurs",
+          "value": "Tak"
+        }
+      },
+      "ponowny_mth": {
+        "label": "Łączna ilość motogodzin z poprzedniego okresu (jeśli znana)",
+        "type": "number",
+        "default_unit": "mth",
+        "show_if": {
+          "field": "ponowny_resurs",
+          "value": "Tak"
+        }
       }
     },
     "sections": [
@@ -1438,7 +1606,7 @@
       },
       {
         "id": "kd",
-        "title": "Za pomocą kalkulatora wyznacz współczynnik Kd",
+        "title": "Za pomocą kalkulatora wyznacz współczynnik K<sub>d</sub>",
         "icon": "balance",
         "fields": [
           "diagram_kd"
@@ -1446,7 +1614,7 @@
       },
       {
         "id": "inspekcja",
-        "title": "Ocena stanu technicznego",
+        "title": "Zespoły",
         "icon": "fact_check",
         "fields": [
           "liny_nosne",
@@ -1471,6 +1639,15 @@
           "mechanizm_zebatkowy",
           "mechanizm_srubowy",
           "mocowanie_napedu"
+        ]
+      },
+      {
+        "title": "Ponowne wyznaczenie resursu",
+        "fields": [
+          "ponowny_resurs",
+          "ostatni_resurs",
+          "data_resurs",
+          "ponowny_mth"
         ]
       }
     ]
@@ -1532,7 +1709,11 @@
         "label": "Ilość przepracowanych lat",
         "required": true,
         "unit_type": "time",
-        "default_unit": "lata"
+        "default_unit": "lata",
+        "unit_options": [
+          "lata",
+          "miesiące"
+        ]
       },
       "tryb_pracy": {
         "label": "Tryb pracy",
@@ -1592,10 +1773,14 @@
       },
       "q_max": {
         "type": "number",
-        "label": "Udźwig maksymalny Q_max [kg]",
+        "label": "Udźwig maksymalny Q<sub>max</sub>",
         "required": true,
         "unit_type": "mass",
-        "default_unit": "kg"
+        "default_unit": "kg",
+        "unit_options": [
+          "kg",
+          "t"
+        ]
       },
       "spec": {
         "type": "select",
@@ -1617,7 +1802,7 @@
       },
       "ostatni_resurs": {
         "type": "number",
-        "label": "Procent wykorzystania z ostatnich obliczeń resursu [%]",
+        "label": "Procent wykorzystania resursu z ostatnich obliczeń",
         "required": false,
         "show_if": {
           "field": "ponowny_resurs",
@@ -1681,7 +1866,7 @@
       },
       "diagram_kd": {
         "type": "diagram",
-        "label": "Widmo obciążeń Kd",
+        "label": "Widmo obciążeń K<sub>d</sub>",
         "svg": "schemat_kd"
       }
     },
@@ -1733,7 +1918,7 @@
       },
       {
         "id": "kd",
-        "title": "Na podstawie kalkulatora współczynnika Kd, wybierz odpowiedni stan obciążenia",
+        "title": "Na podstawie kalkulatora współczynnika K<sub>d</sub>, wybierz odpowiedni stan obciążenia",
         "icon": "balance",
         "fields": [
           "diagram_kd"
@@ -1798,7 +1983,11 @@
         "label": "Ilość przepracowanych lat",
         "required": true,
         "unit_type": "time",
-        "default_unit": "lata"
+        "default_unit": "lata",
+        "unit_options": [
+          "lata",
+          "miesiące"
+        ]
       },
       "tryb_pracy": {
         "label": "Tryb pracy",
@@ -1858,10 +2047,14 @@
       },
       "q_max": {
         "type": "number",
-        "label": "Udźwig maksymalny Q_max [kg]",
+        "label": "Udźwig maksymalny Q<sub>max</sub>",
         "required": true,
         "unit_type": "mass",
-        "default_unit": "kg"
+        "default_unit": "kg",
+        "unit_options": [
+          "kg",
+          "t"
+        ]
       },
       "spec": {
         "type": "select",
@@ -1883,7 +2076,7 @@
       },
       "ostatni_resurs": {
         "type": "number",
-        "label": "Procent wykorzystania z ostatnich obliczeń resursu [%]",
+        "label": "Procent wykorzystania resursu z ostatnich obliczeń",
         "required": false,
         "show_if": {
           "field": "ponowny_resurs",
@@ -1947,7 +2140,7 @@
       },
       "diagram_kd": {
         "type": "diagram",
-        "label": "Widmo obciążeń Kd",
+        "label": "Widmo obciążeń K<sub>d</sub>",
         "svg": "schemat_kd"
       }
     },
@@ -1999,7 +2192,7 @@
       },
       {
         "id": "kd",
-        "title": "Na podstawie kalkulatora współczynnika Kd, wybierz odpowiedni stan obciążenia",
+        "title": "Na podstawie kalkulatora współczynnika K<sub>d</sub>, wybierz odpowiedni stan obciążenia",
         "icon": "balance",
         "fields": [
           "diagram_kd"
@@ -2060,7 +2253,11 @@
         "label": "Ilość przepracowanych lat",
         "required": true,
         "unit_type": "time",
-        "default_unit": "lata"
+        "default_unit": "lata",
+        "unit_options": [
+          "lata",
+          "miesiące"
+        ]
       },
       "tryb_pracy": {
         "label": "Tryb pracy",
@@ -2120,10 +2317,14 @@
       },
       "q_max": {
         "type": "number",
-        "label": "Udźwig maksymalny Q_max [kg]",
+        "label": "Udźwig maksymalny Q<sub>max</sub>",
         "required": true,
         "unit_type": "mass",
-        "default_unit": "kg"
+        "default_unit": "kg",
+        "unit_options": [
+          "kg",
+          "t"
+        ]
       },
       "spec": {
         "type": "select",
@@ -2145,7 +2346,7 @@
       },
       "ostatni_resurs": {
         "type": "number",
-        "label": "Procent wykorzystania z ostatnich obliczeń resursu [%]",
+        "label": "Procent wykorzystania resursu z ostatnich obliczeń",
         "required": false,
         "show_if": {
           "field": "ponowny_resurs",
@@ -2209,7 +2410,7 @@
       },
       "diagram_kd": {
         "type": "diagram",
-        "label": "Widmo obciążeń Kd",
+        "label": "Widmo obciążeń K<sub>d</sub>",
         "svg": "schemat_kd"
       }
     },
@@ -2261,7 +2462,7 @@
       },
       {
         "id": "kd",
-        "title": "Na podstawie kalkulatora współczynnika Kd, wybierz odpowiedni stan obciążenia",
+        "title": "Na podstawie kalkulatora współczynnika K<sub>d</sub>, wybierz odpowiedni stan obciążenia",
         "icon": "balance",
         "fields": [
           "diagram_kd"
@@ -2348,7 +2549,11 @@
         "label": "Ilość przepracowanych lat",
         "required": true,
         "unit_type": "time",
-        "default_unit": "lata"
+        "default_unit": "lata",
+        "unit_options": [
+          "lata",
+          "miesiące"
+        ]
       },
       "tryb_pracy": {
         "label": "Tryb pracy",
@@ -2428,10 +2633,14 @@
       },
       "q_max": {
         "type": "number",
-        "label": "Udźwig maksymalny Q_max [kg]",
+        "label": "Udźwig maksymalny Q<sub>max</sub>",
         "required": true,
         "unit_type": "mass",
-        "default_unit": "kg"
+        "default_unit": "kg",
+        "unit_options": [
+          "kg",
+          "t"
+        ]
       },
       "q_o": {
         "type": "number",
@@ -2460,7 +2669,7 @@
       },
       "ostatni_resurs": {
         "type": "number",
-        "label": "Procent wykorzystania z ostatnich obliczeń resursu [%]",
+        "label": "Procent wykorzystania resursu z ostatnich obliczeń",
         "required": false,
         "show_if": {
           "field": "ponowny_resurs",
@@ -2524,7 +2733,7 @@
       },
       "diagram_kd": {
         "type": "diagram",
-        "label": "Widmo obciążeń Kd",
+        "label": "Widmo obciążeń K<sub>d</sub>",
         "svg": "schemat_kd"
       }
     },
@@ -2579,7 +2788,7 @@
       },
       {
         "id": "kd",
-        "title": "Na podstawie kalkulatora współczynnika Kd, wybierz odpowiedni stan obciążenia",
+        "title": "Na podstawie kalkulatora współczynnika K<sub>d</sub>, wybierz odpowiedni stan obciążenia",
         "icon": "balance",
         "fields": [
           "diagram_kd"
@@ -2625,24 +2834,29 @@
       },
       "h_max": {
         "type": "number",
-        "label": "Maksymalna wysokość podnoszenia h_max [m]",
+        "label": "Maksymalna wysokość podnoszenia h<sub>max</sub>",
         "required": false,
         "unit_type": "length",
         "default_unit": "m"
       },
       "L_b_max": {
         "type": "number",
-        "label": "Maks. wysięg boczny L_b_max",
+        "label": "Maks. wysięg boczny L<sub>b_max</sub>",
         "required": false,
         "unit_type": "length",
         "default_unit": "m"
       },
       "v_pod": {
         "type": "number",
-        "label": "Prędkość podnoszenia/opuszczania v_pod [m/min]",
+        "label": "Prędkość podnoszenia/opuszczania v<sub>pod</sub>",
         "required": false,
         "unit_type": "speed",
-        "default_unit": "m/min"
+        "default_unit": "m/min",
+        "unit_options": [
+          "m/s",
+          "m/min",
+          "m/h"
+        ]
       },
       "q_o": {
         "type": "number",
@@ -2656,7 +2870,11 @@
         "label": "Ilość przepracowanych lat",
         "required": true,
         "unit_type": "time",
-        "default_unit": "lata"
+        "default_unit": "lata",
+        "unit_options": [
+          "lata",
+          "miesiące"
+        ]
       },
       "tryb_pracy": {
         "label": "Tryb pracy",
@@ -2701,10 +2919,14 @@
       },
       "q_max": {
         "type": "number",
-        "label": "Udźwig maksymalny Q_max [kg]",
+        "label": "Udźwig maksymalny Q<sub>max</sub>",
         "required": true,
         "unit_type": "mass",
-        "default_unit": "kg"
+        "default_unit": "kg",
+        "unit_options": [
+          "kg",
+          "t"
+        ]
       },
       "spec": {
         "type": "select",
@@ -2726,7 +2948,7 @@
       },
       "ostatni_resurs": {
         "type": "number",
-        "label": "Procent wykorzystania z ostatnich obliczeń resursu [%]",
+        "label": "Procent wykorzystania resursu z ostatnich obliczeń",
         "required": false,
         "show_if": {
           "field": "ponowny_resurs",
@@ -2831,7 +3053,7 @@
       },
       "diagram_kd": {
         "type": "diagram",
-        "label": "Widmo obciążeń Kd",
+        "label": "Widmo obciążeń K<sub>d</sub>",
         "svg": "schemat_kd"
       }
     },
@@ -2878,7 +3100,7 @@
       },
       {
         "id": "kd",
-        "title": "Za pomocą kalkulatora wyznacz współczynnik Kd",
+        "title": "Za pomocą kalkulatora wyznacz współczynnik K<sub>d</sub>",
         "icon": "balance",
         "fields": [
           "diagram_kd"
@@ -2945,7 +3167,11 @@
         "label": "Ilość przepracowanych lat",
         "required": true,
         "unit_type": "time",
-        "default_unit": "lata"
+        "default_unit": "lata",
+        "unit_options": [
+          "lata",
+          "miesiące"
+        ]
       },
       "tryb_pracy": {
         "label": "Tryb pracy",
@@ -3139,17 +3365,22 @@
       },
       "h_max": {
         "type": "number",
-        "label": "Maksymalna wysokość podnoszenia h_max [m]",
+        "label": "Maksymalna wysokość podnoszenia h<sub>max</sub>",
         "required": true,
         "unit_type": "length",
         "default_unit": "m"
       },
       "v_pod": {
         "type": "number",
-        "label": "Prędkość podnoszenia (m/s)",
+        "label": "Prędkość podnoszenia/opuszczania v<sub>pod</sub>",
         "required": true,
         "unit_type": "velocity",
-        "default_unit": "m/min"
+        "default_unit": "m/s",
+        "unit_options": [
+          "m/s",
+          "m/min",
+          "m/h"
+        ]
       },
       "powierzchnia": {
         "type": "select",
@@ -3191,17 +3422,21 @@
       },
       "q_o": {
         "type": "number",
-        "label": "Ciężar ładunku Qo (kg)",
+        "label": "Ciężar ładunku Qo",
         "required": true,
         "unit_type": "mass",
         "default_unit": "kg"
       },
       "q_max": {
         "type": "number",
-        "label": "Udźwig maksymalny Q_max [kg]",
+        "label": "Udźwig maksymalny Q<sub>max</sub>",
         "required": true,
         "unit_type": "mass",
-        "default_unit": "kg"
+        "default_unit": "kg",
+        "unit_options": [
+          "kg",
+          "t"
+        ]
       },
       "max_czas": {
         "type": "number",
@@ -3257,7 +3492,7 @@
       },
       "diagram_kd": {
         "type": "diagram",
-        "label": "Widmo obciążeń Kd",
+        "label": "Widmo obciążeń K<sub>d</sub>",
         "svg": "schemat_kd"
       }
     },
@@ -3320,7 +3555,7 @@
       },
       {
         "id": "kd",
-        "title": "Za pomocą kalkulatora wyznacz współczynnik Kd",
+        "title": "Za pomocą kalkulatora wyznacz współczynnik K<sub>d</sub>",
         "icon": "balance",
         "fields": [
           "diagram_kd"
@@ -3386,17 +3621,22 @@
       },
       "h_max": {
         "type": "number",
-        "label": "Maksymalna wysokość podnoszenia h_max [m]",
+        "label": "Maksymalna wysokość podnoszenia h<sub>max</sub>",
         "required": true,
         "unit_type": "length",
         "default_unit": "m"
       },
       "v_pod": {
         "type": "number",
-        "label": "Prędkość podnoszenia/opuszczania v_pod",
+        "label": "Prędkość podnoszenia/opuszczania v<sub>pod</sub>",
         "required": true,
         "unit_type": "speed",
-        "default_unit": "m/min"
+        "default_unit": "m/min",
+        "unit_options": [
+          "m/s",
+          "m/min",
+          "m/h"
+        ]
       },
       "s_sz": {
         "type": "number",
@@ -3407,24 +3647,38 @@
       },
       "v_jaz": {
         "type": "number",
-        "label": "Prędkość jazdy v_jaz",
+        "label": "Prędkość jazdy v<sub>jaz</sub>",
         "required": true,
         "unit_type": "speed",
-        "default_unit": "m/min"
+        "default_unit": "m/min",
+        "unit_options": [
+          "m/s",
+          "m/min",
+          "m/h"
+        ]
       },
       "v_prz": {
         "type": "number",
-        "label": "Prędkość przesuwu platformy v_prz",
+        "label": "Prędkość przesuwu platformy v<sub>prz</sub>",
         "required": true,
         "unit_type": "speed",
-        "default_unit": "m/min"
+        "default_unit": "m/min",
+        "unit_options": [
+          "m/s",
+          "m/min",
+          "m/h"
+        ]
       },
       "q_max": {
         "type": "number",
-        "label": "Udźwig maksymalny Q_max [kg]",
+        "label": "Udźwig maksymalny Q<sub>max</sub>",
         "required": true,
         "unit_type": "mass",
-        "default_unit": "kg"
+        "default_unit": "kg",
+        "unit_options": [
+          "kg",
+          "t"
+        ]
       },
       "licznik_pracy_pod": {
         "type": "number",
@@ -3449,7 +3703,11 @@
         "label": "Ilość przepracowanych lat",
         "required": true,
         "unit_type": "time",
-        "default_unit": "lata"
+        "default_unit": "lata",
+        "unit_options": [
+          "lata",
+          "miesiące"
+        ]
       },
       "tryb_pracy": {
         "label": "Tryb pracy",
@@ -3512,7 +3770,7 @@
       },
       "ostatni_resurs": {
         "type": "number",
-        "label": "Procent wykorzystania z ostatnich obliczeń resursu [%]",
+        "label": "Procent wykorzystania resursu z ostatnich obliczeń",
         "required": false,
         "show_if": {
           "field": "ponowny_resurs",
@@ -3576,7 +3834,7 @@
       },
       "diagram_kd": {
         "type": "diagram",
-        "label": "Widmo obciążeń Kd",
+        "label": "Widmo obciążeń K<sub>d</sub>",
         "svg": "schemat_kd"
       }
     },
@@ -3629,7 +3887,7 @@
       },
       {
         "id": "kd",
-        "title": "Za pomocą kalkulatora wyznacz współczynnik Kd",
+        "title": "Za pomocą kalkulatora wyznacz współczynnik K<sub>d</sub>",
         "icon": "balance",
         "fields": [
           "diagram_kd"
@@ -3695,7 +3953,12 @@
       "lata_pracy": {
         "type": "number",
         "label": "Ilość przepracowanych lat",
-        "required": true
+        "required": true,
+        "unit_options": [
+          "lata",
+          "miesiące"
+        ],
+        "default_unit": "lata"
       },
       "tryb_pracy": {
         "label": "Tryb pracy",
@@ -3739,35 +4002,37 @@
       "max_cykle": {
         "type": "number",
         "label": "Maks. cykle (producent)",
-        "required": false
+        "required": false,
+        "hint": "jeśli znane"
       },
       "q_max": {
         "type": "number",
-        "label": "Udźwig maksymalny Q_max [kg]",
+        "label": "Udźwig maksymalny Q<sub>max</sub>",
         "required": true,
         "unit_type": "mass",
-        "default_unit": "kg"
+        "default_unit": "kg",
+        "unit_options": [
+          "kg",
+          "t"
+        ]
       },
       "h_max": {
         "type": "number",
-        "label": "Hmax (Maks. wysokość)",
+        "label": "Maksymalna wysokość podnoszenia h<sub>max</sub>",
         "required": true,
         "unit_type": "length",
         "default_unit": "m"
       },
       "v_pod": {
         "type": "number",
-        "label": "Prędkość podnoszenia",
-        "required": true
-      },
-      "jednostka": {
-        "type": "select",
-        "label": "Jednostka prędkości",
+        "label": "Prędkość podnoszenia/opuszczania v<sub>pod</sub>",
         "required": true,
-        "options": [
-          "[m/s]",
-          "[m/min]"
-        ]
+        "unit_options": [
+          "m/s",
+          "m/min",
+          "m/h"
+        ],
+        "default_unit": "m/min"
       },
       "a_1": {
         "type": "number",
@@ -3776,7 +4041,7 @@
       },
       "a_2": {
         "type": "number",
-        "label": "A2 (%)",
+        "label": "A2",
         "required": true
       },
       "a_3": {
@@ -3834,7 +4099,7 @@
       },
       "diagram_kd": {
         "type": "diagram",
-        "label": "Widmo obciążeń Kd",
+        "label": "Widmo obciążeń K<sub>d</sub>",
         "svg": "schemat_kd"
       },
       "diagram_ad": {
@@ -3858,7 +4123,6 @@
           "typ",
           "h_max",
           "v_pod",
-          "jednostka",
           "q_max",
           "lata_pracy",
           "max_cykle",
@@ -3886,7 +4150,7 @@
       },
       {
         "id": "kd",
-        "title": "Za pomocą kalkulatora wyznacz współczynnik Kd",
+        "title": "Za pomocą kalkulatora wyznacz współczynnik K<sub>d</sub>",
         "icon": "balance",
         "fields": [
           "diagram_kd"
@@ -3946,7 +4210,11 @@
         "label": "Ilość przepracowanych lat",
         "required": true,
         "unit_type": "time",
-        "default_unit": "lata"
+        "default_unit": "lata",
+        "unit_options": [
+          "lata",
+          "miesiące"
+        ]
       },
       "tryb_pracy": {
         "label": "Tryb pracy",
@@ -4006,10 +4274,14 @@
       },
       "q_max": {
         "type": "number",
-        "label": "Udźwig maksymalny Q_max [kg]",
+        "label": "Udźwig maksymalny Q<sub>max</sub>",
         "required": true,
         "unit_type": "mass",
-        "default_unit": "kg"
+        "default_unit": "kg",
+        "unit_options": [
+          "kg",
+          "t"
+        ]
       },
       "spec": {
         "type": "select",
@@ -4031,7 +4303,7 @@
       },
       "ostatni_resurs": {
         "type": "number",
-        "label": "Procent wykorzystania z ostatnich obliczeń resursu [%]",
+        "label": "Procent wykorzystania resursu z ostatnich obliczeń",
         "required": false,
         "show_if": {
           "field": "ponowny_resurs",
@@ -4095,7 +4367,7 @@
       },
       "diagram_kd": {
         "type": "diagram",
-        "label": "Widmo obciążeń Kd",
+        "label": "Widmo obciążeń K<sub>d</sub>",
         "svg": "schemat_kd"
       }
     },
@@ -4147,7 +4419,7 @@
       },
       {
         "id": "kd",
-        "title": "Na podstawie kalkulatora współczynnika Kd, wybierz odpowiedni stan obciążenia",
+        "title": "Na podstawie kalkulatora współczynnika K<sub>d</sub>, wybierz odpowiedni stan obciążenia",
         "icon": "balance",
         "fields": [
           "diagram_kd"
@@ -4209,7 +4481,12 @@
       "lata_pracy": {
         "type": "number",
         "label": "Ilość przepracowanych lat",
-        "required": true
+        "required": true,
+        "unit_options": [
+          "lata",
+          "miesiące"
+        ],
+        "default_unit": "lata"
       },
       "ilosc_cykli": {
         "type": "number",
@@ -4219,17 +4496,13 @@
       "czas_cykle": {
         "type": "number",
         "label": "Średni czas cyklu",
-        "required": true
-      },
-      "jednostka": {
-        "type": "select",
-        "label": "Jednostka czasu cyklu",
         "required": true,
-        "options": [
+        "unit_options": [
           "s",
           "min",
           "h"
-        ]
+        ],
+        "default_unit": "s"
       },
       "sposob_rejestracji": {
         "type": "select",
@@ -4257,14 +4530,19 @@
           "M6",
           "M7",
           "M8"
-        ]
+        ],
+        "gnp_type": "mechanism"
       },
       "q_max": {
         "type": "number",
-        "label": "Udźwig maksymalny Q_max [kg]",
+        "label": "Udźwig maksymalny Q<sub>max</sub>",
         "required": true,
         "unit_type": "mass",
-        "default_unit": "kg"
+        "default_unit": "kg",
+        "unit_options": [
+          "kg",
+          "t"
+        ]
       },
       "spec": {
         "type": "select",
@@ -4286,7 +4564,7 @@
       },
       "ostatni_resurs": {
         "type": "number",
-        "label": "Procent wykorzystania z ostatnich obliczeń resursu [%]",
+        "label": "Procent wykorzystania resursu z ostatnich obliczeń",
         "required": false,
         "show_if": {
           "field": "ponowny_resurs",
@@ -4305,8 +4583,40 @@
       },
       "diagram_kd": {
         "type": "diagram",
-        "label": "Widmo obciążeń Kd",
+        "label": "Widmo obciążeń K<sub>d</sub>",
         "svg": "schemat_kd"
+      },
+      "ilosc_mth": {
+        "label": "Łączna ilość motogodzin (jeśli znana)",
+        "type": "number",
+        "default_unit": "mth",
+        "hint": "Jeśli podane, używane zamiast czasu cyklu × ilości cykli"
+      },
+      "tryb_pracy": {
+        "label": "Tryb pracy",
+        "type": "select",
+        "options": [
+          "1-zmianowy (8h)",
+          "2-zmianowy (16h)",
+          "3-zmianowy (24h)"
+        ]
+      },
+      "cykle_zmiana": {
+        "label": "Ilość cykli na zmianę",
+        "type": "number"
+      },
+      "dni_robocze": {
+        "label": "Ilość dni roboczych w roku",
+        "type": "number"
+      },
+      "ponowny_mth": {
+        "label": "Łączna ilość motogodzin z poprzedniego okresu (jeśli znana)",
+        "type": "number",
+        "default_unit": "mth",
+        "show_if": {
+          "field": "ponowny_resurs",
+          "value": "Tak"
+        }
       }
     },
     "sections": [
@@ -4318,6 +4628,7 @@
           "spec",
           "ponowny_resurs",
           "data_resurs",
+          "ponowny_mth",
           "ostatni_resurs"
         ]
       },
@@ -4334,8 +4645,11 @@
           "q_max",
           "lata_pracy",
           "czas_cykle",
-          "jednostka",
-          "ilosc_cykli"
+          "ilosc_cykli",
+          "ilosc_mth",
+          "tryb_pracy",
+          "cykle_zmiana",
+          "dni_robocze"
         ]
       },
       {
@@ -4356,7 +4670,7 @@
       },
       {
         "id": "kd",
-        "title": "Na podstawie kalkulatora współczynnika Kd, wybierz odpowiedni stan obciążenia",
+        "title": "Na podstawie kalkulatora współczynnika K<sub>d</sub>, wybierz odpowiedni stan obciążenia",
         "icon": "balance",
         "fields": [
           "diagram_kd"
@@ -4368,7 +4682,10 @@
     "name": "Mechanizm Jazdy Wciągarki",
     "description": "Kalkulator resursu dla mechanizmu jazdy wciągarki.",
     "parent_devices": [
-      "wciagarka"
+      "wciagarka",
+      "zuraw",
+      "suwnica",
+      "wciagnik"
     ],
     "fields": {
       "wykonawca": {
@@ -4406,7 +4723,12 @@
       "lata_pracy": {
         "type": "number",
         "label": "Ilość przepracowanych lat",
-        "required": true
+        "required": true,
+        "unit_options": [
+          "lata",
+          "miesiące"
+        ],
+        "default_unit": "lata"
       },
       "ilosc_cykli": {
         "type": "number",
@@ -4416,17 +4738,13 @@
       "czas_cykle": {
         "type": "number",
         "label": "Średni czas cyklu",
-        "required": true
-      },
-      "jednostka": {
-        "type": "select",
-        "label": "Jednostka czasu cyklu",
         "required": true,
-        "options": [
+        "unit_options": [
           "s",
           "min",
           "h"
-        ]
+        ],
+        "default_unit": "s"
       },
       "sposob_rejestracji": {
         "type": "select",
@@ -4454,14 +4772,19 @@
           "M6",
           "M7",
           "M8"
-        ]
+        ],
+        "gnp_type": "mechanism"
       },
       "q_max": {
         "type": "number",
-        "label": "Udźwig maksymalny Q_max [kg]",
+        "label": "Udźwig maksymalny Q<sub>max</sub>",
         "required": true,
         "unit_type": "mass",
-        "default_unit": "kg"
+        "default_unit": "kg",
+        "unit_options": [
+          "kg",
+          "t"
+        ]
       },
       "spec": {
         "type": "select",
@@ -4483,7 +4806,7 @@
       },
       "ostatni_resurs": {
         "type": "number",
-        "label": "Procent wykorzystania z ostatnich obliczeń resursu [%]",
+        "label": "Procent wykorzystania resursu z ostatnich obliczeń",
         "required": false,
         "show_if": {
           "field": "ponowny_resurs",
@@ -4502,8 +4825,40 @@
       },
       "diagram_kd": {
         "type": "diagram",
-        "label": "Widmo obciążeń Kd",
+        "label": "Widmo obciążeń K<sub>d</sub>",
         "svg": "schemat_kd"
+      },
+      "ilosc_mth": {
+        "label": "Łączna ilość motogodzin (jeśli znana)",
+        "type": "number",
+        "default_unit": "mth",
+        "hint": "Jeśli podane, używane zamiast czasu cyklu × ilości cykli"
+      },
+      "tryb_pracy": {
+        "label": "Tryb pracy",
+        "type": "select",
+        "options": [
+          "1-zmianowy (8h)",
+          "2-zmianowy (16h)",
+          "3-zmianowy (24h)"
+        ]
+      },
+      "cykle_zmiana": {
+        "label": "Ilość cykli na zmianę",
+        "type": "number"
+      },
+      "dni_robocze": {
+        "label": "Ilość dni roboczych w roku",
+        "type": "number"
+      },
+      "ponowny_mth": {
+        "label": "Łączna ilość motogodzin z poprzedniego okresu (jeśli znana)",
+        "type": "number",
+        "default_unit": "mth",
+        "show_if": {
+          "field": "ponowny_resurs",
+          "value": "Tak"
+        }
       }
     },
     "sections": [
@@ -4515,6 +4870,7 @@
           "spec",
           "ponowny_resurs",
           "data_resurs",
+          "ponowny_mth",
           "ostatni_resurs"
         ]
       },
@@ -4531,8 +4887,11 @@
           "q_max",
           "lata_pracy",
           "czas_cykle",
-          "jednostka",
-          "ilosc_cykli"
+          "ilosc_cykli",
+          "ilosc_mth",
+          "tryb_pracy",
+          "cykle_zmiana",
+          "dni_robocze"
         ]
       },
       {
@@ -4545,7 +4904,7 @@
       },
       {
         "id": "gnp",
-        "title": "Określ grupę natężenia pracy mechanizmu jazdy wciągarki, wybierając opcję z tabeli",
+        "title": "Określ grupę natężenia pracy mechanizmu jazdy wciągarki/wciągnika, wybierając opcję z tabeli",
         "icon": "speed",
         "fields": [
           "gnp"
@@ -4553,7 +4912,7 @@
       },
       {
         "id": "kd",
-        "title": "Na podstawie kalkulatora współczynnika Kd, wybierz odpowiedni stan obciążenia",
+        "title": "Na podstawie kalkulatora współczynnika K<sub>d</sub>, wybierz odpowiedni stan obciążenia",
         "icon": "balance",
         "fields": [
           "diagram_kd"
@@ -4603,7 +4962,12 @@
       "lata_pracy": {
         "type": "number",
         "label": "Ilość przepracowanych lat",
-        "required": true
+        "required": true,
+        "unit_options": [
+          "lata",
+          "miesiące"
+        ],
+        "default_unit": "lata"
       },
       "ilosc_cykli": {
         "type": "number",
@@ -4613,17 +4977,13 @@
       "czas_cykle": {
         "type": "number",
         "label": "Średni czas cyklu",
-        "required": true
-      },
-      "jednostka": {
-        "type": "select",
-        "label": "Jednostka czasu cyklu",
         "required": true,
-        "options": [
+        "unit_options": [
           "s",
           "min",
           "h"
-        ]
+        ],
+        "default_unit": "s"
       },
       "sposob_rejestracji": {
         "type": "select",
@@ -4651,14 +5011,19 @@
           "M6",
           "M7",
           "M8"
-        ]
+        ],
+        "gnp_type": "mechanism"
       },
       "q_max": {
         "type": "number",
-        "label": "Udźwig maksymalny Q_max [kg]",
+        "label": "Udźwig maksymalny Q<sub>max</sub>",
         "required": true,
         "unit_type": "mass",
-        "default_unit": "kg"
+        "default_unit": "kg",
+        "unit_options": [
+          "kg",
+          "t"
+        ]
       },
       "spec": {
         "type": "select",
@@ -4680,7 +5045,7 @@
       },
       "ostatni_resurs": {
         "type": "number",
-        "label": "Procent wykorzystania z ostatnich obliczeń resursu [%]",
+        "label": "Procent wykorzystania resursu z ostatnich obliczeń",
         "required": false,
         "show_if": {
           "field": "ponowny_resurs",
@@ -4699,8 +5064,40 @@
       },
       "diagram_kd": {
         "type": "diagram",
-        "label": "Widmo obciążeń Kd",
+        "label": "Widmo obciążeń K<sub>d</sub>",
         "svg": "schemat_kd"
+      },
+      "ilosc_mth": {
+        "label": "Łączna ilość motogodzin (jeśli znana)",
+        "type": "number",
+        "default_unit": "mth",
+        "hint": "Jeśli podane, używane zamiast czasu cyklu × ilości cykli"
+      },
+      "tryb_pracy": {
+        "label": "Tryb pracy",
+        "type": "select",
+        "options": [
+          "1-zmianowy (8h)",
+          "2-zmianowy (16h)",
+          "3-zmianowy (24h)"
+        ]
+      },
+      "cykle_zmiana": {
+        "label": "Ilość cykli na zmianę",
+        "type": "number"
+      },
+      "dni_robocze": {
+        "label": "Ilość dni roboczych w roku",
+        "type": "number"
+      },
+      "ponowny_mth": {
+        "label": "Łączna ilość motogodzin z poprzedniego okresu (jeśli znana)",
+        "type": "number",
+        "default_unit": "mth",
+        "show_if": {
+          "field": "ponowny_resurs",
+          "value": "Tak"
+        }
       }
     },
     "sections": [
@@ -4712,6 +5109,7 @@
           "spec",
           "ponowny_resurs",
           "data_resurs",
+          "ponowny_mth",
           "ostatni_resurs"
         ]
       },
@@ -4728,8 +5126,11 @@
           "q_max",
           "lata_pracy",
           "czas_cykle",
-          "jednostka",
-          "ilosc_cykli"
+          "ilosc_cykli",
+          "ilosc_mth",
+          "tryb_pracy",
+          "cykle_zmiana",
+          "dni_robocze"
         ]
       },
       {
@@ -4750,7 +5151,7 @@
       },
       {
         "id": "kd",
-        "title": "Na podstawie kalkulatora współczynnika Kd, wybierz odpowiedni stan obciążenia",
+        "title": "Na podstawie kalkulatora współczynnika K<sub>d</sub>, wybierz odpowiedni stan obciążenia",
         "icon": "balance",
         "fields": [
           "diagram_kd"
@@ -4803,7 +5204,12 @@
       "lata_pracy": {
         "type": "number",
         "label": "Ilość przepracowanych lat",
-        "required": true
+        "required": true,
+        "unit_options": [
+          "lata",
+          "miesiące"
+        ],
+        "default_unit": "lata"
       },
       "ilosc_cykli": {
         "type": "number",
@@ -4813,17 +5219,13 @@
       "czas_cykle": {
         "type": "number",
         "label": "Średni czas cyklu",
-        "required": true
-      },
-      "jednostka": {
-        "type": "select",
-        "label": "Jednostka czasu cyklu",
         "required": true,
-        "options": [
+        "unit_options": [
           "s",
           "min",
           "h"
-        ]
+        ],
+        "default_unit": "s"
       },
       "sposob_rejestracji": {
         "type": "select",
@@ -4851,14 +5253,19 @@
           "M6",
           "M7",
           "M8"
-        ]
+        ],
+        "gnp_type": "mechanism"
       },
       "q_max": {
         "type": "number",
-        "label": "Udźwig maksymalny Q_max [kg]",
+        "label": "Udźwig maksymalny Q<sub>max</sub>",
         "required": true,
         "unit_type": "mass",
-        "default_unit": "kg"
+        "default_unit": "kg",
+        "unit_options": [
+          "kg",
+          "t"
+        ]
       },
       "spec": {
         "type": "select",
@@ -4880,7 +5287,7 @@
       },
       "ostatni_resurs": {
         "type": "number",
-        "label": "Procent wykorzystania z ostatnich obliczeń resursu [%]",
+        "label": "Procent wykorzystania resursu z ostatnich obliczeń",
         "required": false,
         "show_if": {
           "field": "ponowny_resurs",
@@ -4899,8 +5306,40 @@
       },
       "diagram_kd": {
         "type": "diagram",
-        "label": "Widmo obciążeń Kd",
+        "label": "Widmo obciążeń K<sub>d</sub>",
         "svg": "schemat_kd"
+      },
+      "ilosc_mth": {
+        "label": "Łączna ilość motogodzin (jeśli znana)",
+        "type": "number",
+        "default_unit": "mth",
+        "hint": "Jeśli podane, używane zamiast czasu cyklu × ilości cykli"
+      },
+      "tryb_pracy": {
+        "label": "Tryb pracy",
+        "type": "select",
+        "options": [
+          "1-zmianowy (8h)",
+          "2-zmianowy (16h)",
+          "3-zmianowy (24h)"
+        ]
+      },
+      "cykle_zmiana": {
+        "label": "Ilość cykli na zmianę",
+        "type": "number"
+      },
+      "dni_robocze": {
+        "label": "Ilość dni roboczych w roku",
+        "type": "number"
+      },
+      "ponowny_mth": {
+        "label": "Łączna ilość motogodzin z poprzedniego okresu (jeśli znana)",
+        "type": "number",
+        "default_unit": "mth",
+        "show_if": {
+          "field": "ponowny_resurs",
+          "value": "Tak"
+        }
       }
     },
     "sections": [
@@ -4912,6 +5351,7 @@
           "spec",
           "ponowny_resurs",
           "data_resurs",
+          "ponowny_mth",
           "ostatni_resurs"
         ]
       },
@@ -4928,8 +5368,11 @@
           "q_max",
           "lata_pracy",
           "czas_cykle",
-          "jednostka",
-          "ilosc_cykli"
+          "ilosc_cykli",
+          "ilosc_mth",
+          "tryb_pracy",
+          "cykle_zmiana",
+          "dni_robocze"
         ]
       },
       {
@@ -4950,7 +5393,7 @@
       },
       {
         "id": "kd",
-        "title": "Na podstawie kalkulatora współczynnika Kd, wybierz odpowiedni stan obciążenia",
+        "title": "Na podstawie kalkulatora współczynnika K<sub>d</sub>, wybierz odpowiedni stan obciążenia",
         "icon": "balance",
         "fields": [
           "diagram_kd"
@@ -5000,7 +5443,12 @@
       "lata_pracy": {
         "type": "number",
         "label": "Ilość przepracowanych lat",
-        "required": true
+        "required": true,
+        "unit_options": [
+          "lata",
+          "miesiące"
+        ],
+        "default_unit": "lata"
       },
       "ilosc_cykli": {
         "type": "number",
@@ -5010,17 +5458,13 @@
       "czas_cykle": {
         "type": "number",
         "label": "Średni czas cyklu",
-        "required": true
-      },
-      "jednostka": {
-        "type": "select",
-        "label": "Jednostka czasu cyklu",
         "required": true,
-        "options": [
+        "unit_options": [
           "s",
           "min",
           "h"
-        ]
+        ],
+        "default_unit": "s"
       },
       "sposob_rejestracji": {
         "type": "select",
@@ -5048,14 +5492,19 @@
           "M6",
           "M7",
           "M8"
-        ]
+        ],
+        "gnp_type": "mechanism"
       },
       "q_max": {
         "type": "number",
-        "label": "Udźwig maksymalny Q_max [kg]",
+        "label": "Udźwig maksymalny Q<sub>max</sub>",
         "required": true,
         "unit_type": "mass",
-        "default_unit": "kg"
+        "default_unit": "kg",
+        "unit_options": [
+          "kg",
+          "t"
+        ]
       },
       "spec": {
         "type": "select",
@@ -5077,7 +5526,7 @@
       },
       "ostatni_resurs": {
         "type": "number",
-        "label": "Procent wykorzystania z ostatnich obliczeń resursu [%]",
+        "label": "Procent wykorzystania resursu z ostatnich obliczeń",
         "required": false,
         "show_if": {
           "field": "ponowny_resurs",
@@ -5096,8 +5545,40 @@
       },
       "diagram_kd": {
         "type": "diagram",
-        "label": "Widmo obciążeń Kd",
+        "label": "Widmo obciążeń K<sub>d</sub>",
         "svg": "schemat_kd"
+      },
+      "ilosc_mth": {
+        "label": "Łączna ilość motogodzin (jeśli znana)",
+        "type": "number",
+        "default_unit": "mth",
+        "hint": "Jeśli podane, używane zamiast czasu cyklu × ilości cykli"
+      },
+      "tryb_pracy": {
+        "label": "Tryb pracy",
+        "type": "select",
+        "options": [
+          "1-zmianowy (8h)",
+          "2-zmianowy (16h)",
+          "3-zmianowy (24h)"
+        ]
+      },
+      "cykle_zmiana": {
+        "label": "Ilość cykli na zmianę",
+        "type": "number"
+      },
+      "dni_robocze": {
+        "label": "Ilość dni roboczych w roku",
+        "type": "number"
+      },
+      "ponowny_mth": {
+        "label": "Łączna ilość motogodzin z poprzedniego okresu (jeśli znana)",
+        "type": "number",
+        "default_unit": "mth",
+        "show_if": {
+          "field": "ponowny_resurs",
+          "value": "Tak"
+        }
       }
     },
     "sections": [
@@ -5109,6 +5590,7 @@
           "spec",
           "ponowny_resurs",
           "data_resurs",
+          "ponowny_mth",
           "ostatni_resurs"
         ]
       },
@@ -5125,8 +5607,11 @@
           "q_max",
           "lata_pracy",
           "czas_cykle",
-          "jednostka",
-          "ilosc_cykli"
+          "ilosc_cykli",
+          "ilosc_mth",
+          "tryb_pracy",
+          "cykle_zmiana",
+          "dni_robocze"
         ]
       },
       {
@@ -5147,7 +5632,7 @@
       },
       {
         "id": "kd",
-        "title": "Na podstawie kalkulatora współczynnika Kd, wybierz odpowiedni stan obciążenia",
+        "title": "Na podstawie kalkulatora współczynnika K<sub>d</sub>, wybierz odpowiedni stan obciążenia",
         "icon": "balance",
         "fields": [
           "diagram_kd"
@@ -5197,7 +5682,12 @@
       "lata_pracy": {
         "type": "number",
         "label": "Ilość przepracowanych lat",
-        "required": true
+        "required": true,
+        "unit_options": [
+          "lata",
+          "miesiące"
+        ],
+        "default_unit": "lata"
       },
       "ilosc_cykli": {
         "type": "number",
@@ -5207,17 +5697,13 @@
       "czas_cykle": {
         "type": "number",
         "label": "Średni czas cyklu",
-        "required": true
-      },
-      "jednostka": {
-        "type": "select",
-        "label": "Jednostka czasu cyklu",
         "required": true,
-        "options": [
+        "unit_options": [
           "s",
           "min",
           "h"
-        ]
+        ],
+        "default_unit": "s"
       },
       "sposob_rejestracji": {
         "type": "select",
@@ -5245,14 +5731,19 @@
           "M6",
           "M7",
           "M8"
-        ]
+        ],
+        "gnp_type": "mechanism"
       },
       "q_max": {
         "type": "number",
-        "label": "Udźwig maksymalny Q_max [kg]",
+        "label": "Udźwig maksymalny Q<sub>max</sub>",
         "required": true,
         "unit_type": "mass",
-        "default_unit": "kg"
+        "default_unit": "kg",
+        "unit_options": [
+          "kg",
+          "t"
+        ]
       },
       "spec": {
         "type": "select",
@@ -5274,7 +5765,7 @@
       },
       "ostatni_resurs": {
         "type": "number",
-        "label": "Procent wykorzystania z ostatnich obliczeń resursu [%]",
+        "label": "Procent wykorzystania resursu z ostatnich obliczeń",
         "required": false,
         "show_if": {
           "field": "ponowny_resurs",
@@ -5293,8 +5784,40 @@
       },
       "diagram_kd": {
         "type": "diagram",
-        "label": "Widmo obciążeń Kd",
+        "label": "Widmo obciążeń K<sub>d</sub>",
         "svg": "schemat_kd"
+      },
+      "ilosc_mth": {
+        "label": "Łączna ilość motogodzin (jeśli znana)",
+        "type": "number",
+        "default_unit": "mth",
+        "hint": "Jeśli podane, używane zamiast czasu cyklu × ilości cykli"
+      },
+      "tryb_pracy": {
+        "label": "Tryb pracy",
+        "type": "select",
+        "options": [
+          "1-zmianowy (8h)",
+          "2-zmianowy (16h)",
+          "3-zmianowy (24h)"
+        ]
+      },
+      "cykle_zmiana": {
+        "label": "Ilość cykli na zmianę",
+        "type": "number"
+      },
+      "dni_robocze": {
+        "label": "Ilość dni roboczych w roku",
+        "type": "number"
+      },
+      "ponowny_mth": {
+        "label": "Łączna ilość motogodzin z poprzedniego okresu (jeśli znana)",
+        "type": "number",
+        "default_unit": "mth",
+        "show_if": {
+          "field": "ponowny_resurs",
+          "value": "Tak"
+        }
       }
     },
     "sections": [
@@ -5306,6 +5829,7 @@
           "spec",
           "ponowny_resurs",
           "data_resurs",
+          "ponowny_mth",
           "ostatni_resurs"
         ]
       },
@@ -5322,8 +5846,11 @@
           "q_max",
           "lata_pracy",
           "czas_cykle",
-          "jednostka",
-          "ilosc_cykli"
+          "ilosc_cykli",
+          "ilosc_mth",
+          "tryb_pracy",
+          "cykle_zmiana",
+          "dni_robocze"
         ]
       },
       {
@@ -5344,7 +5871,7 @@
       },
       {
         "id": "kd",
-        "title": "Na podstawie kalkulatora współczynnika Kd, wybierz odpowiedni stan obciążenia",
+        "title": "Na podstawie kalkulatora współczynnika K<sub>d</sub>, wybierz odpowiedni stan obciążenia",
         "icon": "balance",
         "fields": [
           "diagram_kd"
@@ -5394,7 +5921,12 @@
       "lata_pracy": {
         "type": "number",
         "label": "Ilość przepracowanych lat",
-        "required": true
+        "required": true,
+        "unit_options": [
+          "lata",
+          "miesiące"
+        ],
+        "default_unit": "lata"
       },
       "tryb_pracy": {
         "label": "Tryb pracy",
@@ -5438,7 +5970,8 @@
       "max_cykle_prod": {
         "type": "number",
         "label": "Maks. cykle (producent)",
-        "required": false
+        "required": false,
+        "hint": "jeśli znane"
       },
       "max_moto_prod": {
         "type": "number",
@@ -5475,21 +6008,25 @@
       },
       "q_max": {
         "type": "number",
-        "label": "Udźwig maksymalny Q_max [kg]",
+        "label": "Udźwig maksymalny Q<sub>max</sub>",
         "required": true,
         "unit_type": "mass",
-        "default_unit": "kg"
+        "default_unit": "kg",
+        "unit_options": [
+          "kg",
+          "t"
+        ]
       },
       "h_max": {
         "type": "number",
-        "label": "Hmax (Maks. wysokość)",
+        "label": "Maksymalna wysokość podnoszenia h<sub>max</sub>",
         "required": false,
         "unit_type": "length",
         "default_unit": "m"
       },
       "L_b_max": {
         "type": "number",
-        "label": "Maksymalny zasięg boczny L_b_max",
+        "label": "Maksymalny zasięg boczny L<sub>b_max</sub>",
         "required": false,
         "unit_type": "length",
         "default_unit": "m",
@@ -5525,7 +6062,7 @@
       },
       "ostatni_resurs": {
         "type": "number",
-        "label": "Procent wykorzystania z ostatnich obliczeń resursu [%]",
+        "label": "Procent wykorzystania resursu z ostatnich obliczeń",
         "required": false,
         "show_if": {
           "field": "ponowny_resurs",
@@ -5642,7 +6179,7 @@
       },
       "diagram_kd": {
         "type": "diagram",
-        "label": "Widmo obciążeń Kd",
+        "label": "Widmo obciążeń K<sub>d</sub>",
         "svg": "schemat_kd"
       }
     },
@@ -5692,7 +6229,7 @@
       },
       {
         "id": "kd",
-        "title": "Za pomocą kalkulatora wyznacz współczynnik Kd",
+        "title": "Za pomocą kalkulatora wyznacz współczynnik K<sub>d</sub>",
         "icon": "balance",
         "fields": [
           "diagram_kd"
@@ -5774,7 +6311,12 @@
       "lata_pracy": {
         "type": "number",
         "label": "Ilość przepracowanych lat",
-        "required": true
+        "required": true,
+        "unit_options": [
+          "lata",
+          "miesiące"
+        ],
+        "default_unit": "lata"
       },
       "tryb_pracy": {
         "label": "Tryb pracy",
@@ -5818,14 +6360,19 @@
       "max_cykle_prod": {
         "type": "number",
         "label": "Maks. cykle (producent)",
-        "required": false
+        "required": false,
+        "hint": "jeśli znane"
       },
       "q_max": {
         "type": "number",
-        "label": "Udźwig maksymalny Q_max [kg]",
+        "label": "Udźwig maksymalny Q<sub>max</sub>",
         "required": true,
         "unit_type": "mass",
-        "default_unit": "kg"
+        "default_unit": "kg",
+        "unit_options": [
+          "kg",
+          "t"
+        ]
       },
       "ponowny_resurs": {
         "type": "select",
@@ -5838,7 +6385,7 @@
       },
       "ostatni_resurs": {
         "type": "number",
-        "label": "Procent wykorzystania z ostatnich obliczeń resursu [%]",
+        "label": "Procent wykorzystania resursu z ostatnich obliczeń",
         "required": false,
         "show_if": {
           "field": "ponowny_resurs",
@@ -5913,7 +6460,7 @@
       },
       "diagram_kd": {
         "type": "diagram",
-        "label": "Widmo obciążeń Kd",
+        "label": "Widmo obciążeń K<sub>d</sub>",
         "svg": "schemat_kd"
       }
     },
@@ -5957,7 +6504,7 @@
       },
       {
         "id": "kd",
-        "title": "Za pomocą kalkulatora wyznacz współczynnik Kd",
+        "title": "Za pomocą kalkulatora wyznacz współczynnik K<sub>d</sub>",
         "icon": "balance",
         "fields": [
           "diagram_kd"
@@ -6016,7 +6563,12 @@
       "lata_pracy": {
         "type": "number",
         "label": "Ilość przepracowanych lat",
-        "required": true
+        "required": true,
+        "unit_options": [
+          "lata",
+          "miesiące"
+        ],
+        "default_unit": "lata"
       },
       "tryb_pracy": {
         "label": "Tryb pracy",
@@ -6060,14 +6612,19 @@
       "max_cykle_prod": {
         "type": "number",
         "label": "Maks. cykle (producent)",
-        "required": false
+        "required": false,
+        "hint": "jeśli znane"
       },
       "q_max": {
         "type": "number",
-        "label": "Udźwig maksymalny Q_max [kg]",
+        "label": "Udźwig maksymalny Q<sub>max</sub>",
         "required": true,
         "unit_type": "mass",
-        "default_unit": "kg"
+        "default_unit": "kg",
+        "unit_options": [
+          "kg",
+          "t"
+        ]
       },
       "ponowny_resurs": {
         "type": "select",
@@ -6080,7 +6637,7 @@
       },
       "ostatni_resurs": {
         "type": "number",
-        "label": "Procent wykorzystania z ostatnich obliczeń resursu [%]",
+        "label": "Procent wykorzystania resursu z ostatnich obliczeń",
         "required": false,
         "show_if": {
           "field": "ponowny_resurs",
@@ -6155,7 +6712,7 @@
       },
       "diagram_kd": {
         "type": "diagram",
-        "label": "Widmo obciążeń Kd",
+        "label": "Widmo obciążeń K<sub>d</sub>",
         "svg": "schemat_kd"
       }
     },
@@ -6199,7 +6756,7 @@
       },
       {
         "id": "kd",
-        "title": "Za pomocą kalkulatora wyznacz współczynnik Kd",
+        "title": "Za pomocą kalkulatora wyznacz współczynnik K<sub>d</sub>",
         "icon": "balance",
         "fields": [
           "diagram_kd"

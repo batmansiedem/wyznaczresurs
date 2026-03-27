@@ -12,6 +12,7 @@
       <q-tab name="users" icon="group" label="Użytkownicy" />
       <q-tab name="transactions" icon="swap_horiz" label="Transakcje" />
       <q-tab name="invoices" icon="receipt_long" label="Faktury / Zestawienia" />
+      <q-tab name="pricing" icon="payments" label="Cennik" />
       <q-tab name="stats" icon="bar_chart" label="Statystyki" />
     </q-tabs>
 
@@ -283,6 +284,43 @@
         </q-card>
       </q-tab-panel>
 
+      <!-- ==================== TAB: CENNIK GŁÓWNY ==================== -->
+      <q-tab-panel name="pricing" class="q-pa-none">
+        <div class="row items-center q-mb-md">
+          <div class="col">
+            <div class="text-h6 text-weight-bold">Cennik globalny kalkulatorów</div>
+            <div class="text-caption text-grey-7">Zdefiniuj domyślne ceny punktowe dla wszystkich użytkowników.</div>
+          </div>
+          <div class="col-auto">
+            <q-btn icon="save" label="Zapisz wszystkie zmiany" color="primary" unelevated
+              :loading="pricingLoading" @click="saveAllPrices" />
+          </div>
+        </div>
+
+        <q-card flat bordered class="rounded-borders shadow-1">
+          <q-table
+            :rows="allCalculators"
+            :columns="pricingColumns"
+            row-key="id"
+            flat
+            hide-bottom
+            :pagination="{ rowsPerPage: 0 }"
+            :loading="pricingLoading"
+          >
+            <template #body-cell-premium_cost="props">
+              <q-td :props="props">
+                <q-input v-model.number="props.row.premium_cost" type="number" outlined dense suffix="pkt" style="width:120px" />
+              </q-td>
+            </template>
+            <template #body-cell-premium_cost_recurring="props">
+              <q-td :props="props">
+                <q-input v-model.number="props.row.premium_cost_recurring" type="number" outlined dense suffix="pkt" style="width:120px" />
+              </q-td>
+            </template>
+          </q-table>
+        </q-card>
+      </q-tab-panel>
+
       <!-- ==================== TAB: STATYSTYKI ==================== -->
       <q-tab-panel name="stats" class="q-pa-none">
         <div v-if="statsLoading" class="text-center q-pa-xl">
@@ -374,10 +412,11 @@
             </div>
           </div>
 
-          <!-- Zakładki: Obliczenia | Faktury | Logotypy | Podpisy -->
+          <!-- Zakładki: Obliczenia | Faktury | Indywidualne ceny | Logotypy | Podpisy -->
           <q-tabs v-model="detailTab" dense indicator-color="primary" active-color="primary" align="left" class="q-mb-sm">
             <q-tab name="obliczenia" icon="calculate" :label="`Obliczenia (${userTransactions.length})`" />
             <q-tab name="faktury" icon="receipt_long" :label="`Faktury (${userInvoices.length})`" />
+            <q-tab name="znizka" icon="percent" label="Zniżka" />
             <q-tab name="logotypy" icon="photo_library" :label="`Logotypy (${userLogos.length})`" />
             <q-tab name="podpisy" icon="draw" :label="`Podpisy (${userSignatures.length})`" />
           </q-tabs>
@@ -534,6 +573,34 @@
                   Łącznie punktów: {{ userInvoices.reduce((s, i) => s + (i.points_added || 0), 0) }}
                 </q-chip>
               </div>
+            </q-tab-panel>
+
+            <!-- ---- ZNIŻKA ---- -->
+            <q-tab-panel name="znizka" class="q-pa-md">
+              <q-card flat bordered class="rounded-borders">
+                <q-card-section>
+                  <div class="text-subtitle1 text-weight-bold q-mb-md">Indywidualna zniżka użytkownika</div>
+                  <div class="row q-col-gutter-md items-center">
+                    <div class="col-12 col-sm-6">
+                      <q-input
+                        v-model.number="selectedUser.discount_percent"
+                        label="Zniżka procentowa (%)"
+                        outlined dense type="number"
+                        min="0" max="100" suffix="%"
+                        hint="Zniżka naliczana od ceny punktowej każdego kalkulatora"
+                      />
+                    </div>
+                    <div class="col-12 col-sm-auto">
+                      <q-btn
+                        label="Zastosuj zniżkę"
+                        color="primary" unelevated
+                        icon="save"
+                        @click="updateUserAdminSettings"
+                      />
+                    </div>
+                  </div>
+                </q-card-section>
+              </q-card>
             </q-tab-panel>
 
             <!-- ---- LOGOTYPY ---- -->
@@ -858,7 +925,7 @@
           </div>
           <q-card flat bordered class="rounded-borders q-mb-md">
             <div v-for="(val, key) in nonIdentInputData" :key="key" class="data-row">
-              <span class="data-key">{{ fieldLabel(key) }}</span>
+              <span class="data-key" v-html="fieldLabel(key)"></span>
               <span class="data-val">{{ formatVal(val) }}</span>
             </div>
           </q-card>
@@ -873,10 +940,23 @@
             <q-icon name="lock" size="2rem" />
             <div>Wyniki zablokowane — brak punktów premium</div>
           </div>
+          <div v-if="selectedTx.output_data" class="q-mt-md">
+            <div class="calc-section-bar q-mb-md">
+              <q-icon name="assessment" size="14px" />
+              Pełny raport obliczeń (widok użytkownika)
+            </div>
+            <q-card flat bordered class="q-pa-md bg-white text-black">
+              <CalculationResultReport
+                :result="selectedTx"
+                :show-pdf-actions="false"
+              />
+            </q-card>
+          </div>
+
           <q-card v-else flat bordered class="rounded-borders q-mb-md">
             <div v-for="(val, key) in selectedTx.output_data" :key="key"
               class="data-row" :class="isKeyResult(key) ? 'data-row--highlight' : ''">
-              <span class="data-key">{{ fieldLabel(key) }}</span>
+              <span class="data-key" v-html="fieldLabel(key)"></span>
               <span class="data-val text-weight-bold">{{ formatVal(val) }}</span>
             </div>
           </q-card>
@@ -1006,6 +1086,9 @@
               </div>
               <div class="col-12 col-sm-6">
                 <q-input v-model.number="editUser.premium" label="Punkty Premium" outlined dense type="number" min="0" suffix="pkt" />
+              </div>
+              <div class="col-12 col-sm-6">
+                <q-input v-model.number="editUser.discount_percent" label="Zniżka procentowa (%)" outlined dense type="number" min="0" max="100" suffix="%" />
               </div>
               <div class="col-12 col-sm-6 self-center q-gutter-x-md">
                 <q-toggle v-model="editUser.is_active" label="Konto aktywne" />
@@ -1229,6 +1312,7 @@ import { ref, computed, onMounted, watch } from 'vue'
 import { api } from 'boot/axios'
 import { useQuasar } from 'quasar'
 import VueApexCharts from 'vue3-apexcharts'
+import CalculationResultReport from 'components/CalculationResultReport.vue'
 
 const $q = useQuasar()
 
@@ -2029,6 +2113,7 @@ async function submitEditUser() {
       postal_code: editUser.value.postal_code,
       city: editUser.value.city,
       premium: editUser.value.premium,
+      discount_percent: editUser.value.discount_percent,
       is_active: editUser.value.is_active,
     })
     $q.notify({ type: 'positive', message: 'Zaktualizowano.', position: 'top' })
@@ -2041,19 +2126,20 @@ async function submitEditUser() {
   }
 }
 
-async function updateUserPdfSettings() {
+async function updateUserAdminSettings() {
   if (!selectedUser.value) return
   try {
     const { data } = await api.patch(`/auth/admin/users/${selectedUser.value.id}/`, {
       show_logo_on_pdf: selectedUser.value.show_logo_on_pdf,
-      show_signature_on_pdf: selectedUser.value.show_signature_on_pdf
+      show_signature_on_pdf: selectedUser.value.show_signature_on_pdf,
+      discount_percent: selectedUser.value.discount_percent
     })
-    $q.notify({ type: 'positive', message: 'Zaktualizowano ustawienia PDF użytkownika.', position: 'top', timeout: 1000 })
+    $q.notify({ type: 'positive', message: 'Zaktualizowano ustawienia użytkownika.', position: 'top', timeout: 1000 })
     // Aktualizacja w głównej liście
     const idx = users.value.findIndex(u => u.id === data.id)
     if (idx !== -1) users.value[idx] = data
   } catch {
-    $q.notify({ type: 'negative', message: 'Błąd podczas aktualizacji ustawień PDF.', position: 'top' })
+    $q.notify({ type: 'negative', message: 'Błąd podczas aktualizacji ustawień.', position: 'top' })
   }
 }
 
@@ -2236,6 +2322,42 @@ function ksefLabel(s) {
   return { accepted: 'Zaakceptowana', pending: 'Oczekująca', sent: 'Wysłana', rejected: 'Odrzucona', cancelled: 'Anulowana' }[s] || s
 }
 
+// ---- Cennik Globalny ----
+const allCalculators = ref([])
+const pricingLoading = ref(false)
+const pricingColumns = [
+  { name: 'name', label: 'Kalkulator', field: 'name', align: 'left', sortable: true },
+  { name: 'premium_cost', label: 'Cena: Nowy resurs', field: 'premium_cost', align: 'center' },
+  { name: 'premium_cost_recurring', label: 'Cena: Ponowny resurs', field: 'premium_cost_recurring', align: 'center' },
+]
+
+async function fetchPricing() {
+  pricingLoading.value = true
+  try {
+    const { data } = await api.get('/calculators/definitions/')
+    allCalculators.value = data
+  } finally {
+    pricingLoading.value = false
+  }
+}
+
+async function saveAllPrices() {
+  pricingLoading.value = true
+  try {
+    const pricesPayload = allCalculators.value.map(c => ({
+      id: c.id,
+      premium_cost: c.premium_cost,
+      premium_cost_recurring: c.premium_cost_recurring
+    }))
+    await api.post('/calculators/definitions/update_prices/', { prices: pricesPayload })
+    $q.notify({ type: 'positive', message: 'Cennik zaktualizowany.', position: 'top' })
+  } catch {
+    $q.notify({ type: 'negative', message: 'Błąd podczas aktualizacji cennika.', position: 'top' })
+  } finally {
+    pricingLoading.value = false
+  }
+}
+
 onMounted(() => {
   fetchUsers()
   fetchStats()
@@ -2245,6 +2367,7 @@ onMounted(() => {
 
 watch(mainTab, tab => {
   if (tab === 'stats' && !stats.value) fetchStats()
+  if (tab === 'pricing' && !allCalculators.value.length) fetchPricing()
 })
 </script>
 
@@ -2267,9 +2390,9 @@ watch(mainTab, tab => {
 }
 .data-row:last-child { border-bottom: none; }
 .data-key {
-  color: #777;
   flex-shrink: 0;
-  max-width: 55%;
+  max-width: 70%;
+  opacity: 0.8;
 }
 .data-val {
   text-align: right;
