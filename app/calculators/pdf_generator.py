@@ -21,7 +21,7 @@ from reportlab.lib.units import cm, mm
 from reportlab.lib.styles import ParagraphStyle
 from reportlab.platypus import (
     SimpleDocTemplate, Paragraph, Table, TableStyle,
-    Spacer, Image, PageBreak, HRFlowable,
+    Spacer, Image, PageBreak, HRFlowable, KeepTogether, CondPageBreak,
 )
 from reportlab.graphics.shapes import Drawing, Rect, String, Line, Circle, PolyLine, Polygon
 from reportlab.pdfbase import pdfmetrics
@@ -37,21 +37,22 @@ pdfmetrics.registerFont(TTFont('DVSB', os.path.join(FONT_PATH, 'DejaVuSans-Bold.
 PAGE_W, PAGE_H = A4
 MARGIN_H = 1.5 * cm
 MARGIN_V = 1.5 * cm
-MARGIN_TOP = 2.5 * cm   # górny margines (accommodates canvas page header)
+MARGIN_TOP = 2.0 * cm   # górny margines (canvas nagłówek zajmuje ~1.5cm strefy nad treścią)
 USABLE_W = PAGE_W - 2 * MARGIN_H   # ~18 cm
 
 # Kolumny tabeli parametrów: etykieta | wartość | jednostka
-COL_LABEL = 11.5 * cm
-COL_VALUE = 4.5 * cm
-COL_UNIT  = USABLE_W - COL_LABEL - COL_VALUE  # ~2 cm
+COL_LABEL = 9.5 * cm
+COL_VALUE = 6.0 * cm
+COL_UNIT  = USABLE_W - COL_LABEL - COL_VALUE  # ~2.5 cm
 
 # ── Kolory bazowe (szarości) ─────────────────────────────────────────────────
 C_WHITE    = colors.white
 C_BLACK    = colors.HexColor('#1a1a2e')
 C_GREY_TXT = colors.HexColor('#555555')
-C_GREY_ROW = colors.HexColor('#f7f8fa')    # przemienne tło wiersza
-C_GREY_SEP = colors.HexColor('#e0e4ea')    # linia oddzielająca
+C_GREY_ROW = colors.white                  # brak przemiennego tła — oszczędność tuszu
+C_GREY_SEP = colors.HexColor('#d8dce4')    # linia oddzielająca (delikatna)
 C_GREY_HDR = colors.HexColor('#eef0f4')    # tło nagłówka sekcji
+C_SECONDARY = colors.HexColor('#1976D2')   # secondary blue (jak na stronie — kolor "resurs")
 
 
 # ── Pomocnicze ───────────────────────────────────────────────────────────────
@@ -95,6 +96,23 @@ def _get_num(raw):
         return float(str(raw).replace(',', '.').replace(' ', ''))
     except (ValueError, TypeError):
         return None
+
+
+def _fmt_num(s: str) -> str:
+    """Formatuje liczbę do wyświetlenia: 2 miejsca po przecinku, spacja jako separator tysięcy,
+    bez notacji wykładniczej. Zwraca niezmieniony string jeśli to nie liczba."""
+    if s in ('-', '', None):
+        return s or '-'
+    try:
+        f = float(str(s).replace(',', '.').replace(' ', ''))
+        if abs(f - round(f)) < 1e-9 and abs(f) < 1e12:
+            return f'{int(round(f)):,}'.replace(',', ' ')
+        else:
+            rounded = round(f, 2)
+            parts = f'{rounded:,.2f}'.split('.')
+            return parts[0].replace(',', ' ') + ',' + parts[1]
+    except (ValueError, TypeError):
+        return str(s)
 
 
 def _split_value_unit(raw, unit_hint: str = '') -> tuple[str, str]:
@@ -149,13 +167,11 @@ def _param_table(rows: list, theme: colors.Color, is_results: bool = False) -> T
     val_color = theme if is_results else C_BLACK
 
     for i, (lbl, val, unit) in enumerate(rows):
-        bg = C_GREY_ROW if i % 2 == 1 else C_WHITE
         tdata.append([
             _p(lbl,  font='DVS',  size=8.5, color=C_GREY_TXT),
             _p(val,  font='DVSB', size=9,   color=val_color, align=2),
             _p(unit, font='DVS',  size=8,   color=C_GREY_TXT),
         ])
-        tstyle.append(('BACKGROUND', (0, i), (-1, i), bg))
 
     # Lewa krawędź w kolorze motywu
     tstyle.append(('LINEBEFORE', (0, 0), (0, -1), 3, _alpha(theme, 0.6)))
@@ -170,10 +186,8 @@ def _section_header(text: str, theme: colors.Color) -> Table:
     cell = _p(text.upper(), font='DVSB', size=8, color=theme)
     t = Table([[cell]], colWidths=[USABLE_W])
     t.setStyle(TableStyle([
-        ('BACKGROUND',    (0, 0), (0, 0), _alpha(theme, 0.08)),
         ('LINEBEFORE',    (0, 0), (0, 0), 4, theme),
         ('LINEBELOW',     (0, 0), (0, 0), 0.5, _alpha(theme, 0.3)),
-        ('LINETOP',       (0, 0), (0, 0), 0.5, _alpha(theme, 0.15)),
         ('LEFTPADDING',   (0, 0), (0, 0), 12),
         ('RIGHTPADDING',  (0, 0), (0, 0), 10),
         ('TOPPADDING',    (0, 0), (0, 0), 7),
@@ -189,14 +203,15 @@ def _bar_chart(bars: list, theme: colors.Color) -> Drawing:
     bars: list of (label, value, max_value)
     Poziomy wykres — pill-shaped słupki, subtelna siatka.
     """
-    LABEL_W  = 7.5 * cm
-    BAR_ZONE = USABLE_W - LABEL_W
-    ROW_H    = 1.2 * cm
-    BAR_H    = ROW_H * 0.48
-    BAR_OFF  = (ROW_H - BAR_H) / 2
-    AXIS_H   = 0.75 * cm
-    TOTAL_H  = ROW_H * len(bars) + AXIS_H
-    RR       = BAR_H / 2   # promień zaokrąglenia (pill)
+    LABEL_W   = 7.5 * cm
+    RIGHT_PAD = 1.6 * cm   # margines prawy na etykietę wartości
+    BAR_ZONE  = USABLE_W - LABEL_W - RIGHT_PAD
+    ROW_H     = 1.2 * cm
+    BAR_H     = ROW_H * 0.48
+    BAR_OFF   = (ROW_H - BAR_H) / 2
+    AXIS_H    = 0.75 * cm
+    TOTAL_H   = ROW_H * len(bars) + AXIS_H
+    RR        = BAR_H / 2   # promień zaokrąglenia (pill)
 
     d = Drawing(USABLE_W, TOTAL_H)
 
@@ -218,12 +233,12 @@ def _bar_chart(bars: list, theme: colors.Color) -> Drawing:
         ratio  = float(val) / max(float(max_val), 0.001)
         fill_w = max(RR * 2, ratio * BAR_ZONE)
         bar_c  = colors.HexColor('#C62828') if ratio >= 1.0 else theme
-        val_str = f'{float(val):.0f}' if isinstance(val, (int, float)) else str(val)
+        val_str = _fmt_num(str(int(round(float(val)))) if isinstance(val, (int, float)) else str(val))
 
-        # Track — pill tło
+        # Track — kontur bez wypełnienia
         d.add(Rect(LABEL_W, y_row + BAR_OFF, BAR_ZONE, BAR_H,
-                   fillColor=_alpha(theme, 0.09), strokeColor=_alpha(theme, 0.12),
-                   strokeWidth=0.5, rx=RR, ry=RR))
+                   fillColor=None, strokeColor=_alpha(theme, 0.25),
+                   strokeWidth=0.7, rx=RR, ry=RR))
         # Wypełnienie — pill kolor
         d.add(Rect(LABEL_W, y_row + BAR_OFF, fill_w, BAR_H,
                    fillColor=bar_c, strokeColor=None, rx=RR, ry=RR))
@@ -338,7 +353,6 @@ def _diagram_kd(input_data: dict, theme: colors.Color) -> list:
             _p(cv,     font='DVS',  size=8, color=C_BLACK, align=1),
         ])
     tstyle = [
-        ('BACKGROUND', (0, 0), (-1, 0), _alpha(theme, 0.12)),
         ('LINEBEFORE',  (0, 0), (0, -1), 3, theme),
         ('LINEBELOW',   (0, 0), (-1, -1), 0.3, C_GREY_SEP),
         ('TOPPADDING',    (0, 0), (-1, -1), 5),
@@ -348,9 +362,6 @@ def _diagram_kd(input_data: dict, theme: colors.Color) -> list:
         ('VALIGN',  (0, 0), (-1, -1), 'MIDDLE'),
         ('ALIGN',   (0, 0), (-1, -1), 'CENTER'),
     ]
-    for ri in range(1, len(tdata)):
-        tstyle.append(('BACKGROUND', (0, ri), (-1, ri),
-                       C_GREY_ROW if ri % 2 == 0 else C_WHITE))
     CW = TBL_W / 3
     tbl = Table(tdata, colWidths=[CW, CW, CW])
     tbl.setStyle(TableStyle(tstyle))
@@ -363,7 +374,7 @@ def _diagram_kd(input_data: dict, theme: colors.Color) -> list:
         ('TOPPADDING',    (0, 0), (-1, -1), 0),
         ('BOTTOMPADDING', (0, 0), (-1, -1), 0),
     ]))
-    return [_section_header('Widmo obciążeń — Kd (widmo klas ładunku)', theme),
+    return [_section_header('Współczynnik K_d i stan obciążenia', theme),
             Spacer(1, 0.15 * cm), combo, Spacer(1, 0.35 * cm)]
 
 
@@ -519,7 +530,6 @@ def _diagram_ldr(input_data: dict, theme: colors.Color) -> list:
             _p(f'{pi_val:.0f}',     font='DVSB', size=8,   color=theme,      align=1),
         ])
     tstyle = [
-        ('BACKGROUND',  (0, 0), (-1, 0), _alpha(theme, 0.12)),
         ('LINEBEFORE',  (0, 0), (0, -1), 3, theme),
         ('LINEBELOW',   (0, 0), (-1, -1), 0.3, C_GREY_SEP),
         ('TOPPADDING',    (0, 0), (-1, -1), 4),
@@ -529,9 +539,6 @@ def _diagram_ldr(input_data: dict, theme: colors.Color) -> list:
         ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
         ('ALIGN',  (0, 0), (-1, -1), 'CENTER'),
     ]
-    for ri in range(1, len(tdata)):
-        tstyle.append(('BACKGROUND', (0, ri), (-1, ri),
-                       C_GREY_ROW if ri % 2 == 0 else C_WHITE))
     CW = TBL_W / 4
     tbl = Table(tdata, colWidths=[CW, CW, CW, CW])
     tbl.setStyle(TableStyle(tstyle))
@@ -698,7 +705,6 @@ def _diagram_hdr(input_data: dict, theme: colors.Color) -> list:
                font='DVSB', size=8, color=theme, align=1),
         ])
     tstyle = [
-        ('BACKGROUND', (0, 0), (-1, 0), _alpha(theme, 0.12)),
         ('LINEBEFORE',  (0, 0), (0, -1), 3, theme),
         ('LINEBELOW',   (0, 0), (-1, -1), 0.3, C_GREY_SEP),
         ('TOPPADDING',    (0, 0), (-1, -1), 5),
@@ -708,9 +714,6 @@ def _diagram_hdr(input_data: dict, theme: colors.Color) -> list:
         ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
         ('ALIGN',  (0, 0), (-1, -1), 'CENTER'),
     ]
-    for ri in range(1, len(tdata)):
-        tstyle.append(('BACKGROUND', (0, ri), (-1, ri),
-                       C_GREY_ROW if ri % 2 == 0 else C_WHITE))
     CW = TBL_W / 3
     tbl = Table(tdata, colWidths=[CW, CW, CW])
     tbl.setStyle(TableStyle(tstyle))
@@ -805,7 +808,6 @@ def _diagram_ad(input_data: dict, theme: colors.Color) -> list:
             _p(f'{val:.0f}', font='DVSB', size=9, color=ac, align=1),
         ])
     tstyle = [
-        ('BACKGROUND', (0, 0), (-1, 0), _alpha(theme, 0.12)),
         ('LINEBEFORE',  (0, 0), (0, -1), 3, theme),
         ('LINEBELOW',   (0, 0), (-1, -1), 0.3, C_GREY_SEP),
         ('TOPPADDING',    (0, 0), (-1, -1), 6),
@@ -815,9 +817,6 @@ def _diagram_ad(input_data: dict, theme: colors.Color) -> list:
         ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
         ('ALIGN',  (0, 0), (-1, -1), 'CENTER'),
     ]
-    for ri in range(1, len(tdata)):
-        tstyle.append(('BACKGROUND', (0, ri), (-1, ri),
-                       C_GREY_ROW if ri % 2 == 0 else C_WHITE))
     CW = TBL_W / 2
     tbl = Table(tdata, colWidths=[CW, CW])
     tbl.setStyle(TableStyle(tstyle))
@@ -884,29 +883,27 @@ def _build_header(result, calc_name: str, logo_obj, theme: colors.Color) -> list
     logo_w_cm = 4.5
     logo_pos = 'right'
 
-    # Logo: pokaż tylko jeśli użytkownik ma włączoną opcję w profilu
+    # Logo: pokaż jeśli użytkownik ma włączoną opcję i wykupione logo
     use_logo = getattr(result.user, 'show_logo_on_pdf', True)
-    if use_logo:
-        # Jeśli przekazano konkretne logo (z dropdownu), użyj go. 
-        # W przeciwnym razie użyj domyślnego loga użytkownika.
+    has_purchased = getattr(result.user, 'has_custom_logo', False)
+    if use_logo and (logo_obj or has_purchased):
         active_img_obj = logo_obj
         if not active_img_obj:
-            active_img_obj = getattr(result.user, 'custom_logo', None)
-            # Jeśli user ma wiele logotypów, pobierz domyślny z modelu UserLogo
-            if not active_img_obj:
-                try:
-                    from users.models import UserLogo
-                    active_img_obj = UserLogo.objects.filter(user=result.user, is_default=True).first()
-                except Exception:
-                    pass
+            try:
+                from users.models import UserLogo
+                active_img_obj = (
+                    UserLogo.objects.filter(user=result.user, is_default=True).first()
+                    or UserLogo.objects.filter(user=result.user).order_by('-created_at').first()
+                )
+            except Exception:
+                pass
 
         if active_img_obj:
-            # Obsługa zarówno starych logotypów (FileField na User) jak i nowych (UserLogo)
             active_img = getattr(active_img_obj, 'image', active_img_obj)
-            logo_w_mm  = getattr(active_img_obj, 'width', getattr(result.user, 'logo_width', 45))
-            logo_h_mm  = getattr(active_img_obj, 'height', getattr(result.user, 'logo_height', 20))
+            logo_w_mm  = getattr(active_img_obj, 'width',    getattr(result.user, 'logo_width',    45))
+            logo_h_mm  = getattr(active_img_obj, 'height',   getattr(result.user, 'logo_height',   20))
             logo_pos   = getattr(active_img_obj, 'position', getattr(result.user, 'logo_position', 'right'))
-            
+
             logo_w_cm  = logo_w_mm / 10.0
             if active_img and hasattr(active_img, 'path'):
                 try:
@@ -923,46 +920,111 @@ def _build_header(result, calc_name: str, logo_obj, theme: colors.Color) -> list
                 except Exception:
                     pass
 
-    title = _p(f'Wyznaczenie resursu — {calc_name}',
-               font='DVSB', size=12, color=theme)
-    subtitle = _p(
-        f'Data obliczeń: {result.created_at.strftime("%d.%m.%Y")}   '
-        f'Użytkownik: {result.user.email}',
-        font='DVS', size=8, color=C_GREY_TXT)
-    txt_block = Table([[title], [subtitle]],
-                      colWidths=[USABLE_W - (logo_w_cm + 0.5) * cm if logo_img else USABLE_W])
+    nr_fab = result.input_data.get('nr_fabryczny', '') if result.input_data else ''
+
+    # Blok tekstowy: tytuł + nr fabryczny + data
+    row1 = _p(f'Wyznaczenie resursu — {calc_name}',
+              font='DVSB', size=14, color=theme)
+    detail_parts = []
+    if nr_fab:
+        detail_parts.append(f'Nr fabryczny: {nr_fab}')
+    detail_parts.append(f'Data obliczeń: {result.created_at.strftime("%d.%m.%Y")}')
+    row2 = _p('   |   '.join(detail_parts), font='DVS', size=8.5, color=C_GREY_TXT)
+
+    # Obszar logo: 5cm dla niestandardowego loga lub brandingu serwisu
+    LOGO_ZONE_W = 5.0 * cm
+    txt_w = USABLE_W - LOGO_ZONE_W
+
+    txt_block = Table([[row1], [row2]], colWidths=[txt_w])
+    txt_block.setStyle(TableStyle([
+        ('LEFTPADDING',   (0, 0), (-1, -1), 0),
+        ('RIGHTPADDING',  (0, 0), (-1, -1), 8),
+        ('TOPPADDING',    (0, 0), (-1, -1), 0),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 0),
+        ('VALIGN',        (0, 0), (-1, -1), 'MIDDLE'),
+    ]))
+
+    # Pozycja top_center: logo wyśrodkowane nad blokiem tekstowym
+    if logo_pos == 'top_center' and logo_img:
+        logo_t = Table([[logo_img]], colWidths=[USABLE_W])
+        logo_t.setStyle(TableStyle([
+            ('ALIGN',         (0, 0), (0, 0), 'CENTER'),
+            ('LEFTPADDING',   (0, 0), (0, 0), 0),
+            ('RIGHTPADDING',  (0, 0), (0, 0), 0),
+            ('TOPPADDING',    (0, 0), (0, 0), 4),
+            ('BOTTOMPADDING', (0, 0), (0, 0), 6),
+        ]))
+        full_txt = Table([[row1], [row2]], colWidths=[USABLE_W])
+        full_txt.setStyle(TableStyle([
+            ('LEFTPADDING',   (0, 0), (-1, -1), 0),
+            ('RIGHTPADDING',  (0, 0), (-1, -1), 0),
+            ('TOPPADDING',    (0, 0), (-1, -1), 0),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
+            ('LINEBELOW',     (0, -1), (0, -1), 1.5, theme),
+        ]))
+        items.append(logo_t)
+        items.append(full_txt)
+        items.append(Spacer(1, 0.35 * cm))
+        return items
 
     if logo_img:
-        lw = (logo_w_cm + 0.5) * cm
-        tw = USABLE_W - lw
-        txt_block = Table([[title], [subtitle]], colWidths=[tw])
-        row = [txt_block, logo_img] if logo_pos != 'left' else [logo_img, txt_block]
-        widths = [tw, lw] if logo_pos != 'left' else [lw, tw]
-        hdr = Table([row], colWidths=widths)
+        logo_cell = logo_img
     else:
-        hdr = Table([[txt_block]], colWidths=[USABLE_W])
+        # Brak niestandardowego loga — branding serwisu w kolorach jak na stronie
+        # "wyznacz" ciemny + "resurs" secondary blue + ".com" szary (jak w navbar)
+        brand_style = ParagraphStyle(
+            'brand',
+            fontName='DVSB',
+            fontSize=11,
+            textColor=C_BLACK,
+            alignment=2,   # TA_RIGHT
+            leading=14,
+            wordWrap='LTR',
+        )
+        brand_line = Paragraph(
+            'wyznacz<font color="#1976D2">resurs</font>'
+            '<font name="DVS" size="8" color="#666666">.com</font>',
+            brand_style,
+        )
+        logo_cell = Table([[brand_line]], colWidths=[LOGO_ZONE_W])
+        logo_cell.setStyle(TableStyle([
+            ('LEFTPADDING',   (0, 0), (-1, -1), 0),
+            ('RIGHTPADDING',  (0, 0), (-1, -1), 0),
+            ('TOPPADDING',    (0, 0), (-1, -1), 0),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 0),
+            ('VALIGN',        (0, 0), (-1, -1), 'MIDDLE'),
+        ]))
 
+    row_data = [txt_block, logo_cell] if logo_pos != 'left' else [logo_cell, txt_block]
+    widths = [txt_w, LOGO_ZONE_W] if logo_pos != 'left' else [LOGO_ZONE_W, txt_w]
+    hdr = Table([row_data], colWidths=widths)
+
+    # Indeks kolumny tekstowej (0 gdy logo prawo/brak, 1 gdy logo lewo)
+    txt_col = 0 if logo_pos != 'left' else 1
     hdr.setStyle(TableStyle([
-        ('VALIGN',       (0, 0), (-1, -1), 'MIDDLE'),
-        ('LEFTPADDING',  (0, 0), (-1, -1), 0),
-        ('RIGHTPADDING', (0, 0), (-1, -1), 0),
-        ('TOPPADDING',   (0, 0), (-1, -1), 0),
-        ('BOTTOMPADDING',(0, 0), (-1, -1), 6),
-        ('LINEBELOW',    (0, 0), (-1, -1), 2, theme),
+        ('VALIGN',        (0, 0), (-1, -1), 'MIDDLE'),
+        ('LEFTPADDING',   (0, 0), (-1, -1), 0),
+        ('LEFTPADDING',   (txt_col, 0), (txt_col, -1), 8),  # odstęp od paska akcentu
+        ('RIGHTPADDING',  (0, 0), (-1, -1), 0),
+        ('TOPPADDING',    (0, 0), (-1, -1), 6),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
+        ('LINEBEFORE',    (txt_col, 0), (txt_col, -1), 4, theme),
+        ('LINEBELOW',     (0, 0), (-1, -1), 1.5, theme),
     ]))
     items.append(hdr)
-    items.append(Spacer(1, 0.4 * cm))
+    items.append(Spacer(1, 0.35 * cm))
     return items
 
 
 # ── Klasa canvas z numerami stron ─────────────────────────────────────────────
 
 class _NumberedCanvas(Canvas):
-    """Canvas rysujący "Strona X / Y" w stopce każdej strony."""
+    """Canvas rysujący nagłówek i stopkę na każdej stronie."""
 
-    def __init__(self, *args, theme=None, **kwargs):
+    def __init__(self, *args, theme=None, header_info=None, **kwargs):
         super().__init__(*args, **kwargs)
         self._theme = theme or colors.HexColor('#1565C0')
+        self._header = header_info or {}
         self._pages = []
 
     def showPage(self):
@@ -973,9 +1035,39 @@ class _NumberedCanvas(Canvas):
         total = len(self._pages)
         for i, page in enumerate(self._pages, 1):
             self.__dict__.update(page)
+            self._draw_page_header(i)
             self._draw_footer(i, total)
             Canvas.showPage(self)
         Canvas.save(self)
+
+    def _draw_page_header(self, page_num: int):
+        """Kompaktowy nagłówek u góry strony (od strony 2 — strona 1 ma pełny nagłówek w treści)."""
+        if page_num == 1:
+            return
+        self.saveState()
+        # Lewa kreska kolorowa (pionowa, jak akcent sekcji)
+        self.setFillColor(self._theme)
+        self.rect(MARGIN_H, PAGE_H - 1.3 * cm, 3, 0.9 * cm, fill=1, stroke=0)
+        # Tekst: nazwa kalkulatora + nr fabryczny (lewo)
+        y_txt = PAGE_H - 0.75 * cm
+        calc_name = self._header.get('calc_name', '')
+        nr_fab = self._header.get('nr_fab', '')
+        left_txt = f'Wyznaczenie resursu — {calc_name}'
+        if nr_fab:
+            left_txt += f'  |  Nr fab.: {nr_fab}'
+        self.setFont('DVSB', 8)
+        self.setFillColor(self._theme)
+        self.drawString(MARGIN_H + 8, y_txt, left_txt)
+        # Data (prawo)
+        date_str = self._header.get('date_str', '')
+        self.setFont('DVS', 7.5)
+        self.setFillColor(C_GREY_TXT)
+        self.drawRightString(PAGE_W - MARGIN_H, y_txt, date_str)
+        # Linia oddzielająca nagłówek od treści
+        self.setStrokeColor(_alpha(self._theme, 0.25))
+        self.setLineWidth(0.5)
+        self.line(MARGIN_H, PAGE_H - 1.45 * cm, PAGE_W - MARGIN_H, PAGE_H - 1.45 * cm)
+        self.restoreState()
 
     def _draw_footer(self, page_num: int, total: int):
         self.saveState()
@@ -984,15 +1076,15 @@ class _NumberedCanvas(Canvas):
         self.setStrokeColor(_alpha(self._theme, 0.35))
         self.setLineWidth(0.5)
         self.line(MARGIN_H, y + 8, PAGE_W - MARGIN_H, y + 8)
-        # Tekst strony
+        # Numer strony
         self.setFont('DVS', 7.5)
         self.setFillColor(C_GREY_TXT)
-        self.drawRightString(PAGE_W - MARGIN_H, y,
-                             f'Strona {page_num} / {total}')
-        # Serwis
-        self.setFont('DVS', 7)
-        self.setFillColor(_alpha(self._theme, 0.5))
-        self.drawString(MARGIN_H, y, 'wyznaczresurs.com')
+        self.drawRightString(PAGE_W - MARGIN_H, y, f'Strona {page_num} / {total}')
+        # Serwis — tylko dla użytkowników bez własnego brandingu
+        if not self._header.get('has_brand'):
+            self.setFont('DVS', 7)
+            self.setFillColor(_alpha(self._theme, 0.5))
+            self.drawString(MARGIN_H, y, 'wyznaczresurs.com')
         self.restoreState()
 
 
@@ -1016,8 +1108,8 @@ INPUT_LABELS = {
     'q_o':                  'Masa osprzętu Q_osp',
     'h_max':                'Maks. wysokość podnoszenia h_max',
     'v_pod':                'Prędkość podnoszenia v_pod',
-    'v_jaz':                'Prędkość jazdy',
-    'v_prz':                'Prędkość przesuwu',
+    'v_jaz':                'Prędkość jazdy v_jaz',
+    'v_prz':                'Prędkość przesuwu v_prz',
     's_sz':                 'Długość szyny jezdnej s',
     'max_cykle_prod':       'Graniczna ilość cykli wg producenta',
     'spec':                 'Wyznaczenie po pierwszym przeglądzie specjalnym',
@@ -1025,8 +1117,9 @@ INPUT_LABELS = {
     'ostatni_resurs':       'Wykorzystanie resursu — poprzednie obliczenia',
     'data_resurs':          'Data poprzednich obliczeń resursu',
     'ster':                 'Rodzaj sterowania',
-    'gnp_check':            'GNP',
-    'gnp_czas':             'Przewidywany czas pracy GNP',
+    'gnp':                  'Grupa natężenia pracy',
+    'gnp_check':            'Nie znam grupy natężenia pracy',
+    'gnp_czas':             'Przewidywany dalszy czas pracy',
     'mechanizm_pomocniczy': 'Mechanizm pomocniczy',
     'czas_pracy_mech':      'Średni czas pracy mechanizmu / cykl',
     'konstrukcja':          'Stan konstrukcji stalowej',
@@ -1047,7 +1140,32 @@ INPUT_LABELS = {
     'h_pod':                'Wysokość podnoszenia kabiny',
     'pyt_motogodzin':       'Licznik motogodzin',
     'licznik_pracy':        'Łączna ilość motogodzin',
+    'licznik_pracy_pod':    'Licznik pracy mechanizmu podnoszenia',
+    'licznik_pracy_jaz':    'Licznik pracy mechanizmu jazdy',
+    'licznik_pracy_prz':    'Licznik pracy mechanizmu przesuwu',
     'cykle_dzwig':          'Ilość jazd dźwigu',
+    # Zespoły dźwigu
+    'liny_nosne':           'Liny nośne',
+    'wciagarka':            'Wciągarka',
+    'konstrukcja_nosna':    'Konstrukcja nośna',
+    'mocowanie_lin':        'Mocowanie lin',
+    'ogranicznik_predkosci': 'Ogranicznik prędkości',
+    'chwytacze_kabiny':     'Chwytacze kabiny',
+    'kola_kabiny':          'Koła kabiny',
+    'kola_przeciwwagi':     'Koła przeciwwagi',
+    'prowadnice_kabiny':    'Prowadnice kabiny',
+    'prowadnice_przeciwwagi': 'Prowadnice przeciwwagi',
+    'zderzak_kabiny':       'Zderzak kabiny',
+    'zderzak_przeciwwagi':  'Zderzak przeciwwagi',
+    'drzwi':                'Drzwi',
+    'silownik':             'Siłownik',
+    'zawor_blokowy':        'Zawór blokowy',
+    'zawor_zwrotny':        'Zawór zwrotny',
+    'przewody_hydrauliczne': 'Przewody hydrauliczne',
+    'przekladnia':          'Przekładnia',
+    'mechanizm_zebatkowy':  'Mechanizm zębatkowy',
+    'mechanizm_srubowy':    'Mechanizm śrubowy',
+    'mocowanie_napedu':     'Mocowanie napędu',
     'naped':                'Rodzaj napędu',
     'operatorzy':           'Ilość operatorów',
     'powierzchnia':         'Stan powierzchni magazynu',
@@ -1070,14 +1188,21 @@ INPUT_LABELS = {
     'h_3': 'Wys. podnoszenia H₃',  'cc_3': 'Udział czasu T₃',
     'h_4': 'Wys. podnoszenia H₄',  'cc_4': 'Udział czasu T₄',
     'h_5': 'Wys. podnoszenia H₅',  'cc_5': 'Udział czasu T₅',
+    # Zakresy godzin pracy dźwigu
+    'zakres_godzin_1': 'Ilość godz. pracy dźwigu 5:00–9:00',
+    'zakres_godzin_2': 'Ilość godz. pracy dźwigu 9:00–13:00',
+    'zakres_godzin_3': 'Ilość godz. pracy dźwigu 13:00–17:00',
+    'zakres_godzin_4': 'Ilość godz. pracy dźwigu 17:00–21:00',
+    'zakres_godzin_5': 'Ilość godz. pracy dźwigu 21:00–0:00',
+    'zakres_godzin_6': 'Ilość godz. pracy dźwigu 0:00–5:00',
 }
 
 # Etykiety wynikowe: klucz → (etykieta, jednostka)
 OUTPUT_LABELS = {
     'resurs_wykorzystanie':      ('Stopień wykorzystania resursu',          '%'),
-    'U_WSK':                     ('Projektowa zdolność cyklowa U_WSK',     'cykli'),
+    'U_WSK':                     ('Maksymalna ilość cykli U_WSK',          'cykli'),
     'T_WSK':                     ('Projektowa zdolność czasowa T_WSK',     'h'),
-    'F_X':                       ('Współczynnik niepewności F_X',           '—'),
+    'F_X':                       ('Współczynnik F_X',                       '—'),
     'ilosc_cykli':               ('Ilość odbytych cykli',                   'cykli'),
     'ilosc_cykli_rok':           ('Ilość cykli / rok',                     'cykli/rok'),
     'czas_uzytkowania_mech':     ('Czas użytkowania mechanizmu',            'h'),
@@ -1095,23 +1220,40 @@ OUTPUT_LABELS = {
     'wiek_dzwigu':               ('Wiek dźwigu',                            'lat'),
 }
 
-_PARAM_ORDER = [
-    'typ', 'nr_fabryczny', 'nr_ewidencyjny', 'nr_udt', 'producent',
-    'wykonawca', 'uwagi',
-    'q_max', 'h_max', 'v_pod', 'v_jaz', 'v_prz', 's_sz',
-    'ponowny_resurs', 'data_resurs', 'ostatni_resurs',
-    'lata_pracy', 'ilosc_cykli', 'cykle_zmiana', 'dni_robocze', 'tryb_pracy',
-    'sposob_rejestracji', 'max_cykle_prod',
-    'ster', 'gnp_check', 'gnp_czas', 'mechanizm_pomocniczy', 'czas_pracy_mech',
-    'q_o', 'spec',
-    'konstrukcja', 'automatyka', 'sworznie', 'ciegna',
-    'eksploatacja', 'szczelnosc', 'hamulce', 'nakretka', 'warkocz',
-    'rok_budowy', 'przeznaczenie', 'operator', 'budynek', 'przystanki',
-    'liczba_dzwigow', 'h_pod', 'pyt_motogodzin', 'licznik_pracy', 'cykle_dzwig',
-    'naped', 'operatorzy', 'powierzchnia', 'serwis',
-    'dlugosc_widel', 'kat_masztu_alfa', 'kat_masztu_beta',
-    'motogodziny', 'efektywny_czas', 'klasa_naprezenia',
+_PARAM_SECTIONS = [
+    ('Dane urządzenia', [
+        'wykonawca', 'nr_fabryczny', 'nr_ewidencyjny', 'nr_udt', 'producent',
+        'typ', 'q_max', 'q_o', 'uwagi',
+    ]),
+    ('Informacje o obliczeniach', [
+        'spec', 'ponowny_resurs', 'data_resurs', 'ostatni_resurs',
+    ]),
+    ('Dane o eksploatacji', [
+        'lata_pracy', 'ilosc_cykli', 'cykle_zmiana', 'tryb_pracy', 'dni_robocze',
+        'sposob_rejestracji', 'gnp', 'gnp_check', 'gnp_czas',
+        'ster', 'mechanizm_pomocniczy', 'czas_pracy_mech', 'max_cykle_prod',
+        'h_max', 'v_pod', 'v_jaz', 'v_prz', 's_sz',
+        'rok_budowy', 'przeznaczenie', 'operator', 'budynek', 'przystanki',
+        'liczba_dzwigow', 'h_pod', 'pyt_motogodzin', 'licznik_pracy', 'cykle_dzwig',
+        'licznik_pracy_pod', 'licznik_pracy_jaz', 'licznik_pracy_prz',
+        'naped', 'operatorzy', 'powierzchnia', 'serwis',
+        'dlugosc_widel', 'kat_masztu_alfa', 'kat_masztu_beta',
+        'motogodziny', 'efektywny_czas', 'klasa_naprezenia',
+    ]),
+    ('Stan techniczny', [
+        'konstrukcja', 'automatyka', 'sworznie', 'ciegna',
+        'eksploatacja', 'szczelnosc', 'hamulce', 'nakretka', 'warkocz',
+        'liny_nosne', 'wciagarka', 'konstrukcja_nosna', 'mocowanie_lin',
+        'ogranicznik_predkosci', 'chwytacze_kabiny', 'kola_kabiny', 'kola_przeciwwagi',
+        'prowadnice_kabiny', 'prowadnice_przeciwwagi', 'zderzak_kabiny', 'zderzak_przeciwwagi',
+        'drzwi', 'silownik', 'zawor_blokowy', 'zawor_zwrotny',
+        'przewody_hydrauliczne', 'przekladnia', 'mechanizm_zebatkowy', 'mechanizm_srubowy',
+        'mocowanie_napedu',
+    ]),
 ]
+
+# Płaska lista kluczy (do eliminacji duplikatów w catch-all)
+_PARAM_ORDER = [k for _, keys in _PARAM_SECTIONS for k in keys]
 
 _RESULT_ORDER = [
     'wsp_kdr', 'wsp_km', 'ldr', 'hdr', 'ss_factor',
@@ -1136,7 +1278,201 @@ _SKIP_KEYS = {
     *[f'p_{i}' for i in range(1, 26)],
     # warning_kd (wewnętrzne)
     'warning_kd',
+    # Mechanizmy wewnętrzne wózka/układnicy — wyświetlane w osobnych sekcjach
+    't_max_pod', 't_sum_pod', 'resurs_wyk_pod', 'resurs_prog_pod', 'data_prog_pod',
+    't_max_jaz', 't_sum_jaz', 'resurs_wyk_jaz', 'resurs_prog_jaz', 'data_prog_jaz',
+    't_max_prz', 't_sum_prz', 'resurs_wyk_prz', 'resurs_prog_prz', 'data_prog_prz',
+    't_max_mas', 't_sum_mas', 'resurs_wyk_mas', 'resurs_prog_mas', 'data_prog_mas',
+    # Współczynniki inżynieryjne (wewnętrzne)
+    'k_wid', 'k_oper', 'EDS_factor', 'k_sro', 'wskaznik_cykle', 'wskaznik_motogodzin',
+    'max_c', 't_max', 'k_w', 'k_k', 'k_v_pod', 'k_h_pod',
 }
+
+
+_MECH_SLUGS = {
+    'mech_podnoszenia', 'mech_jazdy_suwnicy', 'mech_jazdy_wciagarki',
+    'mech_jazdy_zurawia', 'mech_zmiany_obrotu', 'mech_zmiany_wysiegu',
+}
+
+
+def _internal_mechanisms_section(output_data: dict, slug: str, theme: colors.Color) -> list:
+    """Sekcje dla mechanizmów wewnętrznych (wózek widłowy, układnica magazynowa)."""
+    if slug not in {'wozek_jezdniowy', 'ukladnica_magazynowa'}:
+        return []
+
+    mechs = [
+        ('Mechanizm podnoszenia', 't_max_pod', 't_sum_pod', 'resurs_wyk_pod', 'resurs_prog_pod', 'data_prog_pod'),
+        ('Mechanizm jazdy', 't_max_jaz', 't_sum_jaz', 'resurs_wyk_jaz', 'resurs_prog_jaz', 'data_prog_jaz'),
+        ('Mechanizm przesuwu', 't_max_prz', 't_sum_prz', 'resurs_wyk_prz', 'resurs_prog_prz', 'data_prog_prz'),
+    ]
+    if slug == 'wozek_jezdniowy':
+        mechs.append(('Mechanizm odchylenia masztu', 't_max_mas', 't_sum_mas', 'resurs_wyk_mas', 'resurs_prog_mas', 'data_prog_mas'))
+
+    items = []
+    for mech_title, key_max, key_sum, key_wyk, key_prog, key_date in mechs:
+        t_max = _get_num(output_data.get(key_max))
+        t_sum = _get_num(output_data.get(key_sum))
+        resurs_wyk = _get_num(output_data.get(key_wyk))
+        if t_max is None and resurs_wyk is None:
+            continue
+        rows = []
+        if t_max is not None:
+            rows.append(('Maks. czas pracy T_max', _fmt_num(str(round(t_max))), 'mth'))
+        if t_sum is not None:
+            rows.append(('Czas pracy T_sum', _fmt_num(str(round(t_sum))), 'mth'))
+        if resurs_wyk is not None:
+            rows.append(('Stopień wykorzystania resursu', _fmt_num(str(resurs_wyk)), '%'))
+        prog = _get_num(output_data.get(key_prog))
+        if prog is not None and prog > 0:
+            rows.append(('Prognoza wyczerpania', _fmt_num(str(int(prog))), 'dni'))
+        data_prog = output_data.get(key_date)
+        if data_prog:
+            try:
+                from datetime import datetime as _dtm
+                data_str = _dtm.strptime(str(data_prog), '%Y-%m-%d').strftime('%d.%m.%Y')
+            except Exception:
+                data_str = str(data_prog)
+            rows.append(('Symulowana data wyczerpania', data_str, ''))
+        items.append(CondPageBreak(3 * cm))
+        items.append(_section_header(mech_title, theme))
+        items.append(Spacer(1, 0.15 * cm))
+        if rows:
+            items.append(_param_table(rows, theme, is_results=True))
+        items.append(Spacer(1, 0.3 * cm))
+        if t_max is not None and t_sum is not None and t_max > 0:
+            max_v = max(t_max, t_sum) * 1.1
+            items.append(Table(
+                [[_bar_chart([
+                    ('T_max [mth]', t_max, max_v),
+                    ('T_sum [mth]', t_sum, max_v),
+                ], theme)]],
+                colWidths=[USABLE_W]))
+            items.append(Spacer(1, 0.4 * cm))
+    return items
+
+
+def _get_nr_fabryczny(input_data: dict) -> str:
+    """Wyciąga wartość nr_fabryczny z input_data (obsługuje dict i str)."""
+    raw = input_data.get('nr_fabryczny', '')
+    if isinstance(raw, dict):
+        return str(raw.get('value', '') or '').strip()
+    return str(raw or '').strip()
+
+
+def _mechanism_summary_section(result, theme: colors.Color) -> list:
+    """Zwraca elementy PDF z zestawieniem powiązanych mechanizmów (ten sam nr_fabryczny)."""
+    from .models import CalculatorResult
+
+    current_slug = result.calculator_definition.slug
+    is_mechanism = current_slug in _MECH_SLUGS
+
+    nr_fab = _get_nr_fabryczny(result.input_data or {})
+    if not nr_fab:
+        return []
+
+    # Zapytanie: wyniki mechanizmów tego użytkownika z tym samym nr_fabryczny
+    candidate_qs = (
+        CalculatorResult.objects
+        .filter(user=result.user, is_locked=False)
+        .select_related('calculator_definition')
+        .exclude(id=result.id)
+    )
+
+    related = []
+    for r in candidate_qs:
+        if r.calculator_definition.slug not in _MECH_SLUGS:
+            continue
+        if _get_nr_fabryczny(r.input_data or {}) == nr_fab:
+            related.append(r)
+
+    if is_mechanism:
+        # Bieżący mechanizm + powiązane (inne mechanizmy tego samego urządzenia)
+        rows = [(result, True)] + [(r, False) for r in related]
+    else:
+        # Urządzenie: tylko powiązane mechanizmy
+        if not related:
+            return []
+        rows = [(r, False) for r in related]
+
+    story = []
+    story.append(CondPageBreak(6 * cm))
+    story.append(_section_header(f'Zestawienie mechanizmów — nr fabr. {nr_fab}', theme))
+    story.append(Spacer(1, 0.15 * cm))
+
+    # Nagłówek tabeli
+    tdata = [[
+        _p('Mechanizm',        font='DVSB', size=8, color=C_WHITE),
+        _p('Stan obciążenia',  font='DVSB', size=8, color=C_WHITE),
+        _p('Czas użytk. [mth]', font='DVSB', size=8, color=C_WHITE),
+        _p('T_WSK [mth]',      font='DVSB', size=8, color=C_WHITE),
+        _p('Resurs [%]',       font='DVSB', size=8, color=C_WHITE),
+        _p('Data obliczenia',  font='DVSB', size=8, color=C_WHITE),
+    ]]
+    tstyle = [
+        ('BACKGROUND',    (0, 0), (-1, 0), theme),
+        ('FONTNAME',      (0, 0), (-1, -1), 'DVS'),
+        ('FONTSIZE',      (0, 0), (-1, -1), 8),
+        ('ALIGN',         (0, 0), (-1, -1), 'CENTER'),
+        ('ALIGN',         (0, 0), (0, -1), 'LEFT'),
+        ('VALIGN',        (0, 0), (-1, -1), 'MIDDLE'),
+        ('LEFTPADDING',   (0, 0), (-1, -1), 6),
+        ('RIGHTPADDING',  (0, 0), (-1, -1), 6),
+        ('TOPPADDING',    (0, 0), (-1, -1), 5),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 5),
+        ('LINEBELOW',     (0, 0), (-1, -1), 0.3, C_GREY_SEP),
+        ('LINEBEFORE',    (0, 0), (0, -1), 3, _alpha(theme, 0.6)),
+    ]
+
+    for ri, (r, is_curr) in enumerate(rows, start=1):
+        out = r.output_data or {}
+        name = r.calculator_definition.name
+        if is_curr:
+            name += ' ★'
+        stan = str(out.get('stan_obciazenia', '-'))
+        czas_raw = out.get('czas_uzytkowania_mech', '-')
+        czas_str, _ = _split_value_unit(czas_raw)
+        t_wsk_raw = out.get('T_WSK', '-')
+        t_wsk_str, _ = _split_value_unit(t_wsk_raw)
+        resurs = str(out.get('resurs_wykorzystanie', '-'))
+        data = r.created_at.strftime('%d.%m.%Y') if r.created_at else '-'
+        tdata.append([
+            _p(name,              font='DVS',  size=8, color=C_BLACK),
+            _p(stan,              font='DVS',  size=8, color=C_GREY_TXT),
+            _p(_fmt_num(czas_str), font='DVSB', size=8, color=theme),
+            _p(_fmt_num(t_wsk_str), font='DVSB', size=8, color=theme),
+            _p(_fmt_num(resurs),  font='DVSB', size=8.5, color=theme),
+            _p(data,              font='DVS',  size=8, color=C_GREY_TXT),
+        ])
+        if is_curr:
+            tstyle.append(('BACKGROUND', (0, ri), (-1, ri), _alpha(theme, 0.08)))
+
+    CW = [6.5 * cm, 3 * cm, 2.5 * cm, 2.5 * cm, 2.2 * cm, 2.3 * cm]
+    t = Table(tdata, colWidths=CW, repeatRows=1)
+    t.setStyle(TableStyle(tstyle))
+    story.append(t)
+    story.append(Spacer(1, 0.4 * cm))
+
+    # Wykres słupkowy zużycia mechanizmów
+    chart_items = []
+    for r, is_curr in rows:
+        out = r.output_data or {}
+        resurs_val = out.get('resurs_wykorzystanie')
+        if resurs_val is not None:
+            try:
+                name = r.calculator_definition.name + (' ★' if is_curr else '')
+                chart_items.append((name, float(resurs_val)))
+            except (ValueError, TypeError):
+                pass
+
+    if len(chart_items) > 1:
+        global_max = max(max(v for _, v in chart_items) * 1.1, 100)
+        chart_rows = [(name, val, global_max) for name, val in chart_items]
+        story.append(_section_header('Porównanie — Stopień zużycia mechanizmów [%]', theme))
+        story.append(Spacer(1, 0.15 * cm))
+        story.append(Table([[_bar_chart(chart_rows, theme)]], colWidths=[USABLE_W]))
+        story.append(Spacer(1, 0.4 * cm))
+
+    return story
 
 
 # ── Główna funkcja ────────────────────────────────────────────────────────────
@@ -1148,12 +1484,14 @@ def generate_result_pdf(result, calculator_name: str,
     user_color = (getattr(logo_obj, 'theme_color', None)
                   or getattr(result.user, 'theme_color', '#1565C0'))
     THEME = colors.HexColor(user_color)
+    has_brand = bool(logo_obj or (getattr(result.user, 'theme_color', None)
+                                   and getattr(result.user, 'theme_color', '') != '#1565C0'))
 
     buffer = BytesIO()
     doc = SimpleDocTemplate(
         buffer, pagesize=A4,
         rightMargin=MARGIN_H, leftMargin=MARGIN_H,
-        topMargin=MARGIN_V, bottomMargin=MARGIN_V + 0.6 * cm,
+        topMargin=2.2 * cm, bottomMargin=MARGIN_V + 0.6 * cm,
         title=f'Resurs — {calculator_name}',
         author='wyznaczresurs.com',
     )
@@ -1162,27 +1500,52 @@ def generate_result_pdf(result, calculator_name: str,
     input_data  = result.input_data  or {}
     output_data = result.output_data or {}
 
-    # ── Nagłówek ────────────────────────────────────────────────────────────
+    # ── Nagłówek strony 1 (pełny — z logo) ─────────────────────────────────
     story += _build_header(result, calculator_name, logo_obj, THEME)
 
-    # ── Sekcja: Parametry wejściowe ──────────────────────────────────────────
-    story.append(_section_header('Parametry wejściowe', THEME))
-    story.append(Spacer(1, 0.15 * cm))
-
+    # Mapa wartości inspekcji → czytelne etykiety
+    _INSPECTION_VALS = {
+        '1': 'Bez zastrzeżeń',
+        '0.5': 'Wymagający remontu w ciągu 5 lat',
+        '0': 'Wymagający remontu w ciągu 1–2 lat',
+        '-1': 'Nie dotyczy',
+    }
     seen = set()
-    param_rows = []
-    for key in _PARAM_ORDER:
-        if key not in input_data or key in _SKIP_KEYS:
-            continue
-        val, unit = _split_value_unit(input_data[key])
-        if val == '-':
-            continue
-        label = INPUT_LABELS.get(key, key.replace('_', ' ').capitalize())
-        if not unit:
-            unit = _extract_unit(label)
-        param_rows.append((label, val, unit))
-        seen.add(key)
 
+    # ── Sekcje wejściowe ──────────────────────────────────────────────────────
+    for section_title, section_keys in _PARAM_SECTIONS:
+        section_rows = []
+        for key in section_keys:
+            if key not in input_data or key in _SKIP_KEYS:
+                continue
+            # Specjalne traktowanie ostatni_resurs: zawsze % (konwersja z mth)
+            raw_input = input_data[key]
+            if key == 'ostatni_resurs' and isinstance(raw_input, dict) and raw_input.get('unit') == 'mth':
+                T_WSK_val = float(output_data.get('T_WSK', 0) or 0)
+                if T_WSK_val > 0:
+                    pct = round(float(raw_input.get('value', 0)) / T_WSK_val * 100, 2)
+                    val, unit = str(pct), '%'
+                else:
+                    val, unit = _split_value_unit(raw_input)
+            else:
+                val, unit = _split_value_unit(raw_input)
+            if val == '-':
+                continue
+            label = INPUT_LABELS.get(key, key.replace('_', ' ').capitalize())
+            if not unit:
+                unit = _extract_unit(label)
+            val = _INSPECTION_VALS.get(str(val).strip(), val)
+            section_rows.append((label, val, unit))
+            seen.add(key)
+        if section_rows:
+            story.append(CondPageBreak(3 * cm))
+            story.append(_section_header(section_title, THEME))
+            story.append(Spacer(1, 0.15 * cm))
+            story.append(_param_table(section_rows, THEME, is_results=False))
+            story.append(Spacer(1, 0.4 * cm))
+
+    # Pozostałe pola wejściowe (nieprzypisane do żadnej sekcji)
+    extra_rows = []
     for key, raw in input_data.items():
         if key in seen or key in _SKIP_KEYS:
             continue
@@ -1192,13 +1555,70 @@ def generate_result_pdf(result, calculator_name: str,
         label = INPUT_LABELS.get(key, key.replace('_', ' ').capitalize())
         if not unit:
             unit = _extract_unit(label)
-        param_rows.append((label, val, unit))
+        val = _INSPECTION_VALS.get(str(val).strip(), val)
+        extra_rows.append((label, val, unit))
+    if extra_rows:
+        story.append(_section_header('Parametry urządzenia', THEME))
+        story.append(Spacer(1, 0.15 * cm))
+        story.append(_param_table(extra_rows, THEME, is_results=False))
+        story.append(Spacer(1, 0.4 * cm))
 
-    if param_rows:
-        story.append(_param_table(param_rows, THEME, is_results=False))
-    story.append(Spacer(1, 0.4 * cm))
+    # ── Diagramy widm obciążeń (LDR / AD / Kd) ──────────────────────────────
+    story += _diagram_ldr(input_data, THEME)
+    story += _diagram_ad(input_data, THEME)
 
-    # ── Sekcja: Wyniki techniczne ────────────────────────────────────────────
+    # ── Sekcja: Współczynnik Kd i stan obciążenia ─────────────────────────────
+    story += _diagram_kd(input_data, THEME)
+
+    _kd_has_data = any(
+        _get_num(input_data.get(f'q_{i}')) is not None or
+        _get_num(input_data.get(f'c_{i}')) is not None
+        for i in range(1, 6)
+    )
+    if _kd_has_data:
+        _STAN_OPISY_KD = {
+            'Q1': 'Q1-lekki — Ładunek nominalny podnoszony bardzo rzadko, zwykle ładunki znacznie mniejsze od nominalnego',
+            'Q2': 'Q2-przeciętny — Ładunek nominalny podnoszony rzadko, zwykle ładunki zbliżone do połowy ładunku nominalnego',
+            'Q3': 'Q3-ciężki — Ładunek nominalny podnoszony często, zwykle ładunki większe od połowy ładunku nominalnego',
+            'Q4': 'Q4-bardzo ciężki — Ładunek nominalny podnoszony regularnie i ładunki bliskie nominalnemu',
+            'L1': 'L1-lekki — Mechanizm rzadko stosowany przy małych obciążeniach',
+            'L2': 'L2-przeciętny — Mechanizm stosowany regularnie przy średnich obciążeniach',
+            'L3': 'L3-ciężki — Mechanizm często stosowany przy dużych obciążeniach',
+            'L4': 'L4-bardzo ciężki — Mechanizm regularnie stosowany przy obciążeniach bliskich maksymalnym',
+        }
+        _THRESHOLDS_Q = [(0.125, 'Q1-lekki'), (0.25, 'Q2-przeciętny'),
+                         (0.5, 'Q3-ciężki'), (10.0, 'Q4-bardzo ciężki')]
+        _THRESHOLDS_L = [(0.125, 'L1-lekki'), (0.25, 'L2-przeciętny'),
+                         (0.5, 'L3-ciężki'), (10.0, 'L4-bardzo ciężki')]
+
+        _is_mech = result.calculator_definition.slug in _MECH_SLUGS
+        _wsp_raw = output_data.get('wsp_km' if _is_mech else 'wsp_kdr')
+        _stan_kd = output_data.get('stan_obciazenia', '')
+        if (not _stan_kd or _stan_kd == 'N/A') and _wsp_raw is not None:
+            try:
+                _kd_val = float(_wsp_raw)
+                _thresh = _THRESHOLDS_L if _is_mech else _THRESHOLDS_Q
+                _stan_kd = next(s for t, s in _thresh if _kd_val <= t)
+            except Exception:
+                _stan_kd = ''
+
+        if _stan_kd and _stan_kd != 'N/A':
+            _kd_rows = []
+            if _wsp_raw is not None:
+                try:
+                    _kd_rows.append(('Współczynnik K_d', f'{float(_wsp_raw):.4f}', '—'))
+                except (ValueError, TypeError):
+                    pass
+            _stan_opis_kd = next((v for k, v in _STAN_OPISY_KD.items() if str(_stan_kd).startswith(k)), _stan_kd)
+            _kd_rows.append(('Stan obciążenia', _stan_opis_kd, ''))
+            story.append(_param_table(_kd_rows, THEME, is_results=True))
+            story.append(Spacer(1, 0.35 * cm))
+
+    # ── Diagram HDR (po tabeli Kd) ────────────────────────────────────────────
+    story += _diagram_hdr(input_data, THEME)
+
+    # ── Sekcja: Wyniki obliczeń resursu ──────────────────────────────────────
+    story.append(CondPageBreak(3 * cm))
     story.append(_section_header('Wyniki obliczeń resursu', THEME))
     story.append(Spacer(1, 0.15 * cm))
 
@@ -1212,7 +1632,7 @@ def generate_result_pdf(result, calculator_name: str,
         v, u = _split_value_unit(val, unit_hint)
         if v == '-':
             continue
-        result_rows.append((label, v, u))
+        result_rows.append((label, _fmt_num(v), u))
         seen_out.add(key)
 
     for key, raw in output_data.items():
@@ -1221,38 +1641,18 @@ def generate_result_pdf(result, calculator_name: str,
         label, unit_hint = OUTPUT_LABELS.get(key, (key.replace('_', ' ').capitalize(), ''))
         v, u = _split_value_unit(raw, unit_hint)
         if v != '-':
-            result_rows.append((label, v, u))
+            result_rows.append((label, _fmt_num(v), u))
 
     if result_rows:
         story.append(_param_table(result_rows, THEME, is_results=True))
     story.append(Spacer(1, 0.4 * cm))
 
-    # ── Status / komunikat ───────────────────────────────────────────────────
-    msg = output_data.get('resurs_message', '')
-    if msg:
-        story.append(_section_header('Status analizy', THEME))
-        story.append(Spacer(1, 0.15 * cm))
-        msg_cell = _p(msg, font='DVSB', size=9, color=THEME)
-        t = Table([[msg_cell]], colWidths=[USABLE_W])
-        t.setStyle(TableStyle([
-            ('BACKGROUND',    (0, 0), (0, 0), _alpha(THEME, 0.06)),
-            ('LINEBEFORE',    (0, 0), (0, 0), 3, THEME),
-            ('LEFTPADDING',   (0, 0), (0, 0), 12),
-            ('TOPPADDING',    (0, 0), (0, 0), 8),
-            ('BOTTOMPADDING', (0, 0), (0, 0), 8),
-        ]))
-        story.append(t)
-        story.append(Spacer(1, 0.4 * cm))
-
-    # ── Strona 2: Wykresy ────────────────────────────────────────────────────
-    story.append(PageBreak())
-    story += _build_header(result, calculator_name, logo_obj, THEME)
-
-    # Wykres: stopień wykorzystania
+    # ── Sekcja: Stopień wykorzystania resursu (wykres) ────────────────────────
     resurs_val = output_data.get('resurs_wykorzystanie')
     if resurs_val is not None:
         try:
             rv = float(resurs_val)
+            story.append(CondPageBreak(3 * cm))
             story.append(_section_header('Stopień wykorzystania resursu', THEME))
             story.append(Spacer(1, 0.15 * cm))
             story.append(Table(
@@ -1262,28 +1662,32 @@ def generate_result_pdf(result, calculator_name: str,
         except (ValueError, TypeError):
             pass
 
-    # Wykres: cykle vs U_WSK
+    # ── Sekcja: Zestawienie — cykle vs maks. ilość cykli ─────────────────────
     u_wsk  = output_data.get('U_WSK')
     ilosc  = output_data.get('ilosc_cykli') or input_data.get('ilosc_cykli')
     if u_wsk is not None and ilosc is not None:
         try:
             uv = float(u_wsk)
             iv, _ = _split_value_unit(ilosc)
-            iv = float(iv.replace(',', '.').replace(' ', ''))
-            max_v = max(uv, iv) * 1.1
-            story.append(_section_header('Zestawienie — Ilość cykli vs U_WSK', THEME))
+            iv = float(iv.replace(',', '.').replace('', '').replace(' ', ''))
+            fx = float(output_data.get('F_X', 1) or 1)
+            iv_fx = round(iv * fx, 2)
+            max_v = max(uv, iv, iv_fx) * 1.1
+            story.append(CondPageBreak(3 * cm))
+            story.append(_section_header('Zestawienie — Ilość cykli vs maks. ilość cykli', THEME))
             story.append(Spacer(1, 0.15 * cm))
             story.append(Table(
                 [[_bar_chart([
-                    ('Odbyte cykle', iv, max_v),
-                    ('Zdolność cyklowa U_WSK', uv, max_v),
+                    ('Maks. ilość cykli U_WSK', uv, max_v),
+                    ('Odbyte cykle (bez F\u2093)', iv,    max_v),
+                    ('Odbyte cykle (z F\u2093)',   iv_fx, max_v),
                 ], THEME)]],
                 colWidths=[USABLE_W]))
             story.append(Spacer(1, 0.4 * cm))
         except (ValueError, TypeError, AttributeError):
             pass
 
-    # Wykres: czas vs T_WSK
+    # ── Zestawienie — czas vs T_WSK ───────────────────────────────────────────
     t_wsk = output_data.get('T_WSK')
     czas  = output_data.get('czas_uzytkowania_mech')
     if t_wsk is not None and czas is not None:
@@ -1291,32 +1695,33 @@ def generate_result_pdf(result, calculator_name: str,
             tv = float(t_wsk)
             cv, _ = _split_value_unit(czas)
             cv = float(cv.replace(',', '.').replace(' ', ''))
-            max_v = max(tv, cv) * 1.1
+            fx = float(output_data.get('F_X', 1) or 1)
+            cv_fx = round(cv * fx, 2)
+            max_v = max(tv, cv, cv_fx) * 1.1
+            story.append(CondPageBreak(3 * cm))
             story.append(_section_header('Zestawienie — Czas użytkowania vs T_WSK', THEME))
             story.append(Spacer(1, 0.15 * cm))
             story.append(Table(
                 [[_bar_chart([
-                    ('Czas użytkowania [h]', cv, max_v),
-                    ('Zdolność czasowa T_WSK [h]', tv, max_v),
+                    ('Limit T_WSK [h]',              tv,    max_v),
+                    ('Czas użytkowania (bez F\u2093) [h]', cv,    max_v),
+                    ('Czas użytkowania (z F\u2093) [h]',   cv_fx, max_v),
                 ], THEME)]],
                 colWidths=[USABLE_W]))
             story.append(Spacer(1, 0.4 * cm))
         except (ValueError, TypeError, AttributeError):
             pass
 
-    # ── Diagramy arkuszów obliczeniowych ────────────────────────────────────────
-    story += _diagram_kd(input_data, THEME)
-    story += _diagram_ldr(input_data, THEME)
-    story += _diagram_hdr(input_data, THEME)
-    story += _diagram_ad(input_data, THEME)
+    # ── Zestawienie mechanizmów ──────────────────────────────────────────────
+    story += _mechanism_summary_section(result, THEME)
+    story += _internal_mechanisms_section(output_data, result.calculator_definition.slug, THEME)
 
-    # Przebieg (ponowny resurs)
+    # ── Przebieg (ponowny resurs) ─────────────────────────────────────────────
     if str(input_data.get('ponowny_resurs', '')).lower() in ('tak', '1', 'true'):
         ostatni_raw = input_data.get('ostatni_resurs')
-        ostatni_str, _ = _split_value_unit(ostatni_raw)   # wyciąga wartość z dict
+        ostatni_str, _ = _split_value_unit(ostatni_raw)
         data_raw = input_data.get('data_resurs', '')
-        data_ost_raw, _ = _split_value_unit(data_raw)      # plain string lub dict
-        # Formatuj datę do polskiego formatu
+        data_ost_raw, _ = _split_value_unit(data_raw)
         try:
             from datetime import datetime as _dt
             data_ost = _dt.strptime(data_ost_raw, '%Y-%m-%d').strftime('%d.%m.%Y')
@@ -1324,20 +1729,47 @@ def generate_result_pdf(result, calculator_name: str,
             data_ost = data_ost_raw or '-'
         data_now = result.created_at.strftime('%d.%m.%Y')
         rv_str   = str(resurs_val) if resurs_val is not None else '-'
+        ostatni_unit = ostatni_raw.get('unit', '%') if isinstance(ostatni_raw, dict) else '%'
+        if ostatni_unit == 'mth':
+            T_WSK = output_data.get('T_WSK')
+            try:
+                prev_pct_str = f"{(float(ostatni_str) / float(T_WSK)) * 100:.2f}"
+            except (ValueError, TypeError, ZeroDivisionError):
+                prev_pct_str = '-'
+            prev_display = prev_pct_str
+        else:
+            prev_display = ostatni_str
         try:
-            zmiana = f"{float(rv_str) - float(ostatni_str):+.2f}"
+            zmiana = f"{float(rv_str) - float(prev_display):+.2f}"
         except (ValueError, TypeError):
             zmiana = '-'
         story.append(_section_header('Przebieg — Stopień wykorzystania resursu', THEME))
         story.append(Spacer(1, 0.15 * cm))
         story.append(_param_table([
-            ('Poprzednie obliczenia  (' + data_ost + ')', ostatni_str, '%'),
-            ('Bieżące obliczenia  (' + data_now + ')',    rv_str,      '%'),
-            ('Zmiana stopnia wykorzystania',               zmiana,      '%'),
+            ('Poprzednie obliczenia  (' + data_ost + ')', prev_display, '%'),
+            ('Bieżące obliczenia  (' + data_now + ')',    rv_str,       '%'),
+            ('Zmiana stopnia wykorzystania',               zmiana,       '%'),
         ], THEME, is_results=True))
         story.append(Spacer(1, 0.4 * cm))
 
+    # ── Status analizy ────────────────────────────────────────────────────────
+    msg = output_data.get('resurs_message', '')
+    status_items = [CondPageBreak(3 * cm), _section_header('Status analizy', THEME), Spacer(1, 0.15 * cm)]
+    if msg:
+        msg_cell = _p(msg, font='DVSB', size=9, color=THEME)
+        t = Table([[msg_cell]], colWidths=[USABLE_W])
+        t.setStyle(TableStyle([
+            ('LINEBEFORE',    (0, 0), (0, 0), 3, THEME),
+            ('LEFTPADDING',   (0, 0), (0, 0), 12),
+            ('TOPPADDING',    (0, 0), (0, 0), 8),
+            ('BOTTOMPADDING', (0, 0), (0, 0), 8),
+        ]))
+        status_items.append(t)
+    status_items.append(Spacer(1, 0.4 * cm))
+    story += status_items
+
     # ── Podpis cyfrowy (pieczęć/grafika) ────────────────────────────────────────
+    story.append(CondPageBreak(10 * cm))
     story.append(Spacer(1, 0.2 * cm))
     if getattr(result.user, 'show_signature_on_pdf', True):
         if not signature_obj:
@@ -1373,8 +1805,8 @@ def generate_result_pdf(result, calculator_name: str,
             except Exception:
                 pass
 
-    # ── Blok podpisów (z dużą przestrzenią) ─────────────────────────────────────
-    story += _signature_block(THEME)
+    # ── Blok podpisów (z dużą przestrzenią, nie może być ucięty) ─────────────────
+    story.append(KeepTogether(_signature_block(THEME)))
 
     # ── Stopka prawna ─────────────────────────────────────────────────────────
     legal = [
@@ -1389,6 +1821,14 @@ def generate_result_pdf(result, calculator_name: str,
         story.append(Spacer(1, 0.1 * cm))
 
     # ── Build ─────────────────────────────────────────────────────────────────
+    _nr_fab = (result.input_data or {}).get('nr_fabryczny', '')
+    _header_info = {
+        'calc_name': calculator_name,
+        'nr_fab': _nr_fab,
+        'date_str': result.created_at.strftime('%d.%m.%Y'),
+        'has_brand': has_brand,
+    }
     doc.build(story,
-              canvasmaker=lambda *a, **kw: _NumberedCanvas(*a, theme=THEME, **kw))
+              canvasmaker=lambda *a, **kw: _NumberedCanvas(
+                  *a, theme=THEME, header_info=_header_info, **kw))
     return buffer.getvalue()

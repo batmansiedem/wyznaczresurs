@@ -21,7 +21,7 @@
         "unit": "dni"
       },
       "U_WSK": {
-        "label": "Wartość U<sub>WSK</sub>",
+        "label": "Maks. ilość cykli U<sub>WSK</sub>",
         "type": "number"
       },
       "F_X": {
@@ -64,7 +64,7 @@
         "unit": "dni"
       },
       "U_WSK": {
-        "label": "Wartość U<sub>WSK</sub>",
+        "label": "Maks. ilość cykli U<sub>WSK</sub>",
         "type": "number"
       },
       "F_X": {
@@ -82,6 +82,10 @@
       "wsp_kdr": {
         "label": "Współczynnik KDR",
         "type": "number"
+      },
+      "stan_obciazenia": {
+        "label": "Stan obciążenia",
+        "type": "text"
       }
     }
   },
@@ -107,7 +111,7 @@
         "unit": "dni"
       },
       "U_WSK": {
-        "label": "Wartość U<sub>WSK</sub>",
+        "label": "Maks. ilość cykli U<sub>WSK</sub>",
         "type": "number"
       },
       "F_X": {
@@ -196,7 +200,7 @@
         "unit": "dni"
       },
       "U_WSK": {
-        "label": "Wartość U<sub>WSK</sub>",
+        "label": "Maks. ilość cykli U<sub>WSK</sub>",
         "type": "number"
       },
       "F_X": {
@@ -239,7 +243,7 @@
         "unit": "dni"
       },
       "U_WSK": {
-        "label": "Wartość U<sub>WSK</sub>",
+        "label": "Maks. ilość cykli U<sub>WSK</sub>",
         "type": "number"
       },
       "F_X": {
@@ -282,7 +286,7 @@
         "unit": "dni"
       },
       "U_WSK": {
-        "label": "Wartość U<sub>WSK</sub>",
+        "label": "Maks. ilość cykli U<sub>WSK</sub>",
         "type": "number"
       },
       "F_X": {
@@ -325,7 +329,7 @@
         "unit": "dni"
       },
       "U_WSK": {
-        "label": "Wartość U<sub>WSK</sub>",
+        "label": "Maks. ilość cykli U<sub>WSK</sub>",
         "type": "number"
       },
       "F_X": {
@@ -368,7 +372,7 @@
         "unit": "dni"
       },
       "U_WSK": {
-        "label": "Wartość U<sub>WSK</sub>",
+        "label": "Maks. ilość cykli U<sub>WSK</sub>",
         "type": "number"
       },
       "F_X": {
@@ -811,6 +815,22 @@
       "data_prognoza": {
         "label": "Prognozowana data",
         "type": "date"
+      },
+      "U_WSK": {
+        "label": "Maks. ilość cykli U<sub>WSK</sub>",
+        "type": "number"
+      },
+      "F_X": {
+        "label": "Współczynnik F<sub>X</sub>",
+        "type": "number"
+      },
+      "wsp_kdr": {
+        "label": "Współczynnik KDR",
+        "type": "number"
+      },
+      "stan_obciazenia": {
+        "label": "Stan obciążenia",
+        "type": "text"
       }
     }
   },
@@ -829,6 +849,22 @@
       "data_prognoza": {
         "label": "Prognozowana data",
         "type": "date"
+      },
+      "U_WSK": {
+        "label": "Maks. ilość cykli U<sub>WSK</sub>",
+        "type": "number"
+      },
+      "F_X": {
+        "label": "Współczynnik F<sub>X</sub>",
+        "type": "number"
+      },
+      "wsp_kdr": {
+        "label": "Współczynnik KDR",
+        "type": "number"
+      },
+      "stan_obciazenia": {
+        "label": "Stan obciążenia",
+        "type": "text"
       }
     }
   },
@@ -847,6 +883,22 @@
       "data_prognoza": {
         "label": "Prognozowana data",
         "type": "date"
+      },
+      "U_WSK": {
+        "label": "Maks. ilość cykli U<sub>WSK</sub>",
+        "type": "number"
+      },
+      "F_X": {
+        "label": "Współczynnik F<sub>X</sub>",
+        "type": "number"
+      },
+      "wsp_kdr": {
+        "label": "Współczynnik KDR",
+        "type": "number"
+      },
+      "stan_obciazenia": {
+        "label": "Stan obciążenia",
+        "type": "text"
       }
     }
   },
@@ -864,6 +916,73 @@
       },
       "data_prognoza": {
         "label": "Prognozowana data",
+        "type": "date"
+      },
+      "U_WSK": {
+        "label": "Maks. ilość cykli U<sub>WSK</sub>",
+        "type": "number"
+      },
+      "F_X": {
+        "label": "Współczynnik F<sub>X</sub>",
+        "type": "number"
+      },
+      "wsp_kdr": {
+        "label": "Współczynnik K<sub>d</sub>",
+        "type": "number"
+      },
+      "stan_obciazenia": {
+        "label": "Stan obciążenia",
+        "type": "text"
+      },
+      "resurs_prognoza_dni": {
+        "label": "Prognoza (całkowity)",
+        "type": "number",
+        "unit": "dni"
+      },
+      "ilosc_cykli": {
+        "label": "Ilość cykli",
+        "type": "number"
+      },
+      "resurs_wyk_pod": {
+        "label": "Stopień zużycia — mechanizm podnoszenia",
+        "type": "percentage",
+        "unit": "%"
+      },
+      "resurs_prog_pod": {
+        "label": "Prognoza — mech. podnoszenia",
+        "type": "number",
+        "unit": "dni"
+      },
+      "data_prog_pod": {
+        "label": "Symulowana data — mech. podnoszenia",
+        "type": "date"
+      },
+      "resurs_wyk_jaz": {
+        "label": "Stopień zużycia — mechanizm jazdy",
+        "type": "percentage",
+        "unit": "%"
+      },
+      "resurs_prog_jaz": {
+        "label": "Prognoza — mech. jazdy",
+        "type": "number",
+        "unit": "dni"
+      },
+      "data_prog_jaz": {
+        "label": "Symulowana data — mech. jazdy",
+        "type": "date"
+      },
+      "resurs_wyk_prz": {
+        "label": "Stopień zużycia — mechanizm przesuwu",
+        "type": "percentage",
+        "unit": "%"
+      },
+      "resurs_prog_prz": {
+        "label": "Prognoza — mech. przesuwu",
+        "type": "number",
+        "unit": "dni"
+      },
+      "data_prog_prz": {
+        "label": "Symulowana data — mech. przesuwu",
         "type": "date"
       }
     }
@@ -901,6 +1020,14 @@
       "data_prognoza": {
         "label": "Prognozowana data",
         "type": "date"
+      },
+      "wsp_kdr": {
+        "label": "Współczynnik KDR",
+        "type": "number"
+      },
+      "stan_obciazenia": {
+        "label": "Stan obciążenia",
+        "type": "text"
       }
     }
   }

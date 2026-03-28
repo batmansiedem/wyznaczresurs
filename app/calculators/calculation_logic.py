@@ -351,6 +351,7 @@ class DzwignikCalculator(BaseCalculator):
             'resurs_wykorzystanie': resurs_wykorzystanie,
             'hdr': hdr,
             'wsp_kdr': wsp_kdr,
+            'stan_obciazenia': self._get_stan_obciazenia(wsp_kdr),
             'resurs_message': resurs_message,
             'technical_state_reached': has_technical_problems
         })
@@ -806,6 +807,10 @@ class MechJazdySuwnicyCalculator(TimeBasedCalculator):
 
             czas_uzytkowania_mech = ilosc_cykli * czas_cykle_h * F_X
 
+        # ostatni_resurs podany jest w mth — przelicz na % zużycia resursu
+        if ponowny_resurs == 1 and ostatni_resurs > 0:
+            ostatni_resurs = (ostatni_resurs / T_WSK) * 100
+
         prognosis_data = self._calculate_time_based_prognosis(T_WSK, czas_uzytkowania_mech, lata_pracy, ponowny_resurs, ostatni_resurs)
 
         self.output_data.update({
@@ -963,6 +968,8 @@ class PodestRuchomyCalculator(BaseCalculator):
             component_fields, resurs_message, resurs_wykorzystanie
         )
 
+        if 'wsp_kdr' in extra_data:
+            extra_data['stan_obciazenia'] = self._get_stan_obciazenia(extra_data['wsp_kdr'])
         self.output_data.update({
             **prognosis_data,
             **extra_data,
@@ -1007,6 +1014,7 @@ class PodestZaladowczyCalculator(BaseCalculator):
             **prognosis_data,
             'resurs_wykorzystanie': resurs_wykorzystanie,
             'wsp_kdr': wsp_kdr,
+            'stan_obciazenia': self._get_stan_obciazenia(wsp_kdr),
             'resurs_message': resurs_message,
             'technical_state_reached': has_technical_problems,
         })
@@ -1047,6 +1055,7 @@ class PodnosnikSamochodowyCalculator(BaseCalculator):
             **prognosis_data,
             'resurs_wykorzystanie': resurs_wykorzystanie,
             'wsp_kdr': wsp_kdr,
+            'stan_obciazenia': self._get_stan_obciazenia(wsp_kdr),
             'resurs_message': resurs_message,
             'technical_state_reached': has_technical_problems,
         })
@@ -1206,6 +1215,7 @@ class UkladnicaMagazynowaCalculator(BaseCalculator):
             **prz_results,
             'resurs_wykorzystanie': resurs_wykorzystanie,
             'wsp_kdr': wsp_kdr,
+            'stan_obciazenia': self._get_stan_obciazenia(wsp_kdr),
             'EDS_factor': EDS_factor,
             'resurs_message': resurs_message,
             'technical_state_reached': has_technical_problems,
@@ -1703,8 +1713,9 @@ class WozekSpecjalizowanyCalculator(BaseCalculator):
         final_data['resurs_wykorzystanie'] = resurs_wykorzystanie
         
         self.output_data.update({
-            **final_data, 
-            'wsp_kdr': wsp_kdr, 
+            **final_data,
+            'wsp_kdr': wsp_kdr,
+            'stan_obciazenia': self._get_stan_obciazenia(wsp_kdr),
             'ldr': ldr,
             'technical_state_reached': has_technical_problems
         })

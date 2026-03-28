@@ -546,6 +546,11 @@ body {
       border-color: $negative;
       color: color.adjust($negative, $lightness: -15%);
     }
+    &.is-warning {
+      background: rgba(245, 124, 0, 0.08);
+      border-color: #f57c00;
+      color: #e65100;
+    }
     &.is-neutral {
       background: rgba(0,0,0,0.05);
       border-color: #616161;
@@ -585,6 +590,7 @@ body {
     &.selected {
       &.is-positive { color: color.adjust($positive, $lightness: 10%); }
       &.is-negative { color: color.adjust($negative, $lightness: 10%); }
+      &.is-warning { color: #ffb74d; background: rgba(245, 124, 0, 0.12); }
       &.is-neutral { color: #bdbdbd; background: rgba(255,255,255,0.08); }
     }
   }

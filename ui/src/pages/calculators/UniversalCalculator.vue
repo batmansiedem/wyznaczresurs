@@ -53,7 +53,7 @@
               <template v-for="section in activeSections" :key="section.key">
                 <div class="calc-section-bar">
                   <q-icon :name="section.icon" size="14px" />
-                  {{ section.label }}
+                  <span v-html="section.label" />
                 </div>
                 <div class="q-pa-lg">
                   <div class="row q-col-gutter-lg items-start">
@@ -68,7 +68,7 @@
                           <SchemAd v-else-if="currentCalculatorDefinition.fields[key].svg === 'schemat_ad'" :data="formData" />
                         </template>
                         <template v-else>
-                          <CalculatorField :field="currentCalculatorDefinition.fields[key]" v-model="formData[key]" :units="units" />
+                          <CalculatorField :field="currentCalculatorDefinition.fields[key]" v-model="formData[key]" :units="units" :disabled="!!currentResultId && ['nr_fabryczny', 'lata_pracy', 'data_resurs', 'ostatni_resurs'].includes(key)" />
                           <!-- Kalkulator pomocniczy cykli — expansion po polu ilosc_cykli -->
                           <q-expansion-item
                             v-if="key === 'ilosc_cykli' && hasCycleHelper"
@@ -141,13 +141,35 @@
                       </div>
                     </template>
                   </div>
+                  <!-- Stan obciążenia live — pokazuj po sekcji kd -->
+                  <div v-if="section.fieldKeys.includes('diagram_kd') && liveStanObciazenia" class="q-mt-md">
+                    <div :class="['stan-obciazenia-callout', `stan-${liveStanObciazenia.cls}`]">
+                      <q-icon :name="liveStanObciazenia.icon" size="20px" class="q-mr-sm flex-shrink-0" />
+                      <div>
+                        <div class="text-weight-bold">{{ liveStanObciazenia.label }}</div>
+                        <div class="text-caption q-mt-xs">{{ liveStanObciazenia.opis }}</div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </template>
 
+              <!-- Baner trybu modyfikacji -->
+              <div v-if="currentResultId" class="q-px-lg q-pb-sm">
+                <div class="mode-banner">
+                  <q-icon name="edit_note" size="20px" class="q-mr-sm flex-shrink-0" />
+                  <span>Modyfikujesz istniejące obliczenia — <strong>nr fabryczny</strong>, <strong>lata pracy</strong> i dane ponownego resursu są zablokowane.</span>
+                  <q-space />
+                  <q-btn flat dense no-caps size="sm" icon="add_circle_outline" label="Zamiast tego — nowe obliczenia" color="primary" class="q-ml-md flex-shrink-0" @click="startNewFromLoaded" />
+                </div>
+              </div>
               <div class="q-px-lg q-pb-lg">
                 <q-separator class="q-mb-lg" />
-                <div class="row q-gutter-md">
-                  <q-btn :label="`Oblicz wyznaczenie resursu (${currentCost} pkt)`" type="submit" color="primary" :loading="calculating" icon="calculate" unelevated size="lg" class="q-px-xl" />
+                <div class="row q-gutter-md items-center">
+                  <q-btn
+                    :label="currentResultId ? 'Zapisz zmiany (0 pkt)' : `Oblicz wyznaczenie resursu (${currentCost} pkt)`"
+                    type="submit" color="primary" :loading="calculating" icon="calculate" unelevated size="lg" class="q-px-xl"
+                  />
                   <q-btn label="Wyczyść arkusz" flat color="grey-7" icon="clear" no-caps @click="initializeFormData" />
                 </div>
               </div>
@@ -167,8 +189,6 @@
                   :user-premium="userStore.user?.premium ?? 0"
                   :unlocking="unlocking"
                   :downloading-pdf="downloadingPdf"
-                  :logos="userStore.user?.logos"
-                  v-model:selected-logo-id="selectedLogoId"
                   @unlock="unlockResult"
                   @download-pdf="downloadPdf()"
                 />
@@ -253,8 +273,6 @@
                   :user-premium="userStore.user?.premium ?? 0"
                   :unlocking="unlocking"
                   :downloading-pdf="downloadingPdf"
-                  :logos="userStore.user?.logos"
-                  v-model:selected-logo-id="selectedLogoId"
                   @unlock="unlockSavedResult(selectedSavedResult)"
                   @download-pdf="downloadPdf(selectedSavedResult.id)"
                 />
@@ -326,14 +344,6 @@ watch(() => formData.value.ponowny_resurs, () => {
 const savedResults = ref([])
 const loadingResults = ref(false)
 const selectedSavedResult = ref(null)
-const selectedLogoId = ref(null)
-
-watch(() => userStore.user?.logos, (logos) => {
-  if (logos?.length && !selectedLogoId.value) {
-    const def = logos.find(l => l.is_default) || logos[0]
-    selectedLogoId.value = def.id
-  }
-}, { immediate: true })
 
 const calculatorSlug = computed(() => route.params.slug)
 const currentCalculatorDefinition = computed(() => calculatorFields[calculatorSlug.value] || null)
@@ -405,6 +415,53 @@ function onSchemKdKgToT() {
   showMassUnitDialog()
 }
 
+// ── Live stan obciążenia na podstawie wartości q/c w formularzu ────────────
+// Warunki: suma c_i = 100%, tam gdzie c_i > 0 musi być q_i > 0 (nie wszystkie rzędy muszą być wypełnione)
+function toKg(raw) {
+  if (raw == null) return 0
+  const v = typeof raw === 'object' ? parseFloat(raw.value) || 0 : parseFloat(raw) || 0
+  const unit = typeof raw === 'object' ? (raw.unit || 'kg') : 'kg'
+  return unit === 't' ? v * 1000 : v
+}
+const liveWspKdr = computed(() => {
+  const fd = formData.value
+  const qMax = toKg(fd.q_max)
+  if (!qMax) return null
+  let kd = 0
+  let cSum = 0
+  for (let i = 1; i <= 5; i++) {
+    const qi = toKg(fd[`q_${i}`])
+    const ci = parseFloat(typeof fd[`c_${i}`] === 'object' ? fd[`c_${i}`]?.value : fd[`c_${i}`]) || 0
+    if (ci > 0) {
+      if (qi <= 0) return null   // c > 0 bez q — dane niepełne
+      cSum += ci
+      kd += (ci / 100) * Math.pow(qi / qMax, 3)
+    }
+  }
+  if (Math.abs(cSum - 100) > 0.5) return null  // suma c_i ≠ 100%
+  return kd > 0 ? kd : null
+})
+
+const STAN_TABLE_Q = [
+  { max: 0.125, label: 'Q1 — lekki', cls: 'q1', icon: 'sentiment_very_satisfied', opis: 'Ładunek nominalny podnoszony bardzo rzadko, zwykle ładunki znacznie mniejsze od nominalnego' },
+  { max: 0.25,  label: 'Q2 — przeciętny', cls: 'q2', icon: 'sentiment_satisfied', opis: 'Ładunek nominalny podnoszony rzadko, zwykle ładunki zbliżone do połowy ładunku nominalnego' },
+  { max: 0.5,   label: 'Q3 — ciężki', cls: 'q3', icon: 'sentiment_dissatisfied', opis: 'Ładunek nominalny podnoszony często, zwykle ładunki większe od połowy ładunku nominalnego' },
+  { max: 1.0,   label: 'Q4 — bardzo ciężki', cls: 'q4', icon: 'sentiment_very_dissatisfied', opis: 'Ładunek nominalny podnoszony regularnie i ładunki bliskie nominalnemu' },
+]
+const STAN_TABLE_L = [
+  { max: 0.125, label: 'L1 — lekki', cls: 'q1', icon: 'sentiment_very_satisfied', opis: 'Obciążenie mechanizmu bardzo lekkie, ładunki znacznie mniejsze od nominalnego' },
+  { max: 0.25,  label: 'L2 — przeciętny', cls: 'q2', icon: 'sentiment_satisfied', opis: 'Obciążenie mechanizmu przeciętne, ładunki zbliżone do połowy ładunku nominalnego' },
+  { max: 0.5,   label: 'L3 — ciężki', cls: 'q3', icon: 'sentiment_dissatisfied', opis: 'Obciążenie mechanizmu ciężkie, ładunki często bliskie nominalnemu' },
+  { max: 1.0,   label: 'L4 — bardzo ciężki', cls: 'q4', icon: 'sentiment_very_dissatisfied', opis: 'Obciążenie mechanizmu bardzo ciężkie, ładunki regularnie bliskie nominalnemu' },
+]
+
+const liveStanObciazenia = computed(() => {
+  const kd = liveWspKdr.value
+  if (kd === null) return null
+  const table = isMechanism.value ? STAN_TABLE_L : STAN_TABLE_Q
+  return table.find(s => kd <= s.max) || table[table.length - 1]
+})
+
 const activeSections = computed(() => {
   const calc = currentCalculatorDefinition.value
   if (!calc?.fields) return []
@@ -473,11 +530,62 @@ async function fetchSavedResults() {
 function selectSavedResult(row) { selectedSavedResult.value = selectedSavedResult.value?.id === row.id ? null : row }
 
 
-function loadResultToForm(row) {
-  formData.value = JSON.parse(JSON.stringify(row.input_data))
-  currentResultId.value = row.id
+function _applyLoadedData(loaded, resultId) {
+  for (const k of Object.keys(formData.value)) {
+    if (!(k in loaded)) delete formData.value[k]
+  }
+  Object.assign(formData.value, loaded)
+  const kdRef = Array.isArray(schemKdRef.value) ? schemKdRef.value[0] : schemKdRef.value
+  if (kdRef) {
+    for (let i = 1; i <= 5; i++) {
+      const v = loaded[`q_${i}`]
+      if (v != null && typeof v === 'object' && v.unit) { kdRef.applyUnit(v.unit); break }
+    }
+  }
+  currentResultId.value = resultId
   activeTab.value = 'calculator'
-  Notify.create({ type: 'info', message: 'Dane zostały wczytane do formularza.', position: 'top', timeout: 2000 })
+}
+
+function loadResultToForm(row) {
+  const loaded = JSON.parse(JSON.stringify(row.input_data))
+  const date = new Date(row.created_at).toLocaleDateString('pl-PL')
+  Dialog.create({
+    title: 'Co chcesz zrobić z tymi danymi?',
+    message: `Obliczenia z dnia <b>${date}</b>`,
+    html: true,
+    options: {
+      type: 'radio',
+      model: 'modify',
+      items: [
+        {
+          label: 'Zaktualizuj istniejący wynik (bezpłatnie)',
+          description: 'Zmień parametry i nadpisz ten wynik. Nr fabryczny i lata pracy pozostają zablokowane.',
+          value: 'modify',
+          color: 'primary',
+        },
+        {
+          label: `Stwórz nowe obliczenia (${currentCost.value} pkt)`,
+          description: 'Dane zostaną wczytane, ale wynik zostanie zapisany jako nowy. Wszystkie pola odblokowane.',
+          value: 'new',
+          color: 'secondary',
+        },
+      ],
+    },
+    cancel: { label: 'Anuluj', flat: true },
+    ok: { label: 'Wczytaj dane', color: 'primary', unelevated: true },
+    persistent: true,
+  }).onOk(mode => {
+    _applyLoadedData(loaded, mode === 'modify' ? row.id : null)
+    const msg = mode === 'modify'
+      ? 'Dane wczytane — tryb modyfikacji (bezpłatny).'
+      : 'Dane wczytane — tryb nowych obliczeń.'
+    Notify.create({ type: 'info', message: msg, position: 'top', timeout: 2500 })
+  })
+}
+
+function startNewFromLoaded() {
+  currentResultId.value = null
+  Notify.create({ type: 'info', message: 'Tryb nowych obliczeń — wszystkie pola odblokowane.', position: 'top', timeout: 2000 })
 }
 
 function confirmDelete(row) {
@@ -504,13 +612,11 @@ async function downloadPdf(resultId = null) {
   if (!id) return
   downloadingPdf.value = true
   try {
-    const params = {}
-    if (selectedLogoId.value) params.logo_id = selectedLogoId.value
-    const response = await api.get(`/calculators/results/${id}/pdf/`, { 
-      params,
-      responseType: 'blob' 
-    })
-    downloadBlob(response.data, `resurs_${id}.pdf`)
+    const response = await api.get(`/calculators/results/${id}/pdf/`, { responseType: 'blob' })
+    const cd = response.headers['content-disposition'] || ''
+    const match = cd.match(/filename="([^"]+)"/)
+    const filename = match?.[1] || `resurs_${id}.pdf`
+    downloadBlob(response.data, filename)
   } catch {
     Notify.create({ type: 'negative', message: 'Błąd podczas generowania PDF.', position: 'top' })
   } finally {
@@ -532,6 +638,7 @@ onMounted(async () => {
   await fetchUnits()
   initializeFormData()
   fetchDeviceResults()
+  fetchSavedResults()
   if (route.query.result_id) {
     await loadSingleResult(route.query.result_id)
   }
@@ -564,21 +671,23 @@ async function fetchUnits() {
 function initializeFormData() {
   if (!currentCalculatorDefinition.value?.fields) return
   currentResultId.value = null
-  const data = {}
+  const newData = {}
   for (const key in currentCalculatorDefinition.value.fields) {
     const f = currentCalculatorDefinition.value.fields[key]
     if (f.type === 'diagram') continue
     if (f.type === 'number') {
-      data[key] = { value: f.default_value ?? null, unit: f.default_unit || units.value[f.unit_type]?.[0]?.symbol || null }
+      newData[key] = { value: f.default_value ?? null, unit: f.default_unit || units.value[f.unit_type]?.[0]?.symbol || null }
     } else if (f.type === 'inspection_status' && f.options?.length) {
       // Domyślnie ostatnia opcja ("Nie dotyczy")
       const last = f.options[f.options.length - 1]
-      data[key] = f.default_value ?? (typeof last === 'object' ? last.value : last)
+      newData[key] = f.default_value ?? (typeof last === 'object' ? last.value : last)
     } else {
-      data[key] = f.default_value ?? null
+      newData[key] = f.default_value ?? null
     }
   }
-  formData.value = data
+  // Mutuj istniejący obiekt zamiast go zamieniać — SchemKd trzyma referencję do tego samego obiektu
+  for (const k of Object.keys(formData.value)) delete formData.value[k]
+  Object.assign(formData.value, newData)
 }
 
 function isFieldVisible(key) {
@@ -627,7 +736,20 @@ async function submitCalculation() {
     } else {
       res = await api.post(`/calculators/definitions/${calculatorSlug.value}/calculate/`, { input_data: formData.value })
     }
-    calculatedResult.value = res.data
+    if (currentResultId.value) {
+      calculatedResult.value = res.data
+    } else {
+      calculatedResult.value = {
+        ...res.data,
+        id: res.data.result_id,
+        input_data: JSON.parse(JSON.stringify(formData.value)),
+        calculator_definition: {
+          slug: calculatorSlug.value,
+          name: currentCalculatorDefinition.value?.name || calculatorSlug.value,
+          premium_cost: res.data.premium_cost || currentCalculatorDefinition.value?.premium_cost || 0,
+        },
+      }
+    }
     if (res.data.remaining_premium !== undefined && userStore.user) {
       userStore.user.premium = res.data.remaining_premium
     }
@@ -686,7 +808,9 @@ async function loadSingleResult(resultId) {
     const res = await api.get(`/calculators/results/${resultId}/`)
     const result = res.data
     // Wczytaj dane do formularza
-    formData.value = JSON.parse(JSON.stringify(result.input_data))
+    const loaded = JSON.parse(JSON.stringify(result.input_data))
+    for (const k of Object.keys(formData.value)) delete formData.value[k]
+    Object.assign(formData.value, loaded)
     // Jeśli odblokowany, pokaż wyniki od razu
     if (!result.is_locked) {
       calculatedResult.value = result
@@ -714,4 +838,45 @@ onMounted(async () => {
 
 <style scoped>
 .border-primary { border: 1px solid var(--q-primary); }
+
+.mode-banner {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: rgba(21, 101, 192, 0.07);
+  border: 1px solid rgba(21, 101, 192, 0.2);
+  border-left: 4px solid var(--q-primary);
+  font-size: 13px;
+  color: #1565c0;
+  flex-wrap: wrap;
+}
+.body--dark .mode-banner {
+  background: rgba(144, 202, 249, 0.08);
+  border-color: rgba(144, 202, 249, 0.25);
+  color: #90caf9;
+}
+
+.stan-obciazenia-callout {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  border-left: 4px solid;
+  margin-top: 4px;
+  &.stan-q1 { background: rgba(46, 125, 50, 0.08); border-color: #2E7D32; color: #1b5e20; }
+  &.stan-q2 { background: rgba(249, 168, 37, 0.08); border-color: #F9A825; color: #e65100; }
+  &.stan-q3 { background: rgba(230, 81, 0, 0.10); border-color: #E65100; color: #bf360c; }
+  &.stan-q4 { background: rgba(183, 28, 28, 0.10); border-color: #B71C1C; color: #7f0000; }
+}
+.body--dark {
+  .stan-obciazenia-callout {
+    &.stan-q1 { background: rgba(46, 125, 50, 0.15); color: #81c784; }
+    &.stan-q2 { background: rgba(249, 168, 37, 0.15); color: #ffcc80; }
+    &.stan-q3 { background: rgba(230, 81, 0, 0.15); color: #ffb74d; }
+    &.stan-q4 { background: rgba(183, 28, 28, 0.15); color: #ef9a9a; }
+  }
+}
 </style>

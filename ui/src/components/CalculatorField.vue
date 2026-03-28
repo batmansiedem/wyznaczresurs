@@ -12,6 +12,7 @@
     input-class="eng-value"
     :rules="field.required ? [val => (val !== null && val !== '') || 'Pole wymagane'] : []"
     lazy-rules="ondemand"
+    :disable="disabled"
   >
     <template v-slot:label>
       <span v-html="field.label + (field.required ? ' *' : '')"></span>
@@ -55,6 +56,7 @@
     outlined color="primary"
     :rules="field.required ? [val => !!val || 'Pole wymagane'] : []"
     lazy-rules="ondemand"
+    :disable="disabled"
   >
     <template v-slot:label>
       <span v-html="field.label + (field.required ? ' *' : '')"></span>
@@ -108,8 +110,9 @@
     :rules="field.required ? [val => !!val || 'Pole wymagane'] : []"
     lazy-rules="ondemand"
     readonly
-    @click="$refs.qDateProxy?.show()"
-    style="cursor: pointer"
+    :disable="disabled"
+    @click="!disabled && $refs.qDateProxy?.show()"
+    :style="disabled ? '' : 'cursor: pointer'"
   >
     <template v-slot:label>
       <span v-html="field.label + (field.required ? ' *' : '')"></span>
@@ -203,6 +206,7 @@ const props = defineProps({
   field: { type: Object, required: true },
   modelValue: { type: [String, Number, Object], default: null },
   units: { type: Object, default: () => ({}) },
+  disabled: { type: Boolean, default: false },
 })
 
 const emit = defineEmits(['update:modelValue'])
@@ -235,49 +239,36 @@ const GNP_CARDS = computed(() =>
   props.field.gnp_type === 'mechanism' ? GNP_CARDS_M : GNP_CARDS_A
 )
 
-// Nowa logika dla kafelków inspekcji
+// Logika dla kafelków inspekcji — obsługuje opcje tekstowe i wartości liczbowe (dźwig)
 function getInspectionOptions(opts) {
   if (!opts?.length) return []
   const normalized = opts.map(o => (typeof o === 'object' ? o : { label: o, value: o }))
-  
+
   return normalized.map((opt) => {
     const label = opt.label.toLowerCase()
+    const val = String(opt.value)
     let type, icon
-    
-    // Check for Negative states first (to avoid false positives like "Niesprawna" containing "sprawna")
-    if (label.includes('nieprawidłowy') || 
-        label.includes('niezgodne') || 
-        label.includes('niezgodna') || 
-        label.includes('niesprawna') || 
-        label.includes('niesprawne') || 
-        label.includes('nieszczelny') || 
-        label.includes('uszkodzenia') || 
-        label.includes('zły') || 
-        label.includes('występują')) {
-      type = 'negative'
-      icon = 'report_problem'
+
+    // Oparte na wartości liczbowej (np. dźwig: 1=OK, 0.5=warning, 0=zły, -1=N/D)
+    if (val === '1') { type = 'positive'; icon = 'check_circle_outline' }
+    else if (val === '0.5') { type = 'warning'; icon = 'schedule' }
+    else if (val === '0') { type = 'negative'; icon = 'report_problem' }
+    else if (val === '-1') { type = 'neutral'; icon = 'help_outline' }
+    // Oparte na etykiecie tekstowej
+    else if (label.includes('nieprawidłowy') || label.includes('niezgodne') || label.includes('niezgodna') ||
+             label.includes('niesprawna') || label.includes('niesprawne') || label.includes('nieszczelny') ||
+             label.includes('uszkodzenia') || label.includes('zły') || label.includes('występują')) {
+      type = 'negative'; icon = 'report_problem'
     }
-    // Neutral states
     else if (label.includes('nie dotyczy') || label.includes('n/d')) {
-      type = 'neutral'
-      icon = 'help_outline'
+      type = 'neutral'; icon = 'help_outline'
     }
-    // Positive states
-    else if (label.includes('prawidłowy') || 
-             label.includes('brak uszkodzeń') || 
-             label.includes('zgodne') || 
-             label.includes('sprawna') || 
-             label.includes('sprawne') || 
-             label.includes('szczelny') || 
-             label.includes('dobry')) {
-      type = 'positive'
-      icon = 'check_circle_outline'
-    } 
-    // Fallback
-    else {
-      type = 'neutral'
-      icon = 'info_outline'
+    else if (label.includes('prawidłowy') || label.includes('brak uszkodzeń') || label.includes('zgodne') ||
+             label.includes('sprawna') || label.includes('sprawne') || label.includes('szczelny') ||
+             label.includes('dobry') || label.includes('bez zastrzeżeń')) {
+      type = 'positive'; icon = 'check_circle_outline'
     }
+    else { type = 'neutral'; icon = 'info_outline' }
 
     return { ...opt, type, icon }
   })

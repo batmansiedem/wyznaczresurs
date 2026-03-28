@@ -167,49 +167,29 @@ class CalculatorResultViewSet(
             if isinstance(v, dict): return v.get('value')
             return v
 
-        old_nr = get_val(instance.input_data.get('nr_fabryczny'))
-        new_nr = get_val(input_data.get('nr_fabryczny'))
-        old_lata = get_val(instance.input_data.get('lata_pracy'))
-        new_lata = get_val(input_data.get('lata_pracy'))
+        IMMUTABLE = ['nr_fabryczny', 'lata_pracy', 'data_resurs', 'ostatni_resurs']
+        for field in IMMUTABLE:
+            old_val = get_val(instance.input_data.get(field))
+            new_val = get_val(input_data.get(field))
+            if old_val != new_val:
+                raise DRFValidationError(
+                    f"Modyfikacja pola '{field}' wymaga utworzenia nowego resursu (użyj przycisku Oblicz)."
+                )
 
-        if old_nr != new_nr or old_lata != new_lata:
-            raise DRFValidationError("Zmiana numeru fabrycznego lub lat pracy wymaga utworzenia nowego resursu (użyj przycisku Oblicz).")
-
-        # 2. Oblicz koszt aktualizacji (80 pkt lub wg definicji ponownego resursu)
+        # 2. Modyfikacja istniejącego wyniku jest bezpłatna
         calc_def = instance.calculator_definition
-        # Używamy ceny ponownego resursu dla aktualizacji
-        cost = self._calculate_update_cost(user, calc_def)
-        
-        if not user.is_superuser and user.premium < cost:
-            raise DRFValidationError(f"Brak punktów na aktualizację (potrzeba {float(cost)} pkt).")
 
         # 3. Wykonaj nowe obliczenia
         try:
             calculator_instance = calculation_logic.CalculatorFactory.get_calculator(calc_def.slug, input_data)
             output_data = decimals_to_float(calculator_instance.calculate())
-            
+
             with transaction.atomic():
-                if not user.is_superuser and cost > 0:
-                    user.premium -= cost
-                    user.save()
                 serializer.save(output_data=output_data)
         except DjangoValidationError as e:
             raise DRFValidationError(e.messages[0] if e.messages else str(e))
         except Exception as e:
             raise DRFValidationError(f"Błąd podczas aktualizacji obliczeń: {e}")
-
-    def _calculate_update_cost(self, user, calculator_definition):
-        """Koszt aktualizacji to cena ponownego resursu (z uwzględnieniem zniżek)."""
-        from decimal import Decimal
-        
-        base_cost = calculator_definition.premium_cost_recurring
-        
-        if hasattr(user, 'discount_percent') and user.discount_percent > 0:
-            actual_cost = base_cost * (Decimal(100 - user.discount_percent) / Decimal(100))
-        else:
-            actual_cost = base_cost
-        
-        return actual_cost.quantize(Decimal('0.01'))
 
     def perform_destroy(self, instance):
         if instance.user != self.request.user:
@@ -313,8 +293,13 @@ class CalculatorResultViewSet(
         calculator_name = result.calculator_definition.name
         pdf_bytes = generate_result_pdf(result, calculator_name, logo_obj=logo_obj, signature_obj=signature_obj)
         response = HttpResponse(pdf_bytes, content_type='application/pdf')
-        slug = result.calculator_definition.slug
-        response['Content-Disposition'] = f'attachment; filename="resurs_{slug}_{result.id}.pdf"'
+        import re as _re
+        nr_fab = result.input_data.get('nr_fabryczny', '')
+        if isinstance(nr_fab, dict):
+            nr_fab = nr_fab.get('value', '') or ''
+        nr_fab = _re.sub(r'[^\w\-]', '_', str(nr_fab).strip()) or str(result.id)
+        calc_name_safe = _re.sub(r'[^\w\-]', '_', calculator_name)
+        response['Content-Disposition'] = f'attachment; filename="{calc_name_safe}_{nr_fab}.pdf"'
         return response
 
 class GenerateLogbookView(rest_framework.views.APIView):

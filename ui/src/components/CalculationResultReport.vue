@@ -80,7 +80,7 @@
             </div>
             <div class="params-table">
               <template v-for="(fieldDef, key) in inputFields" :key="key">
-                <div v-if="result.input_data?.[key] !== undefined" class="params-row">
+                <div v-if="result.input_data?.[key] !== undefined && result.input_data?.[key] !== null && result.input_data?.[key] !== '-'" class="params-row">
                   <div class="params-label" v-html="fieldDef.label" />
                   <div class="params-value">{{ formatValue(result.input_data[key], fieldDef) }}</div>
                 </div>
@@ -97,7 +97,7 @@
             <div class="params-table">
               <template v-for="(fieldDef, key) in outputFields" :key="key">
                 <div
-                  v-if="result.output_data?.[key] !== undefined && !SUMMARY_KEYS.includes(key)"
+                  v-if="result.output_data?.[key] !== undefined && result.output_data?.[key] !== null && result.output_data?.[key] !== '-' && !SUMMARY_KEYS.includes(key)"
                   class="params-row"
                 >
                   <div class="params-label" v-html="fieldDef.label" />
@@ -141,54 +141,24 @@
           </q-card>
 
           <!-- PDF -->
-          <template v-if="showPdfActions">
-            <q-card flat bordered class="overflow-hidden shadow-1">
-              <div class="calc-section-bar">
-                <q-icon name="picture_as_pdf" size="14px" />
-                Protokół PDF
-              </div>
-              <div class="q-pa-md">
-                <q-select
-                  v-if="logos && logos.length > 0"
-                  :model-value="selectedLogoId"
-                  @update:model-value="$emit('update:selectedLogoId', $event)"
-                  :options="[{ id: null, name: 'Brak logotypu (tylko tekst)' }, ...logos]"
-                  option-label="name"
-                  option-value="id"
-                  emit-value
-                  map-options
-                  outlined
-                  dense
-                  label="Logo na PDF"
-                  class="q-mb-md"
-                >
-                  <template v-slot:option="scope">
-                    <q-item v-bind="scope.itemProps">
-                      <q-item-section avatar v-if="scope.opt.image">
-                        <img :src="getFullLogoUrl(scope.opt.image)" style="height:20px;width:40px;object-fit:contain" />
-                      </q-item-section>
-                      <q-item-section avatar v-else>
-                        <q-icon name="block" color="grey-7" size="sm" />
-                      </q-item-section>
-                      <q-item-section>
-                        <q-item-label>{{ scope.opt.name || 'Bez nazwy' }}</q-item-label>
-                      </q-item-section>
-                    </q-item>
-                  </template>
-                </q-select>
-                <q-btn
-                  icon="picture_as_pdf"
-                  label="Pobierz protokół PDF"
-                  color="primary"
-                  unelevated
-                  size="md"
-                  :loading="downloadingPdf"
-                  @click="$emit('download-pdf')"
-                  class="full-width"
-                />
-              </div>
-            </q-card>
-          </template>
+          <q-card v-if="showPdfActions" flat bordered class="shadow-1">
+            <div class="calc-section-bar">
+              <q-icon name="picture_as_pdf" size="14px" />
+              Protokół PDF
+            </div>
+            <div class="q-pa-md">
+              <q-btn
+                icon="picture_as_pdf"
+                label="Pobierz raport PDF"
+                color="primary"
+                unelevated
+                size="md"
+                :loading="downloadingPdf"
+                @click="$emit('download-pdf')"
+                class="full-width"
+              />
+            </div>
+          </q-card>
 
         </div>
       </div>
@@ -211,11 +181,9 @@ const props = defineProps({
   unlocking: { type: Boolean, default: false },
   downloadingPdf: { type: Boolean, default: false },
   showPdfActions: { type: Boolean, default: true },
-  logos: { type: Array, default: () => [] },
-  selectedLogoId: { type: [Number, String], default: null }
 })
 
-defineEmits(['unlock', 'download-pdf', 'update:selectedLogoId'])
+defineEmits(['unlock', 'download-pdf'])
 
 onMounted(async () => {
   await nextTick()
@@ -251,24 +219,39 @@ const nrFabryczny = computed(() => {
   return typeof v === 'object' ? v.value : v
 })
 
+function fmtNum(v) {
+  if (v === null || v === undefined || v === '') return '-'
+  const n = parseFloat(String(v).replace(',', '.').replace(/\s/g, ''))
+  if (isNaN(n)) return String(v)
+  if (Number.isInteger(n) && Math.abs(n) < 1e12) return n.toLocaleString('pl-PL')
+  return parseFloat(n.toFixed(2)).toLocaleString('pl-PL', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+}
+
 function formatValue(value, fieldDef) {
   if (value === null || value === undefined) return '-'
   if (!fieldDef) return String(value)
   const rawValue = (typeof value === 'object' && value !== null) ? value.value : value
   const unit = (typeof value === 'object' && value !== null) ? value.unit : fieldDef.unit
   switch (fieldDef.type) {
-    case 'number': return unit ? `${rawValue} ${unit}` : String(rawValue)
-    case 'percentage': return `${rawValue}%`
+    case 'number': {
+      const formatted = fmtNum(rawValue)
+      return unit ? `${formatted} ${unit}` : formatted
+    }
+    case 'percentage': return `${fmtNum(rawValue)}%`
     case 'date': return rawValue ? new Date(rawValue).toLocaleDateString('pl-PL') : '-'
     case 'boolean': return (rawValue === 'Tak' || rawValue === true) ? 'Tak' : 'Nie'
+    case 'inspection_status': {
+      // Pokaż etykietę wybranej opcji zamiast surowej wartości
+      if (!fieldDef.options?.length) return String(rawValue)
+      const found = fieldDef.options.find(o => {
+        const optVal = typeof o === 'object' ? String(o.value) : String(o)
+        return optVal === String(rawValue)
+      })
+      if (!found) return String(rawValue)
+      return typeof found === 'object' ? found.label : found
+    }
     default: return String(rawValue)
   }
-}
-
-function getFullLogoUrl(url) {
-  if (!url) return ''
-  if (url.startsWith('http')) return url
-  return url.startsWith('/') ? url : '/' + url
 }
 
 // --- Wykresy ---

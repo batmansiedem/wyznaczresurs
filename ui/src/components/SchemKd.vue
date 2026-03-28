@@ -239,6 +239,13 @@ const cRemaining = computed(() => Math.round((100 - cSum.value) * 10) / 10)
 
 function fillRemaining() {
   if (cRemaining.value <= 0) return
+  for (let i = 1; i <= 5; i++) {
+    if (!getNum(`c_${i}`)) {
+      setNum(`c_${i}`, Math.min(100, cRemaining.value))
+      return
+    }
+  }
+  // Wszystkie wypełnione — dopełnij ostatni
   const cur = Number(getNum('c_5') ?? 0)
   setNum('c_5', Math.min(100, cur + cRemaining.value))
 }

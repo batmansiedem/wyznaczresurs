@@ -84,8 +84,6 @@
             :user-premium="userStore.user?.premium ?? 0"
             :unlocking="unlocking"
             :downloading-pdf="downloadingPdf"
-            :logos="userStore.user?.logos"
-            v-model:selected-logo-id="selectedLogoId"
             @unlock="unlockResult(selectedResult)"
             @download-pdf="downloadPdf(selectedResult)"
           />
@@ -100,7 +98,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted } from 'vue'
 import { api } from 'boot/axios'
 import { useQuasar, Notify, Dialog } from 'quasar'
 import CalculationResultReport from 'components/CalculationResultReport.vue'
@@ -115,15 +113,6 @@ const showDetailsDialog = ref(false)
 const selectedResult = ref(null)
 const unlocking = ref(false)
 const downloadingPdf = ref(false)
-const selectedLogoId = ref(null)
-
-watch(() => userStore.user?.logos, (logos) => {
-  if (logos?.length && !selectedLogoId.value) {
-    const def = logos.find(l => l.is_default) || logos[0]
-    selectedLogoId.value = def.id
-  }
-}, { immediate: true })
-
 const columns = [
   { name: 'calculator_name', required: true, label: 'Urządzenie', align: 'left', field: 'calculator_name', sortable: true },
   { name: 'created_at', label: 'Data obliczeń', align: 'left', field: 'created_at', sortable: true, format: val => new Date(val).toLocaleDateString('pl-PL') },
@@ -190,10 +179,10 @@ async function downloadPdf(row) {
   if (row.is_locked) { Notify.create({ type: 'warning', message: 'Odblokuj wyniki, aby pobrać PDF.', position: 'top' }); return }
   downloadingPdf.value = true
   try {
-    const params = {}
-    if (selectedLogoId.value) params.logo_id = selectedLogoId.value
-    const res = await api.get(`/calculators/results/${row.id}/pdf/`, { params, responseType: 'blob' })
-    downloadBlob(res.data, `resurs_${row.id}.pdf`)
+    const res = await api.get(`/calculators/results/${row.id}/pdf/`, { responseType: 'blob' })
+    const cd = res.headers['content-disposition'] || ''
+    const match = cd.match(/filename="([^"]+)"/)
+    downloadBlob(res.data, match?.[1] || `resurs_${row.id}.pdf`)
   } catch { Notify.create({ type: 'negative', message: 'Błąd pobierania PDF.', position: 'top' }) }
   finally { downloadingPdf.value = false }
 }

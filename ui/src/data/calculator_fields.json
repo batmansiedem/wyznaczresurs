@@ -899,7 +899,7 @@
       },
       "zakres_godzin_1": {
         "type": "number",
-        "label": "Zakres godzin 1",
+        "label": "Ilość godz. pracy dźwigu w przedziale 5:00–9:00",
         "required": false,
         "show_if": {
           "field": "pyt_motogodzin",
@@ -908,7 +908,7 @@
       },
       "zakres_godzin_2": {
         "type": "number",
-        "label": "Zakres godzin 2",
+        "label": "Ilość godz. pracy dźwigu w przedziale 9:00–13:00",
         "required": false,
         "show_if": {
           "field": "pyt_motogodzin",
@@ -917,7 +917,7 @@
       },
       "zakres_godzin_3": {
         "type": "number",
-        "label": "Zakres godzin 3",
+        "label": "Ilość godz. pracy dźwigu w przedziale 13:00–17:00",
         "required": false,
         "show_if": {
           "field": "pyt_motogodzin",
@@ -926,7 +926,7 @@
       },
       "zakres_godzin_4": {
         "type": "number",
-        "label": "Zakres godzin 4",
+        "label": "Ilość godz. pracy dźwigu w przedziale 17:00–21:00",
         "required": false,
         "show_if": {
           "field": "pyt_motogodzin",
@@ -935,7 +935,7 @@
       },
       "zakres_godzin_5": {
         "type": "number",
-        "label": "Zakres godzin 5",
+        "label": "Ilość godz. pracy dźwigu w przedziale 21:00–0:00",
         "required": false,
         "show_if": {
           "field": "pyt_motogodzin",
@@ -944,7 +944,7 @@
       },
       "zakres_godzin_6": {
         "type": "number",
-        "label": "Zakres godzin 6",
+        "label": "Ilość godz. pracy dźwigu w przedziale 0:00–5:00",
         "required": false,
         "show_if": {
           "field": "pyt_motogodzin",
@@ -1561,39 +1561,47 @@
           "field": "ponowny_resurs",
           "value": "Tak"
         }
-      },
-      "ponowny_mth": {
-        "label": "Łączna ilość motogodzin z poprzedniego okresu (jeśli znana)",
-        "type": "number",
-        "default_unit": "mth",
-        "show_if": {
-          "field": "ponowny_resurs",
-          "value": "Tak"
-        }
       }
     },
     "sections": [
       {
+        "id": "informacje",
+        "title": "Informacja na temat resursu",
+        "icon": "info",
+        "fields": [
+          "ponowny_resurs",
+          "data_resurs",
+          "ostatni_resurs"
+        ]
+      },
+      {
         "id": "dane",
-        "title": "Określ dane dla dźwigu podnośnikowego",
+        "title": "Dane dźwigu",
         "icon": "settings",
         "fields": [
           "wykonawca",
           "uwagi",
-          "przeznaczenie",
-          "operator",
-          "budynek",
           "nr_fabryczny",
           "nr_ewidencyjny",
           "rok_budowy",
-          "lata_pracy",
+          "przeznaczenie",
+          "operator",
+          "budynek",
           "q_max",
-          "przystanki",
-          "liczba_dzwigow",
           "h_pod",
           "v_jaz",
+          "przystanki",
+          "liczba_dzwigow",
+          "lata_pracy",
           "dni_robocze",
-          "cykle_dzwig",
+          "cykle_dzwig"
+        ]
+      },
+      {
+        "id": "czas_pracy",
+        "title": "Czas pracy dźwigu",
+        "icon": "schedule",
+        "fields": [
           "pyt_motogodzin",
           "licznik_pracy",
           "zakres_godzin_1",
@@ -1614,7 +1622,7 @@
       },
       {
         "id": "inspekcja",
-        "title": "Zespoły",
+        "title": "Ocena stanu technicznego — Zespoły",
         "icon": "fact_check",
         "fields": [
           "liny_nosne",
@@ -1639,15 +1647,6 @@
           "mechanizm_zebatkowy",
           "mechanizm_srubowy",
           "mocowanie_napedu"
-        ]
-      },
-      {
-        "title": "Ponowne wyznaczenie resursu",
-        "fields": [
-          "ponowny_resurs",
-          "ostatni_resurs",
-          "data_resurs",
-          "ponowny_mth"
         ]
       }
     ]
@@ -1918,7 +1917,7 @@
       },
       {
         "id": "kd",
-        "title": "Na podstawie kalkulatora współczynnika K<sub>d</sub>, wybierz odpowiedni stan obciążenia",
+        "title": "Na podstawie kalkulatora współczynnika K<sub>d</sub> wyznacz stan obciążenia",
         "icon": "balance",
         "fields": [
           "diagram_kd"
@@ -2192,7 +2191,7 @@
       },
       {
         "id": "kd",
-        "title": "Na podstawie kalkulatora współczynnika K<sub>d</sub>, wybierz odpowiedni stan obciążenia",
+        "title": "Na podstawie kalkulatora współczynnika K<sub>d</sub> wyznacz stan obciążenia",
         "icon": "balance",
         "fields": [
           "diagram_kd"
@@ -2462,7 +2461,7 @@
       },
       {
         "id": "kd",
-        "title": "Na podstawie kalkulatora współczynnika K<sub>d</sub>, wybierz odpowiedni stan obciążenia",
+        "title": "Na podstawie kalkulatora współczynnika K<sub>d</sub> wyznacz stan obciążenia",
         "icon": "balance",
         "fields": [
           "diagram_kd"
@@ -2613,7 +2612,7 @@
       },
       "gnp_check": {
         "type": "select",
-        "label": "Nie znam GNP urządzenia",
+        "label": "Nie znam grupy natężenia pracy urządzenia",
         "required": false,
         "options": [
           "Nie",
@@ -2788,7 +2787,7 @@
       },
       {
         "id": "kd",
-        "title": "Na podstawie kalkulatora współczynnika K<sub>d</sub>, wybierz odpowiedni stan obciążenia",
+        "title": "Na podstawie kalkulatora współczynnika K<sub>d</sub> wyznacz stan obciążenia",
         "icon": "balance",
         "fields": [
           "diagram_kd"
@@ -3682,19 +3681,19 @@
       },
       "licznik_pracy_pod": {
         "type": "number",
-        "label": "Motogodziny mechanizmu podnoszenia [h]",
+        "label": "Licznik pracy mechanizmu podnoszenia [mth]",
         "required": false,
         "default_unit": "mth"
       },
       "licznik_pracy_jaz": {
         "type": "number",
-        "label": "Motogodziny mechanizmu jazdy [h]",
+        "label": "Licznik pracy mechanizmu jazdy [mth]",
         "required": false,
         "default_unit": "mth"
       },
       "licznik_pracy_prz": {
         "type": "number",
-        "label": "Motogodziny mechanizmu przesuwu palety [h]",
+        "label": "Licznik pracy mechanizmu przesuwu [mth]",
         "required": false,
         "default_unit": "mth"
       },
@@ -4419,7 +4418,7 @@
       },
       {
         "id": "kd",
-        "title": "Na podstawie kalkulatora współczynnika K<sub>d</sub>, wybierz odpowiedni stan obciążenia",
+        "title": "Na podstawie kalkulatora współczynnika K<sub>d</sub> wyznacz stan obciążenia",
         "icon": "balance",
         "fields": [
           "diagram_kd"
@@ -4564,13 +4563,13 @@
       },
       "ostatni_resurs": {
         "type": "number",
-        "label": "Procent wykorzystania resursu z ostatnich obliczeń",
+        "label": "Motogodziny z poprzedniego okresu [mth]",
         "required": false,
         "show_if": {
           "field": "ponowny_resurs",
           "value": "Tak"
         },
-        "default_unit": "%"
+        "default_unit": "mth"
       },
       "data_resurs": {
         "type": "date",
@@ -4608,15 +4607,6 @@
       "dni_robocze": {
         "label": "Ilość dni roboczych w roku",
         "type": "number"
-      },
-      "ponowny_mth": {
-        "label": "Łączna ilość motogodzin z poprzedniego okresu (jeśli znana)",
-        "type": "number",
-        "default_unit": "mth",
-        "show_if": {
-          "field": "ponowny_resurs",
-          "value": "Tak"
-        }
       }
     },
     "sections": [
@@ -4628,7 +4618,6 @@
           "spec",
           "ponowny_resurs",
           "data_resurs",
-          "ponowny_mth",
           "ostatni_resurs"
         ]
       },
@@ -4670,7 +4659,7 @@
       },
       {
         "id": "kd",
-        "title": "Na podstawie kalkulatora współczynnika K<sub>d</sub>, wybierz odpowiedni stan obciążenia",
+        "title": "Na podstawie kalkulatora współczynnika K<sub>d</sub> wyznacz stan obciążenia",
         "icon": "balance",
         "fields": [
           "diagram_kd"
@@ -4806,13 +4795,13 @@
       },
       "ostatni_resurs": {
         "type": "number",
-        "label": "Procent wykorzystania resursu z ostatnich obliczeń",
+        "label": "Motogodziny z poprzedniego okresu [mth]",
         "required": false,
         "show_if": {
           "field": "ponowny_resurs",
           "value": "Tak"
         },
-        "default_unit": "%"
+        "default_unit": "mth"
       },
       "data_resurs": {
         "type": "date",
@@ -4850,15 +4839,6 @@
       "dni_robocze": {
         "label": "Ilość dni roboczych w roku",
         "type": "number"
-      },
-      "ponowny_mth": {
-        "label": "Łączna ilość motogodzin z poprzedniego okresu (jeśli znana)",
-        "type": "number",
-        "default_unit": "mth",
-        "show_if": {
-          "field": "ponowny_resurs",
-          "value": "Tak"
-        }
       }
     },
     "sections": [
@@ -4870,7 +4850,6 @@
           "spec",
           "ponowny_resurs",
           "data_resurs",
-          "ponowny_mth",
           "ostatni_resurs"
         ]
       },
@@ -4912,7 +4891,7 @@
       },
       {
         "id": "kd",
-        "title": "Na podstawie kalkulatora współczynnika K<sub>d</sub>, wybierz odpowiedni stan obciążenia",
+        "title": "Na podstawie kalkulatora współczynnika K<sub>d</sub> wyznacz stan obciążenia",
         "icon": "balance",
         "fields": [
           "diagram_kd"
@@ -5045,13 +5024,13 @@
       },
       "ostatni_resurs": {
         "type": "number",
-        "label": "Procent wykorzystania resursu z ostatnich obliczeń",
+        "label": "Motogodziny z poprzedniego okresu [mth]",
         "required": false,
         "show_if": {
           "field": "ponowny_resurs",
           "value": "Tak"
         },
-        "default_unit": "%"
+        "default_unit": "mth"
       },
       "data_resurs": {
         "type": "date",
@@ -5089,15 +5068,6 @@
       "dni_robocze": {
         "label": "Ilość dni roboczych w roku",
         "type": "number"
-      },
-      "ponowny_mth": {
-        "label": "Łączna ilość motogodzin z poprzedniego okresu (jeśli znana)",
-        "type": "number",
-        "default_unit": "mth",
-        "show_if": {
-          "field": "ponowny_resurs",
-          "value": "Tak"
-        }
       }
     },
     "sections": [
@@ -5109,7 +5079,6 @@
           "spec",
           "ponowny_resurs",
           "data_resurs",
-          "ponowny_mth",
           "ostatni_resurs"
         ]
       },
@@ -5151,7 +5120,7 @@
       },
       {
         "id": "kd",
-        "title": "Na podstawie kalkulatora współczynnika K<sub>d</sub>, wybierz odpowiedni stan obciążenia",
+        "title": "Na podstawie kalkulatora współczynnika K<sub>d</sub> wyznacz stan obciążenia",
         "icon": "balance",
         "fields": [
           "diagram_kd"
@@ -5287,13 +5256,13 @@
       },
       "ostatni_resurs": {
         "type": "number",
-        "label": "Procent wykorzystania resursu z ostatnich obliczeń",
+        "label": "Motogodziny z poprzedniego okresu [mth]",
         "required": false,
         "show_if": {
           "field": "ponowny_resurs",
           "value": "Tak"
         },
-        "default_unit": "%"
+        "default_unit": "mth"
       },
       "data_resurs": {
         "type": "date",
@@ -5331,15 +5300,6 @@
       "dni_robocze": {
         "label": "Ilość dni roboczych w roku",
         "type": "number"
-      },
-      "ponowny_mth": {
-        "label": "Łączna ilość motogodzin z poprzedniego okresu (jeśli znana)",
-        "type": "number",
-        "default_unit": "mth",
-        "show_if": {
-          "field": "ponowny_resurs",
-          "value": "Tak"
-        }
       }
     },
     "sections": [
@@ -5351,7 +5311,6 @@
           "spec",
           "ponowny_resurs",
           "data_resurs",
-          "ponowny_mth",
           "ostatni_resurs"
         ]
       },
@@ -5393,7 +5352,7 @@
       },
       {
         "id": "kd",
-        "title": "Na podstawie kalkulatora współczynnika K<sub>d</sub>, wybierz odpowiedni stan obciążenia",
+        "title": "Na podstawie kalkulatora współczynnika K<sub>d</sub> wyznacz stan obciążenia",
         "icon": "balance",
         "fields": [
           "diagram_kd"
@@ -5526,13 +5485,13 @@
       },
       "ostatni_resurs": {
         "type": "number",
-        "label": "Procent wykorzystania resursu z ostatnich obliczeń",
+        "label": "Motogodziny z poprzedniego okresu [mth]",
         "required": false,
         "show_if": {
           "field": "ponowny_resurs",
           "value": "Tak"
         },
-        "default_unit": "%"
+        "default_unit": "mth"
       },
       "data_resurs": {
         "type": "date",
@@ -5570,15 +5529,6 @@
       "dni_robocze": {
         "label": "Ilość dni roboczych w roku",
         "type": "number"
-      },
-      "ponowny_mth": {
-        "label": "Łączna ilość motogodzin z poprzedniego okresu (jeśli znana)",
-        "type": "number",
-        "default_unit": "mth",
-        "show_if": {
-          "field": "ponowny_resurs",
-          "value": "Tak"
-        }
       }
     },
     "sections": [
@@ -5590,7 +5540,6 @@
           "spec",
           "ponowny_resurs",
           "data_resurs",
-          "ponowny_mth",
           "ostatni_resurs"
         ]
       },
@@ -5632,7 +5581,7 @@
       },
       {
         "id": "kd",
-        "title": "Na podstawie kalkulatora współczynnika K<sub>d</sub>, wybierz odpowiedni stan obciążenia",
+        "title": "Na podstawie kalkulatora współczynnika K<sub>d</sub> wyznacz stan obciążenia",
         "icon": "balance",
         "fields": [
           "diagram_kd"
@@ -5765,13 +5714,13 @@
       },
       "ostatni_resurs": {
         "type": "number",
-        "label": "Procent wykorzystania resursu z ostatnich obliczeń",
+        "label": "Motogodziny z poprzedniego okresu [mth]",
         "required": false,
         "show_if": {
           "field": "ponowny_resurs",
           "value": "Tak"
         },
-        "default_unit": "%"
+        "default_unit": "mth"
       },
       "data_resurs": {
         "type": "date",
@@ -5809,15 +5758,6 @@
       "dni_robocze": {
         "label": "Ilość dni roboczych w roku",
         "type": "number"
-      },
-      "ponowny_mth": {
-        "label": "Łączna ilość motogodzin z poprzedniego okresu (jeśli znana)",
-        "type": "number",
-        "default_unit": "mth",
-        "show_if": {
-          "field": "ponowny_resurs",
-          "value": "Tak"
-        }
       }
     },
     "sections": [
@@ -5829,7 +5769,6 @@
           "spec",
           "ponowny_resurs",
           "data_resurs",
-          "ponowny_mth",
           "ostatni_resurs"
         ]
       },
@@ -5871,7 +5810,7 @@
       },
       {
         "id": "kd",
-        "title": "Na podstawie kalkulatora współczynnika K<sub>d</sub>, wybierz odpowiedni stan obciążenia",
+        "title": "Na podstawie kalkulatora współczynnika K<sub>d</sub> wyznacz stan obciążenia",
         "icon": "balance",
         "fields": [
           "diagram_kd"
