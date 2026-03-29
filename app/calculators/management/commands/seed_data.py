@@ -41,6 +41,7 @@ CALCULATOR_DEFINITIONS = [
     {"slug": "mech_podnoszenia",     "name": "Mechanizm podnoszenia",     "premium_cost": Decimal("100.00"), "premium_cost_recurring": Decimal("80.00")},
     {"slug": "mech_jazdy_suwnicy",   "name": "Mechanizm jazdy suwnicy",   "premium_cost": Decimal("100.00"), "premium_cost_recurring": Decimal("80.00")},
     {"slug": "mech_jazdy_wciagarki", "name": "Mechanizm jazdy wciągarki", "premium_cost": Decimal("100.00"), "premium_cost_recurring": Decimal("80.00")},
+    {"slug": "mech_jazdy_wciagnika", "name": "Mechanizm jazdy wciągnika", "premium_cost": Decimal("100.00"), "premium_cost_recurring": Decimal("80.00")},
     {"slug": "mech_jazdy_zurawia",   "name": "Mechanizm jazdy żurawia",   "premium_cost": Decimal("100.00"), "premium_cost_recurring": Decimal("80.00")},
     {"slug": "mech_zmiany_wysiegu",  "name": "Mechanizm zmiany wysięgu",  "premium_cost": Decimal("100.00"), "premium_cost_recurring": Decimal("80.00")},
     {"slug": "mech_zmiany_obrotu",   "name": "Mechanizm zmiany obrotu",   "premium_cost": Decimal("100.00"), "premium_cost_recurring": Decimal("80.00")},

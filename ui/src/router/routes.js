@@ -8,7 +8,8 @@ const routes = [
       { path: 'login', component: () => import('pages/auth/LoginPage.vue') },
       { path: 'register', component: () => import('pages/auth/RegisterPage.vue') },
       { path: 'forgot-password', component: () => import('pages/auth/ForgotPasswordPage.vue') },
-      { path: 'password-reset/confirm/:uid/:token', props: true, component: () => import('pages/auth/ResetPasswordConfirmPage.vue') }
+      { path: 'password-reset/confirm/:uid/:token', props: true, component: () => import('pages/auth/ResetPasswordConfirmPage.vue') },
+      { path: 'confirm-email/:key', props: true, component: () => import('pages/auth/EmailConfirmPage.vue') }
     ]
   },
 

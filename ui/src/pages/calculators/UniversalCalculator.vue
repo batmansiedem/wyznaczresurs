@@ -195,6 +195,31 @@
               </q-card-section>
             </template>
           </q-card>
+
+          <!-- Sekcja mechanizmów powiązanych (tylko dla urządzeń nadrzędnych) -->
+          <q-card v-if="childMechs.length" flat bordered class="shadow-1 overflow-hidden q-mt-lg">
+            <div class="calc-section-bar">
+              <q-icon name="settings" size="14px" />
+              Mechanizmy powiązane
+            </div>
+            <div class="q-pa-md">
+              <p class="text-body2 text-grey-7 q-mb-md">
+                Wyznacz resurs mechanizmów napędowych tego urządzenia:
+              </p>
+              <div class="row q-gutter-sm">
+                <q-btn
+                  v-for="mech in childMechs"
+                  :key="mech.slug"
+                  :label="mech.name"
+                  :to="`/calculators/${mech.slug}`"
+                  outline
+                  color="primary"
+                  no-caps
+                  icon="arrow_forward"
+                />
+              </div>
+            </div>
+          </q-card>
         </q-tab-panel>
 
         <!-- ==================== TAB 2: Zapisane wyniki ==================== -->
@@ -352,16 +377,20 @@ const units = ref({})
 const deviceResults = ref([])
 const selectedDeviceResult = ref(null)
 
-const MECH_PARENT_DEVICES = {
-  mech_podnoszenia: ['wciagarka', 'wciagnik', 'suwnica', 'zuraw', 'zuraw_przeladunkowy', 'ukladnica_magazynowa'],
-  mech_jazdy_suwnicy: ['suwnica'],
-  mech_jazdy_wciagarki: ['wciagarka'],
-  mech_jazdy_zurawia: ['zuraw', 'zuraw_przeladunkowy'],
-  mech_zmiany_wysiegu: ['zuraw', 'zuraw_przeladunkowy'],
-  mech_zmiany_obrotu: ['zuraw', 'zuraw_przeladunkowy'],
+// Mechanizmy: slug → lista urządzeń nadrzędnych (z pola parent_devices w JSON)
+const MECH_PARENT_DEVICES = {}
+const DEVICE_CHILD_MECHS = {}
+for (const [slug, def] of Object.entries(calculatorFields)) {
+  if (!def.parent_devices?.length) continue
+  MECH_PARENT_DEVICES[slug] = def.parent_devices
+  for (const parent of def.parent_devices) {
+    if (!DEVICE_CHILD_MECHS[parent]) DEVICE_CHILD_MECHS[parent] = []
+    DEVICE_CHILD_MECHS[parent].push({ slug, name: def.name || slug })
+  }
 }
 
 const isMechanism = computed(() => calculatorSlug.value in MECH_PARENT_DEVICES)
+const childMechs = computed(() => DEVICE_CHILD_MECHS[calculatorSlug.value] || [])
 
 // Wykrywanie zmiany kg → t w polach masy
 const massFieldUnits = computed(() => {
@@ -728,6 +757,82 @@ function loadFromDevice(result) {
 
 
 async function submitCalculation() {
+  // ── Walidacja diagramów KD / LDR / HDR / AD ───────────────────────────────
+  const _fields = currentCalculatorDefinition.value?.fields || {}
+  const _fd = formData.value
+
+  function _getNum(raw) {
+    if (raw == null) return 0
+    return Number(typeof raw === 'object' ? (raw?.value ?? 0) : raw) || 0
+  }
+
+  if (_fields.diagram_kd && isFieldVisible('diagram_kd')) {
+    let cSum = 0, missingQ = false
+    for (let i = 1; i <= 5; i++) {
+      const c = Number(_fd[`c_${i}`] ?? 0)
+      cSum += c
+      if (c > 0 && !_getNum(_fd[`q_${i}`])) missingQ = true
+    }
+    if (cSum === 0) {
+      Notify.create({ type: 'negative', position: 'top', message: 'Widmo K_d: wypełnij co najmniej jedną klasę obciążeń (c_i > 0).' })
+      return
+    }
+    if (Math.round(cSum * 10) / 10 !== 100) {
+      Notify.create({ type: 'negative', position: 'top', message: `Widmo K_d: suma udziałów c musi wynosić 100% (aktualnie ${Math.round(cSum * 10) / 10}%).` })
+      return
+    }
+    if (missingQ) {
+      Notify.create({ type: 'negative', position: 'top', message: 'Widmo K_d: dla każdej klasy z c_i > 0 należy podać masę q_i.' })
+      return
+    }
+  }
+
+  if (_fields.diagram_ldr && isFieldVisible('diagram_ldr')) {
+    let pSum = 0
+    for (let i = 1; i <= 25; i++) pSum += Number(_fd[`p_${i}`] ?? 0)
+    if (pSum === 0) {
+      Notify.create({ type: 'negative', position: 'top', message: 'Widmo LDR: zaznacz co najmniej jedną strefę i podaj udział p_i.' })
+      return
+    }
+    if (Math.round(pSum * 10) / 10 !== 100) {
+      Notify.create({ type: 'negative', position: 'top', message: `Widmo LDR: suma udziałów p musi wynosić 100% (aktualnie ${Math.round(pSum * 10) / 10}%).` })
+      return
+    }
+  }
+
+  if (_fields.diagram_hdr && isFieldVisible('diagram_hdr')) {
+    let ccSum = 0, missingH = false
+    for (let i = 1; i <= 5; i++) {
+      const cc = Number(_fd[`cc_${i}`] ?? 0)
+      ccSum += cc
+      if (cc > 0 && !_getNum(_fd[`h_${i}`])) missingH = true
+    }
+    if (ccSum === 0) {
+      Notify.create({ type: 'negative', position: 'top', message: 'Widmo HDR: zaznacz co najmniej jedną strefę wysokości i podaj udział czasu cc_i.' })
+      return
+    }
+    if (Math.round(ccSum * 10) / 10 !== 100) {
+      Notify.create({ type: 'negative', position: 'top', message: `Widmo HDR: suma udziałów czasu musi wynosić 100% (aktualnie ${Math.round(ccSum * 10) / 10}%).` })
+      return
+    }
+    if (missingH) {
+      Notify.create({ type: 'negative', position: 'top', message: 'Widmo HDR: dla każdej strefy z cc_i > 0 należy podać wysokość h_i.' })
+      return
+    }
+  }
+
+  if (_fields.diagram_ad && isFieldVisible('diagram_ad')) {
+    const aSum = [1, 2, 3].reduce((s, i) => s + Number(_fd[`a_${i}`] ?? 0), 0)
+    if (aSum === 0) {
+      Notify.create({ type: 'negative', position: 'top', message: 'Kąt α_d: wypełnij co najmniej jeden udział procentowy.' })
+      return
+    }
+    if (Math.round(aSum * 10) / 10 !== 100) {
+      Notify.create({ type: 'negative', position: 'top', message: `Kąt α_d: suma udziałów musi wynosić 100% (aktualnie ${Math.round(aSum * 10) / 10}%).` })
+      return
+    }
+  }
+
   calculating.value = true
   try {
     let res
@@ -807,18 +912,49 @@ async function loadSingleResult(resultId) {
   try {
     const res = await api.get(`/calculators/results/${resultId}/`)
     const result = res.data
-    // Wczytaj dane do formularza
     const loaded = JSON.parse(JSON.stringify(result.input_data))
-    for (const k of Object.keys(formData.value)) delete formData.value[k]
+    const date = new Date(result.created_at).toLocaleDateString('pl-PL')
+
+    // Wstępnie wypełnij formData żeby fetchCurrentCost zwrócił właściwy koszt
     Object.assign(formData.value, loaded)
-    // Jeśli odblokowany, pokaż wyniki od razu
-    if (!result.is_locked) {
-      calculatedResult.value = result
-      await nextTick()
-      resultsRef.value?.scrollIntoView({ behavior: 'smooth' })
-    } else {
-      calculatedResult.value = { ...result, result_id: result.id }
-    }
+    await fetchCurrentCost()
+
+    Dialog.create({
+      title: 'Co chcesz zrobić z tymi danymi?',
+      message: `Obliczenia z dnia <b>${date}</b>`,
+      html: true,
+      options: {
+        type: 'radio',
+        model: 'modify',
+        items: [
+          {
+            label: 'Zaktualizuj istniejący wynik (bezpłatnie)',
+            description: 'Zmień parametry i nadpisz ten wynik. Nr fabryczny i lata pracy pozostają zablokowane.',
+            value: 'modify',
+            color: 'primary',
+          },
+          {
+            label: `Stwórz nowe obliczenia (${currentCost.value} pkt)`,
+            description: 'Dane zostaną wczytane, ale wynik zostanie zapisany jako nowy. Wszystkie pola odblokowane.',
+            value: 'new',
+            color: 'secondary',
+          },
+        ],
+      },
+      cancel: { label: 'Anuluj', flat: true },
+      ok: { label: 'Wczytaj dane', color: 'primary', unelevated: true },
+      persistent: true,
+    }).onOk(mode => {
+      _applyLoadedData(loaded, mode === 'modify' ? result.id : null)
+      if (mode === 'modify' && !result.is_locked) {
+        calculatedResult.value = result
+        nextTick(() => resultsRef.value?.scrollIntoView({ behavior: 'smooth' }))
+      }
+      const msg = mode === 'modify'
+        ? 'Dane wczytane — tryb modyfikacji (bezpłatny).'
+        : 'Dane wczytane — tryb nowych obliczeń.'
+      Notify.create({ type: 'info', message: msg, position: 'top', timeout: 2500 })
+    })
   } catch (error) {
     console.error('Błąd wczytywania wyniku:', error)
   }

@@ -600,6 +600,21 @@
       }
     }
   },
+  "mech_jazdy_wciagnika": {
+    "name": "Mechanizm jazdy wciągnika - Wyniki",
+    "fields": {
+      "resurs_wykorzystanie": { "label": "Wykorzystanie resursu", "type": "percentage", "unit": "%" },
+      "resurs_message": { "label": "Status resursu", "type": "text" },
+      "data_prognoza": { "label": "Prognozowana data", "type": "date" },
+      "wsp_km": { "label": "Wsp. widma obciążeń km", "type": "number" },
+      "stan_obciazenia": { "label": "Stan obciążenia", "type": "text" },
+      "T_WSK": { "label": "Projektowa zdolność czasowa T_WSK", "type": "number", "unit": "h" },
+      "F_X": { "label": "Wsp. niepewności rejestracji F<sub>X</sub>", "type": "number" },
+      "czas_uzytkowania_mech": { "label": "Czas użytkowania mechanizmu", "type": "number", "unit": "h" },
+      "czas_uzytkowania_mech_rok": { "label": "Czas użytkowania mech./rok", "type": "number", "unit": "h/rok" },
+      "resurs_prognoza_dni": { "label": "Prognoza resursu", "type": "number", "unit": "dni" }
+    }
+  },
   "mech_jazdy_zurawia": {
     "name": "Mechanizm jazdy żurawia - Wyniki",
     "fields": {
@@ -817,20 +832,43 @@
         "type": "date"
       },
       "U_WSK": {
-        "label": "Maks. ilość cykli U<sub>WSK</sub>",
+        "label": "Projektowa zdolność U<sub>WSK</sub>",
         "type": "number"
+      },
+      "T_WSK": {
+        "label": "Projektowa zdolność T<sub>WSK</sub>",
+        "type": "number",
+        "unit": "mth"
+      },
+      "moto_efektywne": {
+        "label": "Efektywne motogodziny",
+        "type": "number",
+        "unit": "mth"
+      },
+      "moto_rok": {
+        "label": "Motogodziny efektywne / rok",
+        "type": "number",
+        "unit": "mth/rok"
       },
       "F_X": {
         "label": "Współczynnik F<sub>X</sub>",
         "type": "number"
       },
       "wsp_kdr": {
-        "label": "Współczynnik KDR",
+        "label": "Współczynnik widma K<sub>d</sub>",
         "type": "number"
       },
       "stan_obciazenia": {
         "label": "Stan obciążenia",
         "type": "text"
+      },
+      "ldr": {
+        "label": "Współczynnik L<sub>DR</sub>",
+        "type": "number"
+      },
+      "hdr": {
+        "label": "Współczynnik H<sub>DR</sub>",
+        "type": "number"
       }
     }
   },

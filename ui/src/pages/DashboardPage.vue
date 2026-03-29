@@ -186,19 +186,33 @@ function getUtilColor(val) {
 }
 
 function getWorkData(r) {
-  // Sprawdzamy czy to motogodziny (np. dla dźwigów) czy cykle
+  // BUMAR (podest_ruchomy) — motogodziny z pola moto_podest_ruchomy
+  const moto = r.input_data?.moto_podest_ruchomy
+  if (moto != null && moto !== 0 && moto !== '') {
+    const current = typeof moto === 'object' ? parseFloat(moto?.value || 0) : parseFloat(moto || 0)
+    const tWsk = r.output_data?.T_WSK
+    const total = tWsk
+      ? (typeof tWsk === 'object' ? parseFloat(tWsk.value || 0) : parseFloat(tWsk || 0))
+      : 0
+    return {
+      current, total,
+      percent: total ? Math.min(current / total, 1) : 0,
+      unit: 'mth',
+      label: total ? `${current.toLocaleString('pl-PL')} / ${total.toLocaleString('pl-PL')}` : `${current.toLocaleString('pl-PL')} mth`
+    }
+  }
+
+  // Dźwig / urządzenia z motogodzinami
   const isHours = !!r.input_data?.licznik_pracy || !!r.input_data?.pyt_motogodzin
   const val = r.input_data?.ilosc_cykli || r.input_data?.licznik_pracy || 0
-  
   const current = typeof val === 'object' ? parseFloat(val?.value || 0) : parseFloat(val || 0)
   const total = parseFloat(r.output_data?.U_WSK || r.output_data?.U_res || r.output_data?.resurs_h_max || 100000)
-  
   return {
-    current: current,
-    total: total,
+    current,
+    total,
     percent: Math.min(current / total, 1),
     unit: isHours ? 'mth' : 'cykli',
-    label: `${current.toLocaleString()} / ${total.toLocaleString()}`
+    label: `${current.toLocaleString('pl-PL')} / ${total.toLocaleString('pl-PL')}`
   }
 }
 

@@ -1,0 +1,14 @@
+Witaj,
+
+Dziękujemy za rejestrację w serwisie wyznaczresurs.pl.
+
+Aby aktywować konto, kliknij poniższy link:
+
+{{ activate_url }}
+
+Link jest ważny przez {{ expiration_days }} dni.
+
+Jeśli nie zakładałeś/aś konta w naszym serwisie, zignoruj tę wiadomość.
+
+---
+wyznaczresurs.pl — Kalkulator resursu UTB

@@ -142,14 +142,22 @@ function getDeviceDescription(slug) {
   return DEVICE_DESCRIPTIONS[slug] || 'Obliczanie stopnia wykorzystania resursu.'
 }
 
-const DEVICE_MECHANISMS = {
-  suwnica:   ['mech_podnoszenia', 'mech_jazdy_suwnicy'],
-  wciagarka: ['mech_podnoszenia', 'mech_jazdy_wciagarki'],
-  wciagnik:  ['mech_podnoszenia'],
-  zuraw:     ['mech_podnoszenia', 'mech_jazdy_zurawia', 'mech_zmiany_wysiegu', 'mech_zmiany_obrotu'],
+import calculatorFields from 'src/data/calculator_fields.json'
+
+// Mechanizmy: slugi które mają parent_devices w JSON
+const ALL_MECH_SLUGS = new Set(
+  Object.keys(calculatorFields).filter(slug => calculatorFields[slug].parent_devices?.length)
+)
+// Odwrócona mapa: urządzenie → lista slugów mechanizmów
+const DEVICE_MECHANISMS = {}
+for (const [mechSlug, def] of Object.entries(calculatorFields)) {
+  if (!def.parent_devices?.length) continue
+  for (const parent of def.parent_devices) {
+    if (!DEVICE_MECHANISMS[parent]) DEVICE_MECHANISMS[parent] = []
+    DEVICE_MECHANISMS[parent].push(mechSlug)
+  }
 }
 
-const ALL_MECH_SLUGS = new Set(Object.values(DEVICE_MECHANISMS).flat())
 const deviceCalcs = computed(() => calculators.value.filter(c => !ALL_MECH_SLUGS.has(c.slug)))
 const calcBySlug = computed(() => Object.fromEntries(calculators.value.map(c => [c.slug, c])))
 

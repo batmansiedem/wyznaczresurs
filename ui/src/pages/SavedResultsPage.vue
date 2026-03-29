@@ -39,6 +39,8 @@
           </template>
           <template v-slot:body-cell-actions="props">
             <q-td :props="props" class="q-gutter-x-sm text-center">
+              <q-btn icon="open_in_new" label="Kalkulator" color="primary" flat dense no-caps
+                :to="`/calculators/${props.row.calculator_slug}?result_id=${props.row.id}`" />
               <q-btn icon="visibility" label="Szczegóły" color="primary" flat dense
                 @click="showDetails(props.row)" no-caps />
               <q-btn

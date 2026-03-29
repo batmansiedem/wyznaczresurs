@@ -9,6 +9,8 @@ Nowoczesny layout inżynierski:
 
 import os
 import re
+import json as _json
+from pathlib import Path
 from io import BytesIO
 from datetime import datetime
 from math import cos, sin, radians
@@ -32,6 +34,36 @@ from reportlab.pdfgen.canvas import Canvas
 FONT_PATH = os.path.join(settings.BASE_DIR, 'core', 'fonts')
 pdfmetrics.registerFont(TTFont('DVS',  os.path.join(FONT_PATH, 'DejaVuSans.ttf')))
 pdfmetrics.registerFont(TTFont('DVSB', os.path.join(FONT_PATH, 'DejaVuSans-Bold.ttf')))
+
+# ── Mapa show_if z JSON kalkulatorów ─────────────────────────────────────────
+_FIELDS_JSON_PATH = Path(settings.BASE_DIR).parent / 'ui' / 'src' / 'data' / 'calculator_fields.json'
+_CALC_FIELDS_MAP: dict = {}
+try:
+    _CALC_FIELDS_MAP = _json.loads(_FIELDS_JSON_PATH.read_text(encoding='utf-8'))
+except Exception:
+    pass
+
+
+def _is_field_visible_in_pdf(key: str, slug: str, input_data: dict) -> bool:
+    """Zwraca True jeśli pole powinno być widoczne wg show_if z calculator_fields.json."""
+    slug_fields = _CALC_FIELDS_MAP.get(slug, {}).get('fields', {})
+    field_def = slug_fields.get(key, {})
+    show_if = field_def.get('show_if')
+    if not show_if:
+        return True
+    ctrl_field = show_if.get('field')
+    required_val = show_if.get('value')
+    cur = input_data.get(ctrl_field)
+    if isinstance(cur, dict):
+        cur = cur.get('value')
+    cur_str = str(cur) if cur is not None else ''
+    if isinstance(required_val, list):
+        matched = any(str(v) in cur_str for v in required_val)
+    else:
+        matched = cur_str == str(required_val)
+    negate = show_if.get('negate', False)
+    return not matched if negate else matched
+
 
 # ── Stałe layoutu ────────────────────────────────────────────────────────────
 PAGE_W, PAGE_H = A4
@@ -259,15 +291,15 @@ def _bar_chart(bars: list, theme: colors.Color) -> Drawing:
 
 # ── Diagramy arkuszów obliczeniowych ─────────────────────────────────────────
 
-def _diagram_kd(input_data: dict, theme: colors.Color) -> list:
-    """Diagram Kd: rysunek suwnicy + tabela 5 klas widma obciążeń."""
+def _diagram_kd(input_data: dict, theme: colors.Color, is_mech: bool = False) -> list:
+    """Diagram Kd: rysunek suwnicy + tabela 5 klas widma obciążeń.
+    Zawsze renderuje rysunek SVG. Tabelę qi/ci pokazuje tylko gdy dane są dostępne.
+    Dla mechanizmów używa etykiety K_m zamiast K_d."""
     has_any = any(
         _get_num(input_data.get(f'q_{i}')) is not None or
         _get_num(input_data.get(f'c_{i}')) is not None
         for i in range(1, 6)
     )
-    if not has_any:
-        return []
 
     # ── Rysunek suwnicy (SVG 320×320 → 4.8cm) ───────────────────────
     SVG_W, SVG_H = 320, 320
@@ -341,16 +373,24 @@ def _diagram_kd(input_data: dict, theme: colors.Color) -> list:
         _p('qi [kg / t]', font='DVSB', size=8, color=theme, align=1),
         _p('ci [%]', font='DVSB', size=8, color=theme, align=1),
     ]]
-    for i in range(1, 6):
-        qv, qu = _split_value_unit(input_data.get(f'q_{i}'))
-        cv, _  = _split_value_unit(input_data.get(f'c_{i}'))
-        if qv == '-' and cv == '-':
-            continue
-        q_str = f'{qv} {qu}'.strip() if qu else qv
+    if has_any:
+        for i in range(1, 6):
+            qv, qu = _split_value_unit(input_data.get(f'q_{i}'))
+            cv, _  = _split_value_unit(input_data.get(f'c_{i}'))
+            if qv == '-' and cv == '-':
+                continue
+            q_str = f'{qv} {qu}'.strip() if qu else qv
+            tdata.append([
+                _p(str(i), font='DVSB', size=8, color=C_BLACK, align=1),
+                _p(q_str,  font='DVS',  size=8, color=C_BLACK, align=1),
+                _p(cv,     font='DVS',  size=8, color=C_BLACK, align=1),
+            ])
+    else:
+        # Widmo nie zostało zdefiniowane — pokaż informację zamiast pustej tabeli
         tdata.append([
-            _p(str(i), font='DVSB', size=8, color=C_BLACK, align=1),
-            _p(q_str,  font='DVS',  size=8, color=C_BLACK, align=1),
-            _p(cv,     font='DVS',  size=8, color=C_BLACK, align=1),
+            _p('—', font='DVS', size=8, color=C_GREY_SEP, align=1),
+            _p('Widmo nie zdefiniowane', font='DVS', size=8, color=C_GREY_SEP, align=1),
+            _p('—', font='DVS', size=8, color=C_GREY_SEP, align=1),
         ])
     tstyle = [
         ('LINEBEFORE',  (0, 0), (0, -1), 3, theme),
@@ -374,7 +414,8 @@ def _diagram_kd(input_data: dict, theme: colors.Color) -> list:
         ('TOPPADDING',    (0, 0), (-1, -1), 0),
         ('BOTTOMPADDING', (0, 0), (-1, -1), 0),
     ]))
-    return [_section_header('Współczynnik K_d i stan obciążenia', theme),
+    section_title = 'Współczynnik K_m i stan obciążenia' if is_mech else 'Współczynnik K_d i stan obciążenia'
+    return [_section_header(section_title, theme),
             Spacer(1, 0.15 * cm), combo, Spacer(1, 0.35 * cm)]
 
 
@@ -551,7 +592,7 @@ def _diagram_ldr(input_data: dict, theme: colors.Color) -> list:
         ('TOPPADDING',    (0, 0), (-1, -1), 0),
         ('BOTTOMPADDING', (0, 0), (-1, -1), 0),
     ]))
-    return [_section_header('Widmo LDR — zasieg wysiegnika (siatka 5x5)', theme),
+    return [_section_header('Współczynnik wykorzystania wysięgu L_DR', theme),
             Spacer(1, 0.15 * cm), combo, Spacer(1, 0.35 * cm)]
 
 
@@ -726,7 +767,7 @@ def _diagram_hdr(input_data: dict, theme: colors.Color) -> list:
         ('TOPPADDING',    (0, 0), (-1, -1), 0),
         ('BOTTOMPADDING', (0, 0), (-1, -1), 0),
     ]))
-    return [_section_header('Widmo HDR — strefy wysokosci podnoszenia', theme),
+    return [_section_header('Współczynnik wykorzystania wysięgu H_DR', theme),
             Spacer(1, 0.15 * cm), combo, Spacer(1, 0.35 * cm)]
 
 
@@ -1107,6 +1148,11 @@ INPUT_LABELS = {
     'q_max':                'Udźwig maksymalny Q_max',
     'q_o':                  'Masa osprzętu Q_osp',
     'h_max':                'Maks. wysokość podnoszenia h_max',
+    'L_b_max':              'Maks. wysięg boczny L_b,max',
+    's_factor':             'Współczynnik przebiegu naprężeń S',
+    'moto_podest_ruchomy':  'Ilość odbytych motogodzin podestu ruchomego od ostatniego przeglądu specjalnego lub od daty rozpoczęcia eksploatacji',
+    'max_moto_prod':        'Graniczna ilość motogodzin określona przez producenta',
+    'procent_bumar':        'Efektywny czas pracy podestu ruchomego [%]',
     'v_pod':                'Prędkość podnoszenia v_pod',
     'v_jaz':                'Prędkość jazdy v_jaz',
     'v_prz':                'Prędkość przesuwu v_prz',
@@ -1200,7 +1246,9 @@ INPUT_LABELS = {
 # Etykiety wynikowe: klucz → (etykieta, jednostka)
 OUTPUT_LABELS = {
     'resurs_wykorzystanie':      ('Stopień wykorzystania resursu',          '%'),
-    'U_WSK':                     ('Maksymalna ilość cykli U_WSK',          'cykli'),
+    'U_WSK':                     ('Projektowa zdolność U_WSK',             ''),
+    'moto_efektywne':            ('Efektywne motogodziny',                  'mth'),
+    'moto_rok':                  ('Motogodziny efektywne / rok',            'mth/rok'),
     'T_WSK':                     ('Projektowa zdolność czasowa T_WSK',     'h'),
     'F_X':                       ('Współczynnik F_X',                       '—'),
     'ilosc_cykli':               ('Ilość odbytych cykli',                   'cykli'),
@@ -1208,7 +1256,7 @@ OUTPUT_LABELS = {
     'czas_uzytkowania_mech':     ('Czas użytkowania mechanizmu',            'h'),
     'czas_uzytkowania_mech_rok': ('Czas użytkowania mechanizmu / rok',      'h/rok'),
     'wsp_kdr':                   ('Współczynnik widma obciążeń K_d',        '—'),
-    'wsp_km':                    ('Współczynnik widma k_m',                 '—'),
+    'wsp_km':                    ('Współczynnik widma obciążeń K_m',        '—'),
     'stan_obciazenia':           ('Klasa stanu obciążenia',                 ''),
     'data_prognoza':             ('Symulowana data wyczerpania resursu',    ''),
     'resurs_prognoza_dni':       ('Dni do wyczerpania resursu *',           'dni'),
@@ -1232,13 +1280,14 @@ _PARAM_SECTIONS = [
         'lata_pracy', 'ilosc_cykli', 'cykle_zmiana', 'tryb_pracy', 'dni_robocze',
         'sposob_rejestracji', 'gnp', 'gnp_check', 'gnp_czas',
         'ster', 'mechanizm_pomocniczy', 'czas_pracy_mech', 'max_cykle_prod',
-        'h_max', 'v_pod', 'v_jaz', 'v_prz', 's_sz',
+        'h_max', 'L_b_max', 'v_pod', 'v_jaz', 'v_prz', 's_sz',
         'rok_budowy', 'przeznaczenie', 'operator', 'budynek', 'przystanki',
         'liczba_dzwigow', 'h_pod', 'pyt_motogodzin', 'licznik_pracy', 'cykle_dzwig',
         'licznik_pracy_pod', 'licznik_pracy_jaz', 'licznik_pracy_prz',
         'naped', 'operatorzy', 'powierzchnia', 'serwis',
         'dlugosc_widel', 'kat_masztu_alfa', 'kat_masztu_beta',
         'motogodziny', 'efektywny_czas', 'klasa_naprezenia',
+        's_factor', 'moto_podest_ruchomy', 'max_moto_prod', 'procent_bumar',
     ]),
     ('Stan techniczny', [
         'konstrukcja', 'automatyka', 'sworznie', 'ciegna',
@@ -1256,9 +1305,10 @@ _PARAM_SECTIONS = [
 _PARAM_ORDER = [k for _, keys in _PARAM_SECTIONS for k in keys]
 
 _RESULT_ORDER = [
-    'wsp_kdr', 'wsp_km', 'ldr', 'hdr', 'ss_factor',
+    'wsp_kdr', 'wsp_km', 'ss_factor',
     'stan_obciazenia', 'F_X',
-    'U_WSK', 'T_WSK', 'ilosc_cykli', 'czas_uzytkowania_mech',
+    'U_WSK', 'T_WSK', 'moto_efektywne', 'moto_rok',
+    'ilosc_cykli', 'czas_uzytkowania_mech',
     'ilosc_cykli_rok', 'czas_uzytkowania_mech_rok',
     'resurs_wykorzystanie',
     'resurs_prognoza_dni', 'data_prognoza',
@@ -1286,6 +1336,10 @@ _SKIP_KEYS = {
     # Współczynniki inżynieryjne (wewnętrzne)
     'k_wid', 'k_oper', 'EDS_factor', 'k_sro', 'wskaznik_cykle', 'wskaznik_motogodzin',
     'max_c', 't_max', 'k_w', 'k_k', 'k_v_pod', 'k_h_pod',
+    # Pola wewnętrzne kalkulatora żurawia (nie odpowiadają polom w nowej aplikacji)
+    'recalculated_gnp', 'U_DOW',
+    # Pola wewnętrzne wózka specjalizowanego
+    'technical_state_reached', 'resurs_prognoza_dni',
 }
 
 
@@ -1333,12 +1387,11 @@ def _internal_mechanisms_section(output_data: dict, slug: str, theme: colors.Col
             except Exception:
                 data_str = str(data_prog)
             rows.append(('Symulowana data wyczerpania', data_str, ''))
-        items.append(CondPageBreak(3 * cm))
-        items.append(_section_header(mech_title, theme))
-        items.append(Spacer(1, 0.15 * cm))
+        _mech_block = [_section_header(mech_title, theme), Spacer(1, 0.15 * cm)]
         if rows:
-            items.append(_param_table(rows, theme, is_results=True))
-        items.append(Spacer(1, 0.3 * cm))
+            _mech_block.append(_param_table(rows, theme, is_results=True))
+        _mech_block.append(Spacer(1, 0.3 * cm))
+        items.append(KeepTogether(_mech_block))
         if t_max is not None and t_sum is not None and t_max > 0:
             max_v = max(t_max, t_sum) * 1.1
             items.append(Table(
@@ -1511,12 +1564,15 @@ def generate_result_pdf(result, calculator_name: str,
         '-1': 'Nie dotyczy',
     }
     seen = set()
+    _pdf_slug = result.calculator_definition.slug
 
     # ── Sekcje wejściowe ──────────────────────────────────────────────────────
     for section_title, section_keys in _PARAM_SECTIONS:
         section_rows = []
         for key in section_keys:
             if key not in input_data or key in _SKIP_KEYS:
+                continue
+            if not _is_field_visible_in_pdf(key, _pdf_slug, input_data):
                 continue
             # Specjalne traktowanie ostatni_resurs: zawsze % (konwersja z mth)
             raw_input = input_data[key]
@@ -1538,16 +1594,19 @@ def generate_result_pdf(result, calculator_name: str,
             section_rows.append((label, val, unit))
             seen.add(key)
         if section_rows:
-            story.append(CondPageBreak(3 * cm))
-            story.append(_section_header(section_title, THEME))
-            story.append(Spacer(1, 0.15 * cm))
-            story.append(_param_table(section_rows, THEME, is_results=False))
-            story.append(Spacer(1, 0.4 * cm))
+            story.append(KeepTogether([
+                _section_header(section_title, THEME),
+                Spacer(1, 0.15 * cm),
+                _param_table(section_rows, THEME, is_results=False),
+                Spacer(1, 0.4 * cm),
+            ]))
 
     # Pozostałe pola wejściowe (nieprzypisane do żadnej sekcji)
     extra_rows = []
     for key, raw in input_data.items():
         if key in seen or key in _SKIP_KEYS:
+            continue
+        if not _is_field_visible_in_pdf(key, _pdf_slug, input_data):
             continue
         val, unit = _split_value_unit(raw)
         if val == '-':
@@ -1558,24 +1617,35 @@ def generate_result_pdf(result, calculator_name: str,
         val = _INSPECTION_VALS.get(str(val).strip(), val)
         extra_rows.append((label, val, unit))
     if extra_rows:
-        story.append(_section_header('Parametry urządzenia', THEME))
-        story.append(Spacer(1, 0.15 * cm))
-        story.append(_param_table(extra_rows, THEME, is_results=False))
-        story.append(Spacer(1, 0.4 * cm))
+        story.append(KeepTogether([
+            _section_header('Parametry urządzenia', THEME),
+            Spacer(1, 0.15 * cm),
+            _param_table(extra_rows, THEME, is_results=False),
+            Spacer(1, 0.4 * cm),
+        ]))
 
-    # ── Diagramy widm obciążeń (LDR / AD / Kd) ──────────────────────────────
-    story += _diagram_ldr(input_data, THEME)
-    story += _diagram_ad(input_data, THEME)
+    # ── Diagram αd ────────────────────────────────────────────────────────────
+    _ad_items = _diagram_ad(input_data, THEME)
+    if _ad_items:
+        story.append(KeepTogether(_ad_items))
 
     # ── Sekcja: Współczynnik Kd i stan obciążenia ─────────────────────────────
-    story += _diagram_kd(input_data, THEME)
+    # Dla podestu ruchomego: typ decyduje czy LDR czy HDR (nie oba)
+    _slug = result.calculator_definition.slug
+    _podest_hdr_types = {'nożycowy samobieżny', 'masztowy samobieżny', 'masztowy stacjonarny'}
+    if _slug == 'podest_ruchomy':
+        _typ_val = str(_split_value_unit(input_data.get('typ', ''))[0])
+        _render_ldr = _typ_val not in _podest_hdr_types and _typ_val != 'składany na pojeździe BUMAR'
+        _render_hdr = _typ_val in _podest_hdr_types
+    else:
+        _render_ldr = True
+        _render_hdr = True
 
-    _kd_has_data = any(
-        _get_num(input_data.get(f'q_{i}')) is not None or
-        _get_num(input_data.get(f'c_{i}')) is not None
-        for i in range(1, 6)
-    )
-    if _kd_has_data:
+    _is_mech = result.calculator_definition.slug in _MECH_SLUGS
+    _kd_items = _diagram_kd(input_data, THEME, is_mech=_is_mech)
+    _kd_coeff_items = []
+    _wsp_raw_kd = output_data.get('wsp_km' if _is_mech else 'wsp_kdr')
+    if _wsp_raw_kd is not None:
         _STAN_OPISY_KD = {
             'Q1': 'Q1-lekki — Ładunek nominalny podnoszony bardzo rzadko, zwykle ładunki znacznie mniejsze od nominalnego',
             'Q2': 'Q2-przeciętny — Ładunek nominalny podnoszony rzadko, zwykle ładunki zbliżone do połowy ładunku nominalnego',
@@ -1591,9 +1661,8 @@ def generate_result_pdf(result, calculator_name: str,
         _THRESHOLDS_L = [(0.125, 'L1-lekki'), (0.25, 'L2-przeciętny'),
                          (0.5, 'L3-ciężki'), (10.0, 'L4-bardzo ciężki')]
 
-        _is_mech = result.calculator_definition.slug in _MECH_SLUGS
-        _wsp_raw = output_data.get('wsp_km' if _is_mech else 'wsp_kdr')
         _stan_kd = output_data.get('stan_obciazenia', '')
+        _wsp_raw = _wsp_raw_kd
         if (not _stan_kd or _stan_kd == 'N/A') and _wsp_raw is not None:
             try:
                 _kd_val = float(_wsp_raw)
@@ -1611,17 +1680,42 @@ def generate_result_pdf(result, calculator_name: str,
                     pass
             _stan_opis_kd = next((v for k, v in _STAN_OPISY_KD.items() if str(_stan_kd).startswith(k)), _stan_kd)
             _kd_rows.append(('Stan obciążenia', _stan_opis_kd, ''))
-            story.append(_param_table(_kd_rows, THEME, is_results=True))
-            story.append(Spacer(1, 0.35 * cm))
+            _kd_coeff_items = [_param_table(_kd_rows, THEME, is_results=True), Spacer(1, 0.35 * cm)]
 
-    # ── Diagram HDR (po tabeli Kd) ────────────────────────────────────────────
-    story += _diagram_hdr(input_data, THEME)
+    if _kd_items or _kd_coeff_items:
+        story.append(KeepTogether(_kd_items + _kd_coeff_items))
+
+    # ── Diagram LDR + współczynnik L_DR (po sekcji Kd) ──────────────────────
+    if _render_ldr:
+        _ldr_base = _diagram_ldr(input_data, THEME)
+        if _ldr_base:
+            _ldr_all = list(_ldr_base)
+            _ldr_val = output_data.get('ldr')
+            if _ldr_val is not None:
+                try:
+                    _ldr_all.append(_param_table(
+                        [('Współczynnik L_DR', _fmt_num(str(_ldr_val)), '—')], THEME, is_results=True))
+                    _ldr_all.append(Spacer(1, 0.35 * cm))
+                except Exception:
+                    pass
+            story.append(KeepTogether(_ldr_all))
+
+    # ── Diagram HDR + współczynnik H_DR (po sekcji Kd) ──────────────────────
+    if _render_hdr:
+        _hdr_base = _diagram_hdr(input_data, THEME)
+        if _hdr_base:
+            _hdr_all = list(_hdr_base)
+            _hdr_val = output_data.get('hdr')
+            if _hdr_val is not None:
+                try:
+                    _hdr_all.append(_param_table(
+                        [('Współczynnik H_DR', _fmt_num(str(_hdr_val)), '—')], THEME, is_results=True))
+                    _hdr_all.append(Spacer(1, 0.35 * cm))
+                except Exception:
+                    pass
+            story.append(KeepTogether(_hdr_all))
 
     # ── Sekcja: Wyniki obliczeń resursu ──────────────────────────────────────
-    story.append(CondPageBreak(3 * cm))
-    story.append(_section_header('Wyniki obliczeń resursu', THEME))
-    story.append(Spacer(1, 0.15 * cm))
-
     result_rows = []
     seen_out = set()
     for key in _RESULT_ORDER:
@@ -1644,21 +1738,28 @@ def generate_result_pdf(result, calculator_name: str,
             result_rows.append((label, _fmt_num(v), u))
 
     if result_rows:
-        story.append(_param_table(result_rows, THEME, is_results=True))
-    story.append(Spacer(1, 0.4 * cm))
+        _res_title = 'Wyniki obliczeń resursu'
+        if _is_mech:
+            _res_title += f' — {calculator_name}'
+        story.append(KeepTogether([
+            _section_header(_res_title, THEME),
+            Spacer(1, 0.15 * cm),
+            _param_table(result_rows, THEME, is_results=True),
+            Spacer(1, 0.4 * cm),
+        ]))
 
     # ── Sekcja: Stopień wykorzystania resursu (wykres) ────────────────────────
     resurs_val = output_data.get('resurs_wykorzystanie')
     if resurs_val is not None:
         try:
             rv = float(resurs_val)
-            story.append(CondPageBreak(3 * cm))
-            story.append(_section_header('Stopień wykorzystania resursu', THEME))
-            story.append(Spacer(1, 0.15 * cm))
-            story.append(Table(
-                [[_bar_chart([('Stopień zużycia [%]', rv, max(rv * 1.1, 100))], THEME)]],
-                colWidths=[USABLE_W]))
-            story.append(Spacer(1, 0.4 * cm))
+            story.append(KeepTogether([
+                _section_header('Stopień wykorzystania resursu', THEME),
+                Spacer(1, 0.15 * cm),
+                Table([[_bar_chart([('Stopień zużycia [%]', rv, max(rv * 1.1, 100))], THEME)]],
+                      colWidths=[USABLE_W]),
+                Spacer(1, 0.4 * cm),
+            ]))
         except (ValueError, TypeError):
             pass
 
@@ -1673,17 +1774,16 @@ def generate_result_pdf(result, calculator_name: str,
             fx = float(output_data.get('F_X', 1) or 1)
             iv_fx = round(iv * fx, 2)
             max_v = max(uv, iv, iv_fx) * 1.1
-            story.append(CondPageBreak(3 * cm))
-            story.append(_section_header('Zestawienie — Ilość cykli vs maks. ilość cykli', THEME))
-            story.append(Spacer(1, 0.15 * cm))
-            story.append(Table(
-                [[_bar_chart([
+            story.append(KeepTogether([
+                _section_header('Zestawienie — Ilość cykli vs maks. ilość cykli', THEME),
+                Spacer(1, 0.15 * cm),
+                Table([[_bar_chart([
                     ('Maks. ilość cykli U_WSK', uv, max_v),
                     ('Odbyte cykle (bez F\u2093)', iv,    max_v),
                     ('Odbyte cykle (z F\u2093)',   iv_fx, max_v),
-                ], THEME)]],
-                colWidths=[USABLE_W]))
-            story.append(Spacer(1, 0.4 * cm))
+                ], THEME)]], colWidths=[USABLE_W]),
+                Spacer(1, 0.4 * cm),
+            ]))
         except (ValueError, TypeError, AttributeError):
             pass
 
@@ -1698,22 +1798,20 @@ def generate_result_pdf(result, calculator_name: str,
             fx = float(output_data.get('F_X', 1) or 1)
             cv_fx = round(cv * fx, 2)
             max_v = max(tv, cv, cv_fx) * 1.1
-            story.append(CondPageBreak(3 * cm))
-            story.append(_section_header('Zestawienie — Czas użytkowania vs T_WSK', THEME))
-            story.append(Spacer(1, 0.15 * cm))
-            story.append(Table(
-                [[_bar_chart([
+            story.append(KeepTogether([
+                _section_header('Zestawienie — Czas użytkowania vs T_WSK', THEME),
+                Spacer(1, 0.15 * cm),
+                Table([[_bar_chart([
                     ('Limit T_WSK [h]',              tv,    max_v),
                     ('Czas użytkowania (bez F\u2093) [h]', cv,    max_v),
                     ('Czas użytkowania (z F\u2093) [h]',   cv_fx, max_v),
-                ], THEME)]],
-                colWidths=[USABLE_W]))
-            story.append(Spacer(1, 0.4 * cm))
+                ], THEME)]], colWidths=[USABLE_W]),
+                Spacer(1, 0.4 * cm),
+            ]))
         except (ValueError, TypeError, AttributeError):
             pass
 
-    # ── Zestawienie mechanizmów ──────────────────────────────────────────────
-    story += _mechanism_summary_section(result, THEME)
+    # ── Zestawienie mechanizmów wewnętrznych (wózek jezdniowy, układnica) ────
     story += _internal_mechanisms_section(output_data, result.calculator_definition.slug, THEME)
 
     # ── Przebieg (ponowny resurs) ─────────────────────────────────────────────

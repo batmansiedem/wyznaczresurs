@@ -308,6 +308,15 @@ class DzwignikCalculator(BaseCalculator):
         # --- HDR Calculation ---
         cc_vals = [self._get_val(f'cc_{i}') for i in range(1, 6)]
         h_vals = [self._get_val(f'h_{i}') for i in range(1, 6)]
+        cc_sum = sum(cc_vals)
+        if cc_sum > 0:
+            if abs(cc_sum - Decimal('100')) > Decimal('0.5'):
+                raise ValidationError(
+                    f"Widmo HDR: suma udziałów czasu musi wynosić 100% (aktualnie {float(cc_sum):.1f}%).")
+            for i in range(5):
+                if cc_vals[i] > 0 and h_vals[i] <= 0:
+                    raise ValidationError(
+                        f"Widmo HDR: przy strefie T{i+1} > 0 należy podać wysokość h{i+1}.")
         hdr = Decimal(0)
         if h_max > 0:
             for i in range(5):
@@ -825,6 +834,9 @@ class MechJazdySuwnicyCalculator(TimeBasedCalculator):
 class MechJazdyWciagarkiCalculator(MechJazdySuwnicyCalculator):
     slug = 'mech_jazdy_wciagarki'
 
+class MechJazdyWciagnikaCalculator(MechJazdySuwnicyCalculator):
+    slug = 'mech_jazdy_wciagnika'
+
 class MechJazdyZurawiaCalculator(MechJazdySuwnicyCalculator):
     slug = 'mech_jazdy_zurawia'
 
@@ -842,7 +854,6 @@ class PodestRuchomyCalculator(BaseCalculator):
 
     def _calculate_ldr_type(self, common_inputs, kss):
         """Calculates resurs for LDR-based platform types."""
-        # This logic is similar to ZurawPrzeladunkowyCalculator
         ilosc_cykli = common_inputs['ilosc_cykli']
         ponowny_resurs = self._get_val('ponowny_resurs')
         ostatni_resurs = common_inputs['ostatni_resurs']
@@ -851,6 +862,10 @@ class PodestRuchomyCalculator(BaseCalculator):
         ss_factor = Decimal(str(_SS_FACTOR_BASE.get(s_factor, 0.008)))
 
         p_vals = [self._get_val(f'p_{i}') for i in range(1, 26)]
+        p_sum = sum(p_vals)
+        if p_sum > 0 and abs(p_sum - Decimal('100')) > Decimal('0.5'):
+            raise ValidationError(
+                f"Widmo LDR: suma udziałów p musi wynosić 100% (aktualnie {float(p_sum):.1f}%).")
         ldr = sum((p_vals[i] * Decimal('0.01')) * _LDR_COEFFS[i] ** 3 for i in range(25))
 
         wsp_kdr = self._calculate_wsp_kdr(ilosc_cykli)
@@ -883,10 +898,19 @@ class PodestRuchomyCalculator(BaseCalculator):
         h_max = self._get_val('h_max')
         cc_vals = [self._get_val(f'cc_{i}') for i in range(1, 6)]
         h_vals = [self._get_val(f'h_{i}') for i in range(1, 6)]
-        
+        cc_sum = sum(cc_vals)
+        if cc_sum > 0:
+            if abs(cc_sum - Decimal('100')) > Decimal('0.5'):
+                raise ValidationError(
+                    f"Widmo HDR: suma udziałów czasu musi wynosić 100% (aktualnie {float(cc_sum):.1f}%).")
+            for i in range(5):
+                if cc_vals[i] > 0 and h_vals[i] <= 0:
+                    raise ValidationError(
+                        f"Widmo HDR: przy strefie T{i+1} > 0 należy podać wysokość h{i+1}.")
+
         hdr = Decimal(0)
-        if h_max > 0 and sum(cc_vals) > 0: # Assuming percentages don't have to sum to 100
-             hdr = sum(((cc_vals[i] / 100) * (h_vals[i] / h_max) ** 3) for i in range(5))
+        if h_max > 0 and cc_sum > 0:
+            hdr = sum(((cc_vals[i] / 100) * (h_vals[i] / h_max) ** 3) for i in range(5))
 
         wsp_kdr = self._calculate_wsp_kdr(ilosc_cykli)
 
@@ -922,12 +946,13 @@ class PodestRuchomyCalculator(BaseCalculator):
 
         if typ == 'składany na pojeździe BUMAR':
             U_WSK, extra_data = self._calculate_bumar_type(common_inputs, kss)
+            # BUMAR: U_WSK to motogodziny wg producenta — kss nie skaluje U_WSK
         elif typ in ['nożycowy samobieżny', 'masztowy samobieżny', 'masztowy stacjonarny']:
             U_WSK, extra_data = self._calculate_hdr_type(common_inputs, kss)
+            U_WSK *= kss
         else: # Default to LDR type for all others
             U_WSK, extra_data = self._calculate_ldr_type(common_inputs, kss)
-            
-        U_WSK *= kss
+            U_WSK *= kss
 
         # Common final calculation
         sposob_rejestracji = common_inputs['sposob_rejestracji']
@@ -951,7 +976,10 @@ class PodestRuchomyCalculator(BaseCalculator):
             prognosis_data = {
                 'resurs_wykorzystanie': resurs_wykorzystanie,
                 'resurs_prognoza_dni': resurs_prognoza_dni,
-                'data_prognoza': (date.today() + timedelta(days=int(resurs_prognoza_dni))).isoformat()
+                'data_prognoza': (date.today() + timedelta(days=int(resurs_prognoza_dni))).isoformat(),
+                'T_WSK': {'value': U_WSK, 'unit': 'mth'},
+                'moto_efektywne': round(effective_usage, 2),
+                'moto_rok': round(usage_per_year, 2) if usage_per_year else None,
             }
         else:
             prognosis_data = self._calculate_resurs_prognosis(
@@ -1645,9 +1673,13 @@ class WozekSpecjalizowanyCalculator(BaseCalculator):
         F_X = _FX_EXTENDED.get(sposob_rejestracji, Decimal('1.0'))
 
         p_vals = [self._get_val(f'p_{i}') for i in range(1, 26)]
+        p_sum = sum(p_vals)
+        if p_sum > 0 and abs(p_sum - Decimal('100')) > Decimal('0.5'):
+            raise ValidationError(
+                f"Widmo LDR: suma udziałów p musi wynosić 100% (aktualnie {float(p_sum):.1f}%).")
         ldr_coeffs = _LDR_COEFFS
         ldr = sum((p_vals[i] * Decimal('0.01')) * ldr_coeffs[i] ** 3 for i in range(25))
-        
+
         k_oper_map = {'1 operator': 1, '2 operatorów': 0.99, '3 operatorów': 0.98, '4 operatorów': 0.97, '5 i więcej operatorów': 0.96}
         k_oper = Decimal(str(k_oper_map.get(operator, 1.0)))
 
@@ -1738,11 +1770,15 @@ class ZurawPrzeladunkowyCalculator(BaseCalculator):
         ss_factor = Decimal(str(_SS_FACTOR_BASE.get(s_factor, 0.002)))
 
         p_vals = [self._get_val(f'p_{i}') for i in range(1, 26)]
+        p_sum = sum(p_vals)
+        if p_sum > 0 and abs(p_sum - Decimal('100')) > Decimal('0.5'):
+            raise ValidationError(
+                f"Widmo LDR: suma udziałów p musi wynosić 100% (aktualnie {float(p_sum):.1f}%).")
         ldr_coeffs = _LDR_COEFFS
         ldr = Decimal(0)
         for i in range(25):
             ldr += (p_vals[i] * Decimal('0.01')) * (ldr_coeffs[i] ** 3)
-        
+
         max_cykle_prod = self._get_val('max_cykle_prod')
         wsp_kdr = self._calculate_wsp_kdr(ilosc_cykli)
 

@@ -6,31 +6,24 @@ Poziom bezpieczeństwa: WYSOKI (HttpOnly Cookies, CSRF, Password Policy, Brute-f
 
 from pathlib import Path
 from datetime import timedelta
+import os
+from dotenv import load_dotenv
 
 # Budowanie ścieżek wewnątrz projektu
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Wczytaj zmienne z pliku app/.env (jeśli istnieje — na produkcji musi istnieć)
+load_dotenv(BASE_DIR / '.env')
 
 # ==============================================================================
 # 1. KONFIGURACJA PODSTAWOWA I BEZPIECZEŃSTWO
 # ==============================================================================
 
-# [ZMIEŃ TO NA PRODUKCJI]
-# Klucz kryptograficzny. Musi być tajny. Jeśli wycieknie, hakerzy mogą podpisywać fałszywe sesje.
-# Na produkcji użyj np. os.environ.get('SECRET_KEY')
-SECRET_KEY = 'django-insecure-gcgc_@q^ulas&@sl)gk86v8(wc#e0q6*wvbkb06o(t)ftx$(r2'
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-gcgc_@q^ulas&@sl)gk86v8(wc#e0q6*wvbkb06o(t)ftx$(r2')
 
-# [ZMIEŃ TO NA PRODUKCJI]
-# True = widzisz błędy w przeglądarce (Developerka).
-# False = użytkownik widzi tylko "Server Error 500" (Produkcja).
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
-# [ZMIEŃ TO NA PRODUKCJI]
-# Lista domen, pod którymi działa backend. Na produkcji np. ['api.mojanazwa.pl']
-ALLOWED_HOSTS = [
-    "localhost",
-    "127.0.0.1",
-    "51.75.65.27"
-]
+ALLOWED_HOSTS = [h.strip() for h in os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')]
 
 
 # ==============================================================================
@@ -95,7 +88,7 @@ ROOT_URLCONF = 'core.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -114,10 +107,16 @@ WSGI_APPLICATION = 'core.wsgi.application'
 # BAZA DANYCH
 # ==============================================================================
 
+_db_engine = os.environ.get('DB_ENGINE', 'django.db.backends.sqlite3')
+_db_name   = os.environ.get('DB_NAME', 'db.sqlite3')
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': _db_engine,
+        'NAME': BASE_DIR / _db_name if _db_engine.endswith('sqlite3') else _db_name,
+        'USER':     os.environ.get('DB_USER', ''),
+        'PASSWORD': os.environ.get('DB_PASSWORD', ''),
+        'HOST':     os.environ.get('DB_HOST', 'localhost'),
+        'PORT':     os.environ.get('DB_PORT', ''),
     }
 }
 
@@ -127,6 +126,12 @@ DATABASES = {
 
 # Wskazujemy Django, żeby używał naszego modelu zamiast domyślnego User
 AUTH_USER_MODEL = 'users.CustomUser'
+
+# Obsługa hashy bcrypt (migracja ze starej aplikacji PHP)
+PASSWORD_HASHERS = [
+    'django.contrib.auth.hashers.PBKDF2PasswordHasher',
+    'django.contrib.auth.hashers.BCryptPasswordHasher',
+]
 
 # Polityka haseł - Tutaj ustalasz jak trudne musi być hasło
 AUTH_PASSWORD_VALIDATORS = [
@@ -157,20 +162,18 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 # Konfiguracja E-mail
 if DEBUG:
-    # Na developerce e-maile są wyświetlane w konsoli, a nie wysyłane
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 else:
-    # Na produkcji podaj prawdziwe dane swojego serwera SMTP
     EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-    EMAIL_HOST = 'smtp.example.com'
-    EMAIL_PORT = 587
-    EMAIL_USE_TLS = True
-    EMAIL_HOST_USER = 'your-email@example.com'
-    EMAIL_HOST_PASSWORD = 'your-email-password'
 
-# Adresy e-mail serwisu
-SITEEMAIL = 'info@wyznaczresurs.com' # Główny e-mail do odbierania wiadomości
-DEFAULT_FROM_EMAIL = 'noreply@wyznaczresurs.com' # Adres "od" dla automatycznych wiadomości
+EMAIL_HOST          = os.environ.get('EMAIL_HOST', 'localhost')
+EMAIL_PORT          = int(os.environ.get('EMAIL_PORT', '587'))
+EMAIL_USE_TLS       = os.environ.get('EMAIL_USE_TLS', 'True') == 'True'
+EMAIL_HOST_USER     = os.environ.get('EMAIL_HOST_USER', '')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
+
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'noreply@wyznaczresurs.pl')
+SITEEMAIL          = os.environ.get('SITE_EMAIL', 'kontakt@wyznaczresurs.pl')
 
 # ==============================================================================
 # KONFIGURACJA API (DRF & JWT)
@@ -220,24 +223,24 @@ ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
-ACCOUNT_EMAIL_VERIFICATION = 'none' # Zmień na 'mandatory' na produkcji
+ACCOUNT_EMAIL_VERIFICATION = os.environ.get('ACCOUNT_EMAIL_VERIFICATION', 'none')
 ACCOUNT_SIGNUP_PASSWORD_ENTER_TWICE = True
+ACCOUNT_ADAPTER = 'users.adapter.CustomAccountAdapter'
 
 # ==============================================================================
 # CORS & CSRF (Połączenie z Frontendem)
 # ==============================================================================
+_frontend_url = os.environ.get('FRONTEND_URL', 'http://localhost:9000')
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:9000",
     "http://127.0.0.1:9000",
-    "http://51.75.65.27",
-    "http://51.75.65.27:9000"
+    _frontend_url,
 ]
-CORS_ALLOW_CREDENTIALS = True 
+CORS_ALLOW_CREDENTIALS = True
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:9000",
     "http://127.0.0.1:9000",
-    "http://51.75.65.27",
-    "http://51.75.65.27:9000"
+    _frontend_url,
 ]
 CSRF_COOKIE_HTTPONLY = False 
 CSRF_COOKIE_SAMESITE = 'Lax'
@@ -261,7 +264,16 @@ AXES_ONLY_USER_LOCKOUT = False
 # PAYPAL (Sandbox — zmień na produkcji)
 # Utwórz aplikację sandbox na: https://developer.paypal.com/developer/applications
 # ==============================================================================
-import os
-PAYPAL_SANDBOX = DEBUG  # True = sandbox.paypal.com, False = api.paypal.com
-PAYPAL_CLIENT_ID = os.environ.get('PAYPAL_CLIENT_ID', 'SANDBOX_CLIENT_ID_TUTAJ')
-PAYPAL_CLIENT_SECRET = os.environ.get('PAYPAL_CLIENT_SECRET', 'SANDBOX_SECRET_TUTAJ')
+PAYPAL_SANDBOX        = os.environ.get('PAYPAL_SANDBOX', 'True') == 'True'
+PAYPAL_CLIENT_ID      = os.environ.get('PAYPAL_CLIENT_ID', '')
+PAYPAL_CLIENT_SECRET  = os.environ.get('PAYPAL_CLIENT_SECRET', '')
+
+# Backup bazy danych
+BACKUP_DIR       = os.environ.get('BACKUP_DIR', str(BASE_DIR / 'backups'))
+BACKUP_KEEP_LAST = int(os.environ.get('BACKUP_KEEP_LAST', '30'))
+
+# KSeF — Krajowy System e-Faktur
+KSEF_SANDBOX = os.environ.get('KSEF_SANDBOX', 'True') == 'True'
+KSEF_NIP     = os.environ.get('KSEF_NIP', '')
+KSEF_TOKEN   = os.environ.get('KSEF_TOKEN', '')
+KSEF_API_URL = 'https://ksef-test.mf.gov.pl/api' if KSEF_SANDBOX else 'https://ksef.mf.gov.pl/api'

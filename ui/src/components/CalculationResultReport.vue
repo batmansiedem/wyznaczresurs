@@ -80,7 +80,7 @@
             </div>
             <div class="params-table">
               <template v-for="(fieldDef, key) in inputFields" :key="key">
-                <div v-if="result.input_data?.[key] !== undefined && result.input_data?.[key] !== null && result.input_data?.[key] !== '-'" class="params-row">
+                <div v-if="hasValue(result.input_data?.[key]) && isFieldVisible(fieldDef)" class="params-row">
                   <div class="params-label" v-html="fieldDef.label" />
                   <div class="params-value">{{ formatValue(result.input_data[key], fieldDef) }}</div>
                 </div>
@@ -97,7 +97,7 @@
             <div class="params-table">
               <template v-for="(fieldDef, key) in outputFields" :key="key">
                 <div
-                  v-if="result.output_data?.[key] !== undefined && result.output_data?.[key] !== null && result.output_data?.[key] !== '-' && !SUMMARY_KEYS.includes(key)"
+                  v-if="hasValue(result.output_data?.[key]) && !SUMMARY_KEYS.includes(key)"
                   class="params-row"
                 >
                   <div class="params-label" v-html="fieldDef.label" />
@@ -218,6 +218,28 @@ const nrFabryczny = computed(() => {
   if (!v) return null
   return typeof v === 'object' ? v.value : v
 })
+
+function isFieldVisible(fieldDef) {
+  const showIf = fieldDef?.show_if
+  if (!showIf) return true
+  let cur = props.result.input_data?.[showIf.field]
+  if (cur !== null && typeof cur === 'object') cur = cur?.value
+  const curStr = cur != null ? String(cur) : ''
+  const required = showIf.value
+  const matched = Array.isArray(required)
+    ? required.some(v => curStr.includes(String(v)))
+    : curStr === String(required)
+  return showIf.negate ? !matched : matched
+}
+
+function hasValue(v) {
+  if (v === undefined || v === null || v === '-' || v === '') return false
+  if (typeof v === 'object') {
+    const inner = v.value
+    return inner !== undefined && inner !== null && inner !== '-' && inner !== ''
+  }
+  return true
+}
 
 function fmtNum(v) {
   if (v === null || v === undefined || v === '') return '-'
