@@ -32,11 +32,11 @@
         </div>
         <div class="auth-left-content">
           <div class="auth-brand">wyznacz<span style="opacity:0.6">resurs</span>.com</div>
-          <h2 class="auth-left-h2">Kalkulator resursu<br>UTB dla inżynierów</h2>
+          <h2 class="auth-left-h2">Kalkulator resursu<br>UTB</h2>
           <ul class="auth-features">
             <li><q-icon name="check_circle" size="18px" color="white" style="opacity:0.7" />22 typy urządzeń transportu bliskiego</li>
             <li><q-icon name="check_circle" size="18px" color="white" style="opacity:0.7" />Metodologia FEM 9.511 / ISO 4301</li>
-            <li><q-icon name="check_circle" size="18px" color="white" style="opacity:0.7" />Wyznaczenie resursu PDF akceptowane przez UDT</li>
+            <li><q-icon name="check_circle" size="18px" color="white" style="opacity:0.7" />Wyznaczenie resursu PDF akceptowane przez UDT/WDT/TDT</li>
             <li><q-icon name="check_circle" size="18px" color="white" style="opacity:0.7" />Archiwizacja i aktualizacja wyników</li>
           </ul>
           <div class="auth-norm-row">
@@ -54,16 +54,26 @@
             Nie masz konta?
             <q-btn flat no-caps dense label="Zarejestruj się" color="primary" to="/register" class="q-pa-none" />
           </p>
-          <q-form @submit="onSubmit" class="q-gutter-md">
-            <q-input v-model="email" label="Adres email" type="email" outlined
-              :rules="[val => !!val || 'Wymagane']" />
-            <q-input v-model="password" label="Hasło" type="password" outlined
-              :rules="[val => !!val || 'Wymagane']" />
-            <div class="row justify-end">
-              <q-btn flat no-caps label="Zapomniałem hasła" size="sm" color="primary" to="/forgot-password" />
+          <q-form @submit="onSubmit">
+            <div class="row q-col-gutter-md">
+              <div class="col-12">
+                <q-input v-model="email" label="Adres email" type="email" outlined
+                  :rules="[val => !!val || 'Wymagane']" />
+              </div>
+              <div class="col-12">
+                <q-input v-model="password" label="Hasło" type="password" outlined
+                  :rules="[val => !!val || 'Wymagane']" />
+              </div>
+              <div class="col-12">
+                <div class="row justify-end">
+                  <q-btn flat no-caps label="Zapomniałem hasła" size="sm" color="primary" to="/forgot-password" />
+                </div>
+              </div>
+              <div class="col-12">
+                <q-btn label="Zaloguj się" type="submit" color="primary"
+                  class="full-width auth-submit" :loading="loading" unelevated size="lg" />
+              </div>
             </div>
-            <q-btn label="Zaloguj się" type="submit" color="primary"
-              class="full-width auth-submit" :loading="loading" unelevated size="lg" />
           </q-form>
 
           <!-- Linki prawne -->
@@ -141,6 +151,14 @@
 import { ref, onMounted } from 'vue'
 import { useUserStore } from 'stores/user-store'
 import { useRouter, useRoute } from 'vue-router'
+import { useMeta } from 'quasar'
+
+useMeta({
+  title: 'Logowanie | wyznaczresurs.com',
+  meta: {
+    robots: { name: 'robots', content: 'noindex, nofollow' },
+  },
+})
 
 const TERMS_KEY = 'terms_accepted_v1'
 

@@ -125,7 +125,19 @@
 import { ref } from 'vue'
 import { useUserStore } from 'stores/user-store'
 import { api } from 'boot/axios'
-import { Notify } from 'quasar'
+import { Notify, useMeta } from 'quasar'
+
+useMeta({
+  title: 'Kontakt | wyznaczresurs.com',
+  meta: {
+    description:   { name: 'description',       content: 'Skontaktuj się z nami w sprawie obliczeń resursu UTB, metodologii FEM 9.511 / ISO 4301 lub wsparcia technicznego.' },
+    ogTitle:       { property: 'og:title',       content: 'Kontakt | wyznaczresurs.com' },
+    ogDescription: { property: 'og:description', content: 'Formularz kontaktowy — pomoc techniczna, pytania o obliczenia resursu UTB.' },
+    ogUrl:         { property: 'og:url',         content: 'https://wyznaczresurs.com/contact' },
+    robots:        { name: 'robots',              content: 'index, follow' },
+  },
+  link: { canonical: { rel: 'canonical', href: 'https://wyznaczresurs.com/contact' } },
+})
 
 const userStore = useUserStore()
 const loading = ref(false)

@@ -1,0 +1,310 @@
+{
+  "name": "Wciągnik",
+  "description": "Kalkulator resursu dla wciągnika.",
+  "fields": {
+    "wykonawca": {
+      "type": "text",
+      "label": "Wykonawca",
+      "required": false
+    },
+    "uwagi": {
+      "type": "textarea",
+      "label": "Uwagi",
+      "required": false
+    },
+    "typ": {
+      "type": "select",
+      "label": "Typ wciągnika",
+      "required": false,
+      "options": [
+        "Wciągnik z napędem ręcznym",
+        "Wciągnik łańcuchowy elektryczny",
+        "Wciągnik linowy elektryczny",
+        "Wciągnik hydrauliczny",
+        "Wciągnik pneumatyczny"
+      ]
+    },
+    "nr_fabryczny": {
+      "type": "text",
+      "label": "Nr fabryczny",
+      "required": true
+    },
+    "nr_ewidencyjny": {
+      "type": "text",
+      "label": "Nr ewidencyjny UDT/TDT/WDT",
+      "required": false
+    },
+    "lata_pracy": {
+      "type": "number",
+      "label": "Ilość przepracowanych lat",
+      "required": true,
+      "unit_type": "time",
+      "default_unit": "lata",
+      "unit_options": [
+        "lata",
+        "miesiące"
+      ]
+    },
+    "tryb_pracy": {
+      "label": "Tryb pracy",
+      "type": "select",
+      "required": true,
+      "options": [
+        "jednozmianowy",
+        "dwuzmianowy",
+        "trzyzmianowy"
+      ]
+    },
+    "cykle_zmiana": {
+      "label": "Ilość cykli przypadających na zmianę",
+      "type": "number",
+      "required": true
+    },
+    "dni_robocze": {
+      "label": "Ilość dni roboczych w roku",
+      "type": "number",
+      "required": true,
+      "default_value": 250
+    },
+    "ilosc_cykli": {
+      "type": "number",
+      "label": "Ilość odbytych cykli",
+      "required": true,
+      "unit_type": "dimensionless",
+      "default_unit": "cykl"
+    },
+    "sposob_rejestracji": {
+      "type": "select",
+      "label": "Sposób rejestracji przez eksploatującego warunków eksploatacji urządzenia",
+      "required": true,
+      "options": [
+        "Rejestrowanie przyrządami",
+        "Rejestrowanie w dzienniku, łącznie ze stosowaniem licznika",
+        "Rejestrowanie na podstawie procesu technologicznego",
+        "Rejestrowanie na podstawie informacji o produkcji",
+        "Informacja o warunkach eksploatacji jest niekompletna",
+        "Brak informacji o historii urządzenia"
+      ]
+    },
+    "gnp": {
+      "type": "gnp_selector",
+      "label": "Grupa natężenia pracy",
+      "required": true,
+      "options": [
+        "A1",
+        "A2",
+        "A3",
+        "A4",
+        "A5",
+        "A6",
+        "A7",
+        "A8"
+      ]
+    },
+    "q_max": {
+      "type": "number",
+      "label": "Udźwig maksymalny Q<sub>max</sub>",
+      "required": true,
+      "unit_type": "mass",
+      "default_unit": "kg",
+      "unit_options": [
+        "kg",
+        "t"
+      ]
+    },
+    "spec": {
+      "type": "select",
+      "label": "Czy chcesz wyznaczyć resurs po pierwszym przeglądzie specjalnym?",
+      "required": true,
+      "options": [
+        "Nie",
+        "Tak"
+      ]
+    },
+    "ponowny_resurs": {
+      "type": "select",
+      "label": "Czy chcesz wykonać ponowne wyznaczenie resursu?",
+      "required": true,
+      "options": [
+        "Nie",
+        "Tak"
+      ]
+    },
+    "ostatni_resurs": {
+      "type": "number",
+      "label": "Procent wykorzystania resursu z ostatnich obliczeń",
+      "required": false,
+      "show_if": {
+        "field": "ponowny_resurs",
+        "value": "Tak"
+      },
+      "default_unit": "%"
+    },
+    "data_resurs": {
+      "type": "date",
+      "label": "Data wyznaczenia ostatniego resursu",
+      "required": false,
+      "show_if": {
+        "field": "ponowny_resurs",
+        "value": "Tak"
+      }
+    },
+    "konstrukcja": {
+      "type": "inspection_status",
+      "label": "Czy konstrukcja stalowa jest zdeformowana i/lub pojawiły się pęknięcia w złączach spawanych?",
+      "required": true,
+      "options": [
+        "Brak uszkodzeń",
+        "Uszkodzenia"
+      ]
+    },
+    "automatyka": {
+      "type": "inspection_status",
+      "label": "Czy automatyka sterująca i/lub zabezpieczająca jest sprawna i aktywna?",
+      "required": true,
+      "options": [
+        "Sprawna",
+        "Niesprawna"
+      ]
+    },
+    "sworznie": {
+      "type": "inspection_status",
+      "label": "Czy sworznie oraz połączenia rozłączne są właściwie zmontowane i w dobrym stanie technicznym?",
+      "required": true,
+      "options": [
+        "Prawidłowy",
+        "Nieprawidłowy"
+      ]
+    },
+    "ciegna": {
+      "type": "inspection_status",
+      "label": "Czy cięgna (łańcuchy, liny) są w dobrym stanie technicznym?",
+      "required": true,
+      "options": [
+        "Brak uszkodzeń",
+        "Uszkodzenia"
+      ]
+    },
+    "eksploatacja": {
+      "type": "inspection_status",
+      "label": "Czy urządzenie eksploatowane jest zgodnie z przeznaczeniem i instrukcją eksploatacji?",
+      "required": true,
+      "options": [
+        "Zgodne",
+        "Niezgodne"
+      ]
+    },
+    "diagram_kd": {
+      "type": "diagram",
+      "label": "Widmo obciążeń K<sub>d</sub>",
+      "svg": "schemat_kd"
+    }
+  },
+  "sections": [
+    {
+      "id": "informacje",
+      "title": "Informacja na temat resursu",
+      "icon": "info",
+      "fields": [
+        "spec",
+        "ponowny_resurs",
+        "data_resurs",
+        "ostatni_resurs"
+      ]
+    },
+    {
+      "id": "dane",
+      "title": "Określ dane dla wciągnika",
+      "icon": "settings",
+      "fields": [
+        "wykonawca",
+        "uwagi",
+        "typ",
+        "nr_fabryczny",
+        "nr_ewidencyjny",
+        "q_max",
+        "lata_pracy",
+        "ilosc_cykli",
+        "tryb_pracy",
+        "cykle_zmiana",
+        "dni_robocze"
+      ]
+    },
+    {
+      "id": "rejestracja",
+      "title": "Określ sposób rejestracji, wybierając odpowiednią opcję z tabeli",
+      "icon": "assignment",
+      "fields": [
+        "sposob_rejestracji"
+      ]
+    },
+    {
+      "id": "gnp",
+      "title": "Określ grupę natężenia pracy wciągnika, wybierając opcję z tabeli",
+      "icon": "speed",
+      "fields": [
+        "gnp"
+      ]
+    },
+    {
+      "id": "kd",
+      "title": "Na podstawie kalkulatora współczynnika K<sub>d</sub> wyznacz stan obciążenia",
+      "icon": "balance",
+      "fields": [
+        "diagram_kd"
+      ]
+    },
+    {
+      "id": "inspekcja",
+      "title": "Ocena stanu technicznego",
+      "icon": "fact_check",
+      "fields": [
+        "konstrukcja",
+        "automatyka",
+        "sworznie",
+        "ciegna",
+        "eksploatacja"
+      ]
+    }
+  ],
+  "output_fields": {
+    "resurs_wykorzystanie": {
+      "label": "Wykorzystanie resursu",
+      "type": "percentage",
+      "unit": "%"
+    },
+    "resurs_message": {
+      "label": "Status resursu",
+      "type": "text"
+    },
+    "data_prognoza": {
+      "label": "Prognozowana data",
+      "type": "date"
+    },
+    "resurs_prognoza_dni": {
+      "label": "Prognoza",
+      "type": "number",
+      "unit": "dni"
+    },
+    "U_WSK": {
+      "label": "Maks. ilość cykli U<sub>WSK</sub>",
+      "type": "number"
+    },
+    "F_X": {
+      "label": "Współczynnik F<sub>X</sub>",
+      "type": "number"
+    },
+    "ilosc_cykli": {
+      "label": "Ilość cykli",
+      "type": "number"
+    },
+    "wsp_kdr": {
+      "label": "Współczynnik K<sub>d</sub>",
+      "type": "number"
+    },
+    "stan_obciazenia": {
+      "label": "Stan obciążenia",
+      "type": "text"
+    }
+  }
+}

@@ -70,7 +70,7 @@
             <ul class="hero-spec-list q-mb-xl">
               <li>22 typy urządzeń: suwnicy, żurawie, podesty, wózki, układnice</li>
               <li>Metoda cykli pracy wg FEM 9.511 i normy ISO 4301</li>
-              <li>Wyznaczenie resursu PDF akceptowane przez UDT</li>
+              <li>Wyznaczenie resursu PDF akceptowane przez UDT/WDT/TDT</li>
               <li>Archiwizacja i aktualizacja wyników w kolejnych latach</li>
             </ul>
             <q-separator class="q-mb-lg"/>
@@ -304,7 +304,7 @@
       <div class="lc q-mx-auto q-px-md">
         <div class="text-center q-mb-xl">
           <div class="eyebrow eyebrow--light">Proces obliczenia</div>
-          <h2 class="section-h2 text-white">Trzy kroki do orzeczenia</h2>
+          <h2 class="section-h2 text-white">Trzy kroki do wyznaczenia resursu</h2>
         </div>
         <div class="row q-col-gutter-xl">
           <div v-for="(step, i) in steps" :key="i" class="col-12 col-md-4">
@@ -445,7 +445,7 @@
               <q-input v-model="logbookForm.nr_fabryczny" label="Numer fabryczny" outlined dense required />
             </div>
             <div class="col-12 col-sm-6">
-              <q-input v-model="logbookForm.nr_udt" label="Numer ewidencyjny UDT" outlined dense required />
+              <q-input v-model="logbookForm.nr_udt" label="Numer ewidencyjny UDT/TDT/WDT" outlined dense required />
             </div>
             <div class="col-12 col-sm-6">
               <q-input v-model="logbookForm.rok_budowy" label="Rok budowy" outlined dense required />
@@ -476,7 +476,43 @@
 import { ref } from 'vue'
 import { useUserStore } from 'stores/user-store'
 import { api } from 'boot/axios'
-import { useQuasar, exportFile } from 'quasar'
+import { useQuasar, exportFile, useMeta } from 'quasar'
+
+useMeta({
+  title: 'Kalkulator Resursu UTB | wyznaczresurs.com',
+  meta: {
+    description:   { name: 'description',       content: 'Wyznacz resurs urządzeń transportu bliskiego (UTB) metodą cykli pracy FEM 9.511 / ISO 4301. Obliczenia akceptowane przez UDT/WDT/TDT. 22 typy urządzeń: suwnicy, żurawie, podesty, wózki, układnice.' },
+    ogTitle:       { property: 'og:title',       content: 'Kalkulator Resursu UTB | wyznaczresurs.com' },
+    ogDescription: { property: 'og:description', content: 'Wyznacz resurs urządzeń transportu bliskiego metodą cykli pracy FEM 9.511 / ISO 4301. Obliczenia akceptowane przez UDT/WDT/TDT.' },
+    ogUrl:         { property: 'og:url',         content: 'https://wyznaczresurs.com/' },
+    ogType:        { property: 'og:type',        content: 'website' },
+    ogImage:       { property: 'og:image',       content: 'https://wyznaczresurs.com/og-image.png' },
+    ogLocale:      { property: 'og:locale',      content: 'pl_PL' },
+    twCard:        { name: 'twitter:card',        content: 'summary_large_image' },
+    twTitle:       { name: 'twitter:title',       content: 'Kalkulator Resursu UTB | wyznaczresurs.com' },
+    twDesc:        { name: 'twitter:description', content: 'Wyznacz resurs UTB. FEM 9.511 / ISO 4301. Akceptowane przez UDT/WDT/TDT.' },
+    robots:        { name: 'robots',              content: 'index, follow' },
+  },
+  link: {
+    canonical: { rel: 'canonical', href: 'https://wyznaczresurs.com/' },
+  },
+  script: {
+    ldJson: {
+      type: 'application/ld+json',
+      innerHTML: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'WebApplication',
+        name: 'wyznaczresurs.com',
+        url: 'https://wyznaczresurs.com',
+        description: 'Kalkulator resursu urządzeń transportu bliskiego (UTB) metodą cykli pracy FEM 9.511 / ISO 4301. Obliczenia akceptowane przez UDT/WDT/TDT.',
+        applicationCategory: 'EngineeringApplication',
+        inLanguage: 'pl-PL',
+        offers: { '@type': 'Offer', price: '100', priceCurrency: 'PLN', description: '100 punktów za jedno obliczenie resursu UTB' },
+        publisher: { '@type': 'Organization', name: 'wyznaczresurs.com', url: 'https://wyznaczresurs.com' },
+      }),
+    },
+  },
+})
 
 const userStore = useUserStore()
 const $q = useQuasar()
@@ -603,8 +639,8 @@ const standardFeatures = [
 
 const premiumFeatures = [
   'Priorytetowe wsparcie techniczne',
-  'Personalizacja orzeczenia (logo firmy)',
-  'Zbiorcza faktura miesięczna',
+  'Personalizacja obliczeń (logo firmy)',
+  'Historia zakupów i rozliczeń',
   'Nielimitowana liczba urządzeń'
 ]
 </script>

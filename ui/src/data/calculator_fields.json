@@ -31,7 +31,7 @@
       },
       "nr_ewidencyjny": {
         "type": "text",
-        "label": "Nr ewidencyjny UDT",
+        "label": "Nr ewidencyjny UDT/TDT/WDT",
         "required": false
       },
       "lata_pracy": {
@@ -274,7 +274,7 @@
       },
       "nr_ewidencyjny": {
         "type": "text",
-        "label": "Nr ewidencyjny UDT",
+        "label": "Nr ewidencyjny UDT/TDT/WDT",
         "required": false
       },
       "lata_pracy": {
@@ -585,7 +585,7 @@
       },
       "nr_ewidencyjny": {
         "type": "text",
-        "label": "Nr ewidencyjny UDT",
+        "label": "Nr ewidencyjny UDT/TDT/WDT",
         "required": false
       },
       "lata_pracy": {
@@ -844,7 +844,7 @@
       },
       "nr_ewidencyjny": {
         "type": "text",
-        "label": "Nr ewidencyjny UDT",
+        "label": "Nr ewidencyjny UDT/TDT/WDT",
         "required": false
       },
       "rok_budowy": {
@@ -1700,7 +1700,7 @@
       },
       "nr_ewidencyjny": {
         "type": "text",
-        "label": "Nr ewidencyjny UDT",
+        "label": "Nr ewidencyjny UDT/TDT/WDT",
         "required": false
       },
       "lata_pracy": {
@@ -1974,7 +1974,7 @@
       },
       "nr_ewidencyjny": {
         "type": "text",
-        "label": "Nr ewidencyjny UDT",
+        "label": "Nr ewidencyjny UDT/TDT/WDT",
         "required": false
       },
       "lata_pracy": {
@@ -2244,7 +2244,7 @@
       },
       "nr_ewidencyjny": {
         "type": "text",
-        "label": "Nr ewidencyjny UDT",
+        "label": "Nr ewidencyjny UDT/TDT/WDT",
         "required": false
       },
       "lata_pracy": {
@@ -2540,7 +2540,7 @@
       },
       "nr_ewidencyjny": {
         "type": "text",
-        "label": "Nr ewidencyjny UDT",
+        "label": "Nr ewidencyjny UDT/TDT/WDT",
         "required": false
       },
       "lata_pracy": {
@@ -2828,7 +2828,7 @@
       },
       "nr_ewidencyjny": {
         "type": "text",
-        "label": "Nr ewidencyjny UDT",
+        "label": "Nr ewidencyjny UDT/TDT/WDT",
         "required": false
       },
       "h_max": {
@@ -3158,7 +3158,7 @@
       },
       "nr_ewidencyjny": {
         "type": "text",
-        "label": "Nr ewidencyjny UDT",
+        "label": "Nr ewidencyjny UDT/TDT/WDT",
         "required": false
       },
       "lata_pracy": {
@@ -3234,10 +3234,10 @@
       },
       "ostatni_resurs_mech_pod": {
         "type": "number",
-        "label": "Ostatni resurs (mech. podnoszenia)",
+        "label": "Ostatni resurs mechanizmu podnoszenia [%]",
         "required": false,
         "unit_type": "dimensionless",
-        "default_unit": "cycle",
+        "default_unit": "%",
         "show_if": {
           "field": "ponowny_resurs",
           "value": "Tak"
@@ -3245,10 +3245,10 @@
       },
       "ostatni_resurs_mech_jaz": {
         "type": "number",
-        "label": "Ostatni resurs (mech. jazdy)",
+        "label": "Ostatni resurs mechanizmu jazdy [%]",
         "required": false,
         "unit_type": "dimensionless",
-        "default_unit": "cycle",
+        "default_unit": "%",
         "show_if": {
           "field": "ponowny_resurs",
           "value": "Tak"
@@ -3256,10 +3256,10 @@
       },
       "ostatni_resurs_mech_prz": {
         "type": "number",
-        "label": "Ostatni resurs (mech. przesuwu)",
+        "label": "Ostatni resurs mechanizmu przesuwu [%]",
         "required": false,
         "unit_type": "dimensionless",
-        "default_unit": "cycle",
+        "default_unit": "%",
         "show_if": {
           "field": "ponowny_resurs",
           "value": "Tak"
@@ -3267,10 +3267,10 @@
       },
       "ostatni_resurs_mech_mas": {
         "type": "number",
-        "label": "Ostatni resurs (mech. masztu)",
+        "label": "Ostatni resurs mechanizmu masztu [%]",
         "required": false,
         "unit_type": "dimensionless",
-        "default_unit": "cycle",
+        "default_unit": "%",
         "show_if": {
           "field": "ponowny_resurs",
           "value": "Tak"
@@ -3278,10 +3278,10 @@
       },
       "ostatni_licznik": {
         "type": "number",
-        "label": "Ostatni licznik pracy",
+        "label": "Stan licznika motogodzin na dzień wyznaczenia ostatniego resursu [mth]",
         "required": false,
         "unit_type": "time",
-        "default_unit": "lata",
+        "default_unit": "mth",
         "show_if": {
           "field": "ponowny_resurs",
           "value": "Tak"
@@ -3358,7 +3358,7 @@
       },
       "licznik_pracy": {
         "type": "number",
-        "label": "Łączna ilość motogodzin [h]",
+        "label": "Łączna ilość motogodzin [mth]",
         "required": true,
         "default_unit": "mth"
       },
@@ -3402,20 +3402,20 @@
       },
       "dlugosc_widel": {
         "type": "number",
-        "label": "Długość wideł (mm)",
+        "label": "Długość wideł [mm]",
         "required": false,
         "unit_type": "length",
-        "default_unit": "m"
+        "default_unit": "mm"
       },
       "alfa": {
         "type": "number",
-        "label": "Kąt Alfa (odchylenie masztu)",
+        "label": "Kąt przechyłu masztu alfa [deg]",
         "required": true,
         "unit_type": "angle"
       },
       "beta": {
         "type": "number",
-        "label": "Kąt Beta (przechył masztu)",
+        "label": "Kąt przechyłu masztu beta [deg]",
         "required": true,
         "unit_type": "angle"
       },
@@ -3615,7 +3615,7 @@
       },
       "nr_ewidencyjny": {
         "type": "text",
-        "label": "Nr ewidencyjny UDT",
+        "label": "Nr ewidencyjny UDT/TDT/WDT",
         "required": false
       },
       "h_max": {
@@ -3932,12 +3932,12 @@
       },
       "nr_ewidencyjny": {
         "type": "text",
-        "label": "Nr ewidencyjny UDT",
+        "label": "Nr ewidencyjny UDT/TDT/WDT",
         "required": false
       },
       "nr_udt": {
         "type": "text",
-        "label": "Nr ewidencyjny UDT",
+        "label": "Nr ewidencyjny UDT/TDT/WDT",
         "required": true
       },
       "typ": {
@@ -3998,6 +3998,63 @@
           "Brak informacji o historii urządzenia"
         ]
       },
+      "spec": {
+        "type": "select",
+        "label": "Czy chcesz wyznaczyć resurs po pierwszym przeglądzie specjalnym?",
+        "required": true,
+        "options": [
+          "Nie",
+          "Tak"
+        ]
+      },
+      "ponowny_resurs": {
+        "type": "select",
+        "label": "Czy chcesz wykonać ponowne wyznaczenie resursu?",
+        "required": true,
+        "options": [
+          "Nie",
+          "Tak"
+        ]
+      },
+      "ostatni_resurs": {
+        "type": "number",
+        "label": "Ostatni stopień wykorzystania resursu [%]",
+        "required": false,
+        "show_if": {
+          "field": "ponowny_resurs",
+          "value": "Tak"
+        },
+        "default_unit": "%"
+      },
+      "ostatni_resurs_mech_pod": {
+        "type": "number",
+        "label": "Ostatni resurs mechanizmu podnoszenia [%]",
+        "required": false,
+        "show_if": {
+          "field": "ponowny_resurs",
+          "value": "Tak"
+        },
+        "default_unit": "%"
+      },
+      "ostatni_licznik": {
+        "type": "number",
+        "label": "Stan licznika motogodzin na dzień wyznaczenia ostatniego resursu [mth]",
+        "required": false,
+        "show_if": {
+          "field": "ponowny_resurs",
+          "value": "Tak"
+        },
+        "default_unit": "mth"
+      },
+      "data_resurs": {
+        "type": "date",
+        "label": "Data wyznaczenia ostatniego resursu",
+        "required": false,
+        "show_if": {
+          "field": "ponowny_resurs",
+          "value": "Tak"
+        }
+      },
       "max_cykle": {
         "type": "number",
         "label": "Maks. cykle (producent)",
@@ -4035,17 +4092,17 @@
       },
       "a_1": {
         "type": "number",
-        "label": "A1 (%)",
+        "label": "Kąt nachylenia 30° [%]",
         "required": true
       },
       "a_2": {
         "type": "number",
-        "label": "A2",
+        "label": "Kąt nachylenia 60° [%]",
         "required": true
       },
       "a_3": {
         "type": "number",
-        "label": "A3 (%)",
+        "label": "Kąt nachylenia 80° [%]",
         "required": true
       },
       "konstrukcja": {
@@ -4108,6 +4165,19 @@
       }
     },
     "sections": [
+      {
+        "id": "informacje",
+        "title": "Informacja na temat resursu",
+        "icon": "info",
+        "fields": [
+          "spec",
+          "ponowny_resurs",
+          "data_resurs",
+          "ostatni_resurs",
+          "ostatni_resurs_mech_pod",
+          "ostatni_licznik"
+        ]
+      },
       {
         "id": "dane",
         "title": "Określ dane dla windy dekarskiej",
@@ -4201,7 +4271,7 @@
       },
       "nr_ewidencyjny": {
         "type": "text",
-        "label": "Nr ewidencyjny UDT",
+        "label": "Nr ewidencyjny UDT/TDT/WDT",
         "required": false
       },
       "lata_pracy": {
@@ -4474,7 +4544,7 @@
       },
       "nr_ewidencyjny": {
         "type": "text",
-        "label": "Nr ewidencyjny UDT",
+        "label": "Nr ewidencyjny UDT/TDT/WDT",
         "required": false
       },
       "lata_pracy": {
@@ -4705,7 +4775,7 @@
       },
       "nr_ewidencyjny": {
         "type": "text",
-        "label": "Nr ewidencyjny UDT",
+        "label": "Nr ewidencyjny UDT/TDT/WDT",
         "required": false
       },
       "lata_pracy": {
@@ -4909,7 +4979,7 @@
       "uwagi": { "type": "textarea", "label": "Uwagi", "required": false },
       "mechanizm_pomocniczy": { "type": "select", "label": "Mechanizm pomocniczy", "required": false, "options": ["Nie", "Mechanizm pomocniczy (I)", "Mechanizm pomocniczy (II)", "Mechanizm pomocniczy (III)", "Mechanizm pomocniczy (IV)"] },
       "nr_fabryczny": { "type": "text", "label": "Nr fabryczny", "required": true },
-      "nr_ewidencyjny": { "type": "text", "label": "Nr ewidencyjny UDT", "required": false },
+      "nr_ewidencyjny": { "type": "text", "label": "Nr ewidencyjny UDT/TDT/WDT", "required": false },
       "lata_pracy": { "type": "number", "label": "Ilość przepracowanych lat", "required": true, "unit_options": ["lata", "miesiące"], "default_unit": "lata" },
       "ilosc_cykli": { "type": "number", "label": "Ilość odbytych cykli", "required": true },
       "czas_cykle": { "type": "number", "label": "Średni czas cyklu", "required": true, "unit_options": ["s", "min", "h"], "default_unit": "s" },
@@ -4970,7 +5040,7 @@
       },
       "nr_ewidencyjny": {
         "type": "text",
-        "label": "Nr ewidencyjny UDT",
+        "label": "Nr ewidencyjny UDT/TDT/WDT",
         "required": false
       },
       "lata_pracy": {
@@ -5202,7 +5272,7 @@
       },
       "nr_ewidencyjny": {
         "type": "text",
-        "label": "Nr ewidencyjny UDT",
+        "label": "Nr ewidencyjny UDT/TDT/WDT",
         "required": false
       },
       "lata_pracy": {
@@ -5431,7 +5501,7 @@
       },
       "nr_ewidencyjny": {
         "type": "text",
-        "label": "Nr ewidencyjny UDT",
+        "label": "Nr ewidencyjny UDT/TDT/WDT",
         "required": false
       },
       "lata_pracy": {
@@ -5660,7 +5730,7 @@
       },
       "nr_ewidencyjny": {
         "type": "text",
-        "label": "Nr ewidencyjny UDT",
+        "label": "Nr ewidencyjny UDT/TDT/WDT",
         "required": false
       },
       "lata_pracy": {
@@ -5874,7 +5944,7 @@
       },
       "nr_ewidencyjny": {
         "type": "text",
-        "label": "Nr ewidencyjny UDT",
+        "label": "Nr ewidencyjny UDT/TDT/WDT",
         "required": false
       },
       "typ": {
@@ -6041,13 +6111,23 @@
       },
       "ostatni_resurs": {
         "type": "number",
-        "label": "Procent wykorzystania resursu z ostatnich obliczeń",
+        "label": "Ostatni stopień wykorzystania resursu [%]",
         "required": false,
         "show_if": {
           "field": "ponowny_resurs",
           "value": "Tak"
         },
         "default_unit": "%"
+      },
+      "ostatni_licznik": {
+        "type": "number",
+        "label": "Stan licznika motogodzin na dzień wyznaczenia ostatniego resursu [mth]",
+        "required": false,
+        "show_if": {
+          "field": "ponowny_resurs",
+          "value": "Tak"
+        },
+        "default_unit": "mth"
       },
       "data_resurs": {
         "type": "date",
@@ -6284,7 +6364,7 @@
       },
       "nr_ewidencyjny": {
         "type": "text",
-        "label": "Nr ewidencyjny UDT",
+        "label": "Nr ewidencyjny UDT/TDT/WDT",
         "required": false
       },
       "lata_pracy": {
@@ -6536,7 +6616,7 @@
       },
       "nr_ewidencyjny": {
         "type": "text",
-        "label": "Nr ewidencyjny UDT",
+        "label": "Nr ewidencyjny UDT/TDT/WDT",
         "required": false
       },
       "lata_pracy": {

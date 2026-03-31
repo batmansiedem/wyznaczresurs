@@ -32,7 +32,7 @@
       </div>
       <div class="lc q-mx-auto q-px-md" style="position:relative;z-index:1;text-align:center">
         <div class="norm-chips q-mb-lg" style="justify-content:center">
-          <span class="norm-chip">80 pkt / obliczenie</span>
+          <span class="norm-chip">100 pkt / obliczenie</span>
           <span class="norm-chip">1 pkt ≈ 1 PLN brutto</span>
         </div>
         <h1 class="page-h1">Cennik i punkty</h1>
@@ -135,7 +135,7 @@
   <q-page v-else padding>
     <div class="calc-page-header q-mb-xl">
       <h1 class="text-h4 text-weight-bolder text-primary q-my-none">Cennik i punkty</h1>
-      <p class="text-subtitle1 text-grey-7 q-mb-none">80 punktów za jedno obliczenie resursu · 1 pkt ≈ 1 PLN brutto</p>
+      <p class="text-subtitle1 text-grey-7 q-mb-none">100 punktów za jedno obliczenie resursu · 1 pkt ≈ 1 PLN brutto</p>
     </div>
 
     <PricingCards />
@@ -370,7 +370,19 @@
 
 <script setup>
 import { ref, computed, onMounted, nextTick } from 'vue'
-import { useQuasar } from 'quasar'
+import { useQuasar, useMeta } from 'quasar'
+
+useMeta({
+  title: 'Cennik i punkty | wyznaczresurs.com',
+  meta: {
+    description:   { name: 'description',       content: '100 punktów za obliczenie resursu UTB. Bez abonamentu — płacisz tylko za wyniki. Obsługujemy 22 typy urządzeń. Faktury VAT.' },
+    ogTitle:       { property: 'og:title',       content: 'Cennik i punkty | wyznaczresurs.com' },
+    ogDescription: { property: 'og:description', content: '100 punktów za obliczenie resursu UTB. Bez abonamentu — płacisz tylko za wyniki.' },
+    ogUrl:         { property: 'og:url',         content: 'https://wyznaczresurs.com/pricing' },
+    robots:        { name: 'robots',              content: 'index, follow' },
+  },
+  link: { canonical: { rel: 'canonical', href: 'https://wyznaczresurs.com/pricing' } },
+})
 import { api } from 'boot/axios'
 import { useUserStore } from 'stores/user-store'
 import PricingCards from 'components/shared/PricingCards.vue'
@@ -411,7 +423,7 @@ const redeemCode = async () => {
 const pointsSteps = [
   { num: '01', icon: 'person_add',             title: 'Załóż konto',   text: 'Rejestracja bezpłatna — bez karty.' },
   { num: '02', icon: 'account_balance_wallet', title: 'Kup punkty',    text: 'Przelew lub PayPal. 1 pkt ≈ 1 PLN.' },
-  { num: '03', icon: 'calculate',              title: 'Oblicz resurs', text: '80 pkt za obliczenie. Wynik od razu.' },
+  { num: '03', icon: 'calculate',              title: 'Oblicz resurs', text: '100 pkt za obliczenie. Wynik od razu.' },
   { num: '04', icon: 'picture_as_pdf',         title: 'Pobierz PDF',   text: 'Wyznaczenie resursu gotowe do złożenia w UDT.' }
 ]
 

@@ -95,7 +95,21 @@
 
 <script setup>
 import { useUserStore } from 'stores/user-store'
+import { useMeta } from 'quasar'
 import FaqList from 'components/shared/FaqList.vue'
+
+useMeta({
+  title: 'Pomoc i FAQ | wyznaczresurs.com',
+  meta: {
+    description:   { name: 'description',       content: 'Odpowiedzi na najczęściej zadawane pytania dotyczące kalkulatora resursu UTB, metodologii FEM 9.511 / ISO 4301 oraz systemu punktów.' },
+    ogTitle:       { property: 'og:title',       content: 'Pomoc i FAQ | wyznaczresurs.com' },
+    ogDescription: { property: 'og:description', content: 'FAQ: obliczenia resursu UTB, metodologia FEM 9.511 / ISO 4301, system punktów, generowanie raportów PDF.' },
+    ogUrl:         { property: 'og:url',         content: 'https://wyznaczresurs.com/help' },
+    robots:        { name: 'robots',              content: 'index, follow' },
+  },
+  link: { canonical: { rel: 'canonical', href: 'https://wyznaczresurs.com/help' } },
+})
+
 const userStore = useUserStore()
 </script>
 

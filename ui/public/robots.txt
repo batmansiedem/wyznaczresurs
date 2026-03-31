@@ -1,0 +1,24 @@
+User-agent: *
+Allow: /
+Allow: /pricing
+Allow: /help
+Allow: /contact
+Allow: /regulamin
+Allow: /rodo
+Allow: /cookies
+
+Disallow: /dashboard
+Disallow: /calculators
+Disallow: /saved-results
+Disallow: /account
+Disallow: /change-password
+Disallow: /invoices
+Disallow: /notifications
+Disallow: /admin
+Disallow: /login
+Disallow: /register
+Disallow: /forgot-password
+Disallow: /password-reset/
+Disallow: /confirm-email/
+
+Sitemap: https://wyznaczresurs.com/sitemap.xml

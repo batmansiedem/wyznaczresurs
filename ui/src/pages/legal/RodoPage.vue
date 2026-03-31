@@ -138,7 +138,16 @@
 </template>
 
 <script setup>
+import { useMeta } from 'quasar'
 import LegalPageLayout from 'components/shared/LegalPageLayout.vue'
+useMeta({
+  title: 'Polityka prywatności (RODO) | wyznaczresurs.com',
+  meta: {
+    description: { name: 'description', content: 'Polityka prywatności serwisu wyznaczresurs.com — informacje o przetwarzaniu danych osobowych zgodnie z RODO.' },
+    robots:       { name: 'robots',      content: 'index, follow' },
+  },
+  link: { canonical: { rel: 'canonical', href: 'https://wyznaczresurs.com/rodo' } },
+})
 
 const legalBases = [
   { cel: 'Obsługa konta i logowanie',  podstawa: 'Art. 6 ust. 1 lit. b RODO', opis: 'Wykonanie umowy o świadczenie usług' },

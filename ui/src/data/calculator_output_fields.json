@@ -33,7 +33,7 @@
         "type": "number"
       },
       "wsp_kdr": {
-        "label": "Współczynnik KDR",
+        "label": "Współczynnik K<sub>d</sub>",
         "type": "number"
       },
       "stan_obciazenia": {
@@ -80,7 +80,7 @@
         "type": "number"
       },
       "wsp_kdr": {
-        "label": "Współczynnik KDR",
+        "label": "Współczynnik K<sub>d</sub>",
         "type": "number"
       },
       "stan_obciazenia": {
@@ -123,7 +123,7 @@
         "type": "number"
       },
       "wsp_kdr": {
-        "label": "Współczynnik KDR",
+        "label": "Współczynnik K<sub>d</sub>",
         "type": "number"
       },
       "stan_obciazenia": {
@@ -175,6 +175,10 @@
         "label": "Motogodziny / dzień",
         "type": "number",
         "unit": "h"
+      },
+      "wsp_kdr": {
+        "label": "Współczynnik K<sub>d</sub>",
+        "type": "number"
       }
     }
   },
@@ -212,7 +216,7 @@
         "type": "number"
       },
       "wsp_kdr": {
-        "label": "Współczynnik KDR",
+        "label": "Współczynnik K<sub>d</sub>",
         "type": "number"
       },
       "stan_obciazenia": {
@@ -255,7 +259,7 @@
         "type": "number"
       },
       "wsp_kdr": {
-        "label": "Współczynnik KDR",
+        "label": "Współczynnik K<sub>d</sub>",
         "type": "number"
       },
       "stan_obciazenia": {
@@ -298,7 +302,7 @@
         "type": "number"
       },
       "wsp_kdr": {
-        "label": "Współczynnik KDR",
+        "label": "Współczynnik K<sub>d</sub>",
         "type": "number"
       },
       "stan_obciazenia": {
@@ -341,7 +345,7 @@
         "type": "number"
       },
       "wsp_kdr": {
-        "label": "Współczynnik KDR",
+        "label": "Współczynnik K<sub>d</sub>",
         "type": "number"
       },
       "stan_obciazenia": {
@@ -384,7 +388,7 @@
         "type": "number"
       },
       "wsp_kdr": {
-        "label": "Współczynnik KDR",
+        "label": "Współczynnik K<sub>d</sub>",
         "type": "number"
       },
       "stan_obciazenia": {
@@ -434,8 +438,12 @@
         "label": "Ilość cykli",
         "type": "number"
       },
+      "ilosc_cykli_rok": {
+        "label": "Ilość cykli / rok",
+        "type": "number"
+      },
       "wsp_kdr": {
-        "label": "Współczynnik KDR",
+        "label": "Współczynnik K<sub>d</sub>",
         "type": "number"
       },
       "stan_obciazenia": {
@@ -443,59 +451,59 @@
         "type": "text"
       },
       "resurs_wyk_pod": {
-        "label": "Wykorzystanie resursu (mech. podnoszenia)",
+        "label": "Wykorzystanie resursu mechanizmu podnoszenia",
         "type": "percentage",
         "unit": "%"
       },
       "resurs_prog_pod": {
-        "label": "Prognoza (mech. podnoszenia)",
+        "label": "Prognoza mechanizmu podnoszenia",
         "type": "number",
         "unit": "dni"
       },
       "data_prog_pod": {
-        "label": "Prognozowana data (mech. podnoszenia)",
+        "label": "Prognozowana data mechanizmu podnoszenia",
         "type": "date"
       },
       "resurs_wyk_jaz": {
-        "label": "Wykorzystanie resursu (mech. jazdy)",
+        "label": "Wykorzystanie resursu mechanizmu jazdy",
         "type": "percentage",
         "unit": "%"
       },
       "resurs_prog_jaz": {
-        "label": "Prognoza (mech. jazdy)",
+        "label": "Prognoza mechanizmu jazdy",
         "type": "number",
         "unit": "dni"
       },
       "data_prog_jaz": {
-        "label": "Prognozowana data (mech. jazdy)",
+        "label": "Prognozowana data mechanizmu jazdy",
         "type": "date"
       },
       "resurs_wyk_prz": {
-        "label": "Wykorzystanie resursu (mech. przesuwu)",
+        "label": "Wykorzystanie resursu mechanizmu przesuwu",
         "type": "percentage",
         "unit": "%"
       },
       "resurs_prog_prz": {
-        "label": "Prognoza (mech. przesuwu)",
+        "label": "Prognoza mechanizmu przesuwu",
         "type": "number",
         "unit": "dni"
       },
       "data_prog_prz": {
-        "label": "Prognozowana data (mech. przesuwu)",
+        "label": "Prognozowana data mechanizmu przesuwu",
         "type": "date"
       },
       "resurs_wyk_mas": {
-        "label": "Wykorzystanie resursu (mech. masztu)",
+        "label": "Wykorzystanie resursu mechanizmu masztu",
         "type": "percentage",
         "unit": "%"
       },
       "resurs_prog_mas": {
-        "label": "Prognoza (mech. masztu)",
+        "label": "Prognoza mechanizmu masztu",
         "type": "number",
         "unit": "dni"
       },
       "data_prog_mas": {
-        "label": "Prognozowana data (mech. masztu)",
+        "label": "Prognozowana data mechanizmu masztu",
         "type": "date"
       }
     }
@@ -831,6 +839,15 @@
         "label": "Prognozowana data",
         "type": "date"
       },
+      "resurs_prognoza_dni": {
+        "label": "Dni do wyczerpania resursu",
+        "type": "number",
+        "unit": "dni"
+      },
+      "ilosc_cykli_rok": {
+        "label": "Ilość cykli / rok",
+        "type": "number"
+      },
       "U_WSK": {
         "label": "Projektowa zdolność U<sub>WSK</sub>",
         "type": "number"
@@ -897,7 +914,7 @@
         "type": "number"
       },
       "wsp_kdr": {
-        "label": "Współczynnik KDR",
+        "label": "Współczynnik K<sub>d</sub>",
         "type": "number"
       },
       "stan_obciazenia": {
@@ -931,7 +948,7 @@
         "type": "number"
       },
       "wsp_kdr": {
-        "label": "Współczynnik KDR",
+        "label": "Współczynnik K<sub>d</sub>",
         "type": "number"
       },
       "stan_obciazenia": {
@@ -1029,17 +1046,62 @@
     "name": "Winda dekarska - Wyniki",
     "fields": {
       "resurs_wykorzystanie": {
-        "label": "Wykorzystanie resursu",
+        "label": "Stopień wykorzystania resursu (konstrukcja)",
         "type": "percentage",
         "unit": "%"
       },
       "resurs_message": {
-        "label": "Status resursu",
+        "label": "Status resursu (konstrukcja)",
         "type": "text"
       },
       "data_prognoza": {
-        "label": "Prognozowana data",
+        "label": "Symulowana data wyczerpania resursu (konstrukcja)",
         "type": "date"
+      },
+      "resurs_prognoza_dni": {
+        "label": "Dni do wyczerpania resursu (konstrukcja)",
+        "type": "number",
+        "unit": "dni"
+      },
+      "ilosc_cykli": {
+        "label": "Ilość odbytych cykli",
+        "type": "number"
+      },
+      "ilosc_cykli_rok": {
+        "label": "Ilość cykli / rok",
+        "type": "number"
+      },
+      "U_WSK": {
+        "label": "Projektowa zdolność cyklowa U<sub>WSK</sub>",
+        "type": "number"
+      },
+      "F_X": {
+        "label": "Współczynnik F<sub>X</sub>",
+        "type": "number"
+      },
+      "resurs_wyk_pod": {
+        "label": "Stopień wykorzystania resursu (mechanizm podnoszenia)",
+        "type": "percentage",
+        "unit": "%"
+      },
+      "resurs_prog_pod": {
+        "label": "Dni do wyczerpania resursu (mechanizm podnoszenia)",
+        "type": "number",
+        "unit": "dni"
+      },
+      "data_prog_pod": {
+        "label": "Symulowana data wyczerpania resursu (mechanizm podnoszenia)",
+        "type": "date"
+      },
+      "t_max_pod": {
+        "label": "Zdolność resursowa mechanizmu t<sub>max</sub>",
+        "type": "number",
+        "unit": "h"
+      },
+      "t_sum_pod": {
+        "label": "Czas pracy mechanizmu t<sub>sum</sub>",
+        "type": "number",
+        "unit": "h"
       }
     }
   },
@@ -1060,7 +1122,7 @@
         "type": "date"
       },
       "wsp_kdr": {
-        "label": "Współczynnik KDR",
+        "label": "Współczynnik K<sub>d</sub>",
         "type": "number"
       },
       "stan_obciazenia": {

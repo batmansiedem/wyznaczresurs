@@ -1,0 +1,539 @@
+{
+  "name": "Wózek jezdniowy",
+  "description": "Kalkulator resursu dla wózka jezdniowego.",
+  "fields": {
+    "wykonawca": {
+      "type": "text",
+      "label": "Wykonawca",
+      "required": false
+    },
+    "uwagi": {
+      "type": "textarea",
+      "label": "Uwagi",
+      "required": false
+    },
+    "nr_fabryczny": {
+      "type": "text",
+      "label": "Nr fabryczny",
+      "required": true
+    },
+    "nr_ewidencyjny": {
+      "type": "text",
+      "label": "Nr ewidencyjny UDT/TDT/WDT",
+      "required": false
+    },
+    "lata_pracy": {
+      "type": "number",
+      "label": "Ilość przepracowanych lat",
+      "required": true,
+      "unit_type": "time",
+      "default_unit": "lata",
+      "unit_options": [
+        "lata",
+        "miesiące"
+      ]
+    },
+    "tryb_pracy": {
+      "label": "Tryb pracy",
+      "type": "select",
+      "required": true,
+      "options": [
+        "jednozmianowy",
+        "dwuzmianowy",
+        "trzyzmianowy"
+      ]
+    },
+    "cykle_zmiana": {
+      "label": "Ilość cykli przypadających na zmianę",
+      "type": "number",
+      "required": true
+    },
+    "dni_robocze": {
+      "label": "Ilość dni roboczych w roku",
+      "type": "number",
+      "required": true,
+      "default_value": 250
+    },
+    "ilosc_cykli": {
+      "type": "number",
+      "label": "Ilość odbytych cykli",
+      "required": true,
+      "unit_type": "dimensionless",
+      "default_unit": "cykl"
+    },
+    "sposob_rejestracji": {
+      "type": "select",
+      "label": "Sposób rejestracji przez eksploatującego warunków eksploatacji urządzenia",
+      "required": true,
+      "options": [
+        "Rejestrowanie przyrządami",
+        "Rejestrowanie w dzienniku, łącznie ze stosowaniem licznika",
+        "Rejestrowanie na podstawie procesu technologicznego",
+        "Rejestrowanie na podstawie informacji o produkcji",
+        "Informacja o warunkach eksploatacji jest niekompletna",
+        "Brak informacji o historii urządzenia"
+      ]
+    },
+    "ponowny_resurs": {
+      "type": "select",
+      "label": "Czy chcesz wykonać ponowne wyznaczenie resursu?",
+      "required": true,
+      "options": [
+        "Nie",
+        "Tak"
+      ]
+    },
+    "ostatni_resurs": {
+      "type": "number",
+      "label": "Ostatni resurs (całościowy)",
+      "required": false,
+      "show_if": {
+        "field": "ponowny_resurs",
+        "value": "Tak"
+      },
+      "default_unit": "%"
+    },
+    "ostatni_resurs_mech_pod": {
+      "type": "number",
+      "label": "Ostatni resurs mechanizmu podnoszenia",
+      "required": false,
+      "unit_type": "dimensionless",
+      "default_unit": "%",
+      "show_if": {
+        "field": "ponowny_resurs",
+        "value": "Tak"
+      }
+    },
+    "ostatni_resurs_mech_jaz": {
+      "type": "number",
+      "label": "Ostatni resurs mechanizmu jazdy",
+      "required": false,
+      "unit_type": "dimensionless",
+      "default_unit": "%",
+      "show_if": {
+        "field": "ponowny_resurs",
+        "value": "Tak"
+      }
+    },
+    "ostatni_resurs_mech_prz": {
+      "type": "number",
+      "label": "Ostatni resurs mechanizmu przesuwu",
+      "required": false,
+      "unit_type": "dimensionless",
+      "default_unit": "%",
+      "show_if": {
+        "field": "ponowny_resurs",
+        "value": "Tak"
+      }
+    },
+    "ostatni_resurs_mech_mas": {
+      "type": "number",
+      "label": "Ostatni resurs mechanizmu masztu",
+      "required": false,
+      "unit_type": "dimensionless",
+      "default_unit": "%",
+      "show_if": {
+        "field": "ponowny_resurs",
+        "value": "Tak"
+      }
+    },
+    "ostatni_licznik": {
+      "type": "number",
+      "label": "Stan licznika motogodzin na dzień wyznaczenia ostatniego resursu",
+      "required": false,
+      "unit_type": "time",
+      "default_unit": "mth",
+      "show_if": {
+        "field": "ponowny_resurs",
+        "value": "Tak"
+      }
+    },
+    "data_resurs": {
+      "type": "date",
+      "label": "Data wyznaczenia ostatniego resursu",
+      "required": false,
+      "show_if": {
+        "field": "ponowny_resurs",
+        "value": "Tak"
+      }
+    },
+    "spec": {
+      "type": "select",
+      "label": "Czy chcesz wyznaczyć resurs po pierwszym przeglądzie specjalnym?",
+      "required": true,
+      "options": [
+        "Nie",
+        "Tak"
+      ]
+    },
+    "naped": {
+      "type": "select",
+      "label": "Rodzaj napędu",
+      "required": true,
+      "options": [
+        "spalinowy",
+        "elektryczny",
+        "elektryczny prowadzony",
+        "hydrauliczny",
+        "hybrydowy"
+      ]
+    },
+    "operator": {
+      "type": "select",
+      "label": "Liczba operatorów",
+      "required": true,
+      "options": [
+        "1 operator",
+        "2 operatorów",
+        "3 operatorów",
+        "4 operatorów",
+        "5 i więcej operatorów"
+      ]
+    },
+    "temperatura": {
+      "type": "select",
+      "label": "Temperatura pracy",
+      "required": true,
+      "options": [
+        "normalna",
+        "praca w zmiennych temperaturach (praca na zewnątrz, chłodnie)"
+      ]
+    },
+    "srodowisko": {
+      "type": "select",
+      "label": "Środowisko agresywne",
+      "required": true,
+      "options": [
+        "TAK",
+        "NIE"
+      ]
+    },
+    "serwis": {
+      "type": "select",
+      "label": "Plan serwisowy",
+      "required": true,
+      "options": [
+        "plan serwisowy zgodny z wymogami instrukcji ekploatacji",
+        "rozszerzony plan serwisowy przekraczający wymogi instrukcji ekploatacjirozszerzony plan serwisowy przekraczający wymogi instrukcji ekploatacji"
+      ]
+    },
+    "licznik_pracy": {
+      "type": "number",
+      "label": "Łączna ilość motogodzin",
+      "required": true,
+      "default_unit": "mth"
+    },
+    "h_max": {
+      "type": "number",
+      "label": "Maksymalna wysokość podnoszenia h<sub>max</sub>",
+      "required": true,
+      "unit_type": "length",
+      "default_unit": "m"
+    },
+    "v_pod": {
+      "type": "number",
+      "label": "Prędkość podnoszenia/opuszczania v<sub>pod</sub>",
+      "required": true,
+      "unit_type": "velocity",
+      "default_unit": "m/s",
+      "unit_options": [
+        "m/s",
+        "m/min",
+        "m/h"
+      ]
+    },
+    "powierzchnia": {
+      "type": "select",
+      "label": "Rodzaj powierzchni",
+      "required": true,
+      "options": [
+        "równa, gładka bez ubytków",
+        "równa chropowata z małą ilością ubytków",
+        "różnorodna z dużą ilością ubytków"
+      ]
+    },
+    "widly_check": {
+      "type": "select",
+      "label": "Orginalna długość wideł?",
+      "required": true,
+      "options": [
+        "Tak",
+        "Nie"
+      ]
+    },
+    "dlugosc_widel": {
+      "type": "number",
+      "label": "Długość wideł",
+      "required": false,
+      "unit_type": "length",
+      "default_unit": "mm"
+    },
+    "alfa": {
+      "type": "number",
+      "label": "Kąt przechyłu masztu alfa",
+      "required": true,
+      "unit_type": "angle",
+      "default_unit": "°"
+    },
+    "beta": {
+      "type": "number",
+      "label": "Kąt przechyłu masztu beta",
+      "required": true,
+      "unit_type": "angle",
+      "default_unit": "°"
+    },
+    "q_o": {
+      "type": "number",
+      "label": "Ciężar ładunku Qo",
+      "required": true,
+      "unit_type": "mass",
+      "default_unit": "kg"
+    },
+    "q_max": {
+      "type": "number",
+      "label": "Udźwig maksymalny Q<sub>max</sub>",
+      "required": true,
+      "unit_type": "mass",
+      "default_unit": "kg",
+      "unit_options": [
+        "kg",
+        "t"
+      ]
+    },
+    "max_czas": {
+      "type": "number",
+      "label": "Maksymalny czas pracy (wg producenta)",
+      "required": false,
+      "unit_type": "time",
+      "default_unit": "lata"
+    },
+    "konstrukcja": {
+      "type": "inspection_status",
+      "label": "Czy konstrukcja stalowa jest zdeformowana i/lub pojawiły się pęknięcia w złączach spawanych?",
+      "required": true,
+      "options": [
+        "Brak uszkodzeń",
+        "Uszkodzenia"
+      ]
+    },
+    "automatyka": {
+      "type": "inspection_status",
+      "label": "Czy automatyka sterująca i/lub zabezpieczająca jest sprawna i aktywna?",
+      "required": true,
+      "options": [
+        "Sprawna",
+        "Niesprawna"
+      ]
+    },
+    "sworznie": {
+      "type": "inspection_status",
+      "label": "Czy sworznie oraz połączenia rozłączne są właściwie zmontowane i w dobrym stanie technicznym?",
+      "required": true,
+      "options": [
+        "Prawidłowy",
+        "Nieprawidłowy"
+      ]
+    },
+    "ciegna": {
+      "type": "inspection_status",
+      "label": "Czy cięgna (łańcuchy, liny) są w dobrym stanie technicznym?",
+      "required": true,
+      "options": [
+        "Brak uszkodzeń",
+        "Uszkodzenia"
+      ]
+    },
+    "eksploatacja": {
+      "type": "inspection_status",
+      "label": "Czy urządzenie eksploatowane jest zgodnie z przeznaczeniem i instrukcją eksploatacji?",
+      "required": true,
+      "options": [
+        "Zgodne",
+        "Niezgodne"
+      ]
+    },
+    "diagram_kd": {
+      "type": "diagram",
+      "label": "Widmo obciążeń K<sub>d</sub>",
+      "svg": "schemat_kd"
+    }
+  },
+  "sections": [
+    {
+      "id": "informacje",
+      "title": "Informacja na temat resursu",
+      "icon": "info",
+      "fields": [
+        "spec",
+        "ponowny_resurs",
+        "data_resurs",
+        "ostatni_resurs",
+        "ostatni_licznik",
+        "ostatni_resurs_mech_pod",
+        "ostatni_resurs_mech_jaz",
+        "ostatni_resurs_mech_prz",
+        "ostatni_resurs_mech_mas"
+      ]
+    },
+    {
+      "id": "dane",
+      "title": "Określ dane dla wózka jezdniowego podnośnikowego",
+      "icon": "settings",
+      "fields": [
+        "wykonawca",
+        "uwagi",
+        "naped",
+        "operator",
+        "powierzchnia",
+        "serwis",
+        "temperatura",
+        "srodowisko",
+        "nr_fabryczny",
+        "nr_ewidencyjny",
+        "widly_check",
+        "dlugosc_widel",
+        "h_max",
+        "v_pod",
+        "alfa",
+        "beta",
+        "q_max",
+        "q_o",
+        "licznik_pracy",
+        "lata_pracy",
+        "max_czas",
+        "ilosc_cykli",
+        "tryb_pracy",
+        "cykle_zmiana",
+        "dni_robocze"
+      ]
+    },
+    {
+      "id": "rejestracja",
+      "title": "Określ sposób rejestracji, wybierając odpowiednią opcję z tabeli",
+      "icon": "assignment",
+      "fields": [
+        "sposob_rejestracji"
+      ]
+    },
+    {
+      "id": "kd",
+      "title": "Za pomocą kalkulatora wyznacz współczynnik K<sub>d</sub>",
+      "icon": "balance",
+      "fields": [
+        "diagram_kd"
+      ]
+    },
+    {
+      "id": "inspekcja",
+      "title": "Ocena stanu technicznego",
+      "icon": "fact_check",
+      "fields": [
+        "konstrukcja",
+        "automatyka",
+        "sworznie",
+        "ciegna",
+        "eksploatacja"
+      ]
+    }
+  ],
+  "output_fields": {
+    "resurs_wykorzystanie": {
+      "label": "Wykorzystanie resursu (całkowity)",
+      "type": "percentage",
+      "unit": "%"
+    },
+    "resurs_message": {
+      "label": "Status resursu (całkowity)",
+      "type": "text"
+    },
+    "data_prognoza": {
+      "label": "Prognozowana data (całkowity)",
+      "type": "date"
+    },
+    "resurs_prognoza_dni": {
+      "label": "Prognoza (całkowity)",
+      "type": "number",
+      "unit": "dni"
+    },
+    "U_WSK": {
+      "label": "Wartość U<sub>WSK</sub> (całkowity)",
+      "type": "number"
+    },
+    "F_X": {
+      "label": "Współczynnik F<sub>X</sub>",
+      "type": "number"
+    },
+    "ilosc_cykli": {
+      "label": "Ilość cykli",
+      "type": "number"
+    },
+    "ilosc_cykli_rok": {
+      "label": "Ilość cykli / rok",
+      "type": "number"
+    },
+    "wsp_kdr": {
+      "label": "Współczynnik K<sub>d</sub>",
+      "type": "number"
+    },
+    "stan_obciazenia": {
+      "label": "Stan obciążenia",
+      "type": "text"
+    },
+    "resurs_wyk_pod": {
+      "label": "Wykorzystanie resursu mechanizmu podnoszenia",
+      "type": "percentage",
+      "unit": "%"
+    },
+    "resurs_prog_pod": {
+      "label": "Prognoza mechanizmu podnoszenia",
+      "type": "number",
+      "unit": "dni"
+    },
+    "data_prog_pod": {
+      "label": "Prognozowana data mechanizmu podnoszenia",
+      "type": "date"
+    },
+    "resurs_wyk_jaz": {
+      "label": "Wykorzystanie resursu mechanizmu jazdy",
+      "type": "percentage",
+      "unit": "%"
+    },
+    "resurs_prog_jaz": {
+      "label": "Prognoza mechanizmu jazdy",
+      "type": "number",
+      "unit": "dni"
+    },
+    "data_prog_jaz": {
+      "label": "Prognozowana data mechanizmu jazdy",
+      "type": "date"
+    },
+    "resurs_wyk_prz": {
+      "label": "Wykorzystanie resursu mechanizmu przesuwu",
+      "type": "percentage",
+      "unit": "%"
+    },
+    "resurs_prog_prz": {
+      "label": "Prognoza mechanizmu przesuwu",
+      "type": "number",
+      "unit": "dni"
+    },
+    "data_prog_prz": {
+      "label": "Prognozowana data mechanizmu przesuwu",
+      "type": "date"
+    },
+    "resurs_wyk_mas": {
+      "label": "Wykorzystanie resursu mechanizmu masztu",
+      "type": "percentage",
+      "unit": "%"
+    },
+    "resurs_prog_mas": {
+      "label": "Prognoza mechanizmu masztu",
+      "type": "number",
+      "unit": "dni"
+    },
+    "data_prog_mas": {
+      "label": "Prognozowana data mechanizmu masztu",
+      "type": "date"
+    }
+  }
+}

@@ -1,0 +1,414 @@
+{
+  "name": "Układnica magazynowa",
+  "description": "Kalkulator resursu dla układnicy magazynowej.",
+  "fields": {
+    "wykonawca": {
+      "type": "text",
+      "label": "Wykonawca",
+      "required": false
+    },
+    "uwagi": {
+      "type": "textarea",
+      "label": "Uwagi",
+      "required": false
+    },
+    "typ": {
+      "type": "select",
+      "label": "Typ układnicy magazynowej",
+      "required": false,
+      "options": [
+        "Układnica magazynowa jednokolomnowa",
+        "Układnica magazynowa dwukolumnowa",
+        "Układnica magazynowa przejezdna na szynach",
+        "Układnica magazynowa przejezdna podwieszana"
+      ]
+    },
+    "ster": {
+      "type": "select",
+      "label": "Rodzaj sterowania",
+      "required": true,
+      "options": [
+        "Układnica magazynowa sterowana autmatycznie",
+        "Układnica magazynowa sterowana ręcznie"
+      ]
+    },
+    "nr_fabryczny": {
+      "type": "text",
+      "label": "Nr fabryczny",
+      "required": true
+    },
+    "nr_ewidencyjny": {
+      "type": "text",
+      "label": "Nr ewidencyjny UDT/TDT/WDT",
+      "required": false
+    },
+    "h_max": {
+      "type": "number",
+      "label": "Maksymalna wysokość podnoszenia h<sub>max</sub>",
+      "required": true,
+      "unit_type": "length",
+      "default_unit": "m"
+    },
+    "v_pod": {
+      "type": "number",
+      "label": "Prędkość podnoszenia/opuszczania v<sub>pod</sub>",
+      "required": true,
+      "unit_type": "speed",
+      "default_unit": "m/min",
+      "unit_options": [
+        "m/s",
+        "m/min",
+        "m/h"
+      ]
+    },
+    "s_sz": {
+      "type": "number",
+      "label": "Długość szyny jezdnej s",
+      "required": true,
+      "unit_type": "length",
+      "default_unit": "m"
+    },
+    "v_jaz": {
+      "type": "number",
+      "label": "Prędkość jazdy v<sub>jaz</sub>",
+      "required": true,
+      "unit_type": "speed",
+      "default_unit": "m/min",
+      "unit_options": [
+        "m/s",
+        "m/min",
+        "m/h"
+      ]
+    },
+    "v_prz": {
+      "type": "number",
+      "label": "Prędkość przesuwu platformy v<sub>prz</sub>",
+      "required": true,
+      "unit_type": "speed",
+      "default_unit": "m/min",
+      "unit_options": [
+        "m/s",
+        "m/min",
+        "m/h"
+      ]
+    },
+    "q_max": {
+      "type": "number",
+      "label": "Udźwig maksymalny Q<sub>max</sub>",
+      "required": true,
+      "unit_type": "mass",
+      "default_unit": "kg",
+      "unit_options": [
+        "kg",
+        "t"
+      ]
+    },
+    "licznik_pracy_pod": {
+      "type": "number",
+      "label": "Licznik pracy mechanizmu podnoszenia",
+      "required": false,
+      "default_unit": "mth"
+    },
+    "licznik_pracy_jaz": {
+      "type": "number",
+      "label": "Licznik pracy mechanizmu jazdy",
+      "required": false,
+      "default_unit": "mth"
+    },
+    "licznik_pracy_prz": {
+      "type": "number",
+      "label": "Licznik pracy mechanizmu przesuwu",
+      "required": false,
+      "default_unit": "mth"
+    },
+    "lata_pracy": {
+      "type": "number",
+      "label": "Ilość przepracowanych lat",
+      "required": true,
+      "unit_type": "time",
+      "default_unit": "lata",
+      "unit_options": [
+        "lata",
+        "miesiące"
+      ]
+    },
+    "tryb_pracy": {
+      "label": "Tryb pracy",
+      "type": "select",
+      "required": true,
+      "options": [
+        "jednozmianowy",
+        "dwuzmianowy",
+        "trzyzmianowy"
+      ]
+    },
+    "cykle_zmiana": {
+      "label": "Ilość cykli przypadających na zmianę",
+      "type": "number",
+      "required": true
+    },
+    "dni_robocze": {
+      "label": "Ilość dni roboczych w roku",
+      "type": "number",
+      "required": true,
+      "default_value": 250
+    },
+    "ilosc_cykli": {
+      "type": "number",
+      "label": "Ilość odbytych cykli",
+      "required": true,
+      "unit_type": "dimensionless",
+      "default_unit": "cykl"
+    },
+    "sposob_rejestracji": {
+      "type": "select",
+      "label": "Sposób rejestracji przez eksploatującego warunków eksploatacji urządzenia",
+      "required": true,
+      "options": [
+        "Rejestrowanie przyrządami",
+        "Rejestrowanie w dzienniku, łącznie ze stosowaniem licznika",
+        "Rejestrowanie na podstawie procesu technologicznego",
+        "Rejestrowanie na podstawie informacji o produkcji",
+        "Informacja o warunkach eksploatacji jest niekompletna",
+        "Brak informacji o historii urządzenia"
+      ]
+    },
+    "spec": {
+      "type": "select",
+      "label": "Czy chcesz wyznaczyć resurs po pierwszym przeglądzie specjalnym?",
+      "required": true,
+      "options": [
+        "Nie",
+        "Tak"
+      ]
+    },
+    "ponowny_resurs": {
+      "type": "select",
+      "label": "Czy chcesz wykonać ponowne wyznaczenie resursu?",
+      "required": true,
+      "options": [
+        "Nie",
+        "Tak"
+      ]
+    },
+    "ostatni_resurs": {
+      "type": "number",
+      "label": "Procent wykorzystania resursu z ostatnich obliczeń",
+      "required": false,
+      "show_if": {
+        "field": "ponowny_resurs",
+        "value": "Tak"
+      },
+      "default_unit": "%"
+    },
+    "data_resurs": {
+      "type": "date",
+      "label": "Data wyznaczenia ostatniego resursu",
+      "required": false,
+      "show_if": {
+        "field": "ponowny_resurs",
+        "value": "Tak"
+      }
+    },
+    "konstrukcja": {
+      "type": "inspection_status",
+      "label": "Czy konstrukcja stalowa jest zdeformowana i/lub pojawiły się pęknięcia w złączach spawanych?",
+      "required": true,
+      "options": [
+        "Brak uszkodzeń",
+        "Uszkodzenia"
+      ]
+    },
+    "automatyka": {
+      "type": "inspection_status",
+      "label": "Czy automatyka sterująca i/lub zabezpieczająca jest sprawna i aktywna?",
+      "required": true,
+      "options": [
+        "Sprawna",
+        "Niesprawna"
+      ]
+    },
+    "sworznie": {
+      "type": "inspection_status",
+      "label": "Czy sworznie oraz połączenia rozłączne są właściwie zmontowane i w dobrym stanie technicznym?",
+      "required": true,
+      "options": [
+        "Prawidłowy",
+        "Nieprawidłowy"
+      ]
+    },
+    "ciegna": {
+      "type": "inspection_status",
+      "label": "Czy cięgna (łańcuchy, liny) są w dobrym stanie technicznym?",
+      "required": true,
+      "options": [
+        "Brak uszkodzeń",
+        "Uszkodzenia"
+      ]
+    },
+    "eksploatacja": {
+      "type": "inspection_status",
+      "label": "Czy urządzenie eksploatowane jest zgodnie z przeznaczeniem i instrukcją eksploatacji?",
+      "required": true,
+      "options": [
+        "Zgodne",
+        "Niezgodne"
+      ]
+    },
+    "diagram_kd": {
+      "type": "diagram",
+      "label": "Widmo obciążeń K<sub>d</sub>",
+      "svg": "schemat_kd"
+    }
+  },
+  "sections": [
+    {
+      "id": "informacje",
+      "title": "Informacja na temat resursu",
+      "icon": "info",
+      "fields": [
+        "spec",
+        "ponowny_resurs",
+        "data_resurs",
+        "ostatni_resurs"
+      ]
+    },
+    {
+      "id": "dane",
+      "title": "Określ dane dla układnicy magazynowej",
+      "icon": "settings",
+      "fields": [
+        "wykonawca",
+        "uwagi",
+        "typ",
+        "ster",
+        "nr_fabryczny",
+        "nr_ewidencyjny",
+        "h_max",
+        "v_pod",
+        "s_sz",
+        "v_jaz",
+        "v_prz",
+        "q_max",
+        "licznik_pracy_pod",
+        "licznik_pracy_jaz",
+        "licznik_pracy_prz",
+        "lata_pracy",
+        "ilosc_cykli",
+        "tryb_pracy",
+        "cykle_zmiana",
+        "dni_robocze"
+      ]
+    },
+    {
+      "id": "rejestracja",
+      "title": "Określ sposób rejestracji, wybierając odpowiednią opcję z tabeli",
+      "icon": "assignment",
+      "fields": [
+        "sposob_rejestracji"
+      ]
+    },
+    {
+      "id": "kd",
+      "title": "Za pomocą kalkulatora wyznacz współczynnik K<sub>d</sub>",
+      "icon": "balance",
+      "fields": [
+        "diagram_kd"
+      ]
+    },
+    {
+      "id": "inspekcja",
+      "title": "Ocena stanu technicznego",
+      "icon": "fact_check",
+      "fields": [
+        "konstrukcja",
+        "automatyka",
+        "sworznie",
+        "ciegna",
+        "eksploatacja"
+      ]
+    }
+  ],
+  "output_fields": {
+    "resurs_wykorzystanie": {
+      "label": "Wykorzystanie resursu",
+      "type": "percentage",
+      "unit": "%"
+    },
+    "resurs_message": {
+      "label": "Status resursu",
+      "type": "text"
+    },
+    "data_prognoza": {
+      "label": "Prognozowana data",
+      "type": "date"
+    },
+    "U_WSK": {
+      "label": "Maks. ilość cykli U<sub>WSK</sub>",
+      "type": "number"
+    },
+    "F_X": {
+      "label": "Współczynnik F<sub>X</sub>",
+      "type": "number"
+    },
+    "wsp_kdr": {
+      "label": "Współczynnik K<sub>d</sub>",
+      "type": "number"
+    },
+    "stan_obciazenia": {
+      "label": "Stan obciążenia",
+      "type": "text"
+    },
+    "resurs_prognoza_dni": {
+      "label": "Prognoza (całkowity)",
+      "type": "number",
+      "unit": "dni"
+    },
+    "ilosc_cykli": {
+      "label": "Ilość cykli",
+      "type": "number"
+    },
+    "resurs_wyk_pod": {
+      "label": "Stopień zużycia — mechanizm podnoszenia",
+      "type": "percentage",
+      "unit": "%"
+    },
+    "resurs_prog_pod": {
+      "label": "Prognoza — mech. podnoszenia",
+      "type": "number",
+      "unit": "dni"
+    },
+    "data_prog_pod": {
+      "label": "Symulowana data — mech. podnoszenia",
+      "type": "date"
+    },
+    "resurs_wyk_jaz": {
+      "label": "Stopień zużycia — mechanizm jazdy",
+      "type": "percentage",
+      "unit": "%"
+    },
+    "resurs_prog_jaz": {
+      "label": "Prognoza — mech. jazdy",
+      "type": "number",
+      "unit": "dni"
+    },
+    "data_prog_jaz": {
+      "label": "Symulowana data — mech. jazdy",
+      "type": "date"
+    },
+    "resurs_wyk_prz": {
+      "label": "Stopień zużycia — mechanizm przesuwu",
+      "type": "percentage",
+      "unit": "%"
+    },
+    "resurs_prog_prz": {
+      "label": "Prognoza — mech. przesuwu",
+      "type": "number",
+      "unit": "dni"
+    },
+    "data_prog_prz": {
+      "label": "Symulowana data — mech. przesuwu",
+      "type": "date"
+    }
+  }
+}

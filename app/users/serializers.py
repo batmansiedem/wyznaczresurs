@@ -115,9 +115,15 @@ class AdminUserListSerializer(serializers.ModelSerializer):
 
     def get_display_name(self, obj):
         if obj.is_company:
-            return obj.company_name or obj.email
-        full = f"{obj.first_name} {obj.last_name}".strip()
-        return full or obj.email
+            if obj.company_name:
+                return obj.company_name
+        else:
+            full = f"{obj.first_name} {obj.last_name}".strip()
+            if full:
+                return full
+        # Brak nazwy — pokaż lokalną część emaila jako @handle
+        local = obj.email.split('@')[0] if obj.email else ''
+        return f"@{local}" if local else obj.email
 
 
 class AdminUserDetailSerializer(AdminUserListSerializer):

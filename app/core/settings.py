@@ -277,3 +277,14 @@ KSEF_SANDBOX = os.environ.get('KSEF_SANDBOX', 'True') == 'True'
 KSEF_NIP     = os.environ.get('KSEF_NIP', '')
 KSEF_TOKEN   = os.environ.get('KSEF_TOKEN', '')
 KSEF_API_URL = 'https://ksef-test.mf.gov.pl/api' if KSEF_SANDBOX else 'https://ksef.mf.gov.pl/api'
+
+# ==============================================================================
+# KONFIGURACJA FAKTUR
+# ==============================================================================
+INVOICE_SELLER_DATA = {
+    'name': 'EDS Dariusz Surmacki',
+    'address': 'ul. Lawinowa 36C, 92-010 Łódź',
+    'nip': '7691427583',
+    'bank_account': '60 1240 3116 1111 0010 9288 1740',
+    'email': 'info@wyznaczresurs.com',
+}

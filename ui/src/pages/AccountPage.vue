@@ -59,13 +59,13 @@
         </q-card>
 
         <!-- WŁASNE LOGOTYPY -->
-        <div class="section-label q-mt-xl">Logotypy na orzeczeniach</div>
+        <div class="section-label q-mt-xl">Logotypy na obliczeniach</div>
         <q-card flat bordered class="shadow-1 q-pa-lg">
           <div class="row q-col-gutter-md items-center q-mb-lg border-bottom q-pb-md">
             <div class="col-12 col-sm">
-              <div class="text-subtitle1 text-weight-bold">Personalizacja orzeczeń PDF</div>
+              <div class="text-subtitle1 text-weight-bold">Personalizacja obliczeń PDF</div>
               <div class="text-body2 text-grey-7">
-                Możesz posiadać wiele logotypów i wybierać, który ma zostać użyty na orzeczeniu.
+                Możesz posiadać wiele logotypów i wybierać, który ma zostać użyty na obliczeniu.
                 Każde kolejne logo kosztuje <strong>200 punktów premium</strong>.
               </div>
             </div>
@@ -89,7 +89,7 @@
               <div class="text-subtitle2 text-weight-bold q-mb-xs">Ustawienia wyświetlania</div>
               <q-toggle
                 v-model="form.show_logo_on_pdf"
-                label="Pokazuj logo na orzeczeniu PDF"
+                label="Pokazuj logo na obliczeniu PDF"
                 color="primary"
                 left-label
                 class="full-width justify-between border-toggle q-pa-sm rounded-borders"
@@ -247,7 +247,7 @@
               </div>
 
               <div class="col-12">
-                <div class="text-caption text-grey-7 q-mb-xs">Pozycja na orzeczeniu:</div>
+                <div class="text-caption text-grey-7 q-mb-xs">Pozycja na obliczeniu:</div>
                 <q-btn-toggle
                   v-model="logoForm.position"
                   spread no-caps unelevated

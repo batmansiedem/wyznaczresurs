@@ -167,11 +167,10 @@
 </template>
 
 <script setup>
-import { computed, onMounted, nextTick } from 'vue'
+import { computed, onMounted, nextTick, ref, watch } from 'vue'
 import { useQuasar } from 'quasar'
 import VueApexCharts from 'vue3-apexcharts'
-import calculatorFields from 'src/data/calculator_fields.json'
-import calculatorOutputFields from 'src/data/calculator_output_fields.json'
+import { api } from 'src/boot/axios.js'
 
 const SUMMARY_KEYS = ['resurs_message', 'data_prognoza', 'resurs_prognoza_dni', 'resurs_wykorzystanie', 'technical_state_reached', 'resurs']
 
@@ -193,8 +192,23 @@ onMounted(async () => {
 const $q = useQuasar()
 
 const slug = computed(() => props.result.calculator_definition?.slug || props.result.calculator_slug)
-const inputFields = computed(() => calculatorFields[slug.value]?.fields || {})
-const outputFields = computed(() => calculatorOutputFields[slug.value]?.fields || {})
+
+const deviceConfig = ref({})
+
+async function fetchDeviceConfig(s) {
+  if (!s) return
+  try {
+    const res = await api.get(`/calculators/definitions/${s}/schema/`)
+    deviceConfig.value = res.data
+  } catch (error) {
+    console.error('Błąd pobierania konfiguracji urządzenia:', error)
+  }
+}
+
+watch(slug, (s) => fetchDeviceConfig(s), { immediate: true })
+
+const inputFields = computed(() => deviceConfig.value?.fields || {})
+const outputFields = computed(() => deviceConfig.value?.output_fields || {})
 
 const resursValue = computed(() => {
   const v = props.result.output_data?.resurs_wykorzystanie ?? props.result.output_data?.resurs ?? 0

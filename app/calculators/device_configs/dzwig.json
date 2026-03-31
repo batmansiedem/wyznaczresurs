@@ -1,0 +1,886 @@
+{
+  "name": "Dźwig",
+  "description": "Kalkulator resursu dla dźwigu.",
+  "fields": {
+    "wykonawca": {
+      "type": "text",
+      "label": "Wykonawca",
+      "required": false
+    },
+    "uwagi": {
+      "type": "textarea",
+      "label": "Uwagi",
+      "required": false
+    },
+    "nr_fabryczny": {
+      "type": "text",
+      "label": "Nr fabryczny",
+      "required": true
+    },
+    "nr_ewidencyjny": {
+      "type": "text",
+      "label": "Nr ewidencyjny UDT/TDT/WDT",
+      "required": false
+    },
+    "rok_budowy": {
+      "type": "number",
+      "label": "Rok budowy dźwigu",
+      "required": true
+    },
+    "lata_pracy": {
+      "type": "number",
+      "label": "Ilość przepracowanych lat",
+      "required": true,
+      "unit_options": [
+        "lata",
+        "miesiące"
+      ],
+      "default_unit": "lata"
+    },
+    "cykle_dzwig": {
+      "type": "number",
+      "label": "Ilość jazd dźwigu",
+      "required": false
+    },
+    "pyt_motogodzin": {
+      "type": "select",
+      "label": "Czy dźwig posiada licznik motogodzin?",
+      "required": true,
+      "options": [
+        {
+          "label": "Tak",
+          "value": "1"
+        },
+        {
+          "label": "Nie",
+          "value": "0"
+        }
+      ]
+    },
+    "licznik_pracy": {
+      "type": "number",
+      "label": "Łączna ilość motogodzin",
+      "required": false,
+      "show_if": {
+        "field": "pyt_motogodzin",
+        "value": "1"
+      },
+      "default_unit": "mth"
+    },
+    "dni_robocze": {
+      "type": "number",
+      "label": "Ilość dni roboczych w roku",
+      "required": true
+    },
+    "zakres_godzin_1": {
+      "type": "number",
+      "label": "Ilość godz. pracy dźwigu w przedziale 5:00–9:00",
+      "required": false,
+      "show_if": {
+        "field": "pyt_motogodzin",
+        "value": "0"
+      }
+    },
+    "zakres_godzin_2": {
+      "type": "number",
+      "label": "Ilość godz. pracy dźwigu w przedziale 9:00–13:00",
+      "required": false,
+      "show_if": {
+        "field": "pyt_motogodzin",
+        "value": "0"
+      }
+    },
+    "zakres_godzin_3": {
+      "type": "number",
+      "label": "Ilość godz. pracy dźwigu w przedziale 13:00–17:00",
+      "required": false,
+      "show_if": {
+        "field": "pyt_motogodzin",
+        "value": "0"
+      }
+    },
+    "zakres_godzin_4": {
+      "type": "number",
+      "label": "Ilość godz. pracy dźwigu w przedziale 17:00–21:00",
+      "required": false,
+      "show_if": {
+        "field": "pyt_motogodzin",
+        "value": "0"
+      }
+    },
+    "zakres_godzin_5": {
+      "type": "number",
+      "label": "Ilość godz. pracy dźwigu w przedziale 21:00–0:00",
+      "required": false,
+      "show_if": {
+        "field": "pyt_motogodzin",
+        "value": "0"
+      }
+    },
+    "zakres_godzin_6": {
+      "type": "number",
+      "label": "Ilość godz. pracy dźwigu w przedziale 0:00–5:00",
+      "required": false,
+      "show_if": {
+        "field": "pyt_motogodzin",
+        "value": "0"
+      }
+    },
+    "v_jaz": {
+      "type": "number",
+      "label": "Prędkość jazdy kabiny",
+      "required": true,
+      "unit_type": "velocity",
+      "default_unit": "m/s",
+      "unit_options": [
+        "m/s",
+        "m/min",
+        "m/h"
+      ]
+    },
+    "h_pod": {
+      "type": "number",
+      "label": "Maksymalna wysokość podnoszenia",
+      "required": true,
+      "unit_type": "length",
+      "default_unit": "m"
+    },
+    "przystanki": {
+      "type": "number",
+      "label": "Ilość przystanków",
+      "required": true
+    },
+    "budynek": {
+      "type": "select",
+      "label": "Miejsce zabudowy",
+      "required": true,
+      "options": [
+        "budowa",
+        "magazyn",
+        "budynek mieszkalny",
+        "budynek firmowy",
+        "budynek administracji publicznej",
+        "budynek użyteczności publicznej",
+        "pojazd"
+      ]
+    },
+    "operator": {
+      "type": "select",
+      "label": "Rodzaj obsługi",
+      "required": true,
+      "options": [
+        "bez prawa jazdy w kabinie",
+        "jazda z operatorem",
+        "jazda bez operatora"
+      ]
+    },
+    "przeznaczenie": {
+      "type": "select",
+      "label": "Przeznaczenie dźwigu",
+      "required": true,
+      "options": [
+        "dźwig osobowy",
+        "dźwig towarowy",
+        "dźwig osobowo-towarowy",
+        "transport osób niepełnosprawnych"
+      ]
+    },
+    "liczba_dzwigow": {
+      "type": "number",
+      "label": "Liczba dźwigów obsługujących daną ilość przystanków",
+      "required": true
+    },
+    "q_max": {
+      "type": "number",
+      "label": "Udźwig maksymalny Q<sub>max</sub>",
+      "required": true,
+      "unit_type": "mass",
+      "default_unit": "kg",
+      "unit_options": [
+        "kg",
+        "t"
+      ]
+    },
+    "spec": {
+      "type": "select",
+      "label": "Czy chcesz wyznaczyć resurs po pierwszym przeglądzie specjalnym?",
+      "required": true,
+      "options": [
+        "Nie",
+        "Tak"
+      ]
+    },
+    "liny_nosne": {
+      "type": "inspection_status",
+      "label": "Liny nośne",
+      "required": true,
+      "options": [
+        {
+          "label": "Bez zastrzeżeń",
+          "value": "1"
+        },
+        {
+          "label": "Wymagający remontu/wymiany w ciągu 1-2 lat",
+          "value": "0"
+        },
+        {
+          "label": "Wymagający remontu/wymiany w ciągu 5 lat",
+          "value": "0.5"
+        },
+        {
+          "label": "Nie dotyczy",
+          "value": "-1"
+        }
+      ]
+    },
+    "wciagarka": {
+      "type": "inspection_status",
+      "label": "Wciągarka",
+      "required": true,
+      "options": [
+        {
+          "label": "Bez zastrzeżeń",
+          "value": "1"
+        },
+        {
+          "label": "Wymagający remontu/wymiany w ciągu 1-2 lat",
+          "value": "0"
+        },
+        {
+          "label": "Wymagający remontu/wymiany w ciągu 5 lat",
+          "value": "0.5"
+        },
+        {
+          "label": "Nie dotyczy",
+          "value": "-1"
+        }
+      ]
+    },
+    "konstrukcja_nosna": {
+      "type": "inspection_status",
+      "label": "Konstrukcja nośna",
+      "required": true,
+      "options": [
+        {
+          "label": "Bez zastrzeżeń",
+          "value": "1"
+        },
+        {
+          "label": "Wymagający remontu/wymiany w ciągu 1-2 lat",
+          "value": "0"
+        },
+        {
+          "label": "Wymagający remontu/wymiany w ciągu 5 lat",
+          "value": "0.5"
+        },
+        {
+          "label": "Nie dotyczy",
+          "value": "-1"
+        }
+      ]
+    },
+    "mocowanie_lin": {
+      "type": "inspection_status",
+      "label": "Mocowanie lin",
+      "required": true,
+      "options": [
+        {
+          "label": "Bez zastrzeżeń",
+          "value": "1"
+        },
+        {
+          "label": "Wymagający remontu/wymiany w ciągu 1-2 lat",
+          "value": "0"
+        },
+        {
+          "label": "Wymagający remontu/wymiany w ciągu 5 lat",
+          "value": "0.5"
+        },
+        {
+          "label": "Nie dotyczy",
+          "value": "-1"
+        }
+      ]
+    },
+    "ogranicznik_predkosci": {
+      "type": "inspection_status",
+      "label": "Ogranicznik prędkości",
+      "required": true,
+      "options": [
+        {
+          "label": "Bez zastrzeżeń",
+          "value": "1"
+        },
+        {
+          "label": "Wymagający remontu/wymiany w ciągu 1-2 lat",
+          "value": "0"
+        },
+        {
+          "label": "Wymagający remontu/wymiany w ciągu 5 lat",
+          "value": "0.5"
+        },
+        {
+          "label": "Nie dotyczy",
+          "value": "-1"
+        }
+      ]
+    },
+    "chwytacze_kabiny": {
+      "type": "inspection_status",
+      "label": "Chwytacze kabiny",
+      "required": true,
+      "options": [
+        {
+          "label": "Bez zastrzeżeń",
+          "value": "1"
+        },
+        {
+          "label": "Wymagający remontu/wymiany w ciągu 1-2 lat",
+          "value": "0"
+        },
+        {
+          "label": "Wymagający remontu/wymiany w ciągu 5 lat",
+          "value": "0.5"
+        },
+        {
+          "label": "Nie dotyczy",
+          "value": "-1"
+        }
+      ]
+    },
+    "kola_kabiny": {
+      "type": "inspection_status",
+      "label": "Koła kabiny",
+      "required": true,
+      "options": [
+        {
+          "label": "Bez zastrzeżeń",
+          "value": "1"
+        },
+        {
+          "label": "Wymagający remontu/wymiany w ciągu 1-2 lat",
+          "value": "0"
+        },
+        {
+          "label": "Wymagający remontu/wymiany w ciągu 5 lat",
+          "value": "0.5"
+        },
+        {
+          "label": "Nie dotyczy",
+          "value": "-1"
+        }
+      ]
+    },
+    "kola_przeciwwagi": {
+      "type": "inspection_status",
+      "label": "Koła przeciwwagi",
+      "required": true,
+      "options": [
+        {
+          "label": "Bez zastrzeżeń",
+          "value": "1"
+        },
+        {
+          "label": "Wymagający remontu/wymiany w ciągu 1-2 lat",
+          "value": "0"
+        },
+        {
+          "label": "Wymagający remontu/wymiany w ciągu 5 lat",
+          "value": "0.5"
+        },
+        {
+          "label": "Nie dotyczy",
+          "value": "-1"
+        }
+      ]
+    },
+    "prowadnice_kabiny": {
+      "type": "inspection_status",
+      "label": "Prowadnice kabiny",
+      "required": true,
+      "options": [
+        {
+          "label": "Bez zastrzeżeń",
+          "value": "1"
+        },
+        {
+          "label": "Wymagający remontu/wymiany w ciągu 1-2 lat",
+          "value": "0"
+        },
+        {
+          "label": "Wymagający remontu/wymiany w ciągu 5 lat",
+          "value": "0.5"
+        },
+        {
+          "label": "Nie dotyczy",
+          "value": "-1"
+        }
+      ]
+    },
+    "prowadnice_przeciwwagi": {
+      "type": "inspection_status",
+      "label": "Prowadnice przeciwwagi",
+      "required": true,
+      "options": [
+        {
+          "label": "Bez zastrzeżeń",
+          "value": "1"
+        },
+        {
+          "label": "Wymagający remontu/wymiany w ciągu 1-2 lat",
+          "value": "0"
+        },
+        {
+          "label": "Wymagający remontu/wymiany w ciągu 5 lat",
+          "value": "0.5"
+        },
+        {
+          "label": "Nie dotyczy",
+          "value": "-1"
+        }
+      ]
+    },
+    "zderzak_kabiny": {
+      "type": "inspection_status",
+      "label": "Zderzak kabiny",
+      "required": true,
+      "options": [
+        {
+          "label": "Bez zastrzeżeń",
+          "value": "1"
+        },
+        {
+          "label": "Wymagający remontu/wymiany w ciągu 1-2 lat",
+          "value": "0"
+        },
+        {
+          "label": "Wymagający remontu/wymiany w ciągu 5 lat",
+          "value": "0.5"
+        },
+        {
+          "label": "Nie dotyczy",
+          "value": "-1"
+        }
+      ]
+    },
+    "zderzak_przeciwwagi": {
+      "type": "inspection_status",
+      "label": "Zderzak przeciwwagi",
+      "required": true,
+      "options": [
+        {
+          "label": "Bez zastrzeżeń",
+          "value": "1"
+        },
+        {
+          "label": "Wymagający remontu/wymiany w ciągu 1-2 lat",
+          "value": "0"
+        },
+        {
+          "label": "Wymagający remontu/wymiany w ciągu 5 lat",
+          "value": "0.5"
+        },
+        {
+          "label": "Nie dotyczy",
+          "value": "-1"
+        }
+      ]
+    },
+    "automatyka": {
+      "type": "inspection_status",
+      "label": "Automatyka",
+      "required": true,
+      "options": [
+        {
+          "label": "Bez zastrzeżeń",
+          "value": "1"
+        },
+        {
+          "label": "Wymagający remontu/wymiany w ciągu 1-2 lat",
+          "value": "0"
+        },
+        {
+          "label": "Wymagający remontu/wymiany w ciągu 5 lat",
+          "value": "0.5"
+        },
+        {
+          "label": "Nie dotyczy",
+          "value": "-1"
+        }
+      ]
+    },
+    "drzwi": {
+      "type": "inspection_status",
+      "label": "Drzwi",
+      "required": true,
+      "options": [
+        {
+          "label": "Bez zastrzeżeń",
+          "value": "1"
+        },
+        {
+          "label": "Wymagający remontu/wymiany w ciągu 1-2 lat",
+          "value": "0"
+        },
+        {
+          "label": "Wymagający remontu/wymiany w ciągu 5 lat",
+          "value": "0.5"
+        },
+        {
+          "label": "Nie dotyczy",
+          "value": "-1"
+        }
+      ]
+    },
+    "silownik": {
+      "type": "inspection_status",
+      "label": "Siłownik",
+      "required": true,
+      "options": [
+        {
+          "label": "Bez zastrzeżeń",
+          "value": "1"
+        },
+        {
+          "label": "Wymagający remontu/wymiany w ciągu 1-2 lat",
+          "value": "0"
+        },
+        {
+          "label": "Wymagający remontu/wymiany w ciągu 5 lat",
+          "value": "0.5"
+        },
+        {
+          "label": "Nie dotyczy",
+          "value": "-1"
+        }
+      ]
+    },
+    "zawor_blokowy": {
+      "type": "inspection_status",
+      "label": "Zawór blokowy",
+      "required": true,
+      "options": [
+        {
+          "label": "Bez zastrzeżeń",
+          "value": "1"
+        },
+        {
+          "label": "Wymagający remontu/wymiany w ciągu 1-2 lat",
+          "value": "0"
+        },
+        {
+          "label": "Wymagający remontu/wymiany w ciągu 5 lat",
+          "value": "0.5"
+        },
+        {
+          "label": "Nie dotyczy",
+          "value": "-1"
+        }
+      ]
+    },
+    "zawor_zwrotny": {
+      "type": "inspection_status",
+      "label": "Zawór zwrotny",
+      "required": true,
+      "options": [
+        {
+          "label": "Bez zastrzeżeń",
+          "value": "1"
+        },
+        {
+          "label": "Wymagający remontu/wymiany w ciągu 1-2 lat",
+          "value": "0"
+        },
+        {
+          "label": "Wymagający remontu/wymiany w ciągu 5 lat",
+          "value": "0.5"
+        },
+        {
+          "label": "Nie dotyczy",
+          "value": "-1"
+        }
+      ]
+    },
+    "przewody_hydrauliczne": {
+      "type": "inspection_status",
+      "label": "Przewody hydrauliczne",
+      "required": true,
+      "options": [
+        {
+          "label": "Bez zastrzeżeń",
+          "value": "1"
+        },
+        {
+          "label": "Wymagający remontu/wymiany w ciągu 1-2 lat",
+          "value": "0"
+        },
+        {
+          "label": "Wymagający remontu/wymiany w ciągu 5 lat",
+          "value": "0.5"
+        },
+        {
+          "label": "Nie dotyczy",
+          "value": "-1"
+        }
+      ]
+    },
+    "przekladnia": {
+      "type": "inspection_status",
+      "label": "Przekładnia",
+      "required": true,
+      "options": [
+        {
+          "label": "Bez zastrzeżeń",
+          "value": "1"
+        },
+        {
+          "label": "Wymagający remontu/wymiany w ciągu 1-2 lat",
+          "value": "0"
+        },
+        {
+          "label": "Wymagający remontu/wymiany w ciągu 5 lat",
+          "value": "0.5"
+        },
+        {
+          "label": "Nie dotyczy",
+          "value": "-1"
+        }
+      ]
+    },
+    "mechanizm_zebatkowy": {
+      "type": "inspection_status",
+      "label": "Mechanizm zębatkowy",
+      "required": true,
+      "options": [
+        {
+          "label": "Bez zastrzeżeń",
+          "value": "1"
+        },
+        {
+          "label": "Wymagający remontu/wymiany w ciągu 1-2 lat",
+          "value": "0"
+        },
+        {
+          "label": "Wymagający remontu/wymiany w ciągu 5 lat",
+          "value": "0.5"
+        },
+        {
+          "label": "Nie dotyczy",
+          "value": "-1"
+        }
+      ]
+    },
+    "mechanizm_srubowy": {
+      "type": "inspection_status",
+      "label": "Mechanizm śrubowy",
+      "required": true,
+      "options": [
+        {
+          "label": "Bez zastrzeżeń",
+          "value": "1"
+        },
+        {
+          "label": "Wymagający remontu/wymiany w ciągu 1-2 lat",
+          "value": "0"
+        },
+        {
+          "label": "Wymagający remontu/wymiany w ciągu 5 lat",
+          "value": "0.5"
+        },
+        {
+          "label": "Nie dotyczy",
+          "value": "-1"
+        }
+      ]
+    },
+    "mocowanie_napedu": {
+      "type": "inspection_status",
+      "label": "Mocowanie napędu",
+      "required": true,
+      "options": [
+        {
+          "label": "Bez zastrzeżeń",
+          "value": "1"
+        },
+        {
+          "label": "Wymagający remontu/wymiany w ciągu 1-2 lat",
+          "value": "0"
+        },
+        {
+          "label": "Wymagający remontu/wymiany w ciągu 5 lat",
+          "value": "0.5"
+        },
+        {
+          "label": "Nie dotyczy",
+          "value": "-1"
+        }
+      ]
+    },
+    "diagram_kd": {
+      "type": "diagram",
+      "label": "Widmo obciążeń K<sub>d</sub>",
+      "svg": "schemat_kd"
+    },
+    "ponowny_resurs": {
+      "label": "Czy chcesz wykonać ponowne wyznaczenie resursu?",
+      "type": "select",
+      "options": [
+        "Tak",
+        "Nie"
+      ],
+      "default_value": "Nie"
+    },
+    "ostatni_resurs": {
+      "label": "Procent resursu z ostatnich obliczeń",
+      "type": "number",
+      "show_if": {
+        "field": "ponowny_resurs",
+        "value": "Tak"
+      },
+      "default_unit": "%"
+    },
+    "data_resurs": {
+      "label": "Data wyznaczenia ostatniego resursu",
+      "type": "date",
+      "show_if": {
+        "field": "ponowny_resurs",
+        "value": "Tak"
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "informacje",
+      "title": "Informacja na temat resursu",
+      "icon": "info",
+      "fields": [
+        "spec",
+        "ponowny_resurs",
+        "data_resurs",
+        "ostatni_resurs"
+      ]
+    },
+    {
+      "id": "dane",
+      "title": "Dane dźwigu",
+      "icon": "settings",
+      "fields": [
+        "wykonawca",
+        "uwagi",
+        "nr_fabryczny",
+        "nr_ewidencyjny",
+        "rok_budowy",
+        "przeznaczenie",
+        "operator",
+        "budynek",
+        "q_max",
+        "h_pod",
+        "v_jaz",
+        "przystanki",
+        "liczba_dzwigow",
+        "lata_pracy",
+        "dni_robocze",
+        "cykle_dzwig"
+      ]
+    },
+    {
+      "id": "czas_pracy",
+      "title": "Czas pracy dźwigu",
+      "icon": "schedule",
+      "fields": [
+        "pyt_motogodzin",
+        "licznik_pracy",
+        "zakres_godzin_1",
+        "zakres_godzin_2",
+        "zakres_godzin_3",
+        "zakres_godzin_4",
+        "zakres_godzin_5",
+        "zakres_godzin_6"
+      ]
+    },
+    {
+      "id": "kd",
+      "title": "Za pomocą kalkulatora wyznacz współczynnik K<sub>d</sub>",
+      "icon": "balance",
+      "fields": [
+        "diagram_kd"
+      ]
+    },
+    {
+      "id": "inspekcja",
+      "title": "Ocena stanu technicznego — Zespoły",
+      "icon": "fact_check",
+      "fields": [
+        "liny_nosne",
+        "wciagarka",
+        "konstrukcja_nosna",
+        "mocowanie_lin",
+        "ogranicznik_predkosci",
+        "chwytacze_kabiny",
+        "kola_kabiny",
+        "kola_przeciwwagi",
+        "prowadnice_kabiny",
+        "prowadnice_przeciwwagi",
+        "zderzak_kabiny",
+        "zderzak_przeciwwagi",
+        "automatyka",
+        "drzwi",
+        "silownik",
+        "zawor_blokowy",
+        "zawor_zwrotny",
+        "przewody_hydrauliczne",
+        "przekladnia",
+        "mechanizm_zebatkowy",
+        "mechanizm_srubowy",
+        "mocowanie_napedu"
+      ]
+    }
+  ],
+  "output_fields": {
+    "resurs": {
+      "label": "Resurs",
+      "type": "percentage",
+      "unit": "%"
+    },
+    "zalecenia": {
+      "label": "Zalecenia",
+      "type": "text"
+    },
+    "prognoza": {
+      "label": "Prognoza",
+      "type": "number",
+      "unit": "lata"
+    },
+    "data_prognoza": {
+      "label": "Prognozowana data",
+      "type": "date"
+    },
+    "wiek_dzwigu": {
+      "label": "Wiek dźwigu",
+      "type": "number",
+      "unit": "lata"
+    },
+    "ilosc_cykli": {
+      "label": "Ilość cykli",
+      "type": "number"
+    },
+    "ilosc_cykli_rok": {
+      "label": "Ilość cykli (rok)",
+      "type": "number"
+    },
+    "ilosc_motogodzin_rok": {
+      "label": "Motogodziny (rok)",
+      "type": "number",
+      "unit": "h"
+    },
+    "ilosc_motogodzin_dzien": {
+      "label": "Motogodziny / dzień",
+      "type": "number",
+      "unit": "h"
+    },
+    "wsp_kdr": {
+      "label": "Współczynnik K<sub>d</sub>",
+      "type": "number"
+    }
+  }
+}

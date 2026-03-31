@@ -44,24 +44,20 @@ DEFAULT_CALCS_SQL   = Path(__file__).resolve().parents[4] / 'u685896714_calculat
 INSPECTION_FIELDS = {'konstrukcja', 'automatyka', 'sworznie', 'ciegna',
                      'eksploatacja', 'szczelnosc', 'hamulce', 'nakretka'}
 
-# Wczytaj słownik opcji z calculator_fields.json (raz przy starcie)
-_FIELDS_JSON_PATH = Path(__file__).resolve().parents[4] / 'ui' / 'src' / 'data' / 'calculator_fields.json'
-
 def _build_inspection_map() -> dict:
     """
     Zwraca słownik: {slug: {field_name: {1: ok_str, 0: problem_str, -1: na_str}}}
-    Dane brane z calculator_fields.json — per kalkulator, bo opcje mogą się różnić.
+    Dane brane z device_config (per-device JSON) — per kalkulator, bo opcje mogą się różnić.
     """
-    if not _FIELDS_JSON_PATH.exists():
-        return {}
     try:
-        data = json.loads(_FIELDS_JSON_PATH.read_text(encoding='utf-8'))
+        from calculators.device_config import get_all_configs
+        all_configs = get_all_configs()
     except Exception:
         return {}
 
     result = {}
-    for slug, calc in data.items():
-        fields = calc.get('fields', {})
+    for slug, config in all_configs.items():
+        fields = config.get('fields', {})
         slug_map = {}
         for fname, fdef in fields.items():
             if fname not in INSPECTION_FIELDS:
@@ -139,6 +135,7 @@ JEDNOSTKA_KEY = 'jednostka'
 FIELD_RENAMES = {
     'ilosc_cykli_zmiana': 'cykle_zmiana',
     'ilosc_dni_roboczych': 'dni_robocze',
+    'max_cykle': 'max_cykle_prod',
 }
 
 
@@ -474,7 +471,9 @@ def _wrap_value(key: str, val, slug: str, row: dict = None) -> object:
         'procent_jazda', 'procent_podnosnik', 'ilosc_moto', 'max_moto_prod',
         'lata_pracy', 'ilosc_cykli', 'cykle_zmiana', 'dni_robocze',
         'h_max', 'v_pod', 'v_jaz', 'h_pod', 'L_b_max', 's_sz', 'v_prz',
-        'licznik_pracy', 'ldr', 'hdr',
+        'licznik_pracy', 'ostatni_licznik', 'ldr', 'hdr',
+        'ostatni_resurs', 'ostatni_resurs_mech_pod', 'ostatni_resurs_mech_jaz',
+        'ostatni_resurs_mech_prz', 'ostatni_resurs_mech_mas',
     }:
         val = _normalize_numeric(val)
     if val is None or val == '':
@@ -562,16 +561,20 @@ def migrate_calculators(calcs_data: dict, username_map: dict[str, User],
             else:
                 created_at = datetime.now()
 
-            input_data, _ = _split_row(row, slug)
+            input_data, old_output_data = _split_row(row, slug)
 
-            # Oblicz wyniki nową logiką (stary output_data ignorujemy)
+            # Oblicz wyniki nową logiką; jeśli się nie uda — użyj starych wyników z SQL
             try:
                 calc_instance = CalculatorFactory.get_calculator(slug, input_data)
                 output_data = decimals_to_float(calc_instance.calculate())
             except (DRFValidationError, Exception) as e:
-                stdout.write(f"  [ERR-CALC] {slug} row={row.get('id')}: {e}")
-                errors += 1
-                continue
+                if old_output_data:
+                    stdout.write(f"  [WARN-CALC] {slug} row={row.get('id')}: {e} — używam starych wyników")
+                    output_data = old_output_data
+                else:
+                    stdout.write(f"  [ERR-CALC] {slug} row={row.get('id')}: {e}")
+                    errors += 1
+                    continue
 
             if dry_run:
                 stdout.write(

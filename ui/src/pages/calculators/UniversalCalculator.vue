@@ -321,7 +321,6 @@ import SchemLdr from 'components/SchemLdr.vue'
 import SchemHdr from 'components/SchemHdr.vue'
 import SchemKd from 'components/SchemKd.vue'
 import SchemAd from 'components/SchemAd.vue'
-import calculatorFields from 'src/data/calculator_fields.json'
 import { useUserStore } from 'stores/user-store'
 import { downloadBlob } from 'src/utils/download'
 
@@ -370,27 +369,38 @@ const savedResults = ref([])
 const loadingResults = ref(false)
 const selectedSavedResult = ref(null)
 
+const calculatorConfigs = ref({})
+
 const calculatorSlug = computed(() => route.params.slug)
-const currentCalculatorDefinition = computed(() => calculatorFields[calculatorSlug.value] || null)
+const currentCalculatorDefinition = computed(() => calculatorConfigs.value[calculatorSlug.value] || null)
 
 const units = ref({})
 const deviceResults = ref([])
 const selectedDeviceResult = ref(null)
 
-// Mechanizmy: slug → lista urządzeń nadrzędnych (z pola parent_devices w JSON)
-const MECH_PARENT_DEVICES = {}
-const DEVICE_CHILD_MECHS = {}
-for (const [slug, def] of Object.entries(calculatorFields)) {
-  if (!def.parent_devices?.length) continue
-  MECH_PARENT_DEVICES[slug] = def.parent_devices
-  for (const parent of def.parent_devices) {
-    if (!DEVICE_CHILD_MECHS[parent]) DEVICE_CHILD_MECHS[parent] = []
-    DEVICE_CHILD_MECHS[parent].push({ slug, name: def.name || slug })
+// Mechanizmy: slug → lista urządzeń nadrzędnych (z pola parent_devices w konfiguracji)
+const mechParentDevices = computed(() => {
+  const map = {}
+  for (const [slug, def] of Object.entries(calculatorConfigs.value)) {
+    if (def.parent_devices?.length) map[slug] = def.parent_devices
   }
-}
+  return map
+})
 
-const isMechanism = computed(() => calculatorSlug.value in MECH_PARENT_DEVICES)
-const childMechs = computed(() => DEVICE_CHILD_MECHS[calculatorSlug.value] || [])
+const deviceChildMechs = computed(() => {
+  const map = {}
+  for (const [slug, def] of Object.entries(calculatorConfigs.value)) {
+    if (!def.parent_devices?.length) continue
+    for (const parent of def.parent_devices) {
+      if (!map[parent]) map[parent] = []
+      map[parent].push({ slug, name: def.name || slug })
+    }
+  }
+  return map
+})
+
+const isMechanism = computed(() => calculatorSlug.value in mechParentDevices.value)
+const childMechs = computed(() => deviceChildMechs.value[calculatorSlug.value] || [])
 
 // Wykrywanie zmiany kg → t w polach masy
 const massFieldUnits = computed(() => {
@@ -663,16 +673,6 @@ function getSavedFieldValue(input_data, key) {
 
 
 
-onMounted(async () => {
-  await fetchUnits()
-  initializeFormData()
-  fetchDeviceResults()
-  fetchSavedResults()
-  if (route.query.result_id) {
-    await loadSingleResult(route.query.result_id)
-  }
-  loading.value = false
-})
 
 watch(calculatorSlug, async () => {
   await fetchUnits()
@@ -731,13 +731,19 @@ function isFieldVisible(key) {
 
 
 async function fetchDeviceResults() {
-  const parentSlugs = MECH_PARENT_DEVICES[calculatorSlug.value] || []
+  const parentSlugs = mechParentDevices.value[calculatorSlug.value] || []
   if (!parentSlugs.length) return
   const all = []
   for (const slug of parentSlugs) {
     try {
       const res = await api.get('/calculators/results/for_calculator/', { params: { slug } })
-      all.push(...res.data.map(r => ({ ...r, label: `${calculatorFields[slug]?.name || slug} — ${new Date(r.created_at).toLocaleDateString('pl-PL')}` })))
+      all.push(...res.data.map(r => {
+        const name = calculatorConfigs.value[slug]?.name || slug
+        const nrFab = r.input_data?.nr_fabryczny || ''
+        const date = new Date(r.created_at).toLocaleDateString('pl-PL')
+        const label = nrFab ? `${name} — nr fab. ${nrFab} — ${date}` : `${name} — ${date}`
+        return { ...r, label }
+      }))
     } catch (error) {
       console.error(error)
     }
@@ -960,10 +966,21 @@ async function loadSingleResult(resultId) {
   }
 }
 
+async function fetchCalculatorConfigs() {
+  try {
+    const res = await api.get('/calculators/definitions/schemas/')
+    calculatorConfigs.value = res.data
+  } catch (error) {
+    console.error('Błąd pobierania konfiguracji kalkulatorów:', error)
+  }
+}
+
 onMounted(async () => {
+  await fetchCalculatorConfigs()
   await fetchUnits()
   initializeFormData()
   fetchDeviceResults()
+  fetchSavedResults()
   if (route.query.result_id) {
     await loadSingleResult(route.query.result_id)
   }

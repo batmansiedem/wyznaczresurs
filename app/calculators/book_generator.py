@@ -105,10 +105,51 @@ def generate_logbook_pdf(data):
     story = []
 
     # --- STRONA 1: DANE URZĄDZENIA ---
-    title = _p("DZIENNIK REJESTRACJI PRZEBIEGU EKSPLOATACJI<br/>URZĄDZENIA TRANSPORTU BLISKIEGO", 
-               font='DVSB', size=16, color=PRIMARY, align=1)
-    story.append(title)
-    story.append(Spacer(1, 1*cm))
+    # Nagłówek z brandingiem (jak na obliczeniach)
+    LOGO_ZONE_W = 5.0 * cm
+    txt_w = USABLE_W - LOGO_ZONE_W
+
+    brand_style = ParagraphStyle(
+        'brand', fontName='DVSB', fontSize=11,
+        textColor=C_BLACK, alignment=2, leading=14,
+    )
+    brand_line = Paragraph(
+        'wyznacz<font color="#1976D2">resurs</font>'
+        '<font name="DVS" size="8" color="#666666">.com</font>',
+        brand_style,
+    )
+    logo_cell = Table([[brand_line]], colWidths=[LOGO_ZONE_W])
+    logo_cell.setStyle(TableStyle([
+        ('LEFTPADDING',   (0, 0), (-1, -1), 0),
+        ('RIGHTPADDING',  (0, 0), (-1, -1), 0),
+        ('TOPPADDING',    (0, 0), (-1, -1), 0),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 0),
+        ('VALIGN',        (0, 0), (-1, -1), 'MIDDLE'),
+    ]))
+
+    title_p = _p("DZIENNIK REJESTRACJI PRZEBIEGU EKSPLOATACJI URZĄDZENIA TRANSPORTU BLISKIEGO",
+                 font='DVSB', size=13, color=PRIMARY, align=0)
+    txt_block = Table([[title_p]], colWidths=[txt_w])
+    txt_block.setStyle(TableStyle([
+        ('LEFTPADDING',   (0, 0), (-1, -1), 10),
+        ('RIGHTPADDING',  (0, 0), (-1, -1), 4),
+        ('TOPPADDING',    (0, 0), (-1, -1), 0),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 0),
+        ('VALIGN',        (0, 0), (-1, -1), 'MIDDLE'),
+    ]))
+
+    hdr = Table([[txt_block, logo_cell]], colWidths=[txt_w, LOGO_ZONE_W])
+    hdr.setStyle(TableStyle([
+        ('VALIGN',        (0, 0), (-1, -1), 'MIDDLE'),
+        ('LEFTPADDING',   (0, 0), (-1, -1), 0),
+        ('RIGHTPADDING',  (0, 0), (-1, -1), 0),
+        ('TOPPADDING',    (0, 0), (-1, -1), 6),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
+        ('LINEBEFORE',    (0, 0), (0, -1), 4, PRIMARY),
+        ('LINEBELOW',     (0, 0), (-1, -1), 1.5, PRIMARY),
+    ]))
+    story.append(hdr)
+    story.append(Spacer(1, 0.8*cm))
 
     story.append(_section_header("Dane identyfikacyjne urządzenia"))
     story.append(Spacer(1, 0.3*cm))
@@ -116,7 +157,7 @@ def generate_logbook_pdf(data):
     device_info = [
         ['Rodzaj urządzenia:', data.get('rodzaj_urzadzenia', '')],
         ['Numer fabryczny:', data.get('nr_fabryczny', '')],
-        ['Numer ewidencyjny UDT:', data.get('nr_udt', '')],
+        ['Numer ewidencyjny UDT/TDT/WDT:', data.get('nr_udt', '')],
         ['Rok budowy:', data.get('rok_budowy', '')],
         ['Rok dopuszczenia / przeglądu spec.:', data.get('rok_dop', '')],
     ]
@@ -176,7 +217,41 @@ def generate_logbook_pdf(data):
 
     # --- STRONA 2: REJESTRACJA PRZEBIEGU ---
     story.append(PageBreak())
-    story.append(_p("REJESTRACJA PRZEBIEGU EKSPLOATACJI", font='DVSB', size=14, color=PRIMARY, align=1))
+
+    # Nagłówek strony 2 z brandingiem
+    title_p2 = _p("REJESTRACJA PRZEBIEGU EKSPLOATACJI", font='DVSB', size=13, color=PRIMARY, align=0)
+    txt_block2 = Table([[title_p2]], colWidths=[txt_w])
+    txt_block2.setStyle(TableStyle([
+        ('LEFTPADDING',   (0, 0), (-1, -1), 10),
+        ('RIGHTPADDING',  (0, 0), (-1, -1), 4),
+        ('TOPPADDING',    (0, 0), (-1, -1), 0),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 0),
+        ('VALIGN',        (0, 0), (-1, -1), 'MIDDLE'),
+    ]))
+    brand_line2 = Paragraph(
+        'wyznacz<font color="#1976D2">resurs</font>'
+        '<font name="DVS" size="8" color="#666666">.com</font>',
+        brand_style,
+    )
+    logo_cell2 = Table([[brand_line2]], colWidths=[LOGO_ZONE_W])
+    logo_cell2.setStyle(TableStyle([
+        ('LEFTPADDING',   (0, 0), (-1, -1), 0),
+        ('RIGHTPADDING',  (0, 0), (-1, -1), 0),
+        ('TOPPADDING',    (0, 0), (-1, -1), 0),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 0),
+        ('VALIGN',        (0, 0), (-1, -1), 'MIDDLE'),
+    ]))
+    hdr2 = Table([[txt_block2, logo_cell2]], colWidths=[txt_w, LOGO_ZONE_W])
+    hdr2.setStyle(TableStyle([
+        ('VALIGN',        (0, 0), (-1, -1), 'MIDDLE'),
+        ('LEFTPADDING',   (0, 0), (-1, -1), 0),
+        ('RIGHTPADDING',  (0, 0), (-1, -1), 0),
+        ('TOPPADDING',    (0, 0), (-1, -1), 6),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
+        ('LINEBEFORE',    (0, 0), (0, -1), 4, PRIMARY),
+        ('LINEBELOW',     (0, 0), (-1, -1), 1.5, PRIMARY),
+    ]))
+    story.append(hdr2)
     story.append(Spacer(1, 0.5*cm))
     
     # Stan resursu
@@ -194,18 +269,26 @@ def generate_logbook_pdf(data):
     story.append(st)
     story.append(Spacer(1, 0.5*cm))
 
-    # Tabela rejestracji
-    reg_header = [
-        ['Data / okres', 'Rejestrowane parametry', '', '', 'Obciążenie (ciężar / % cykli)', '', '', '', ''],
-        ['', 'Dni pracy', 'Liczba cykli', 'Motogodziny', 'i1', 'i2', 'i3', 'i4', 'i5']
+    # Tabela rejestracji — szerokości kolumn sumują się do USABLE_W
+    cw_data  = USABLE_W * 0.17   # Data / okres
+    cw_dni   = USABLE_W * 0.10   # Dni pracy
+    cw_cyk   = USABLE_W * 0.13   # Liczba cykli
+    cw_moto  = USABLE_W * 0.13   # Motogodziny
+    cw_i     = (USABLE_W - cw_data - cw_dni - cw_cyk - cw_moto) / 5  # i1–i5
+
+    def _ph(txt):
+        """Nagłówek tabeli — Paragraph z zawijaniem."""
+        return _p(txt, font='DVSB', size=7.5, color=PRIMARY, align=1)
+
+    reg_rows = [
+        [_ph('Data / okres'), _ph('Rejestrowane parametry'), '', '', _ph('Obciążenie (ciężar / % cykli)'), '', '', '', ''],
+        ['', _ph('Dni pracy'), _ph('Liczba cykli'), _ph('Motogodziny'), _ph('i1'), _ph('i2'), _ph('i3'), _ph('i4'), _ph('i5')],
     ]
     for _ in range(18):
-        reg_header.append(['' for _ in range(9)])
+        reg_rows.append(['' for _ in range(9)])
 
-    cw = USABLE_W / 10.5
-    reg_table = Table(reg_header, colWidths=[cw*1.5, cw, cw, cw, cw, cw, cw, cw, cw])
+    reg_table = Table(reg_rows, colWidths=[cw_data, cw_dni, cw_cyk, cw_moto, cw_i, cw_i, cw_i, cw_i, cw_i])
     reg_table.setStyle(TableStyle([
-        ('FONTNAME', (0,0), (-1,1), 'DVSB'),
         ('FONTSIZE', (0,0), (-1,-1), 7.5),
         ('GRID', (0,0), (-1,-1), 0.3, C_GREY_SEP),
         ('SPAN', (1,0), (3,0)),

@@ -43,7 +43,7 @@ def generate_invoice_pdf(invoice) -> bytes:
     
     header_data = [
         [Paragraph("Data wystawienia:", label_style), Paragraph("Miejsce wystawienia:", label_style)],
-        [Paragraph(invoice.issue_date.strftime('%d.%m.%Y'), value_style), Paragraph("Warszawa", value_style)]
+        [Paragraph(invoice.issue_date.strftime('%d.%m.%Y'), value_style), Paragraph("Łódź", value_style)]
     ]
     header_table = Table(header_data, colWidths=[9*cm, 8*cm])
     header_table.setStyle(TableStyle([('VALIGN', (0,0), (-1,-1), 'TOP'), ('LEFTPADDING', (0,0), (-1,-1), 0)]))
@@ -53,7 +53,7 @@ def generate_invoice_pdf(invoice) -> bytes:
     # 2. Sprzedawca, Nabywca, Odbiorca (Pionowo)
     sides_data = [
         [Paragraph("SPRZEDAWCA", label_style)],
-        [Paragraph("<b>wyznaczresurs.com Sp. z o.o.</b><br/>ul. Przykładowa 123, 00-001 Warszawa<br/>NIP: 1234567890", value_style)],
+        [Paragraph("<b>EDS Dariusz Surmacki.</b><br/>ul. Lawinowa 36C, 92-010 Łódź<br/>NIP: 7691427583<br/>e-mail: info@wyznaczresurs.com", value_style)],
         [Spacer(1, 0.3*cm)],
         [Paragraph("NABYWCA", label_style)],
         [Paragraph(f"<b>{invoice.buyer_name}</b><br/>{invoice.buyer_address.replace(',', '<br/>')}<br/>NIP: {invoice.buyer_nip}", value_style)]

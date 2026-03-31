@@ -9,8 +9,6 @@ Nowoczesny layout inżynierski:
 
 import os
 import re
-import json as _json
-from pathlib import Path
 from io import BytesIO
 from datetime import datetime
 from math import cos, sin, radians
@@ -35,18 +33,12 @@ FONT_PATH = os.path.join(settings.BASE_DIR, 'core', 'fonts')
 pdfmetrics.registerFont(TTFont('DVS',  os.path.join(FONT_PATH, 'DejaVuSans.ttf')))
 pdfmetrics.registerFont(TTFont('DVSB', os.path.join(FONT_PATH, 'DejaVuSans-Bold.ttf')))
 
-# ── Mapa show_if z JSON kalkulatorów ─────────────────────────────────────────
-_FIELDS_JSON_PATH = Path(settings.BASE_DIR).parent / 'ui' / 'src' / 'data' / 'calculator_fields.json'
-_CALC_FIELDS_MAP: dict = {}
-try:
-    _CALC_FIELDS_MAP = _json.loads(_FIELDS_JSON_PATH.read_text(encoding='utf-8'))
-except Exception:
-    pass
+from .device_config import load_config as _load_device_config
 
 
 def _is_field_visible_in_pdf(key: str, slug: str, input_data: dict) -> bool:
-    """Zwraca True jeśli pole powinno być widoczne wg show_if z calculator_fields.json."""
-    slug_fields = _CALC_FIELDS_MAP.get(slug, {}).get('fields', {})
+    """Zwraca True jeśli pole powinno być widoczne wg show_if z konfiguracji urządzenia."""
+    slug_fields = _load_device_config(slug).get('fields', {})
     field_def = slug_fields.get(key, {})
     show_if = field_def.get('show_if')
     if not show_if:
@@ -1266,7 +1258,19 @@ OUTPUT_LABELS = {
     'zalecenia':                 ('Zalecenia',                              ''),
     'prognoza':                  ('Prognoza eksploatacji',                  'lat'),
     'wiek_dzwigu':               ('Wiek dźwigu',                            'lat'),
-}
+    'resurs_wyk_pod':            ('Wykorzystanie resursu mechanizmu podnoszenia', '%'),
+    'resurs_prog_pod':           ('Prognoza mechanizmu podnoszenia',        'dni'),
+    'resurs_wyk_jaz':            ('Wykorzystanie resursu mechanizmu jazdy',      '%'),
+    'resurs_prog_jaz':           ('Prognoza mechanizmu jazdy',               'dni'),
+    'resurs_wyk_prz':            ('Wykorzystanie resursu mechanizmu przesuwu',    '%'),
+    'resurs_prog_prz':           ('Prognoza mechanizmu przesuwu',            'dni'),
+    'resurs_wyk_mas':           ('Wykorzystanie resursu mechanizmu masztu',     '%'),
+    'resurs_prog_mas':          ('Prognoza mechanizmu masztu',              'dni'),
+    'resurs_prognoza_dni':      ('Dni do wyczerpania resursu',              'dni'),
+    'data_prog_pod':            ('Symulowana data (mech. podnoszenia)',     ''),
+    't_max_pod':                ('Zdolność resursowa t_max',                'h'),
+    't_sum_pod':                ('Czas pracy t_sum',                        'h'),
+    }
 
 _PARAM_SECTIONS = [
     ('Dane urządzenia', [
@@ -1338,6 +1342,7 @@ _SKIP_KEYS = {
     'max_c', 't_max', 'k_w', 'k_k', 'k_v_pod', 'k_h_pod',
     # Pola wewnętrzne kalkulatora żurawia (nie odpowiadają polom w nowej aplikacji)
     'recalculated_gnp', 'U_DOW',
+    'max_czas',
     # Pola wewnętrzne wózka specjalizowanego
     'technical_state_reached', 'resurs_prognoza_dni',
 }
@@ -1590,7 +1595,12 @@ def generate_result_pdf(result, calculator_name: str,
             label = INPUT_LABELS.get(key, key.replace('_', ' ').capitalize())
             if not unit:
                 unit = _extract_unit(label)
-            val = _INSPECTION_VALS.get(str(val).strip(), val)
+            
+            # Mapowanie wartości inspekcji tylko dla pól typu inspection_status
+            field_def = _load_device_config(_pdf_slug).get('fields', {}).get(key, {})
+            if field_def.get('type') == 'inspection_status':
+                val = _INSPECTION_VALS.get(str(val).strip(), val)
+            
             section_rows.append((label, val, unit))
             seen.add(key)
         if section_rows:
@@ -1642,9 +1652,9 @@ def generate_result_pdf(result, calculator_name: str,
         _render_hdr = True
 
     _is_mech = result.calculator_definition.slug in _MECH_SLUGS
-    _kd_items = _diagram_kd(input_data, THEME, is_mech=_is_mech)
-    _kd_coeff_items = []
     _wsp_raw_kd = output_data.get('wsp_km' if _is_mech else 'wsp_kdr')
+    _kd_items = _diagram_kd(input_data, THEME, is_mech=_is_mech) if _wsp_raw_kd is not None else []
+    _kd_coeff_items = []
     if _wsp_raw_kd is not None:
         _STAN_OPISY_KD = {
             'Q1': 'Q1-lekki — Ładunek nominalny podnoszony bardzo rzadko, zwykle ładunki znacznie mniejsze od nominalnego',

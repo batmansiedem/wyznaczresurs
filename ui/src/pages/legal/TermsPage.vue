@@ -115,5 +115,14 @@
 </template>
 
 <script setup>
+import { useMeta } from 'quasar'
 import LegalPageLayout from 'components/shared/LegalPageLayout.vue'
+useMeta({
+  title: 'Regulamin | wyznaczresurs.com',
+  meta: {
+    description: { name: 'description', content: 'Regulamin serwisu wyznaczresurs.com — zasady korzystania z kalkulatora resursu UTB, odpowiedzialność, płatności punktowe.' },
+    robots:       { name: 'robots',      content: 'index, follow' },
+  },
+  link: { canonical: { rel: 'canonical', href: 'https://wyznaczresurs.com/regulamin' } },
+})
 </script>

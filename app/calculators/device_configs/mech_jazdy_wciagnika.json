@@ -1,0 +1,276 @@
+{
+  "name": "Mechanizm jazdy wciągnika",
+  "description": "Kalkulator resursu dla mechanizmu jazdy wciągnika.",
+  "fields": {
+    "wykonawca": {
+      "type": "text",
+      "label": "Wykonawca",
+      "required": false
+    },
+    "uwagi": {
+      "type": "textarea",
+      "label": "Uwagi",
+      "required": false
+    },
+    "mechanizm_pomocniczy": {
+      "type": "select",
+      "label": "Mechanizm pomocniczy",
+      "required": false,
+      "options": [
+        "Nie",
+        "Mechanizm pomocniczy (I)",
+        "Mechanizm pomocniczy (II)",
+        "Mechanizm pomocniczy (III)",
+        "Mechanizm pomocniczy (IV)"
+      ]
+    },
+    "nr_fabryczny": {
+      "type": "text",
+      "label": "Nr fabryczny",
+      "required": true
+    },
+    "nr_ewidencyjny": {
+      "type": "text",
+      "label": "Nr ewidencyjny UDT/TDT/WDT",
+      "required": false
+    },
+    "lata_pracy": {
+      "type": "number",
+      "label": "Ilość przepracowanych lat",
+      "required": true,
+      "unit_options": [
+        "lata",
+        "miesiące"
+      ],
+      "default_unit": "lata"
+    },
+    "ilosc_cykli": {
+      "type": "number",
+      "label": "Ilość odbytych cykli",
+      "required": true
+    },
+    "czas_cykle": {
+      "type": "number",
+      "label": "Średni czas cyklu",
+      "required": true,
+      "unit_options": [
+        "s",
+        "min",
+        "h"
+      ],
+      "default_unit": "s"
+    },
+    "sposob_rejestracji": {
+      "type": "select",
+      "label": "Sposób rejestracji przez eksploatującego warunków eksploatacji urządzenia",
+      "required": true,
+      "options": [
+        "Rejestrowanie przyrządami",
+        "Rejestrowanie w dzienniku, łącznie ze stosowaniem licznika",
+        "Rejestrowanie na podstawie procesu technologicznego",
+        "Rejestrowanie na podstawie informacji o produkcji",
+        "Informacja o warunkach eksploatacji jest niekompletna",
+        "Brak informacji o historii urządzenia"
+      ]
+    },
+    "gnp": {
+      "type": "gnp_selector",
+      "label": "Grupa natężenia pracy (mechanizmu)",
+      "required": true,
+      "options": [
+        "M1",
+        "M2",
+        "M3",
+        "M4",
+        "M5",
+        "M6",
+        "M7",
+        "M8"
+      ],
+      "gnp_type": "mechanism"
+    },
+    "q_max": {
+      "type": "number",
+      "label": "Udźwig maksymalny Q<sub>max</sub>",
+      "required": true,
+      "unit_type": "mass",
+      "default_unit": "kg",
+      "unit_options": [
+        "kg",
+        "t"
+      ]
+    },
+    "spec": {
+      "type": "select",
+      "label": "Czy chcesz wyznaczyć resurs po pierwszym przeglądzie specjalnym?",
+      "required": true,
+      "options": [
+        "Nie",
+        "Tak"
+      ]
+    },
+    "ponowny_resurs": {
+      "type": "select",
+      "label": "Czy chcesz wykonać ponowne wyznaczenie resursu?",
+      "required": true,
+      "options": [
+        "Nie",
+        "Tak"
+      ]
+    },
+    "ostatni_resurs": {
+      "type": "number",
+      "label": "Motogodziny z poprzedniego okresu",
+      "required": false,
+      "show_if": {
+        "field": "ponowny_resurs",
+        "value": "Tak"
+      },
+      "default_unit": "mth"
+    },
+    "data_resurs": {
+      "type": "date",
+      "label": "Data wyznaczenia ostatniego resursu",
+      "required": false,
+      "show_if": {
+        "field": "ponowny_resurs",
+        "value": "Tak"
+      }
+    },
+    "diagram_kd": {
+      "type": "diagram",
+      "label": "Widmo obciążeń K<sub>d</sub>",
+      "svg": "schemat_kd"
+    },
+    "ilosc_mth": {
+      "label": "Łączna ilość motogodzin (jeśli znana)",
+      "type": "number",
+      "default_unit": "mth",
+      "hint": "Jeśli podane, używane zamiast czasu cyklu × ilości cykli"
+    },
+    "tryb_pracy": {
+      "label": "Tryb pracy",
+      "type": "select",
+      "options": [
+        "1-zmianowy (8h)",
+        "2-zmianowy (16h)",
+        "3-zmianowy (24h)"
+      ]
+    },
+    "cykle_zmiana": {
+      "label": "Ilość cykli na zmianę",
+      "type": "number"
+    },
+    "dni_robocze": {
+      "label": "Ilość dni roboczych w roku",
+      "type": "number"
+    }
+  },
+  "sections": [
+    {
+      "id": "informacje",
+      "title": "Informacja na temat resursu",
+      "icon": "info",
+      "fields": [
+        "spec",
+        "ponowny_resurs",
+        "data_resurs",
+        "ostatni_resurs"
+      ]
+    },
+    {
+      "id": "dane",
+      "title": "Określ dane dla mechanizmu jazdy wciągnika",
+      "icon": "settings",
+      "fields": [
+        "wykonawca",
+        "uwagi",
+        "mechanizm_pomocniczy",
+        "nr_fabryczny",
+        "nr_ewidencyjny",
+        "q_max",
+        "lata_pracy",
+        "czas_cykle",
+        "ilosc_cykli",
+        "ilosc_mth",
+        "tryb_pracy",
+        "cykle_zmiana",
+        "dni_robocze"
+      ]
+    },
+    {
+      "id": "rejestracja",
+      "title": "Określ sposób rejestracji, wybierając odpowiednią opcję z tabeli",
+      "icon": "assignment",
+      "fields": [
+        "sposob_rejestracji"
+      ]
+    },
+    {
+      "id": "gnp",
+      "title": "Określ grupę natężenia pracy mechanizmu jazdy wciągnika, wybierając opcję z tabeli",
+      "icon": "speed",
+      "fields": [
+        "gnp"
+      ]
+    },
+    {
+      "id": "kd",
+      "title": "Na podstawie kalkulatora współczynnika K<sub>d</sub> wyznacz stan obciążenia",
+      "icon": "balance",
+      "fields": [
+        "diagram_kd"
+      ]
+    }
+  ],
+  "output_fields": {
+    "resurs_wykorzystanie": {
+      "label": "Wykorzystanie resursu",
+      "type": "percentage",
+      "unit": "%"
+    },
+    "resurs_message": {
+      "label": "Status resursu",
+      "type": "text"
+    },
+    "data_prognoza": {
+      "label": "Prognozowana data",
+      "type": "date"
+    },
+    "wsp_km": {
+      "label": "Wsp. widma obciążeń km",
+      "type": "number"
+    },
+    "stan_obciazenia": {
+      "label": "Stan obciążenia",
+      "type": "text"
+    },
+    "T_WSK": {
+      "label": "Projektowa zdolność czasowa T_WSK",
+      "type": "number",
+      "unit": "h"
+    },
+    "F_X": {
+      "label": "Wsp. niepewności rejestracji F<sub>X</sub>",
+      "type": "number"
+    },
+    "czas_uzytkowania_mech": {
+      "label": "Czas użytkowania mechanizmu",
+      "type": "number",
+      "unit": "h"
+    },
+    "czas_uzytkowania_mech_rok": {
+      "label": "Czas użytkowania mech./rok",
+      "type": "number",
+      "unit": "h/rok"
+    },
+    "resurs_prognoza_dni": {
+      "label": "Prognoza resursu",
+      "type": "number",
+      "unit": "dni"
+    }
+  },
+  "parent_devices": [
+    "wciagnik"
+  ]
+}

@@ -1,0 +1,397 @@
+{
+  "name": "Winda Dekarska",
+  "description": "Kalkulator resursu dla windy dekarskiej.",
+  "fields": {
+    "wykonawca": {
+      "type": "text",
+      "label": "Wykonawca",
+      "required": false
+    },
+    "uwagi": {
+      "type": "textarea",
+      "label": "Uwagi",
+      "required": false
+    },
+    "producent": {
+      "type": "text",
+      "label": "Producent",
+      "required": true
+    },
+    "nr_fabryczny": {
+      "type": "text",
+      "label": "Nr fabryczny",
+      "required": true
+    },
+    "nr_ewidencyjny": {
+      "type": "text",
+      "label": "Nr ewidencyjny UDT/TDT/WDT",
+      "required": false
+    },
+    "nr_udt": {
+      "type": "text",
+      "label": "Nr ewidencyjny UDT/TDT/WDT",
+      "required": true
+    },
+    "typ": {
+      "type": "select",
+      "label": "Typ windy",
+      "required": true,
+      "options": [
+        "elektryczny",
+        "hydrauliczny"
+      ]
+    },
+    "lata_pracy": {
+      "type": "number",
+      "label": "Ilość przepracowanych lat",
+      "required": true,
+      "unit_options": [
+        "lata",
+        "miesiące"
+      ],
+      "default_unit": "lata"
+    },
+    "tryb_pracy": {
+      "label": "Tryb pracy",
+      "type": "select",
+      "required": true,
+      "options": [
+        "jednozmianowy",
+        "dwuzmianowy",
+        "trzyzmianowy"
+      ]
+    },
+    "cykle_zmiana": {
+      "label": "Ilość cykli przypadających na zmianę",
+      "type": "number",
+      "required": true
+    },
+    "dni_robocze": {
+      "label": "Ilość dni roboczych w roku",
+      "type": "number",
+      "required": true,
+      "default_value": 250
+    },
+    "ilosc_cykli": {
+      "type": "number",
+      "label": "Ilość odbytych cykli",
+      "required": true
+    },
+    "sposob_rejestracji": {
+      "type": "select",
+      "label": "Sposób rejestracji przez eksploatującego warunków eksploatacji urządzenia",
+      "required": true,
+      "options": [
+        "Rejestrowanie przyrządami",
+        "Rejestrowanie w dzienniku, łącznie ze stosowaniem licznika",
+        "Rejestrowanie na podstawie procesu technologicznego",
+        "Rejestrowanie na podstawie informacji o produkcji",
+        "Informacja o warunkach eksploatacji jest niekompletna",
+        "Brak informacji o historii urządzenia"
+      ]
+    },
+    "spec": {
+      "type": "select",
+      "label": "Czy chcesz wyznaczyć resurs po pierwszym przeglądzie specjalnym?",
+      "required": true,
+      "options": [
+        "Nie",
+        "Tak"
+      ]
+    },
+    "ponowny_resurs": {
+      "type": "select",
+      "label": "Czy chcesz wykonać ponowne wyznaczenie resursu?",
+      "required": true,
+      "options": [
+        "Nie",
+        "Tak"
+      ]
+    },
+    "ostatni_resurs": {
+      "type": "number",
+      "label": "Ostatni stopień wykorzystania resursu",
+      "required": false,
+      "show_if": {
+        "field": "ponowny_resurs",
+        "value": "Tak"
+      },
+      "default_unit": "%"
+    },
+    "ostatni_resurs_mech_pod": {
+      "type": "number",
+      "label": "Ostatni resurs mechanizmu podnoszenia",
+      "required": false,
+      "show_if": {
+        "field": "ponowny_resurs",
+        "value": "Tak"
+      },
+      "default_unit": "%"
+    },
+    "ostatni_licznik": {
+      "type": "number",
+      "label": "Stan licznika motogodzin na dzień wyznaczenia ostatniego resursu",
+      "required": false,
+      "show_if": {
+        "field": "ponowny_resurs",
+        "value": "Tak"
+      },
+      "default_unit": "mth"
+    },
+    "data_resurs": {
+      "type": "date",
+      "label": "Data wyznaczenia ostatniego resursu",
+      "required": false,
+      "show_if": {
+        "field": "ponowny_resurs",
+        "value": "Tak"
+      }
+    },
+    "max_cykle": {
+      "type": "number",
+      "label": "Maks. cykle (producent)",
+      "required": false,
+      "hint": "jeśli znane"
+    },
+    "q_max": {
+      "type": "number",
+      "label": "Udźwig maksymalny Q<sub>max</sub>",
+      "required": true,
+      "unit_type": "mass",
+      "default_unit": "kg",
+      "unit_options": [
+        "kg",
+        "t"
+      ]
+    },
+    "h_max": {
+      "type": "number",
+      "label": "Maksymalna wysokość podnoszenia h<sub>max</sub>",
+      "required": true,
+      "unit_type": "length",
+      "default_unit": "m"
+    },
+    "v_pod": {
+      "type": "number",
+      "label": "Prędkość podnoszenia/opuszczania v<sub>pod</sub>",
+      "required": true,
+      "unit_options": [
+        "m/s",
+        "m/min",
+        "m/h"
+      ],
+      "default_unit": "m/min"
+    },
+    "a_1": {
+      "type": "number",
+      "label": "Kąt nachylenia 30°",
+      "required": true,
+      "default_unit": "%"
+    },
+    "a_2": {
+      "type": "number",
+      "label": "Kąt nachylenia 60°",
+      "required": true,
+      "default_unit": "%"
+    },
+    "a_3": {
+      "type": "number",
+      "label": "Kąt nachylenia 80°",
+      "required": true,
+      "default_unit": "%"
+    },
+    "konstrukcja": {
+      "type": "inspection_status",
+      "label": "Czy konstrukcja stalowa jest zdeformowana i/lub pojawiły się pęknięcia w złączach spawanych?",
+      "options": [
+        "Brak uszkodzeń",
+        "Uszkodzenia"
+      ]
+    },
+    "automatyka": {
+      "type": "inspection_status",
+      "label": "Czy automatyka sterująca i/lub zabezpieczająca jest sprawna i aktywna?",
+      "options": [
+        "Sprawna",
+        "Niesprawna"
+      ]
+    },
+    "sworznie": {
+      "type": "inspection_status",
+      "label": "Stan sworzni",
+      "options": [
+        "Brak uszkodzeń",
+        "Uszkodzenia"
+      ]
+    },
+    "eksploatacja": {
+      "type": "inspection_status",
+      "label": "Czy urządzenie eksploatowane jest zgodnie z przeznaczeniem i instrukcją eksploatacji?",
+      "options": [
+        "Zgodne",
+        "Niezgodne"
+      ]
+    },
+    "szczelnosc": {
+      "type": "inspection_status",
+      "label": "Szczelność",
+      "options": [
+        "Szczelny",
+        "Nieszczelny"
+      ]
+    },
+    "hamulce": {
+      "type": "inspection_status",
+      "label": "Czy układ hamulcowy jest sprawny?",
+      "options": [
+        "Sprawne",
+        "Niesprawne"
+      ]
+    },
+    "diagram_kd": {
+      "type": "diagram",
+      "label": "Widmo obciążeń K<sub>d</sub>",
+      "svg": "schemat_kd"
+    },
+    "diagram_ad": {
+      "type": "diagram",
+      "svg": "schemat_ad",
+      "label": "Rozkład kątów"
+    }
+  },
+  "sections": [
+    {
+      "id": "informacje",
+      "title": "Informacja na temat resursu",
+      "icon": "info",
+      "fields": [
+        "spec",
+        "ponowny_resurs",
+        "data_resurs",
+        "ostatni_resurs",
+        "ostatni_resurs_mech_pod",
+        "ostatni_licznik"
+      ]
+    },
+    {
+      "id": "dane",
+      "title": "Określ dane dla windy dekarskiej",
+      "icon": "settings",
+      "fields": [
+        "wykonawca",
+        "uwagi",
+        "producent",
+        "nr_fabryczny",
+        "nr_ewidencyjny",
+        "nr_udt",
+        "typ",
+        "h_max",
+        "v_pod",
+        "q_max",
+        "lata_pracy",
+        "max_cykle",
+        "ilosc_cykli",
+        "tryb_pracy",
+        "cykle_zmiana",
+        "dni_robocze"
+      ]
+    },
+    {
+      "id": "rejestracja",
+      "title": "Określ sposób rejestracji, wybierając odpowiednią opcję z tabeli",
+      "icon": "assignment",
+      "fields": [
+        "sposob_rejestracji"
+      ]
+    },
+    {
+      "id": "ad",
+      "title": "Wyznacz współczynnik αd — kąt ustawienia windy dekarskiej",
+      "icon": "architecture",
+      "fields": [
+        "diagram_ad"
+      ]
+    },
+    {
+      "id": "kd",
+      "title": "Za pomocą kalkulatora wyznacz współczynnik K<sub>d</sub>",
+      "icon": "balance",
+      "fields": [
+        "diagram_kd"
+      ]
+    },
+    {
+      "id": "inspekcja",
+      "title": "Ocena stanu technicznego",
+      "icon": "fact_check",
+      "fields": [
+        "konstrukcja",
+        "automatyka",
+        "sworznie",
+        "eksploatacja",
+        "szczelnosc",
+        "hamulce"
+      ]
+    }
+  ],
+  "output_fields": {
+    "resurs_wykorzystanie": {
+      "label": "Stopień wykorzystania resursu (konstrukcja)",
+      "type": "percentage",
+      "unit": "%"
+    },
+    "resurs_message": {
+      "label": "Status resursu (konstrukcja)",
+      "type": "text"
+    },
+    "data_prognoza": {
+      "label": "Symulowana data wyczerpania resursu (konstrukcja)",
+      "type": "date"
+    },
+    "resurs_prognoza_dni": {
+      "label": "Dni do wyczerpania resursu (konstrukcja)",
+      "type": "number",
+      "unit": "dni"
+    },
+    "ilosc_cykli": {
+      "label": "Ilość odbytych cykli",
+      "type": "number"
+    },
+    "ilosc_cykli_rok": {
+      "label": "Ilość cykli / rok",
+      "type": "number"
+    },
+    "U_WSK": {
+      "label": "Projektowa zdolność cyklowa U<sub>WSK</sub>",
+      "type": "number"
+    },
+    "F_X": {
+      "label": "Współczynnik F<sub>X</sub>",
+      "type": "number"
+    },
+    "resurs_wyk_pod": {
+      "label": "Stopień wykorzystania resursu (mechanizm podnoszenia)",
+      "type": "percentage",
+      "unit": "%"
+    },
+    "resurs_prog_pod": {
+      "label": "Dni do wyczerpania resursu (mechanizm podnoszenia)",
+      "type": "number",
+      "unit": "dni"
+    },
+    "data_prog_pod": {
+      "label": "Symulowana data wyczerpania resursu (mechanizm podnoszenia)",
+      "type": "date"
+    },
+    "t_max_pod": {
+      "label": "Zdolność resursowa mechanizmu t<sub>max</sub>",
+      "type": "number",
+      "unit": "h"
+    },
+    "t_sum_pod": {
+      "label": "Czas pracy mechanizmu t<sub>sum</sub>",
+      "type": "number",
+      "unit": "h"
+    }
+  }
+}

@@ -38,7 +38,7 @@
             <li><q-icon name="check_circle" size="18px" color="white" style="opacity:0.7" />Rejestracja bezpłatna — bez karty</li>
             <li><q-icon name="check_circle" size="18px" color="white" style="opacity:0.7" />22 typy urządzeń transportu bliskiego</li>
             <li><q-icon name="check_circle" size="18px" color="white" style="opacity:0.7" />Metodologia FEM 9.511 / ISO 4301</li>
-            <li><q-icon name="check_circle" size="18px" color="white" style="opacity:0.7" />Wyznaczenie resursu PDF akceptowane przez UDT</li>
+            <li><q-icon name="check_circle" size="18px" color="white" style="opacity:0.7" />Wyznaczenie resursu PDF akceptowane przez UDT/WDT/TDT</li>
           </ul>
           <div class="auth-norm-row">
             <span class="auth-norm">FEM 9.511</span>
@@ -113,7 +113,14 @@
 import { reactive, ref } from 'vue'
 import { useUserStore } from 'stores/user-store'
 import { useRouter } from 'vue-router'
-import { Notify } from 'quasar'
+import { Notify, useMeta } from 'quasar'
+
+useMeta({
+  title: 'Rejestracja | wyznaczresurs.com',
+  meta: {
+    robots: { name: 'robots', content: 'noindex, nofollow' },
+  },
+})
 
 const userStore = useUserStore()
 const router = useRouter()

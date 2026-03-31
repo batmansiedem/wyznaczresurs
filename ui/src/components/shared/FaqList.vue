@@ -38,7 +38,7 @@ const faqItems = [
   {
     icon: 'verified_user',
     q: 'Czy obliczenia są zgodne z UDT?',
-    a: `<p style="margin:0;line-height:1.7">Tak. Wszystkie algorytmy opracowano na podstawie Rozporządzenia MPiT z dnia 30 października 2018 r. oraz wytycznych FEM 9.511 i normy ISO 4301. Wyznaczenie resursu PDF jest akceptowane przez Urząd Dozoru Technicznego.</p>`
+    a: `<p style="margin:0;line-height:1.7">Tak. Wszystkie algorytmy opracowano na podstawie Rozporządzenia MPiT z dnia 30 października 2018 r. oraz wytycznych FEM 9.511 i normy ISO 4301. Wyznaczenie resursu PDF jest akceptowane przez UDT/WDT/TDT.</p>`
   },
   {
     icon: 'picture_as_pdf',
@@ -48,12 +48,12 @@ const faqItems = [
   {
     icon: 'update',
     q: 'Czy mogę zaktualizować obliczenia w kolejnym roku?',
-    a: `<p style="margin:0;line-height:1.7">Tak. Zapisane wyniki możesz edytować — zaktualizuj dane eksploatacyjne o kolejny rok pracy i wygeneruj nowy raport PDF. Każda aktualizacja kosztuje 80 punktów.</p>`
+    a: `<p style="margin:0;line-height:1.7">Tak. Zapisane wyniki możesz edytować — zaktualizuj dane eksploatacyjne o kolejny rok pracy i wygeneruj nowy raport PDF. Każda aktualizacja kosztuje 100 punktów.</p>`
   },
   {
     icon: 'lock',
     q: 'Co to jest wynik zablokowany?',
-    a: `<p style="margin:0;line-height:1.7">Gdy na koncie brakuje punktów, obliczenie jest wykonywane, ale wyniki pozostają zablokowane (widoczna tylko informacja o braku punktów). Wynik można odblokować w dowolnym momencie po doładowaniu konta — kosztuje to 80 pkt.</p>`
+    a: `<p style="margin:0;line-height:1.7">Gdy na koncie brakuje punktów, obliczenie jest wykonywane, ale wyniki pozostają zablokowane (widoczna tylko informacja o braku punktów). Wynik można odblokować w dowolnym momencie po doładowaniu konta — kosztuje to 100 pkt.</p>`
   }
 ]
 </script>

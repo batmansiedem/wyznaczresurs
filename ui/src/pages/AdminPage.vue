@@ -659,7 +659,7 @@
                 <div class="col">
                   <q-toggle
                     v-model="selectedUser.show_signature_on_pdf"
-                    label="Pokazuj podpis na orzeczeniu PDF dla tego użytkownika"
+                    label="Pokazuj podpis na obliczeniu PDF dla tego użytkownika"
                     color="primary"
                     left-label
                     @update:model-value="updateUserPdfSettings"

@@ -201,6 +201,13 @@ class BaseCalculator(ABC):
             return val * 1000 if raw.get('unit') == 't' else val
         return Decimal(str(raw or 0))
 
+    def get_kss(self):
+        """Zwraca współczynnik kss (0.5 jeśli wybrano resurs po przeglądzie specjalnym, inaczej 1.0)."""
+        spec = self.input_data.get('spec')
+        if spec == 'Tak':
+            return Decimal('0.5')
+        return Decimal('1.0')
+
     def _calculate_wsp_kdr(self, ilosc_cykli):
         """Oblicza współczynnik widma obciążeń na podstawie q_max, q_1..q_5, c_1..c_5."""
         q_max = self._get_kg_val('q_max')   # zawsze w kg
@@ -508,12 +515,23 @@ class DzwigCalculator(BaseCalculator):
         elif 10 < wiek_dzwigu <= 15: resurs = (4 * wiek_dzwigu)
         elif 15 < wiek_dzwigu <= 20: resurs = (3 * wiek_dzwigu + 15)
         elif 20 < wiek_dzwigu <= 25: resurs = (2 * wiek_dzwigu + 35)
-        else: resurs = 90
-        
-        ilosc_motogodzin_dzien = licznik_godzin / (lata_pracy * dni_robocze) if lata_pracy > 0 and dni_robocze > 0 else 0
-        resurs = resurs * ((Decimal('1')/Decimal('120')) * ilosc_motogodzin_dzien + Decimal('0.8'))
+        else: resurs = Decimal(90)
 
-        # Min caps for resurs based on wiek_dzwigu
+        # Adjustments based on lata_pracy (PHP L166-L172)
+        if wiek_dzwigu > 25:
+            if lata_pracy <= 5: resurs -= 40
+            elif 5 < lata_pracy <= 10: resurs -= 30
+            elif 10 < lata_pracy <= 15: resurs -= 20
+        elif 15 < wiek_dzwigu <= 25:
+            if lata_pracy <= 5: resurs -= 45
+            elif 5 < lata_pracy <= 10: resurs -= 35
+            elif 10 < lata_pracy <= 15: resurs -= 25
+
+        # Adjustment for daily operating hours (PHP L184)
+        ilosc_motogodzin_dzien = licznik_godzin / (lata_pracy * dni_robocze) if lata_pracy > 0 and dni_robocze > 0 else Decimal(0)
+        resurs = resurs * ((Decimal('1')/Decimal('120')) * Decimal(str(ilosc_motogodzin_dzien)) + Decimal('0.8'))
+
+        # Min caps for resurs based on wiek_dzwigu (PHP L187-L192)
         if wiek_dzwigu <= 5: resurs = min(resurs, Decimal(15))
         elif 5 < wiek_dzwigu <= 10: resurs = min(resurs, Decimal(40))
         elif 10 < wiek_dzwigu <= 15: resurs = min(resurs, Decimal(60))
@@ -521,20 +539,8 @@ class DzwigCalculator(BaseCalculator):
         elif 20 < wiek_dzwigu <= 25: resurs = min(resurs, Decimal(85))
         else: resurs = min(resurs, Decimal(90))
 
-        # Adjustments based on lata_pracy if wiek_dzwigu > 25
-        if wiek_dzwigu > 25:
-            if lata_pracy <= 5: resurs -= 40
-            elif 5 < lata_pracy <= 10: resurs -= 30
-            elif 10 < lata_pracy <= 15: resurs -= 20
-        # Adjustments based on lata_pracy if 15 < wiek_dzwigu <= 25
-        elif 15 < wiek_dzwigu <= 25:
-            if lata_pracy <= 5: resurs -= 45
-            elif 5 < lata_pracy <= 10: resurs -= 35
-            elif 10 < lata_pracy <= 15: resurs -= 25
-
-        # Component checks - resurs additions
-        component_resurs_add = {
-            'liny_nosne': 3, 'wciagarka': 3, 'konstrukcja_nosna': 3, 'mocowanie_lin': 3,
+        # Component checks - resurs additions (PHP L194-L215)
+        component_resurs_add = {            'liny_nosne': 3, 'wciagarka': 3, 'konstrukcja_nosna': 3, 'mocowanie_lin': 3,
             'ogranicznik_predkosci': 3, 'chwytacze_kabiny': 3, 'kola_kabiny': 3,
             'kola_przeciwwagi': 3, 'prowadnice_kabiny': 3, 'prowadnice_przeciwwagi': 3,
             'zderzak_kabiny': 3, 'zderzak_przeciwwagi': 3, 'automatyka': 3, 'drzwi': 3,
@@ -637,11 +643,14 @@ class AutotransporterCalculator(BaseCalculator):
 
         F_X = _FX_EXTENDED.get(sposob_rejestracji, Decimal('1.0'))
         
+        # --- KSS factor ---
+        kss = self.get_kss()
+
         # --- U_WSK Calculation ---
         if max_cykle_prod > 0:
-            U_WSK = max_cykle_prod
+            U_WSK = max_cykle_prod * kss
         else:
-            U_WSK = -5000 * wsp_kdr + Decimal('25000')
+            U_WSK = (-5000 * wsp_kdr + Decimal('25000')) * kss
         U_WSK = U_WSK.to_integral_value(rounding='ROUND_CEILING')
 
         # --- Stan obciazenia (load state) ---
@@ -964,14 +973,20 @@ class PodestRuchomyCalculator(BaseCalculator):
             procent_bumar = self._get_val('procent_bumar', 100)
             effective_usage = moto_podest_ruchomy * (procent_bumar / 100)
             
-            resurs_wykorzystanie = round((effective_usage / U_WSK) * 100, 2)
+            ostatni_licznik = self._get_val('ostatni_licznik') if common_inputs['ponowny_resurs'] == 1 else Decimal(0)
+            effective_delta = effective_usage - (ostatni_licznik * (procent_bumar / 100)) if common_inputs['ponowny_resurs'] == 1 else effective_usage
+            
+            resurs_wykorzystanie = round((effective_delta / U_WSK) * 100, 2) if U_WSK > 0 else Decimal(0)
+            if common_inputs['ponowny_resurs'] == 1:
+                resurs_wykorzystanie += common_inputs['ostatni_resurs']
+            
             usage_per_year = effective_usage / common_inputs['lata_pracy'] if common_inputs['lata_pracy'] > 0 else 0
             
             resurs_prognoza_dni = 0
             if resurs_wykorzystanie < 100 and usage_per_year > 0:
-                remaining_usage = U_WSK - effective_usage
-                resurs_prognoza_dni = min((remaining_usage / usage_per_year) * 365, Decimal(3650))
-                resurs_prognoza_dni = resurs_prognoza_dni.to_integral_value(rounding='ROUND_FLOOR')
+                remaining_usage = U_WSK * (Decimal('1') - (common_inputs['ostatni_resurs'] / 100 if common_inputs['ponowny_resurs'] == 1 else 0)) - effective_delta
+                resurs_prognoza_dni = min((remaining_usage / (usage_per_year * (procent_bumar / 100))) * 365, Decimal(3650)) if procent_bumar > 0 else 0
+                resurs_prognoza_dni = Decimal(str(resurs_prognoza_dni)).to_integral_value(rounding='ROUND_FLOOR')
 
             prognosis_data = {
                 'resurs_wykorzystanie': resurs_wykorzystanie,
@@ -980,6 +995,7 @@ class PodestRuchomyCalculator(BaseCalculator):
                 'T_WSK': {'value': U_WSK, 'unit': 'mth'},
                 'moto_efektywne': round(effective_usage, 2),
                 'moto_rok': round(usage_per_year, 2) if usage_per_year else None,
+                'ilosc_cykli_rok': (common_inputs['ilosc_cykli'] * F_X / common_inputs['lata_pracy']).to_integral_value(rounding='ROUND_CEILING') if common_inputs['lata_pracy'] > 0 else Decimal(0),
             }
         else:
             prognosis_data = self._calculate_resurs_prognosis(
@@ -1193,8 +1209,10 @@ class UkladnicaMagazynowaCalculator(BaseCalculator):
         licznik_pracy_prz = self._get_val('licznik_pracy_prz')
         if licznik_pracy_prz > 0:
             t_sum_prz = licznik_pracy_prz
-        else:
+        elif v_prz > 0:
             t_sum_prz = (self._get_val('ilosc_cykli') * k_s_2 * F_X * (s_max / v_prz) / 60).to_integral_value(rounding='ROUND_FLOOR')
+        else:
+            t_sum_prz = Decimal(0)
 
         resurs_wyk_prz = round((t_sum_prz / t_max_prz) * 100, 2) if t_max_prz > 0 else Decimal(0)
         
@@ -1263,6 +1281,10 @@ class WindaDekarskaCalculator(BaseCalculator):
         lata_pracy = common_inputs['lata_pracy']
         ilosc_cykli = common_inputs['ilosc_cykli']
         sposob_rejestracji = common_inputs['sposob_rejestracji']
+        ponowny_resurs = common_inputs['ponowny_resurs']
+        ostatni_resurs = common_inputs['ostatni_resurs']
+        ostatni_resurs_mech_pod = self._get_val('ostatni_resurs_mech_pod') if ponowny_resurs == 1 else Decimal(0)
+        ostatni_licznik = self._get_val('ostatni_licznik') if ponowny_resurs == 1 else Decimal(0)
         
         # --- Coefficients from a_1, a_2, a_3 ---
         a_1 = self._get_val('a_1')
@@ -1275,12 +1297,11 @@ class WindaDekarskaCalculator(BaseCalculator):
         F_X = _FX_EXTENDED.get(sposob_rejestracji, Decimal('1.0'))
 
         # --- Part 1: Hoisting Mechanism (Time-based) ---
-        typ_winda = self._get_str('typ')
         t_max = Decimal('3000') # Base value for both "elektryczny" and "hydrauliczny"
         t_max_pod = t_max * k_w
         
         h_max = self._get_val('h_max')
-        # v_pod jako dict (unit_options: m/s / m/min / m/h) → konwertuj do m/h
+        # v_pod as dict (unit_options: m/s / m/min / m/h) → convert to m/h
         v_pod_raw = self.input_data.get('v_pod')
         if isinstance(v_pod_raw, dict):
             v_pod_val = Decimal(str(v_pod_raw.get('value') or 0))
@@ -1295,10 +1316,13 @@ class WindaDekarskaCalculator(BaseCalculator):
             # stare dane: plain number zakładamy m/min (domyślna jednostka)
             v_pod_j = Decimal(str(v_pod_raw or 0)) * 60
             
-        t_sum_pod = (h_max / v_pod_j) * F_X * ilosc_cykli if v_pod_j > 0 else Decimal(0)
+        ilosc_cykli_delta = ilosc_cykli - ostatni_licznik if ponowny_resurs == 1 else ilosc_cykli
+        t_sum_pod = (h_max / v_pod_j) * F_X * ilosc_cykli_delta if v_pod_j > 0 else Decimal(0)
         t_sum_pod = t_sum_pod.to_integral_value(rounding='ROUND_FLOOR')
 
         resurs_wyk_pod = round((t_sum_pod / t_max_pod) * 100, 2) if t_max_pod > 0 else Decimal(0)
+        if ponowny_resurs == 1:
+            resurs_wyk_pod += ostatni_resurs_mech_pod
         
         resurs_prog_pod = Decimal(0)
         if resurs_wyk_pod < 100 and t_sum_pod > 0 and lata_pracy > 0:
@@ -1310,11 +1334,11 @@ class WindaDekarskaCalculator(BaseCalculator):
         max_c = max_cykle if max_cykle > 0 else Decimal('120000')
         U_WSK = max_c * k_k
         
-        # Using the standard cycle-based prognosis for the structure part
-        prognosis_data = self._calculate_resurs_prognosis(U_WSK, F_X, ilosc_cykli, lata_pracy, "Nie", 0) # ponowny_resurs not supported for this calc
+        prognosis_data = self._calculate_resurs_prognosis(U_WSK, F_X, ilosc_cykli, lata_pracy, ponowny_resurs, ostatni_resurs)
 
         resurs_message = prognosis_data['resurs_message']
         resurs_wykorzystanie = prognosis_data['resurs_wykorzystanie']
+        
         # --- Component checks ---
         component_fields = ['konstrukcja', 'automatyka', 'sworznie', 'eksploatacja', 'szczelnosc', 'hamulce']
         resurs_message, resurs_wykorzystanie, has_technical_problems = self._apply_technical_state_logic(
@@ -1331,12 +1355,26 @@ class WindaDekarskaCalculator(BaseCalculator):
             't_max_pod': t_max_pod,
             't_sum_pod': t_sum_pod,
             'resurs_wyk_pod': resurs_wyk_pod,
+            'resurs_prog_pod': int(resurs_prog_pod),
             'data_prog_pod': data_prog_pod,
+            'ilosc_cykli_rok': (ilosc_cykli * F_X / lata_pracy).to_integral_value(rounding='ROUND_CEILING') if lata_pracy > 0 else Decimal(0),
         })
+        return self.output_data
         return self.output_data
 
 class WozekJezdniowyCalculator(BaseCalculator):
     slug = 'wozek_jezdniowy'
+
+    def _calculate_wsp_kdr(self, ilosc_cykli):
+        """Nadpisanie Kd dla wózka: uwzględnia masę osprzętu Q_o (zgodnie z PHP)."""
+        q_max = self._get_kg_val('q_max')
+        q_o = self._get_kg_val('q_o')
+        q_vals = [self._get_val(f'q_{i}') for i in range(1, 6)]  # z diagramu, zawsze kg
+        c_vals = [self._get_val(f'c_{i}') for i in range(1, 6)]
+        if q_o > 0:
+            q_vals = [q + q_o for q in q_vals]
+        return calculate_wsp_kdr(ilosc_cykli, q_max, q_vals, c_vals)
+
     def calculate(self):
         common_inputs = self._extract_and_process_common_inputs()
         lata_pracy = common_inputs['lata_pracy']
@@ -1350,7 +1388,7 @@ class WozekJezdniowyCalculator(BaseCalculator):
         operator = self._get_str('operator')
         temperatura = self._get_str('temperatura')
         srodowisko = self._get_str('srodowisko')
-        kss = self._get_kss()
+        kss = self.get_kss()
 
         licznik_pracy = self._get_val('licznik_pracy')
         h_max = self._get_val('h_max')
@@ -1443,17 +1481,17 @@ class WozekJezdniowyCalculator(BaseCalculator):
         if ponowny_resurs == 1:
             ostatni_licznik = self._get_val('ostatni_licznik') # Need to get this from input
             ostatni_resurs_mech_pod = self._get_val('ostatni_resurs_mech_pod') # Need to get this from input
-            licznik_roznica = licznik_pracy - ostatni_licznik
+            licznik_roznica = max(Decimal(0), licznik_pracy - ostatni_licznik)
             t_sum_pod = (k_pod_1 + k_pod_2) * (licznik_roznica * F_X)
             t_sum_pod = t_sum_pod.to_integral_value(rounding='ROUND_FLOOR')
-            resurs_wyk_pod = ostatni_resurs_mech_pod + round(((t_sum_pod) / t_max_pod) * 100, 2)
-            if resurs_wyk_pod < 100:
+            resurs_wyk_pod = ostatni_resurs_mech_pod + (round(((t_sum_pod) / t_max_pod) * 100, 2) if t_max_pod > 0 else Decimal(0))
+            if resurs_wyk_pod < 100 and t_sum_pod > 0 and lata_pracy > 0:
                 resurs_prog_pod = min((((Decimal('1') - resurs_wyk_pod / Decimal('100')) * (t_max_pod - t_sum_pod) / (t_sum_pod / lata_pracy)) * 365), Decimal(3650))
             resurs_prog_pod = resurs_prog_pod.to_integral_value(rounding='ROUND_FLOOR')
             data_prog_pod = (date.today() + timedelta(days=int(resurs_prog_pod))).isoformat()
         else:
-            resurs_wyk_pod = round(((t_sum_pod) / t_max_pod) * 100, 2)
-            if resurs_wyk_pod < 100:
+            resurs_wyk_pod = round(((t_sum_pod) / t_max_pod) * 100, 2) if t_max_pod > 0 else Decimal(0)
+            if resurs_wyk_pod < 100 and t_sum_pod > 0 and lata_pracy > 0:
                 resurs_prog_pod = min((((t_max_pod - t_sum_pod) / (t_sum_pod / lata_pracy)) * 365), Decimal(3650))
             resurs_prog_pod = resurs_prog_pod.to_integral_value(rounding='ROUND_FLOOR')
             data_prog_pod = (date.today() + timedelta(days=int(resurs_prog_pod))).isoformat()
@@ -1484,19 +1522,19 @@ class WozekJezdniowyCalculator(BaseCalculator):
         if ponowny_resurs == 1:
             ostatni_licznik = self._get_val('ostatni_licznik')
             ostatni_resurs_mech_jaz = self._get_val('ostatni_resurs_mech_jaz')
-            licznik_roznica = licznik_pracy - ostatni_licznik
+            licznik_roznica = max(Decimal(0), licznik_pracy - ostatni_licznik)
             t_sum_jaz = (k_jaz_1 + k_jaz_2) * (licznik_roznica * F_X)
             t_sum_jaz = t_sum_jaz.to_integral_value(rounding='ROUND_FLOOR')
-            resurs_wyk_jaz = ostatni_resurs_mech_jaz + round(((t_sum_jaz) / t_max_jaz) * 100, 2)
-            if resurs_wyk_jaz < 100:
+            resurs_wyk_jaz = ostatni_resurs_mech_jaz + (round(((t_sum_jaz) / t_max_jaz) * 100, 2) if t_max_jaz > 0 else Decimal(0))
+            if resurs_wyk_jaz < 100 and t_sum_jaz > 0 and lata_pracy > 0:
                 resurs_prog_jaz = min((((Decimal('1') - resurs_wyk_jaz / Decimal('100')) * (t_max_jaz - t_sum_jaz) / (t_sum_jaz / lata_pracy)) * 365), Decimal(3650))
             resurs_prog_jaz = resurs_prog_jaz.to_integral_value(rounding='ROUND_FLOOR')
             data_prog_jaz = (date.today() + timedelta(days=int(resurs_prog_jaz))).isoformat()
         else:
             t_sum_jaz = (k_jaz_1 + k_jaz_2) * (licznik_pracy * F_X)
             t_sum_jaz = t_sum_jaz.to_integral_value(rounding='ROUND_FLOOR')
-            resurs_wyk_jaz = round(((t_sum_jaz) / t_max_jaz) * 100, 2)
-            if resurs_wyk_jaz < 100:
+            resurs_wyk_jaz = round(((t_sum_jaz) / t_max_jaz) * 100, 2) if t_max_jaz > 0 else Decimal(0)
+            if resurs_wyk_jaz < 100 and t_sum_jaz > 0 and lata_pracy > 0:
                 resurs_prog_jaz = min((((t_max_jaz - t_sum_jaz) / (t_sum_jaz / lata_pracy)) * 365), Decimal(3650))
             resurs_prog_jaz = resurs_prog_jaz.to_integral_value(rounding='ROUND_FLOOR')
             data_prog_jaz = (date.today() + timedelta(days=int(resurs_prog_jaz))).isoformat()
@@ -1517,19 +1555,19 @@ class WozekJezdniowyCalculator(BaseCalculator):
         if ponowny_resurs == 1:
             ostatni_licznik = self._get_val('ostatni_licznik') # Need to get this from input
             ostatni_resurs_mech_prz = self._get_val('ostatni_resurs_mech_prz') # Need to get this from input
-            licznik_roznica = licznik_pracy - ostatni_licznik
+            licznik_roznica = max(Decimal(0), licznik_pracy - ostatni_licznik)
             t_sum_prz = licznik_roznica * k_s_1 * F_X
             t_sum_prz = t_sum_prz.to_integral_value(rounding='ROUND_FLOOR')
-            resurs_wyk_prz = ostatni_resurs_mech_prz + round(((t_sum_prz) / t_max_prz) * 100, 2)
-            if resurs_wyk_prz < 100:
+            resurs_wyk_prz = ostatni_resurs_mech_prz + (round(((t_sum_prz) / t_max_prz) * 100, 2) if t_max_prz > 0 else Decimal(0))
+            if resurs_wyk_prz < 100 and t_sum_prz > 0 and lata_pracy > 0:
                 resurs_prog_prz = min((((Decimal('1') - resurs_wyk_prz / Decimal('100')) * (t_max_prz - t_sum_prz) / (t_sum_prz / lata_pracy)) * 365), Decimal(3650))
             resurs_prog_prz = resurs_prog_prz.to_integral_value(rounding='ROUND_FLOOR')
             data_prog_prz = (date.today() + timedelta(days=int(resurs_prog_prz))).isoformat()
         else:
             t_sum_prz = licznik_pracy * k_s_1 * F_X
             t_sum_prz = t_sum_prz.to_integral_value(rounding='ROUND_FLOOR')
-            resurs_wyk_prz = round(((t_sum_prz) / t_max_prz) * 100, 2)
-            if resurs_wyk_prz < 100:
+            resurs_wyk_prz = round(((t_sum_prz) / t_max_prz) * 100, 2) if t_max_prz > 0 else Decimal(0)
+            if resurs_wyk_prz < 100 and t_sum_prz > 0 and lata_pracy > 0:
                 resurs_prog_prz = min((((t_max_prz - t_sum_prz) / (t_sum_prz / lata_pracy)) * 365), Decimal(3650))
             resurs_prog_prz = resurs_prog_prz.to_integral_value(rounding='ROUND_FLOOR')
             data_prog_prz = (date.today() + timedelta(days=int(resurs_prog_prz))).isoformat()
@@ -1550,19 +1588,19 @@ class WozekJezdniowyCalculator(BaseCalculator):
         if ponowny_resurs == 1:
             ostatni_licznik = self._get_val('ostatni_licznik') # Need to get this from input
             ostatni_resurs_mech_mas = self._get_val('ostatni_resurs_mech_mas') # Need to get this from input
-            licznik_roznica = licznik_pracy - ostatni_licznik
+            licznik_roznica = max(Decimal(0), licznik_pracy - ostatni_licznik)
             t_sum_mas = k_m_1 * licznik_roznica * F_X
             t_sum_mas = t_sum_mas.to_integral_value(rounding='ROUND_FLOOR')
-            resurs_wyk_mas = ostatni_resurs_mech_mas + round(((t_sum_mas) / t_max_mas) * 100, 2)
-            if resurs_wyk_mas < 100:
+            resurs_wyk_mas = ostatni_resurs_mech_mas + (round(((t_sum_mas) / t_max_mas) * 100, 2) if t_max_mas > 0 else Decimal(0))
+            if resurs_wyk_mas < 100 and t_sum_mas > 0 and lata_pracy > 0:
                 resurs_prog_mas = min((((Decimal('1') - resurs_wyk_mas / Decimal('100')) * (t_max_mas - t_sum_mas) / (t_sum_mas / lata_pracy)) * 365), Decimal(3650))
             resurs_prog_mas = resurs_prog_mas.to_integral_value(rounding='ROUND_FLOOR')
             data_prog_mas = (date.today() + timedelta(days=int(resurs_prog_mas))).isoformat()
         else:
             t_sum_mas = k_m_1 * licznik_pracy * F_X
             t_sum_mas = t_sum_mas.to_integral_value(rounding='ROUND_FLOOR')
-            resurs_wyk_mas = round(((t_sum_mas) / t_max_mas) * 100, 2)
-            if resurs_wyk_mas < 100:
+            resurs_wyk_mas = round(((t_sum_mas) / t_max_mas) * 100, 2) if t_max_mas > 0 else Decimal(0)
+            if resurs_wyk_mas < 100 and t_sum_mas > 0 and lata_pracy > 0:
                 resurs_prog_mas = min((((t_max_mas - t_sum_mas) / (t_sum_mas / lata_pracy)) * 365), Decimal(3650))
             resurs_prog_mas = resurs_prog_mas.to_integral_value(rounding='ROUND_FLOOR')
             data_prog_mas = (date.today() + timedelta(days=int(resurs_prog_mas))).isoformat()
@@ -1666,10 +1704,13 @@ class WozekSpecjalizowanyCalculator(BaseCalculator):
         lata_pracy = common_inputs['lata_pracy']
         ilosc_cykli = common_inputs['ilosc_cykli']
         sposob_rejestracji = common_inputs['sposob_rejestracji']
-        
+        ponowny_resurs = common_inputs['ponowny_resurs']
+        ostatni_resurs = common_inputs['ostatni_resurs']
+        ostatni_licznik = self._get_val('ostatni_licznik') if ponowny_resurs == 1 else Decimal(0)
+
         sposob_pracy = self._get_str('sposob_pracy')
         operator = self._get_str('operator')
-        
+
         F_X = _FX_EXTENDED.get(sposob_rejestracji, Decimal('1.0'))
 
         p_vals = [self._get_val(f'p_{i}') for i in range(1, 26)]
@@ -1684,75 +1725,90 @@ class WozekSpecjalizowanyCalculator(BaseCalculator):
         k_oper = Decimal(str(k_oper_map.get(operator, 1.0)))
 
         wsp_kdr = self._calculate_wsp_kdr(ilosc_cykli)
-        
-        resurs_message = ''
+
         final_data = {}
 
         if sposob_pracy == "wózek widłowy/ładowarka":
             max_moto_prod = self._get_val('max_moto_prod')
-            T_WSK = max_moto_prod if max_moto_prod > 0 else Decimal('15000')
-            
-            T_WSK1 = Decimal('0.01') * (-10 * ldr + 10) * T_WSK
-            
+            T_WSK_base = max_moto_prod if max_moto_prod > 0 else Decimal('15000')
+
+            T_WSK1 = Decimal('0.01') * (Decimal('-10') * ldr + Decimal('10')) * T_WSK_base
+
             T_WSK2 = Decimal(0)
-            if wsp_kdr <= Decimal('0.2'): T_WSK2 = Decimal('0.05') * T_WSK
-            elif wsp_kdr <= Decimal('0.4'): T_WSK2 = Decimal('0.02') * T_WSK
-            
-            T_WSK = (T_WSK + T_WSK1 + T_WSK2) * k_oper
+            if wsp_kdr <= Decimal('0.2'): T_WSK2 = Decimal('0.05') * T_WSK_base
+            elif wsp_kdr <= Decimal('0.4'): T_WSK2 = Decimal('0.02') * T_WSK_base
+
+            T_WSK = (T_WSK_base + T_WSK1 + T_WSK2) * k_oper
             T_WSK = T_WSK.to_integral_value(rounding='ROUND_CEILING')
 
             ilosc_moto = self._get_val('ilosc_moto')
             procent_jazda = self._get_val('procent_jazda')
+
             ilosc_moto_cal = ilosc_moto - (ilosc_moto * Decimal('0.01') * procent_jazda)
+
+            ostatni_moto_cal = ostatni_licznik - (ostatni_licznik * Decimal('0.01') * procent_jazda) if ponowny_resurs == 1 else Decimal(0)
+            moto_delta = (ilosc_moto_cal - ostatni_moto_cal) if ponowny_resurs == 1 else ilosc_moto_cal
+
+            resurs_wykorzystanie = round((moto_delta * F_X / T_WSK) * 100, 2) if T_WSK > 0 else 0
+            if ponowny_resurs == 1:
+                resurs_wykorzystanie += ostatni_resurs
+
             ilosc_moto_rok = (ilosc_moto_cal * F_X) / lata_pracy if lata_pracy > 0 else 0
-            
-            resurs_wykorzystanie = round(((ilosc_moto_cal * F_X) / T_WSK) * 100, 2) if T_WSK > 0 else 0
-            
+
             resurs_prognoza = Decimal(0)
             if resurs_wykorzystanie < 100 and ilosc_moto_rok > 0:
-                resurs_prognoza = min((((T_WSK - ilosc_moto_cal * F_X) / ilosc_moto_rok) * 365), Decimal(3650))
+                correction = ostatni_resurs / 100 if ponowny_resurs == 1 else Decimal(0)
+                remaining_time = T_WSK * (1 - correction) - (moto_delta * F_X)
+                resurs_prognoza = min((remaining_time / ilosc_moto_rok) * 365, Decimal(3650))
 
             data_prognoza = (date.today() + timedelta(days=int(resurs_prognoza.to_integral_value(rounding='ROUND_FLOOR')))).isoformat()
-            resurs = 'Resurs został osiągnięty. Zaleca się wykonanie przeglądu specjalnego.' if (ilosc_moto_cal * F_X) > T_WSK else 'Resurs nie został osiągnięty.'
-            
-            final_data = {'T_WSK': T_WSK, 'ilosc_moto_rok': ilosc_moto_rok, 'resurs_wykorzystanie': resurs_wykorzystanie, 'resurs_prognoza_dni': resurs_prognoza, 'data_prognoza': data_prognoza, 'resurs_message': resurs}
+            resurs_msg = 'Resurs został osiągnięty. Zaleca się wykonanie przeglądu specjalnego.' if resurs_wykorzystanie >= 100 else 'Resurs nie został osiągnięty.'
 
-        elif sposob_pracy == "podnośnik koszowy/wózek widłowy/ładowarka":
-            U_WSK = (Decimal('2e6') * Decimal('0.008')) / wsp_kdr if wsp_kdr > 0 else 0
-            U_WSK1 = Decimal('0.01') * (-10 * ldr + 10) * U_WSK
-            
+            final_data = {
+                'T_WSK': T_WSK, 
+                'moto_rok': round(ilosc_moto_rok, 2), 
+                'resurs_wykorzystanie': resurs_wykorzystanie, 
+                'resurs_prognoza_dni': int(resurs_prognoza), 
+                'data_prognoza': data_prognoza, 
+                'resurs_message': resurs_msg,
+                'ilosc_moto_cal': round(ilosc_moto_cal, 2)
+            }
+
+        else: # "podnośnik koszowy/wózek widłowy/ładowarka"
+            U_WSK_base = (Decimal('2e6') * Decimal('0.008')) / wsp_kdr if wsp_kdr > 0 else Decimal(0)
+            U_WSK1 = Decimal('0.01') * (Decimal('-10') * ldr + Decimal('10')) * U_WSK_base
+
             procent_podnosnik = self._get_val('procent_podnosnik')
             U_WSK2 = Decimal(0)
-            if procent_podnosnik < 15: U_WSK2 = Decimal('0.10') * U_WSK
-            elif procent_podnosnik < 25: U_WSK2 = Decimal('0.75') * U_WSK # Note: PHP has a typo here, it should be 0.075
-            elif procent_podnosnik < 50: U_WSK2 = Decimal('0.35') * U_WSK
-            
-            U_WSK = (U_WSK + U_WSK1 + U_WSK2) * k_oper
+            if procent_podnosnik < 15: U_WSK2 = Decimal('0.10') * U_WSK_base
+            elif procent_podnosnik < 25: U_WSK2 = Decimal('0.75') * U_WSK_base # Matching PHP
+            elif procent_podnosnik < 50: U_WSK2 = Decimal('0.35') * U_WSK_base
+
+            U_WSK = (U_WSK_base + U_WSK1 + U_WSK2) * k_oper
             U_WSK = U_WSK.to_integral_value(rounding='ROUND_CEILING')
 
-            prognosis_data = self._calculate_resurs_prognosis(U_WSK, F_X, ilosc_cykli, lata_pracy, "Nie", 0)
-            resurs = prognosis_data['resurs_message']
-            final_data = {**prognosis_data, 'resurs_message': resurs}
+            prognosis_data = self._calculate_resurs_prognosis(U_WSK, F_X, ilosc_cykli, lata_pracy, ponowny_resurs, ostatni_resurs)
+            final_data = {**prognosis_data}
 
         # Common component checks
         resurs_message = final_data.get('resurs_message', '')
         resurs_wykorzystanie = final_data.get('resurs_wykorzystanie', 0)
-        component_fields = ['konstrukcja', 'automatyka', 'sworznie', 'eksploatacja', 'szczelnosc']
+        component_fields = ['konstrukcja', 'automatyka', 'sworznie', 'ciegna', 'eksploatacja', 'szczelnosc']
         resurs_message, resurs_wykorzystanie, has_technical_problems = self._apply_technical_state_logic(
             component_fields, resurs_message, resurs_wykorzystanie
         )
         final_data['resurs_message'] = resurs_message
         final_data['resurs_wykorzystanie'] = resurs_wykorzystanie
-        
+
         self.output_data.update({
             **final_data,
             'wsp_kdr': wsp_kdr,
             'stan_obciazenia': self._get_stan_obciazenia(wsp_kdr),
             'ldr': ldr,
-            'technical_state_reached': has_technical_problems
+            'technical_state_reached': has_technical_problems,
+            'ilosc_cykli_rok': (ilosc_cykli * F_X / lata_pracy).to_integral_value(rounding='ROUND_CEILING') if lata_pracy > 0 else Decimal(0),
         })
         return self.output_data
-
 class ZurawPrzeladunkowyCalculator(BaseCalculator):
     slug = 'zuraw_przeladunkowy'
     def calculate(self):

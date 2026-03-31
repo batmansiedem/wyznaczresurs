@@ -85,5 +85,14 @@
 </template>
 
 <script setup>
+import { useMeta } from 'quasar'
 import LegalPageLayout from 'components/shared/LegalPageLayout.vue'
+useMeta({
+  title: 'Polityka cookies | wyznaczresurs.com',
+  meta: {
+    description: { name: 'description', content: 'Polityka plików cookies serwisu wyznaczresurs.com.' },
+    robots:       { name: 'robots',      content: 'index, follow' },
+  },
+  link: { canonical: { rel: 'canonical', href: 'https://wyznaczresurs.com/cookies' } },
+})
 </script>

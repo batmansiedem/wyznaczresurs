@@ -5,11 +5,11 @@ const routes = [
     component: () => import('layouts/LandingLayout.vue'),
     children: [
       { path: '', component: () => import('pages/LandingPage.vue') },
-      { path: 'login', component: () => import('pages/auth/LoginPage.vue') },
-      { path: 'register', component: () => import('pages/auth/RegisterPage.vue') },
-      { path: 'forgot-password', component: () => import('pages/auth/ForgotPasswordPage.vue') },
-      { path: 'password-reset/confirm/:uid/:token', props: true, component: () => import('pages/auth/ResetPasswordConfirmPage.vue') },
-      { path: 'confirm-email/:key', props: true, component: () => import('pages/auth/EmailConfirmPage.vue') }
+      { path: 'login',          meta: { title: 'Logowanie' },            component: () => import('pages/auth/LoginPage.vue') },
+      { path: 'register',       meta: { title: 'Rejestracja' },          component: () => import('pages/auth/RegisterPage.vue') },
+      { path: 'forgot-password', meta: { title: 'Resetuj hasło' },       component: () => import('pages/auth/ForgotPasswordPage.vue') },
+      { path: 'password-reset/confirm/:uid/:token', props: true,         component: () => import('pages/auth/ResetPasswordConfirmPage.vue') },
+      { path: 'confirm-email/:key', props: true,                         component: () => import('pages/auth/EmailConfirmPage.vue') }
     ]
   },
 
@@ -18,9 +18,9 @@ const routes = [
     path: '/',
     component: () => import('layouts/DualLayout.vue'),
     children: [
-      { path: 'regulamin', meta: { breadcrumbs: [{ label: 'Regulamin' }] }, component: () => import('pages/legal/TermsPage.vue') },
-      { path: 'rodo', meta: { breadcrumbs: [{ label: 'Polityka prywatności' }] }, component: () => import('pages/legal/RodoPage.vue') },
-      { path: 'cookies', meta: { breadcrumbs: [{ label: 'Polityka cookies' }] }, component: () => import('pages/legal/CookiesPage.vue') }
+      { path: 'regulamin', meta: { title: 'Regulamin',             breadcrumbs: [{ label: 'Regulamin' }] },             component: () => import('pages/legal/TermsPage.vue') },
+      { path: 'rodo',      meta: { title: 'Polityka prywatności',  breadcrumbs: [{ label: 'Polityka prywatności' }] },  component: () => import('pages/legal/RodoPage.vue') },
+      { path: 'cookies',   meta: { title: 'Polityka cookies',      breadcrumbs: [{ label: 'Polityka cookies' }] },      component: () => import('pages/legal/CookiesPage.vue') }
     ]
   },
 
@@ -32,49 +32,49 @@ const routes = [
     children: [
       {
         path: 'dashboard',
-        meta: { breadcrumbs: [{ label: 'Pulpit' }] },
+        meta: { title: 'Pulpit', breadcrumbs: [{ label: 'Pulpit' }] },
         component: () => import('pages/DashboardPage.vue')
       },
       {
         path: 'calculators',
-        meta: { breadcrumbs: [{ label: 'Kalkulatory' }] },
+        meta: { title: 'Kalkulatory', breadcrumbs: [{ label: 'Kalkulatory' }] },
         component: () => import('pages/CalculatorsListPage.vue')
       },
       {
         path: 'calculators/:slug',
         name: 'calculator',
         props: true,
-        meta: { breadcrumbs: [{ label: 'Kalkulatory', to: '/calculators' }, { label: '' }] },
+        meta: { title: 'Kalkulator', breadcrumbs: [{ label: 'Kalkulatory', to: '/calculators' }, { label: '' }] },
         component: () => import('pages/calculators/UniversalCalculator.vue')
       },
       {
         path: 'saved-results',
-        meta: { breadcrumbs: [{ label: 'Zapisane wyniki' }] },
+        meta: { title: 'Zapisane wyniki', breadcrumbs: [{ label: 'Zapisane wyniki' }] },
         component: () => import('pages/SavedResultsPage.vue')
       },
       {
         path: 'account',
-        meta: { breadcrumbs: [{ label: 'Moje konto' }] },
+        meta: { title: 'Moje konto', breadcrumbs: [{ label: 'Moje konto' }] },
         component: () => import('pages/AccountPage.vue')
       },
       {
         path: 'change-password',
-        meta: { breadcrumbs: [{ label: 'Moje konto', to: '/account' }, { label: 'Zmień hasło' }] },
+        meta: { title: 'Zmień hasło', breadcrumbs: [{ label: 'Moje konto', to: '/account' }, { label: 'Zmień hasło' }] },
         component: () => import('pages/auth/ChangePasswordPage.vue')
       },
       {
         path: 'invoices',
-        meta: { breadcrumbs: [{ label: 'Faktury' }] },
+        meta: { title: 'Faktury', breadcrumbs: [{ label: 'Faktury' }] },
         component: () => import('pages/InvoicesPage.vue')
       },
       {
         path: 'notifications',
-        meta: { breadcrumbs: [{ label: 'Powiadomienia' }], requiresSuperuser: true },
+        meta: { title: 'Powiadomienia', breadcrumbs: [{ label: 'Powiadomienia' }], requiresSuperuser: true },
         component: () => import('pages/NotificationsPage.vue')
       },
       {
         path: 'admin',
-        meta: { breadcrumbs: [{ label: 'Panel administratora' }], requiresSuperuser: true },
+        meta: { title: 'Panel administratora', breadcrumbs: [{ label: 'Panel administratora' }], requiresSuperuser: true },
         component: () => import('pages/AdminPage.vue')
       }
     ]
@@ -87,17 +87,17 @@ const routes = [
     children: [
       {
         path: 'contact',
-        meta: { breadcrumbs: [{ label: 'Kontakt' }] },
+        meta: { title: 'Kontakt', breadcrumbs: [{ label: 'Kontakt' }] },
         component: () => import('pages/ContactPage.vue')
       },
       {
         path: 'pricing',
-        meta: { breadcrumbs: [{ label: 'Cennik i punkty' }] },
+        meta: { title: 'Cennik i punkty', breadcrumbs: [{ label: 'Cennik i punkty' }] },
         component: () => import('pages/PricingPage.vue')
       },
       {
         path: 'help',
-        meta: { breadcrumbs: [{ label: 'Pomoc / FAQ' }] },
+        meta: { title: 'Pomoc / FAQ', breadcrumbs: [{ label: 'Pomoc / FAQ' }] },
         component: () => import('pages/HelpPage.vue')
       }
     ]

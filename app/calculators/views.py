@@ -47,6 +47,21 @@ class CalculatorDefinitionViewSet(viewsets.ModelViewSet):
         
         return Response({"detail": f"Zaktualizowano {updated_count} kalkulatorów."})
 
+    @action(detail=False, methods=['get'], permission_classes=[IsAuthenticated])
+    def schemas(self, request):
+        """Zwraca konfiguracje wszystkich kalkulatorów (pola formularzy + pola wynikowe)."""
+        from .device_config import get_all_configs
+        return Response(get_all_configs())
+
+    @action(detail=True, methods=['get'], permission_classes=[IsAuthenticated])
+    def schema(self, request, slug=None):
+        """Zwraca konfigurację pojedynczego kalkulatora."""
+        from .device_config import load_config
+        config = load_config(slug)
+        if not config:
+            return Response({'detail': 'Konfiguracja nie znaleziona.'}, status=404)
+        return Response(config)
+
     @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated])
     def get_cost(self, request, slug=None):
         """Zwraca koszt obliczenia dla danego użytkownika i danych wejściowych."""

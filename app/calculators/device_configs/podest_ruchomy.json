@@ -1,0 +1,476 @@
+{
+  "name": "Podest Ruchomy",
+  "description": "Kalkulator resursu dla podestu ruchomego.",
+  "fields": {
+    "wykonawca": {
+      "type": "text",
+      "label": "Wykonawca",
+      "required": false
+    },
+    "uwagi": {
+      "type": "textarea",
+      "label": "Uwagi",
+      "required": false
+    },
+    "nr_fabryczny": {
+      "type": "text",
+      "label": "Nr fabryczny",
+      "required": true
+    },
+    "nr_ewidencyjny": {
+      "type": "text",
+      "label": "Nr ewidencyjny UDT/TDT/WDT",
+      "required": false
+    },
+    "typ": {
+      "type": "select",
+      "label": "Typ podestu",
+      "required": true,
+      "options": [
+        "nożycowy samobieżny",
+        "masztowy samobieżny",
+        "masztowy stacjonarny",
+        "składany przenośny",
+        "teleskopowy samobieżny",
+        "teleskopowy na pojeździe",
+        "składany na pojeździe",
+        "składany na pojeździe BUMAR"
+      ]
+    },
+    "lata_pracy": {
+      "type": "number",
+      "label": "Ilość przepracowanych lat",
+      "required": true,
+      "unit_options": [
+        "lata",
+        "miesiące"
+      ],
+      "default_unit": "lata"
+    },
+    "tryb_pracy": {
+      "label": "Tryb pracy",
+      "type": "select",
+      "required": true,
+      "options": [
+        "jednozmianowy",
+        "dwuzmianowy",
+        "trzyzmianowy"
+      ]
+    },
+    "cykle_zmiana": {
+      "label": "Ilość cykli przypadających na zmianę",
+      "type": "number",
+      "required": true
+    },
+    "dni_robocze": {
+      "label": "Ilość dni roboczych w roku",
+      "type": "number",
+      "required": true,
+      "default_value": 250
+    },
+    "ilosc_cykli": {
+      "type": "number",
+      "label": "Ilość odbytych cykli",
+      "required": true
+    },
+    "sposob_rejestracji": {
+      "type": "select",
+      "label": "Sposób rejestracji przez eksploatującego warunków eksploatacji urządzenia",
+      "required": true,
+      "options": [
+        "Rejestrowanie przyrządami",
+        "Rejestrowanie w dzienniku, łącznie ze stosowaniem licznika",
+        "Rejestrowanie na podstawie procesu technologicznego",
+        "Rejestrowanie na podstawie informacji o produkcji",
+        "Informacja o warunkach eksploatacji jest niekompletna",
+        "Brak informacji o historii urządzenia"
+      ]
+    },
+    "max_cykle_prod": {
+      "type": "number",
+      "label": "Maks. cykle (producent)",
+      "required": false,
+      "hint": "jeśli znane",
+      "show_if": {
+        "field": "typ",
+        "value": [
+          "BUMAR"
+        ],
+        "negate": true
+      }
+    },
+    "max_moto_prod": {
+      "type": "number",
+      "label": "Graniczna ilość motogodzin określona przez producenta (należy podać jeśli jest znana)",
+      "required": false,
+      "default_unit": "mth",
+      "show_if": {
+        "field": "typ",
+        "value": [
+          "BUMAR"
+        ]
+      }
+    },
+    "moto_podest_ruchomy": {
+      "type": "number",
+      "label": "Ilość odbytych motogodzin podestu ruchomego od ostatniego przeglądu specjalnego lub od daty rozpoczęcia eksploatacji (należy podać jeśli jest znana)",
+      "required": false,
+      "default_unit": "mth",
+      "show_if": {
+        "field": "typ",
+        "value": [
+          "BUMAR"
+        ]
+      }
+    },
+    "procent_bumar": {
+      "type": "number",
+      "label": "Efektywny czas pracy podestu ruchomego",
+      "required": false,
+      "default_unit": "%",
+      "show_if": {
+        "field": "typ",
+        "value": [
+          "BUMAR"
+        ]
+      }
+    },
+    "q_max": {
+      "type": "number",
+      "label": "Udźwig maksymalny Q<sub>max</sub>",
+      "required": true,
+      "unit_type": "mass",
+      "default_unit": "kg",
+      "unit_options": [
+        "kg",
+        "t"
+      ]
+    },
+    "h_max": {
+      "type": "number",
+      "label": "Maksymalna wysokość podnoszenia h<sub>max</sub>",
+      "required": false,
+      "unit_type": "length",
+      "default_unit": "m"
+    },
+    "L_b_max": {
+      "type": "number",
+      "label": "Maksymalny zasięg boczny L<sub>b_max</sub>",
+      "required": false,
+      "unit_type": "length",
+      "default_unit": "m",
+      "show_if": {
+        "field": "typ",
+        "negate": true,
+        "value": [
+          "nożycowy",
+          "masztowy"
+        ]
+      }
+    },
+    "spec": {
+      "type": "select",
+      "label": "Czy chcesz wyznaczyć resurs po pierwszym przeglądzie specjalnym?",
+      "required": true,
+      "options": [
+        "Nie",
+        "Tak"
+      ]
+    },
+    "ponowny_resurs": {
+      "type": "select",
+      "label": "Czy chcesz wykonać ponowne wyznaczenie resursu?",
+      "required": true,
+      "options": [
+        "Nie",
+        "Tak"
+      ]
+    },
+    "ostatni_resurs": {
+      "type": "number",
+      "label": "Ostatni stopień wykorzystania resursu",
+      "required": false,
+      "show_if": {
+        "field": "ponowny_resurs",
+        "value": "Tak"
+      },
+      "default_unit": "%"
+    },
+    "ostatni_licznik": {
+      "type": "number",
+      "label": "Stan licznika motogodzin na dzień wyznaczenia ostatniego resursu",
+      "required": false,
+      "show_if": {
+        "field": "ponowny_resurs",
+        "value": "Tak"
+      },
+      "default_unit": "mth"
+    },
+    "data_resurs": {
+      "type": "date",
+      "label": "Data wyznaczenia ostatniego resursu",
+      "required": false,
+      "show_if": {
+        "field": "ponowny_resurs",
+        "value": "Tak"
+      }
+    },
+    "s_factor": {
+      "type": "select",
+      "label": "Współczynnik przebiegu naprężeń S",
+      "required": false,
+      "options": [
+        "nieznana",
+        "S02",
+        "S01",
+        "S0",
+        "S1",
+        "S2",
+        "S3",
+        "S4",
+        "S5",
+        "S6",
+        "S7"
+      ]
+    },
+    "diagram_hdr": {
+      "type": "diagram",
+      "label": "Schemat stref wysokości (H_dr)",
+      "svg": "schemat_hdr",
+      "show_if": {
+        "field": "typ",
+        "value": [
+          "nożycowy",
+          "masztowy"
+        ]
+      }
+    },
+    "diagram_ldr": {
+      "type": "diagram",
+      "label": "Schemat stref zasięgu i wysokości (L_dr)",
+      "svg": "schemat_ldr",
+      "show_if": {
+        "field": "typ",
+        "value": [
+          "teleskopowy",
+          "składany"
+        ]
+      }
+    },
+    "konstrukcja": {
+      "type": "inspection_status",
+      "label": "Czy konstrukcja stalowa jest zdeformowana i/lub pojawiły się pęknięcia w złączach spawanych?",
+      "options": [
+        "Brak uszkodzeń",
+        "Uszkodzenia"
+      ]
+    },
+    "automatyka": {
+      "type": "inspection_status",
+      "label": "Czy automatyka sterująca i/lub zabezpieczająca jest sprawna i aktywna?",
+      "options": [
+        "Sprawna",
+        "Niesprawna"
+      ]
+    },
+    "sworznie": {
+      "type": "inspection_status",
+      "label": "Czy sworznie oraz połączenia rozłączne są właściwie zmontowane i w dobrym stanie technicznym?",
+      "options": [
+        "Prawidłowy",
+        "Nieprawidłowy"
+      ]
+    },
+    "ciegna": {
+      "type": "inspection_status",
+      "label": "Czy cięgna (łańcuchy, liny) są w dobrym stanie technicznym?",
+      "options": [
+        "Brak uszkodzeń",
+        "Uszkodzenia"
+      ]
+    },
+    "eksploatacja": {
+      "type": "inspection_status",
+      "label": "Czy urządzenie eksploatowane jest zgodnie z przeznaczeniem i instrukcją eksploatacji?",
+      "options": [
+        "Zgodne",
+        "Niezgodne"
+      ]
+    },
+    "szczelnosc": {
+      "type": "inspection_status",
+      "label": "Szczelność",
+      "options": [
+        "Szczelny",
+        "Nieszczelny"
+      ]
+    },
+    "hamulce": {
+      "type": "inspection_status",
+      "label": "Czy układ hamulcowy jest sprawny?",
+      "options": [
+        "Sprawne",
+        "Niesprawne"
+      ]
+    },
+    "diagram_kd": {
+      "type": "diagram",
+      "label": "Widmo obciążeń K<sub>d</sub>",
+      "svg": "schemat_kd"
+    }
+  },
+  "sections": [
+    {
+      "id": "informacje",
+      "title": "Informacja na temat resursu",
+      "icon": "info",
+      "fields": [
+        "spec",
+        "ponowny_resurs",
+        "data_resurs",
+        "ostatni_resurs"
+      ]
+    },
+    {
+      "id": "dane",
+      "title": "Określ dane dla podestu ruchomego",
+      "icon": "settings",
+      "fields": [
+        "wykonawca",
+        "uwagi",
+        "typ",
+        "nr_fabryczny",
+        "nr_ewidencyjny",
+        "h_max",
+        "L_b_max",
+        "q_max",
+        "lata_pracy",
+        "max_cykle_prod",
+        "ilosc_cykli",
+        "max_moto_prod",
+        "moto_podest_ruchomy",
+        "procent_bumar",
+        "tryb_pracy",
+        "cykle_zmiana",
+        "dni_robocze"
+      ]
+    },
+    {
+      "id": "rejestracja",
+      "title": "Określ sposób rejestracji, wybierając odpowiednią opcję z tabeli",
+      "icon": "assignment",
+      "fields": [
+        "sposob_rejestracji"
+      ]
+    },
+    {
+      "id": "kd",
+      "title": "Za pomocą kalkulatora wyznacz współczynnik K<sub>d</sub>",
+      "icon": "balance",
+      "fields": [
+        "diagram_kd"
+      ]
+    },
+    {
+      "id": "hdr",
+      "title": "Za pomocą kalkulatora wyznacz współczynnik wysokości",
+      "icon": "height",
+      "fields": [
+        "diagram_hdr"
+      ]
+    },
+    {
+      "id": "s_factor",
+      "title": "Określ współczynnik przebiegu naprężeń S",
+      "icon": "analytics",
+      "fields": [
+        "s_factor"
+      ]
+    },
+    {
+      "id": "ldr",
+      "title": "Za pomocą kalkulatora wyznacz współczynnik wykorzystania wysięgu",
+      "icon": "bar_chart",
+      "fields": [
+        "diagram_ldr"
+      ]
+    },
+    {
+      "id": "inspekcja",
+      "title": "Ocena stanu technicznego",
+      "icon": "fact_check",
+      "fields": [
+        "konstrukcja",
+        "automatyka",
+        "sworznie",
+        "ciegna",
+        "eksploatacja",
+        "szczelnosc",
+        "hamulce"
+      ]
+    }
+  ],
+  "output_fields": {
+    "resurs_wykorzystanie": {
+      "label": "Wykorzystanie resursu",
+      "type": "percentage",
+      "unit": "%"
+    },
+    "resurs_message": {
+      "label": "Status resursu",
+      "type": "text"
+    },
+    "data_prognoza": {
+      "label": "Prognozowana data",
+      "type": "date"
+    },
+    "resurs_prognoza_dni": {
+      "label": "Dni do wyczerpania resursu",
+      "type": "number",
+      "unit": "dni"
+    },
+    "ilosc_cykli_rok": {
+      "label": "Ilość cykli / rok",
+      "type": "number"
+    },
+    "U_WSK": {
+      "label": "Projektowa zdolność U<sub>WSK</sub>",
+      "type": "number"
+    },
+    "T_WSK": {
+      "label": "Projektowa zdolność T<sub>WSK</sub>",
+      "type": "number",
+      "unit": "mth"
+    },
+    "moto_efektywne": {
+      "label": "Efektywne motogodziny",
+      "type": "number",
+      "unit": "mth"
+    },
+    "moto_rok": {
+      "label": "Motogodziny efektywne / rok",
+      "type": "number",
+      "unit": "mth/rok"
+    },
+    "F_X": {
+      "label": "Współczynnik F<sub>X</sub>",
+      "type": "number"
+    },
+    "wsp_kdr": {
+      "label": "Współczynnik widma K<sub>d</sub>",
+      "type": "number"
+    },
+    "stan_obciazenia": {
+      "label": "Stan obciążenia",
+      "type": "text"
+    },
+    "ldr": {
+      "label": "Współczynnik L<sub>DR</sub>",
+      "type": "number"
+    },
+    "hdr": {
+      "label": "Współczynnik H<sub>DR</sub>",
+      "type": "number"
+    }
+  }
+}

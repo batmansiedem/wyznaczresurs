@@ -73,13 +73,13 @@
 const standardFeatures = [
   'Kalkulator zgodny z FEM 9.511 / ISO 4301',
   'Archiwizacja wyników w chmurze',
-  'Aktualizacja danych w kolejnych latach',
+  'Edycja i aktualizacja zapisanych wyników',
   'Wyznaczenie resursu PDF z tabelami i wykresem'
 ]
 const premiumFeatures = [
   'Priorytetowe wsparcie techniczne',
-  'Personalizacja orzeczenia (logo firmy)',
-  'Zbiorcza faktura miesięczna',
+  'Personalizacja obliczeń (logo firmy)',
+  'Historia zakupów i rozliczeń',
   'Nielimitowana liczba urządzeń'
 ]
 </script>

@@ -23,4 +23,9 @@ export default boot(async ({ router, store }) => {
       next()
     }
   })
+
+  router.afterEach((to) => {
+    const title = to.meta?.title
+    document.title = title ? `${title} | wyznaczresurs.com` : 'wyznaczresurs.com'
+  })
 })
