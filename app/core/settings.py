@@ -338,6 +338,16 @@ LOGGING = {
             'level': 'WARNING',
             'propagate': False,
         },
+        'django.core.mail': {
+            'handlers': ['console', 'file_app'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        'allauth': {
+            'handlers': ['console', 'file_app'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
         # Faktury, KSeF, PayPal
         'invoices': {
             'handlers': ['console', 'file_app', 'file_transactions'],
