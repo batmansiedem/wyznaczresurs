@@ -49,5 +49,13 @@ class CreateInvoiceSerializer(serializers.Serializer):
 
 
 class CreateCorrectionSerializer(serializers.Serializer):
-    net_amount = serializers.DecimalField(max_digits=10, decimal_places=2)
+    net_amount   = serializers.DecimalField(max_digits=10, decimal_places=2, required=False)
+    gross_amount = serializers.DecimalField(max_digits=10, decimal_places=2, required=False)
     reason = serializers.CharField(max_length=500)
+
+    def validate(self, attrs):
+        if not attrs.get('net_amount') and not attrs.get('gross_amount'):
+            raise serializers.ValidationError(
+                "Podaj skorygowaną kwotę netto (net_amount) lub brutto (gross_amount)."
+            )
+        return attrs

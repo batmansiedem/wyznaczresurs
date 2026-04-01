@@ -740,6 +740,13 @@
               <div class="col-12 col-sm-6">
                 <q-input v-model.number="invoice.net_amount" label="Kwota netto (PLN) *" outlined dense
                   type="number" min="0" step="0.01" suffix="PLN"
+                  @update:model-value="onNetUpdate"
+                  :rules="[v => v > 0 || 'Kwota musi być większa od 0']" />
+              </div>
+              <div class="col-12 col-sm-6">
+                <q-input v-model.number="invoice.gross_amount" label="Kwota brutto (PLN) *" outlined dense
+                  type="number" min="0" step="0.01" suffix="PLN"
+                  @update:model-value="onGrossUpdate"
                   :rules="[v => v > 0 || 'Kwota musi być większa od 0']" />
               </div>
               <div class="col-12 col-sm-6">
@@ -747,7 +754,7 @@
                   type="number" min="0" suffix="pkt"
                   :rules="[v => v >= 0 || 'Nie może być ujemne']" />
               </div>
-              <div class="col-12">
+              <div class="col-12 col-sm-6">
                 <q-select v-model="invoice.payment_terms" label="Warunki płatności" outlined dense
                   :options="[
                     { label: 'Zapłacono przelewem', value: 'paid' },
@@ -833,12 +840,23 @@
 
           <q-form @submit="submitCorrection">
             <div class="row q-col-gutter-md">
-              <div class="col-12">
+              <div class="col-12 col-sm-6">
                 <q-input
                   v-model.number="correctionForm.net_amount"
                   label="Skorygowana kwota netto (PLN) *"
                   outlined dense type="number" min="0" step="0.01" suffix="PLN"
-                  hint="Wpisz kwotę po korekcie (nie różnicę)"
+                  @update:model-value="onNetUpdateCorrection"
+                  hint="Wpisz kwotę po korekcie"
+                  :rules="[v => v >= 0 || 'Kwota nie może być ujemna']"
+                />
+              </div>
+              <div class="col-12 col-sm-6">
+                <q-input
+                  v-model.number="correctionForm.gross_amount"
+                  label="Skorygowana kwota brutto (PLN) *"
+                  outlined dense type="number" min="0" step="0.01" suffix="PLN"
+                  @update:model-value="onGrossUpdateCorrection"
+                  hint="Wpisz kwotę po korekcie"
                   :rules="[v => v >= 0 || 'Kwota nie może być ujemna']"
                 />
               </div>
@@ -1501,6 +1519,7 @@ const newInvoiceDialog = ref(false)
 const invoiceLoading = ref(false)
 const invoice = ref({
   net_amount: null,
+  gross_amount: null,
   points_to_add: 100,
   is_proforma: false,
   service_name: 'Wyznaczenie resursu UTB GTU_12',
@@ -1513,6 +1532,22 @@ const invoice = ref({
   payment_terms: 'paid'
 })
 
+function onNetUpdate(val) {
+  if (val && val > 0) {
+    invoice.value.gross_amount = Number((val * 1.23).toFixed(2))
+  } else if (!val) {
+    invoice.value.gross_amount = null
+  }
+}
+
+function onGrossUpdate(val) {
+  if (val && val > 0) {
+    invoice.value.net_amount = Number((val / 1.23).toFixed(2))
+  } else if (!val) {
+    invoice.value.net_amount = null
+  }
+}
+
 function openNewInvoiceForUser() {
   const buyer = selectedUser.value
   const name = buyer.company_name || `${buyer.first_name || ''} ${buyer.last_name || ''}`.trim() || buyer.email
@@ -1520,6 +1555,7 @@ function openNewInvoiceForUser() {
 
   invoice.value = {
     net_amount: null,
+    gross_amount: null,
     points_to_add: 100,
     is_proforma: false,
     service_name: 'Wyznaczenie resursu UTB GTU_12',
@@ -1541,6 +1577,7 @@ async function submitInvoice() {
     const payload = {
       user_id: selectedUser.value.id,
       net_amount: invoice.value.net_amount,
+      gross_amount: invoice.value.gross_amount,
       points_to_add: invoice.value.points_to_add,
       is_proforma: invoice.value.is_proforma,
       service_name: invoice.value.service_name,
@@ -1593,7 +1630,23 @@ async function approveProforma(inv) {
 const correctionDialog = ref(false)
 const correctionInvoice = ref(null)
 const correctionLoading = ref(false)
-const correctionForm = ref({ net_amount: null, reason: '' })
+const correctionForm = ref({ net_amount: null, gross_amount: null, reason: '' })
+
+function onNetUpdateCorrection(val) {
+  if (val !== null && val >= 0) {
+    correctionForm.value.gross_amount = Number((val * 1.23).toFixed(2))
+  } else {
+    correctionForm.value.gross_amount = null
+  }
+}
+
+function onGrossUpdateCorrection(val) {
+  if (val !== null && val >= 0) {
+    correctionForm.value.net_amount = Number((val / 1.23).toFixed(2))
+  } else {
+    correctionForm.value.net_amount = null
+  }
+}
 
 function startCorrection(inv) {
   $q.dialog({
@@ -1604,7 +1657,7 @@ function startCorrection(inv) {
     persistent: true
   }).onOk(() => {
     correctionInvoice.value = inv
-    correctionForm.value = { net_amount: null, reason: '' }
+    correctionForm.value = { net_amount: null, gross_amount: null, reason: '' }
     correctionDialog.value = true
   })
 }
@@ -1621,6 +1674,7 @@ async function submitCorrection() {
     try {
       await api.post(`/billing/invoices/${correctionInvoice.value.id}/issue_correction/`, {
         net_amount: correctionForm.value.net_amount,
+        gross_amount: correctionForm.value.gross_amount,
         reason: correctionForm.value.reason
       })
       $q.notify({ type: 'positive', message: 'Faktura korygująca wystawiona i wysłana do KSeF.', position: 'top' })

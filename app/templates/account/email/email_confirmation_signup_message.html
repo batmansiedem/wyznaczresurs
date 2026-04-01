@@ -1,69 +1,23 @@
-<!DOCTYPE html>
-<html lang="pl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@500;700&family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
-    <style>
-        body { margin:0; padding:0; width:100% !important; background-color:#f4f7fa; font-family:'Roboto','Segoe UI',Arial,sans-serif; -webkit-font-smoothing:antialiased; }
-        .email-wrapper { width:100%; background-color:#f4f7fa; padding:40px 0; }
-        .container { max-width:600px; margin:0 auto; background-color:#ffffff; border-radius:8px; overflow:hidden; box-shadow:0 12px 40px rgba(10,25,41,0.12); }
-        .hero { background:linear-gradient(145deg,#1565C0 0%,#0c3c73 100%); color:#ffffff; padding:55px 40px; text-align:center; }
-        .hero-logo { font-size:32px; font-weight:900; letter-spacing:-1px; text-decoration:none; color:#ffffff; }
-        .hero-logo span { color:#90caf9; }
-        .hero-sub { margin-top:15px; font-size:16px; opacity:0.85; font-weight:400; }
-        .compliance-strip { background-color:#0A1929; color:#ffffff; padding:15px 20px; text-align:center; font-family:'Roboto Mono',monospace; font-size:11px; letter-spacing:1px; text-transform:uppercase; border-bottom:2px solid #1976D2; }
-        .content { padding:45px 40px; color:#334155; line-height:1.8; }
-        .formula-box { font-family:'Roboto Mono',monospace; font-size:13px; background-color:rgba(25,118,210,0.06); border-left:4px solid #1976D2; padding:16px 20px; border-radius:0 6px 6px 0; color:#1565C0; margin:25px 0; word-break:break-all; }
-        h2 { font-size:24px; font-weight:900; color:#0A1929; margin-top:0; margin-bottom:20px; line-height:1.2; }
-        .btn-container { margin-top:35px; text-align:center; }
-        .btn { display:inline-block; background-color:#1565C0; color:#ffffff !important; padding:16px 36px; border-radius:4px; text-decoration:none; font-weight:700; font-size:16px; box-shadow:0 4px 15px rgba(21,101,192,0.3); }
-        .footer { background-color:#0A1929; padding:40px; text-align:center; color:rgba(255,255,255,0.5); font-size:12px; }
-        .footer-logo { font-weight:700; color:#ffffff; font-size:14px; margin-bottom:12px; display:block; }
-        .footer a { color:#1976D2; text-decoration:none; }
-    </style>
-</head>
-<body>
-<div class="email-wrapper">
-    <div class="container">
+{% extends "emails/base_email.html" %}
 
-        <div class="hero">
-            <a href="https://wyznaczresurs.pl" class="hero-logo">wyznacz<span>resurs</span>.pl</a>
-            <div class="hero-sub">Aktywacja konta</div>
-        </div>
+{% block email_subject %}Potwierdź adres e-mail{% endblock %}
 
-        <div class="compliance-strip">
-            FEM 9.511 &bull; ISO 4301 &bull; ROZP. MPiT 2018 &bull; UDT
-        </div>
+{% block email_content %}
+    <h2>Potwierdź swój adres e-mail</h2>
+    <p>Dziękujemy za rejestrację w serwisie <strong>wyznaczresurs.com</strong>.</p>
+    <p>Kliknij przycisk poniżej, aby aktywować swoje konto i rozpocząć korzystanie z kalkulatorów resursu UTB.</p>
 
-        <div class="content">
-            <h2>Potwierdź adres e-mail</h2>
-            <p>Dziękujemy za rejestrację w serwisie <strong>wyznaczresurs.pl</strong>.</p>
-            <p>Kliknij przycisk poniżej, aby aktywować konto i rozpocząć wyznaczanie resursu UTB.</p>
-
-            <div class="btn-container">
-                <a href="{{ activate_url }}" class="btn">Aktywuj konto</a>
-            </div>
-
-            <p style="margin-top:32px;font-size:14px;color:#64748b;">Jeśli przycisk nie działa, skopiuj poniższy link do przeglądarki:</p>
-            <div class="formula-box">{{ activate_url }}</div>
-
-            <p style="font-size:13px;color:#94a3b8;">
-                Link jest ważny przez {{ expiration_days }} dni.<br>
-                Jeśli nie zakładałeś/aś konta w naszym serwisie, zignoruj tę wiadomość.
-            </p>
-        </div>
-
-        <div class="footer">
-            <span class="footer-logo">wyznaczresurs.pl</span>
-            Profesjonalny system wyznaczania resursu UTB.<br>
-            Zgodność z normami FEM/ISO i wymogami UDT.<br><br>
-            &copy; {% now "Y" %} Wszystkie prawa zastrzeżone.
-        </div>
-
+    <div class="btn-container">
+        <a href="{{ activate_url }}" class="btn">Aktywuj konto</a>
     </div>
-</div>
-</body>
-</html>
+
+    <p style="margin-top:32px; font-size:14px; color:#64748b;">Jeśli przycisk powyżej nie działa, skopiuj i wklej poniższy link do przeglądarki:</p>
+    <div style="font-family: 'Roboto Mono', monospace; font-size: 13px; background-color: rgba(25, 118, 210, 0.06); border-left: 4px solid #1976D2; padding: 16px 20px; border-radius: 0 6px 6px 0; color: #1565C0; margin: 25px 0; word-break: break-all;">
+        {{ activate_url }}
+    </div>
+
+    <p style="font-size:13px; color:#94a3b8; margin-top: 20px;">
+        Link jest ważny przez {{ expiration_days }} dni.<br>
+        Jeśli nie zakładałeś/aś konta w naszym serwisie, możesz bezpiecznie zignorować tę wiadomość.
+    </p>
+{% endblock %}

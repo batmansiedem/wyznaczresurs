@@ -162,12 +162,7 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 # Konfiguracja E-mail
-if DEBUG:
-    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-else:
-    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-
-EMAIL_HOST          = os.environ.get('EMAIL_HOST', 'localhost')
+EMAIL_HOST          = os.environ.get('EMAIL_HOST', '')
 EMAIL_PORT          = int(os.environ.get('EMAIL_PORT', '587'))
 EMAIL_USE_TLS       = os.environ.get('EMAIL_USE_TLS', 'False') == 'True'
 EMAIL_USE_SSL       = os.environ.get('EMAIL_USE_SSL', 'False') == 'True'
@@ -175,8 +170,15 @@ EMAIL_HOST_USER     = os.environ.get('EMAIL_HOST_USER', '')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
 EMAIL_TIMEOUT       = 10  # sekundy — timeout połączenia SMTP
 
-DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'noreply@wyznaczresurs.pl')
-SITEEMAIL          = os.environ.get('SITE_EMAIL', 'kontakt@wyznaczresurs.pl')
+if EMAIL_HOST:
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+else:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'noreply@wyznaczresurs.com')
+SITEEMAIL          = os.environ.get('SITE_EMAIL', 'kontakt@wyznaczresurs.com')
+SITE_NAME          = 'wyznaczresurs.com'
+
 
 # ==============================================================================
 # KONFIGURACJA API (DRF & JWT)
@@ -226,7 +228,7 @@ ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
-ACCOUNT_EMAIL_VERIFICATION = os.environ.get('ACCOUNT_EMAIL_VERIFICATION', 'none')
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
 ACCOUNT_SIGNUP_PASSWORD_ENTER_TWICE = True
 ACCOUNT_ADAPTER = 'users.adapter.CustomAccountAdapter'
 

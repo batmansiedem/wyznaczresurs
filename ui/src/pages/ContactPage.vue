@@ -122,7 +122,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useUserStore } from 'stores/user-store'
 import { api } from 'boot/axios'
 import { Notify, useMeta } from 'quasar'
@@ -150,6 +150,20 @@ const contactItems = [
   { icon: 'phone',    label: 'Telefon',      value: '+48 666 625 752' },
   { icon: 'schedule', label: 'Godziny pracy',value: 'Poniedziałek – Piątek', note: '8:00 – 17:00' }
 ]
+
+function prefillForm() {
+  if (userStore.isLoggedIn && userStore.user) {
+    const u = userStore.user
+    form.value.name = u.company_name || `${u.first_name || ''} ${u.last_name || ''}`.trim()
+    form.value.email = u.email || ''
+    // Jeśli w modelu User nie ma telefonu, zostanie puste
+    form.value.phone = u.phone || ''
+  }
+}
+
+onMounted(() => {
+  prefillForm()
+})
 
 const onSubmit = async () => {
   loading.value = true

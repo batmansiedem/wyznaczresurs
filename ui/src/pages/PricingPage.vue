@@ -476,8 +476,8 @@ const initPaypal = async () => {
 
   try {
     await loadPaypalSdk()
-    await nextTick()
     paypalLoading.value = false
+    await nextTick()  // poczekaj aż Vue wyrenderuje #paypal-button-container
 
     window.paypal.Buttons({
       style: { layout: 'vertical', color: 'blue', shape: 'rect', label: 'pay' },

@@ -233,9 +233,14 @@ class InvoiceViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         data = serializer.validated_data
 
-        net = data["net_amount"]
-        vat = (net * Decimal("0.23")).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
-        gross = net + vat
+        if data.get("gross_amount"):
+            gross = data["gross_amount"]
+            net   = (gross / Decimal("1.23")).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+            vat   = gross - net
+        else:
+            net   = data["net_amount"]
+            vat   = (net * Decimal("0.23")).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+            gross = net + vat
 
         now = datetime.datetime.now()
         correction_number = f"KOR/{now.year}/{now.month:02d}/{str(uuid.uuid4())[:8].upper()}"

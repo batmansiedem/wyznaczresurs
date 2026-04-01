@@ -583,13 +583,12 @@ class DzwigCalculator(BaseCalculator):
             prognoza = Decimal('-0.25') * resurs + Decimal('25')
         prognoza = prognoza.to_integral_value(rounding='ROUND_FLOOR')
 
-        data_prognoza = date.today() + timedelta(days=int(prognoza * 365)) # Assuming prognoza is in years
-
+        data_prognoza = (date.today() + timedelta(days=int(prognoza * 365))).isoformat()
 
         zalecenia = "Resurs nie został osiągnięty"
         if resurs >= 100:
             zalecenia = "Resurs został osiągnięty. Zaleca się wykonanie przeglądu specjalnego"
-            data_prognoza = date.today().isoformat() # If resurs achieved, prognosis is today
+            data_prognoza = date.today().isoformat()
 
         self.output_data.update({
             'resurs': resurs,

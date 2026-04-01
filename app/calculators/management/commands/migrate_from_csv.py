@@ -28,6 +28,25 @@ import logging
 from pathlib import Path
 from datetime import datetime
 
+# Kolejność kodowań do próby — cp1250 pierwsze, bo to standard phpMyAdmin z polskich hostingów
+_ENCODINGS_TO_TRY = ['cp1250', 'iso-8859-2', 'utf-8']
+
+
+def _read_text(path: Path, encoding: str = '') -> str:
+    """Odczytuje plik tekstowy z auto-detekcją kodowania."""
+    if encoding:
+        return path.read_text(encoding=encoding, errors='replace')
+    for enc in _ENCODINGS_TO_TRY:
+        try:
+            text = path.read_text(encoding=enc, errors='strict')
+            logger_csv = logging.getLogger(__name__)
+            logger_csv.info("Plik %s odczytany z kodowaniem %s", path.name, enc)
+            return text
+        except (UnicodeDecodeError, LookupError):
+            continue
+    # ostateczny fallback
+    return path.read_text(encoding='utf-8', errors='replace')
+
 from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
 from django.db import transaction
@@ -128,16 +147,44 @@ NUMERIC_NORMALIZE = {
     'ostatni_resurs_mech_prz', 'ostatni_resurs_mech_mas',
 }
 
+# Fallback gdy device_config nie ma opcji dla danego pola (z polskimi znakami)
 INSPECTION_FALLBACK = {
-    'konstrukcja':  {1: 'Brak uszkodzen', 0: 'Uszkodzenia',   -1: 'Nie dotyczy'},
-    'automatyka':   {1: 'Brak uszkodzen', 0: 'Uszkodzenia',   -1: 'Nie dotyczy'},
-    'sworznie':     {1: 'Prawidlowy',     0: 'Nieprawidlowy',  -1: 'Prawidlowy'},
-    'ciegna':       {1: 'Brak uszkodzen', 0: 'Uszkodzenia',   -1: 'Nie dotyczy'},
-    'eksploatacja': {1: 'Zgodne',         0: 'Niezgodne',     -1: 'Nie dotyczy'},
-    'szczelnosc':   {1: 'Szczelny',       0: 'Nieszczelny',   -1: 'Nie dotyczy'},
-    'hamulce':      {1: 'Sprawne',        0: 'Niesprawne',    -1: 'Nie dotyczy'},
-    'nakretka':     {1: 'Sprawna',        0: 'Niesprawna',    -1: 'Nie dotyczy'},
+    'konstrukcja':  {1: 'Brak uszkodzeń', 0: 'Uszkodzenia',    -1: 'Nie dotyczy'},
+    'automatyka':   {1: 'Brak uszkodzeń', 0: 'Uszkodzenia',    -1: 'Nie dotyczy'},
+    'sworznie':     {1: 'Prawidłowy',     0: 'Nieprawidłowy',   -1: 'Prawidłowy'},
+    'ciegna':       {1: 'Brak uszkodzeń', 0: 'Uszkodzenia',    -1: 'Nie dotyczy'},
+    'eksploatacja': {1: 'Zgodne',         0: 'Niezgodne',      -1: 'Nie dotyczy'},
+    'szczelnosc':   {1: 'Szczelny',       0: 'Nieszczelny',    -1: 'Nie dotyczy'},
+    'hamulce':      {1: 'Sprawne',        0: 'Niesprawne',     -1: 'Nie dotyczy'},
+    'nakretka':     {1: 'Sprawna',        0: 'Niesprawna',     -1: 'Nie dotyczy'},
 }
+
+# Mapa per-slug z prawdziwymi opcjami z device_config (ładowana raz przy starcie)
+def _build_inspection_map() -> dict:
+    try:
+        from calculators.device_config import get_all_configs
+        all_configs = get_all_configs()
+    except Exception:
+        return {}
+    result = {}
+    for slug, config in all_configs.items():
+        fields = config.get('fields', {})
+        slug_map = {}
+        for fname, fdef in fields.items():
+            if fname not in INSPECTION_FIELDS:
+                continue
+            opts = fdef.get('options', [])
+            if len(opts) >= 2:
+                slug_map[fname] = {
+                    1:  opts[0],
+                    0:  opts[1],
+                    -1: opts[2] if len(opts) > 2 else opts[0],
+                }
+        if slug_map:
+            result[slug] = slug_map
+    return result
+
+_INSPECTION_MAP = _build_inspection_map()
 
 
 # ---------------------------------------------------------------------------
@@ -157,14 +204,14 @@ def _parse_csv_value(s: str):
         return s if s else None
 
 
-def parse_multitable_csv(file_path: Path) -> list[tuple[str, list[dict]]]:
+def parse_multitable_csv(file_path: Path, encoding: str = '') -> list[tuple[str, list[dict]]]:
     """
     Parsuje plik CSV z wieloma tabelami (phpMyAdmin export).
     Każda tabela zaczyna się nowym wierszem nagłówkowym (id;username;...).
 
     Zwraca listę krotek (slug, rows_list) w kolejności SECTION_SLUGS.
     """
-    content = file_path.read_text(encoding='utf-8', errors='replace')
+    content = _read_text(file_path, encoding=encoding)
     lines = content.splitlines()
 
     sections_raw = []       # lista list wierszy (per sekcja)
@@ -246,12 +293,15 @@ def _normalize_numeric(val):
         return val
 
 
-def _convert_inspection(key: str, val) -> str:
+def _convert_inspection(key: str, val, slug: str = '') -> str:
     try:
         int_val = int(float(val))
     except (ValueError, TypeError):
         return val
-    field_map = INSPECTION_FALLBACK.get(key)
+    # Szukaj w per-slug mapie (z prawdziwymi opcjami z JSON)
+    field_map = _INSPECTION_MAP.get(slug, {}).get(key)
+    if not field_map:
+        field_map = INSPECTION_FALLBACK.get(key)
     if not field_map:
         return val
     return field_map.get(int_val, field_map.get(1))
@@ -259,7 +309,7 @@ def _convert_inspection(key: str, val) -> str:
 
 def _wrap_value(key: str, val, slug: str, row: dict) -> object:
     if key in INSPECTION_FIELDS:
-        return _convert_inspection(key, val)
+        return _convert_inspection(key, val, slug)
     if key in BINARY_TAK_NIE:
         try:
             return 'Tak' if int(float(val)) != 0 else 'Nie'
@@ -529,11 +579,18 @@ class Command(BaseCommand):
         parser.add_argument('--dry-run',     action='store_true')
         parser.add_argument('--skip-users',  action='store_true')
         parser.add_argument('--skip-calcs',  action='store_true')
+        parser.add_argument('--encoding',    type=str, default='',
+                            help='Kodowanie plików CSV (np. cp1250, utf-8). Domyślnie: auto-detekcja.')
 
     def handle(self, *args, **options):
         dry_run = options['dry_run']
+        enc = options['encoding']
         if dry_run:
             self.stdout.write(self.style.WARNING("=== DRY RUN — nic nie zapisuję ==="))
+        if enc:
+            self.stdout.write(f"Kodowanie: {enc} (ręcznie)")
+        else:
+            self.stdout.write(f"Kodowanie: auto-detekcja (kolejność: {', '.join(_ENCODINGS_TO_TRY)})")
 
         username_map = {}
 
@@ -545,7 +602,7 @@ class Command(BaseCommand):
                 return
             self.stdout.write(f"\n--- IMPORT UŻYTKOWNIKÓW ({members_path.name}) ---")
             rows = list(csv.DictReader(
-                members_path.read_text(encoding='utf-8', errors='replace').splitlines(),
+                _read_text(members_path, encoding=enc).splitlines(),
                 delimiter=';', quotechar='"',
             ))
             # Przekształć wszystkie wartości przez _parse_csv_value
@@ -556,7 +613,7 @@ class Command(BaseCommand):
             if members_path.exists():
                 self.stdout.write("Pomijam import — ładuję istniejących użytkowników...")
                 rows = list(csv.DictReader(
-                    members_path.read_text(encoding='utf-8', errors='replace').splitlines(),
+                    _read_text(members_path, encoding=enc).splitlines(),
                     delimiter=';', quotechar='"',
                 ))
                 for row in rows:
@@ -578,7 +635,7 @@ class Command(BaseCommand):
                 self.stderr.write(self.style.ERROR(f"Nie znaleziono: {calcs_path}"))
                 return
             self.stdout.write(f"\n--- IMPORT WYNIKÓW ({calcs_path.name}) ---")
-            sections = parse_multitable_csv(calcs_path)
+            sections = parse_multitable_csv(calcs_path, encoding=enc)
             self.stdout.write(f"Znaleziono {len(sections)} sekcji (tabel).")
             for i, (slug, rows) in enumerate(sections):
                 self.stdout.write(f"  Sekcja {i+1:2d}: {slug} ({len(rows)} wierszy)")
