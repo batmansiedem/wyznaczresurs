@@ -67,12 +67,19 @@ def _get_session_token() -> str:
         headers={"Content-Type": "application/json", "Accept": "application/json"},
         timeout=15,
     )
+    logger.debug("KSeF AuthorisationChallenge status=%d body=%s",
+                 challenge_resp.status_code, challenge_resp.text[:500])
     if not challenge_resp.ok:
         logger.error("KSeF AuthorisationChallenge błąd %d: %s",
                      challenge_resp.status_code, challenge_resp.text[:300])
         challenge_resp.raise_for_status()
 
-    challenge_data = challenge_resp.json()
+    try:
+        challenge_data = challenge_resp.json()
+    except Exception:
+        logger.error("KSeF AuthorisationChallenge — odpowiedź nie jest JSON (status=%d): %s",
+                     challenge_resp.status_code, challenge_resp.text[:500])
+        raise
     challenge_hex  = challenge_data["challenge"]     # np. "0000000012345678901234567890"
     timestamp      = challenge_data["timestamp"]     # ISO datetime
     logger.debug("KSeF: challenge=%s timestamp=%s", challenge_hex[:16], timestamp)
