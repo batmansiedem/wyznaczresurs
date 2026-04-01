@@ -540,7 +540,7 @@ def _poll_session_status(access_token: str, session_ref: str) -> None:
     """
     for attempt in range(UPO_MAX_RETRIES):
         resp = requests.get(
-            _api_url(f"/sessions/status/{session_ref}"),
+            _api_url(f"/sessions/online/{session_ref}"),
             headers={
                 "Authorization": f"Bearer {access_token}",
                 "Accept":        "application/json",
