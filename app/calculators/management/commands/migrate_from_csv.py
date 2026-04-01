@@ -28,8 +28,8 @@ import logging
 from pathlib import Path
 from datetime import datetime
 
-# Kolejność kodowań do próby — cp1250 pierwsze, bo to standard phpMyAdmin z polskich hostingów
-_ENCODINGS_TO_TRY = ['cp1250', 'iso-8859-2', 'utf-8']
+# Kolejność kodowań do próby — utf-8-sig/utf-8 pierwsze (nowe pliki), potem cp1250/iso dla starszych exportów phpMyAdmin
+_ENCODINGS_TO_TRY = ['utf-8-sig', 'utf-8', 'cp1250', 'iso-8859-2']
 
 
 def _read_text(path: Path, encoding: str = '') -> str:
