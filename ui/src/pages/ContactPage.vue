@@ -168,7 +168,7 @@ onMounted(() => {
 const onSubmit = async () => {
   loading.value = true
   try {
-    await api.post('/contacts/', form.value)
+    await api.post('/contacts/send/', form.value)
     Notify.create({ type: 'positive', message: 'Wiadomość wysłana!' })
     form.value = { name: '', email: '', phone: '', subject: 'Zapytanie o ofertę', message: '' }
   } catch {

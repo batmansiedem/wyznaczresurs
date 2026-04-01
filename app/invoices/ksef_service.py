@@ -533,6 +533,43 @@ def _poll_invoice_status(access_token: str, invoice_ref: str) -> dict:
 # Publiczny interfejs
 # ===========================================================================
 
+def _poll_session_status(access_token: str, session_ref: str) -> None:
+    """
+    Polluje status sesji aż będzie gotowa (100 - Aktywna).
+    W API 2.0 status 415 w wysyłce oznacza, że sesja nie jest jeszcze w pełni 'Started'.
+    """
+    for attempt in range(UPO_MAX_RETRIES):
+        resp = requests.get(
+            _api_url(f"/sessions/online/{session_ref}/status"),
+            headers={
+                "Authorization": f"Bearer {access_token}",
+                "Accept":        "application/json",
+            },
+            timeout=15,
+        )
+        if not resp.ok:
+            logger.warning("KSeF session/status błąd %d (próba %d): %s",
+                           resp.status_code, attempt + 1, resp.text[:300])
+            time.sleep(UPO_RETRY_DELAY)
+            continue
+
+        data = resp.json()
+        # Status sesji online
+        status_code = data.get("status", {}).get("code")
+        logger.debug("KSeF session/status (próba %d): status.code=%s", attempt + 1, status_code)
+
+        if status_code == 100:
+            return  # Sesja aktywna, można słać
+        
+        if status_code and int(status_code) >= 400:
+            desc = data.get("status", {}).get("description", "")
+            raise RuntimeError(f"KSeF: sesja online nieudana (code={status_code}): {desc}")
+
+        time.sleep(UPO_RETRY_DELAY)
+    
+    raise TimeoutError(f"KSeF: timeout oczekiwania na aktywację sesji {session_ref}")
+
+
 def _do_submit(invoice, is_correction: bool) -> None:
     """Wspólna logika wysyłki faktury/korekty."""
     access_token = None
@@ -547,8 +584,8 @@ def _do_submit(invoice, is_correction: bool) -> None:
 
         session_ref  = _open_online_session(access_token, aes_key, aes_iv)
         
-        # Krótka pauza, aby upewnić się, że sesja jest aktywna w systemie KSeF
-        time.sleep(2)
+        # Kluczowe: czekamy aż sesja będzie w stanie 100 (Aktywna)
+        _poll_session_status(access_token, session_ref)
 
         xml_bytes    = _build_fa3_xml(invoice, is_correction=is_correction)
         invoice_ref  = _send_invoice_to_session(access_token, session_ref, xml_bytes, aes_key, aes_iv)

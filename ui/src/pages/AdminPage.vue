@@ -770,7 +770,7 @@
                   v-model="invoice.use_custom_buyer"
                   icon="business"
                   label="Inny Nabywca / Odbiorca (np. Samorząd)"
-                  header-class="bg-grey-2 rounded-borders"
+                  header-class="rounded-borders"
                   class="rounded-borders border-grey shadow-1"
                 >
                   <q-card>
