@@ -480,56 +480,92 @@ def _close_online_session(access_token: str, session_ref: str) -> None:
 
 def _poll_invoice_status(access_token: str, session_ref: str, invoice_ref: str) -> dict:
     """
-    Polluje status faktury aż do akceptacji lub odrzucenia.
-    Wykorzystuje endpoint sesji interaktywnej (online) KSeF API 2.0.
-    Zwraca dict: {'status': 'accepted'|'rejected', 'ksef_ref': '...'}
+    Stabilny polling KSeF API 2.0:
+    - obsługuje 404 jako "jeszcze nie gotowe"
+    - fallback do endpointu globalnego /invoices/{ref}
     """
+
     for attempt in range(UPO_MAX_RETRIES):
-        resp = requests.get(
-            _api_url(f"/sessions/online/{session_ref}/invoices/{invoice_ref}"),
-            headers={
-                "Authorization": f"Bearer {access_token}",
-                "Accept":        "application/json",
-            },
-            timeout=15,
-        )
-        if not resp.ok:
-            logger.warning("KSeF session/invoice/status błąd %d (próba %d): %s",
-                           resp.status_code, attempt + 1, resp.text[:300])
-            time.sleep(UPO_RETRY_DELAY)
-            continue
-
-        data = resp.json()
-        logger.debug("KSeF session/invoice/status (próba %d): %s", attempt + 1, data)
-
-        # Obsługa różnych formatów odpowiedzi (API 2.0)
-        code = (
-            data.get("processingCode")
-            or data.get("status", {}).get("code")
-        )
-        ksef_ref = (
-            data.get("ksefReferenceNumber")
-            or data.get("elementReferenceNumber")
-            or invoice_ref
-        )
-
-        if code == 200:
-            return {'status': 'accepted', 'ksef_ref': ksef_ref}
-        if code and int(code) >= 400:
-            reason = (
-                data.get("processingDescription")
-                or data.get("status", {}).get("description", "")
+        try:
+            # 1️⃣ Endpoint sesji
+            resp = requests.get(
+                _api_url(f"/sessions/online/{session_ref}/invoices/{invoice_ref}"),
+                headers={
+                    "Authorization": f"Bearer {access_token}",
+                    "Accept":        "application/json",
+                },
+                timeout=15,
             )
-            logger.error("KSeF: faktura odrzucona: %s", reason)
-            return {'status': 'rejected', 'ksef_ref': ksef_ref, 'reason': reason}
+
+            # 🟡 404 = normalne (jeszcze nie przetworzone)
+            if resp.status_code == 404:
+                logger.debug(
+                    "KSeF: 404 (sesja) — faktura jeszcze niedostępna (próba %d)",
+                    attempt + 1
+                )
+
+                # 🔁 fallback do globalnego endpointu
+                global_resp = requests.get(
+                    _api_url(f"/invoices/{invoice_ref}"),
+                    headers={
+                        "Authorization": f"Bearer {access_token}",
+                        "Accept":        "application/json",
+                    },
+                    timeout=15,
+                )
+
+                if global_resp.status_code == 404:
+                    time.sleep(UPO_RETRY_DELAY)
+                    continue
+
+                resp = global_resp
+
+            if not resp.ok:
+                logger.warning(
+                    "KSeF status błąd %d (próba %d): %s",
+                    resp.status_code,
+                    attempt + 1,
+                    resp.text[:300],
+                )
+                time.sleep(UPO_RETRY_DELAY)
+                continue
+
+            data = resp.json()
+            logger.debug("KSeF status OK (próba %d): %s", attempt + 1, data)
+
+            code = (
+                data.get("processingCode")
+                or data.get("status", {}).get("code")
+            )
+
+            ksef_ref = (
+                data.get("ksefReferenceNumber")
+                or data.get("elementReferenceNumber")
+                or invoice_ref
+            )
+
+            if code == 200:
+                return {"status": "accepted", "ksef_ref": ksef_ref}
+
+            if code and int(code) >= 400:
+                reason = (
+                    data.get("processingDescription")
+                    or data.get("status", {}).get("description", "")
+                )
+                return {
+                    "status": "rejected",
+                    "ksef_ref": ksef_ref,
+                    "reason": reason,
+                }
+
+        except Exception as e:
+            logger.warning("KSeF polling wyjątek (próba %d): %s", attempt + 1, e)
 
         time.sleep(UPO_RETRY_DELAY)
 
     raise TimeoutError(
-        f"KSeF: timeout oczekiwania na akceptację faktury ({UPO_MAX_RETRIES * UPO_RETRY_DELAY}s)"
+        f"KSeF: timeout ({UPO_MAX_RETRIES * UPO_RETRY_DELAY}s) oczekiwania na status faktury"
     )
-
-
 # ===========================================================================
 # Publiczny interfejs
 # ===========================================================================
@@ -549,15 +585,23 @@ def _do_submit(invoice, is_correction: bool) -> None:
 
         session_ref  = _open_online_session(access_token, aes_key, aes_iv)
 
-        xml_bytes    = _build_fa3_xml(invoice, is_correction=is_correction)
-        invoice_ref  = _send_invoice_to_session(access_token, session_ref, xml_bytes, aes_key, aes_iv)
+        xml_bytes = _build_fa3_xml(invoice, is_correction=is_correction)
+        invoice_ref = _send_invoice_to_session(
+            access_token,
+            session_ref,
+            xml_bytes,
+            aes_key,
+            aes_iv,
+        )
+
+        time.sleep(1)
 
         # Przechowujemy session_ref do pollingu
         current_session_ref = session_ref
 
         _close_online_session(access_token, session_ref)
         session_ref = None  # zamknięta — nie zamykaj ponownie w finally
-
+        time.sleep(5)
         result = _poll_invoice_status(access_token, current_session_ref, invoice_ref)
 
         if result['status'] == 'accepted':
