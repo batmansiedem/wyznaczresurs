@@ -202,7 +202,7 @@ class InvoiceViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=["post"])
     @transaction.atomic
     def issue_correction(self, request, pk=None):
-        """Wystawia ustrukturyzowaną fakturę korygującą (FA(2)) i wysyła do KSeF."""
+        """Wystawia ustrukturyzowaną fakturę korygującą (FA(3)) i wysyła do KSeF."""
         if not request.user.is_staff:
             return Response({"detail": "Brak uprawnień."}, status=status.HTTP_403_FORBIDDEN)
 

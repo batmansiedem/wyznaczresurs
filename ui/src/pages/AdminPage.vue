@@ -881,7 +881,7 @@
               <div class="col-12">
                 <q-banner dense class="bg-orange-1 text-warning rounded-borders">
                   <template #avatar><q-icon name="warning" color="warning" /></template>
-                  Faktura korygująca zostanie wysłana do <strong>KSeF</strong> jako dokument ustrukturyzowany FA(2).
+                  Faktura korygująca zostanie wysłana do <strong>KSeF</strong> jako dokument ustrukturyzowany FA(3).
                 </q-banner>
               </div>
               <div class="col-12">

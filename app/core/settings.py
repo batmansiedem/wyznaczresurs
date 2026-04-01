@@ -170,12 +170,21 @@ EMAIL_HOST_USER     = os.environ.get('EMAIL_HOST_USER', '')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
 EMAIL_TIMEOUT       = 10  # sekundy — timeout połączenia SMTP
 
+# Obejście dla Python 3.14+ (problemy z weryfikacją certyfikatu Basic Constraints)
+if os.environ.get('EMAIL_SSL_NO_VERIFY', 'True') == 'True':
+    import ssl
+    context = ssl._create_unverified_context()
+    EMAIL_SSL_CONTEXT = context
+
 if EMAIL_HOST:
-    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    if os.environ.get('EMAIL_SSL_NO_VERIFY', 'True') == 'True':
+        EMAIL_BACKEND = 'core.email_backend.UnverifiedSSLEmailBackend'
+    else:
+        EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 else:
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
-DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'noreply@wyznaczresurs.com')
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'info@wyznaczresurs.com')
 SITEEMAIL          = os.environ.get('SITE_EMAIL', 'kontakt@wyznaczresurs.com')
 SITE_NAME          = 'wyznaczresurs.com'
 
@@ -278,10 +287,10 @@ BACKUP_DIR       = os.environ.get('BACKUP_DIR', str(BASE_DIR / 'backups'))
 BACKUP_KEEP_LAST = int(os.environ.get('BACKUP_KEEP_LAST', '30'))
 
 # KSeF — Krajowy System e-Faktur
-KSEF_SANDBOX = os.environ.get('KSEF_SANDBOX', 'True') == 'True'
+KSEF_SANDBOX = os.environ.get('KSEF_SANDBOX', 'True') != 'False'
 KSEF_NIP     = os.environ.get('KSEF_NIP', '')
 KSEF_TOKEN   = os.environ.get('KSEF_TOKEN', '')
-KSEF_API_URL = 'https://ksef-test.mf.gov.pl' if KSEF_SANDBOX else 'https://ksef.mf.gov.pl'
+KSEF_API_URL = 'https://api-test.ksef.mf.gov.pl/v2' if KSEF_SANDBOX else 'https://api.ksef.mf.gov.pl/v2'
 
 # ==============================================================================
 # LOGOWANIE (LOGGING)

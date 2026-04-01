@@ -3011,3 +3011,14 @@ django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: 'localhost:8000
 [2026-04-01 18:05:00] INFO calculators: Dodano użytkownika: dallisongude83@hotmail.com (premium=0)
 [2026-04-01 18:05:00] INFO calculators: Dodano użytkownika: yonuyu_fopepo45@hotmail.com (premium=0)
 [2026-04-01 18:05:00] INFO calculators.management.commands.migrate_from_csv: Plik u685896714_calculators.csv odczytany z kodowaniem utf-8-sig
+[2026-04-01 20:11:18] INFO invoices.ksef: KSeF: rozpoczynam autoryzację (sandbox=False, NIP=7691427583)
+[2026-04-01 20:11:20] INFO invoices.ksef: KSeF: uzyskano accessToken (...HlcKjaR_U18Q)
+[2026-04-01 20:11:21] INFO invoices.ksef: KSeF: sesja online otwarta, ref=20260401-SO-3E726B4000-9DA62A7BAB-57
+[2026-04-01 20:11:21] ERROR invoices.ksef: KSeF /invoices — odpowiedź: {"exception":{"exceptionDetailList":[{"exceptionCode":21180,"exceptionDescription":"Status sesji nie pozwala na wykonanie operacji.","details":["Status sesji (415) uniemożliwia wysyłkę faktur."]}],"serviceCode":"00-f9ae734489037fba2c6cf1396ad973a4-b6e5fff38c48095f-00","timestamp":"2026-04-01T18:11:20.7908912Z"}}
+[2026-04-01 20:25:14] INFO invoices.ksef: KSeF: rozpoczynam autoryzację (sandbox=False, NIP=7691427583)
+[2026-04-01 20:25:16] INFO invoices.ksef: KSeF: uzyskano accessToken (...PbUs4PDFrCgc)
+[2026-04-01 20:25:16] INFO invoices.ksef: KSeF: sesja online otwarta, ref=20260401-SO-3F3E5A1000-2E03FFA422-E0
+[2026-04-01 20:25:16] ERROR invoices.ksef: KSeF /invoices — odpowiedź: {"exception":{"exceptionDetailList":[{"exceptionCode":21180,"exceptionDescription":"Status sesji nie pozwala na wykonanie operacji.","details":["Status sesji (415) uniemożliwia wysyłkę faktur."]}],"serviceCode":"00-12216c9378036556149913531e79827e-e0a27e6629d96293-00","timestamp":"2026-04-01T18:25:16.0765497Z"}}
+[2026-04-01 20:28:32] INFO invoices.ksef: KSeF: rozpoczynam autoryzację (sandbox=False, NIP=7691427583)
+[2026-04-01 20:28:32] ERROR invoices.ksef: KSeF /auth/challenge — odpowiedź: 
+[2026-04-01 20:34:26] INFO invoices.ksef: KSeF: rozpoczynam autoryzację (sandbox=True, NIP=7691427583)
