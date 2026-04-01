@@ -159,9 +159,14 @@ class InvoiceViewSet(viewsets.ModelViewSet):
         data = serializer.validated_data
 
         target_user = User.objects.get(id=data["user_id"])
-        net = data["net_amount"]
-        vat = (net * Decimal("0.23")).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
-        gross = net + vat
+        if data.get("gross_amount"):
+            gross = data["gross_amount"]
+            net   = (gross / Decimal("1.23")).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+            vat   = gross - net
+        else:
+            net   = data["net_amount"]
+            vat   = (net * Decimal("0.23")).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+            gross = net + vat
 
         is_pro = data.get("is_proforma", False)
         prefix = "PF" if is_pro else "FV"

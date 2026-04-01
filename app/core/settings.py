@@ -7,6 +7,7 @@ Poziom bezpieczeństwa: WYSOKI (HttpOnly Cookies, CSRF, Password Policy, Brute-f
 from pathlib import Path
 from datetime import timedelta
 import os
+import logging.handlers
 from dotenv import load_dotenv
 
 # Budowanie ścieżek wewnątrz projektu
@@ -168,9 +169,11 @@ else:
 
 EMAIL_HOST          = os.environ.get('EMAIL_HOST', 'localhost')
 EMAIL_PORT          = int(os.environ.get('EMAIL_PORT', '587'))
-EMAIL_USE_TLS       = os.environ.get('EMAIL_USE_TLS', 'True') == 'True'
+EMAIL_USE_TLS       = os.environ.get('EMAIL_USE_TLS', 'False') == 'True'
+EMAIL_USE_SSL       = os.environ.get('EMAIL_USE_SSL', 'False') == 'True'
 EMAIL_HOST_USER     = os.environ.get('EMAIL_HOST_USER', '')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
+EMAIL_TIMEOUT       = 10  # sekundy — timeout połączenia SMTP
 
 DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'noreply@wyznaczresurs.pl')
 SITEEMAIL          = os.environ.get('SITE_EMAIL', 'kontakt@wyznaczresurs.pl')
@@ -277,6 +280,71 @@ KSEF_SANDBOX = os.environ.get('KSEF_SANDBOX', 'True') == 'True'
 KSEF_NIP     = os.environ.get('KSEF_NIP', '')
 KSEF_TOKEN   = os.environ.get('KSEF_TOKEN', '')
 KSEF_API_URL = 'https://ksef-test.mf.gov.pl/api' if KSEF_SANDBOX else 'https://ksef.mf.gov.pl/api'
+
+# ==============================================================================
+# LOGOWANIE (LOGGING)
+# ==============================================================================
+
+LOG_DIR = BASE_DIR / 'logs'
+LOG_DIR.mkdir(exist_ok=True)
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '[{asctime}] {levelname} {name}: {message}',
+            'style': '{',
+            'datefmt': '%Y-%m-%d %H:%M:%S',
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+        'file_app': {
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': str(LOG_DIR / 'app.log'),
+            'maxBytes': 10 * 1024 * 1024,  # 10 MB
+            'backupCount': 5,
+            'formatter': 'verbose',
+            'encoding': 'utf-8',
+        },
+        'file_transactions': {
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': str(LOG_DIR / 'transactions.log'),
+            'maxBytes': 10 * 1024 * 1024,  # 10 MB
+            'backupCount': 10,
+            'formatter': 'verbose',
+            'encoding': 'utf-8',
+        },
+    },
+    'loggers': {
+        # Błędy Django (500, złe zapytania itp.)
+        'django.request': {
+            'handlers': ['console', 'file_app'],
+            'level': 'WARNING',
+            'propagate': False,
+        },
+        # Faktury, KSeF, PayPal
+        'invoices': {
+            'handlers': ['console', 'file_app', 'file_transactions'],
+            'level': 'DEBUG' if DEBUG else 'INFO',
+            'propagate': False,
+        },
+        # Kalkulatory (obliczenia, punkty)
+        'calculators': {
+            'handlers': ['console', 'file_app'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+    },
+    'root': {
+        'handlers': ['console', 'file_app'],
+        'level': 'WARNING',
+    },
+}
 
 # ==============================================================================
 # KONFIGURACJA FAKTUR
