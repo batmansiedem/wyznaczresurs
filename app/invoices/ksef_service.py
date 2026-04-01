@@ -478,14 +478,15 @@ def _close_online_session(access_token: str, session_ref: str) -> None:
         logger.warning("KSeF: nie udało się zamknąć sesji online %s: %s", session_ref, e)
 
 
-def _poll_invoice_status(access_token: str, invoice_ref: str) -> dict:
+def _poll_invoice_status(access_token: str, session_ref: str, invoice_ref: str) -> dict:
     """
     Polluje status faktury aż do akceptacji lub odrzucenia.
+    Wykorzystuje endpoint sesji interaktywnej (online) KSeF API 2.0.
     Zwraca dict: {'status': 'accepted'|'rejected', 'ksef_ref': '...'}
     """
     for attempt in range(UPO_MAX_RETRIES):
         resp = requests.get(
-            _api_url(f"/invoices/{invoice_ref}/status"),
+            _api_url(f"/sessions/online/{session_ref}/invoices/{invoice_ref}"),
             headers={
                 "Authorization": f"Bearer {access_token}",
                 "Accept":        "application/json",
@@ -493,15 +494,15 @@ def _poll_invoice_status(access_token: str, invoice_ref: str) -> dict:
             timeout=15,
         )
         if not resp.ok:
-            logger.warning("KSeF invoice/status błąd %d (próba %d): %s",
+            logger.warning("KSeF session/invoice/status błąd %d (próba %d): %s",
                            resp.status_code, attempt + 1, resp.text[:300])
             time.sleep(UPO_RETRY_DELAY)
             continue
 
         data = resp.json()
-        logger.debug("KSeF invoice/status (próba %d): %s", attempt + 1, data)
+        logger.debug("KSeF session/invoice/status (próba %d): %s", attempt + 1, data)
 
-        # Obsługa różnych formatów odpowiedzi
+        # Obsługa różnych formatów odpowiedzi (API 2.0)
         code = (
             data.get("processingCode")
             or data.get("status", {}).get("code")
@@ -551,10 +552,13 @@ def _do_submit(invoice, is_correction: bool) -> None:
         xml_bytes    = _build_fa3_xml(invoice, is_correction=is_correction)
         invoice_ref  = _send_invoice_to_session(access_token, session_ref, xml_bytes, aes_key, aes_iv)
 
+        # Przechowujemy session_ref do pollingu
+        current_session_ref = session_ref
+
         _close_online_session(access_token, session_ref)
         session_ref = None  # zamknięta — nie zamykaj ponownie w finally
 
-        result = _poll_invoice_status(access_token, invoice_ref)
+        result = _poll_invoice_status(access_token, current_session_ref, invoice_ref)
 
         if result['status'] == 'accepted':
             invoice.ksef_status           = "accepted"
