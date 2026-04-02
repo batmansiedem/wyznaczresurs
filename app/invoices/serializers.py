@@ -24,25 +24,18 @@ class InvoiceSerializer(serializers.ModelSerializer):
         from django.conf import settings
         import re
         
-        # Inteligente wykrywanie środowiska: jeśli numer kończy się na -8C (test) lub sandbox jest True
+        # Wykrywanie środowiska: numer -8C sugeruje testy
         is_test_invoice = obj.ksef_reference_number and obj.ksef_reference_number.endswith('-8C')
         is_sandbox_mode = getattr(settings, 'KSEF_SANDBOX', True)
         
-        if is_test_invoice or is_sandbox_mode:
-            base = 'https://qr-test.ksef.mf.gov.pl/invoice'
-        else:
-            base = 'https://qr.ksef.mf.gov.pl/invoice'
-            
+        base = 'https://qr-test.ksef.mf.gov.pl/invoice' if (is_test_invoice or is_sandbox_mode) else 'https://qr.ksef.mf.gov.pl/invoice'
+        
+        # Oficjalny format FA(3): /invoice/{NIP}/{DATA}/{HASH}
+        nip = "".join(re.findall(r'\d+', settings.KSEF_NIP))
+        date_str = obj.issue_date.strftime('%d-%m-%Y')
         inv_hash = obj.ksef_invoice_hash.replace('+', '-').replace('/', '_').rstrip('=')
         
-        if obj.ksef_reference_number:
-            # Format dla faktur z numerem KSeF
-            return f"{base}/{obj.ksef_reference_number}/{inv_hash}"
-        else:
-            # Format dla faktur bez numeru (offline)
-            nip = "".join(re.findall(r'\d+', settings.KSEF_NIP))
-            date_str = obj.issue_date.strftime('%Y%m%d')
-            return f"{base}/{nip}/{date_str}/{inv_hash}"
+        return f"{base}/{nip}/{date_str}/{inv_hash}"
 
 class CreateInvoiceSerializer(serializers.Serializer):
     user_id = serializers.IntegerField()

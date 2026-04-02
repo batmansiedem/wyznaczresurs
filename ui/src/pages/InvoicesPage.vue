@@ -53,7 +53,7 @@
             <q-btn
               v-if="props.row.ksef_qr_url"
               flat round dense color="orange-9" icon="open_in_new"
-              type="a" :href="props.row.ksef_qr_url" target="_blank"
+              tag="a" :href="props.row.ksef_qr_url" target="_blank"
             >
               <q-tooltip>Zobacz/Pobierz w portalu KSeF</q-tooltip>
             </q-btn>
