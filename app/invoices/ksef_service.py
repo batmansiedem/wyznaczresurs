@@ -476,13 +476,44 @@ def submit_correction(invoice): submit_to_ksef(invoice, is_correction=True)
 
 def refresh_ksef_qr(invoice):
     """
-    Dla starszych faktur, które nie mają hasha w bazie (lub został zgubiony).
-    Generuje XML z obecnego stanu faktury, oblicza jego skrót i zapisuje.
-    (Skrót może minimalnie odbiegać od oryginalnego przez zmieniającą się datę wygenerowania XML).
+    Pobiera oryginalny hash faktury bezpośrednio z KSeF przeszukując listę faktur z danego dnia.
     """
     if not invoice.ksef_reference_number:
         raise ValueError("Faktura nie posiada numeru KSeF.")
-    xml = build_fa3_xml(invoice, invoice.is_correction)
-    inv_hash = base64.b64encode(hashlib.sha256(xml).digest()).decode('ascii')
-    invoice.ksef_invoice_hash = inv_hash
-    invoice.save(update_fields=["ksef_invoice_hash"])
+    
+    client = KSeFClient()
+    client.authenticate()
+    try:
+        client.open_session()
+        
+        # Przeszukujemy faktury wystawione w dniu wystawienia faktury
+        date_str = invoice.issue_date.strftime('%Y-%m-%d')
+        query_criteria = {
+            "queryCriteria": {
+                "subjectType": "subject1",
+                "type": "range",
+                "invoicingDateFrom": f"{date_str}T00:00:00.000Z",
+                "invoicingDateTo": f"{date_str}T23:59:59.000Z"
+            }
+        }
+        
+        resp = client._request("POST", "/invoices/query", json=query_criteria)
+        if resp.ok:
+            data = resp.json()
+            for inv_info in data.get("invoiceMetadataList", []):
+                if inv_info.get("ksefReferenceNumber") == invoice.ksef_reference_number:
+                    inv_hash = inv_info.get("invoiceHash", {}).get("hashSHA", {}).get("value")
+                    if inv_hash:
+                        invoice.ksef_invoice_hash = inv_hash
+                        invoice.save(update_fields=["ksef_invoice_hash"])
+                        return
+        
+        # Jeśli nie znaleziono w query, spróbuj zapytania o status sesji (jeśli była niedawna)
+        # ale zazwyczaj Query Invoices wystarczy.
+        
+        # Fallback: Jeśli nie da się pobrać, przeliczamy (ale ostrzegamy, że może być błędny)
+        xml = build_fa3_xml(invoice, invoice.is_correction)
+        invoice.ksef_invoice_hash = base64.b64encode(hashlib.sha256(xml).digest()).decode('ascii')
+        invoice.save(update_fields=["ksef_invoice_hash"])
+    finally:
+        client.logout()

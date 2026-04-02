@@ -138,20 +138,20 @@ def generate_invoice_pdf(invoice) -> bytes:
             import qrcode
             from reportlab.platypus import Image as RLImage
             
-            # KSeF v2 QR format: [BASE_URL]/[DATA]/[NIP]/[HASH]
-            # HASH must be Base64URL (RFC 4648)
+            # KSeF v2 QR format: [BASE_URL]/[NrKSeF]/[HASH] lub [BASE_URL]/[NIP]/[DATA]/[HASH]
             inv_hash = invoice.ksef_invoice_hash.replace('+', '-').replace('/', '_').rstrip('=')
-            
-            # NIP sprzedawcy (bez myślników)
-            seller_nip = settings.KSEF_NIP.replace('-', '').strip()
-            
-            # Data wystawienia (P_1) w formacie DD-MM-RRRR
-            date_str = invoice.issue_date.strftime('%d-%m-%Y')
             
             is_test = getattr(settings, 'KSEF_SANDBOX', True)
             base_qr_url = 'https://qr-test.ksef.mf.gov.pl/invoice' if is_test else 'https://qr.ksef.mf.gov.pl/invoice'
             
-            qr_url = f"{base_qr_url}/{date_str}/{seller_nip}/{inv_hash}"
+            if invoice.ksef_reference_number:
+                # Faktura z numerem KSeF
+                qr_url = f"{base_qr_url}/{invoice.ksef_reference_number}/{inv_hash}"
+            else:
+                # Faktura offline (bez numeru)
+                seller_nip = settings.KSEF_NIP.replace('-', '').strip()
+                date_str = invoice.issue_date.strftime('%Y%m%d')
+                qr_url = f"{base_qr_url}/{seller_nip}/{date_str}/{inv_hash}"
             
             qr = qrcode.QRCode(version=1, box_size=10, border=1)
             qr.add_data(qr_url)
@@ -166,7 +166,7 @@ def generate_invoice_pdf(invoice) -> bytes:
             
             qr_table_data = [
                 [qr_image],
-                [Paragraph(invoice.ksef_reference_number, ParagraphStyle('QRLabel', parent=styles['Normal'], fontSize=7, alignment=1, fontName='DejaVuSans'))]
+                [Paragraph(invoice.ksef_reference_number or "OFFLINE", ParagraphStyle('QRLabel', parent=styles['Normal'], fontSize=7, alignment=1, fontName='DejaVuSans'))]
             ]
             qr_table = Table(qr_table_data, colWidths=[4*cm])
             qr_table.setStyle(TableStyle([
