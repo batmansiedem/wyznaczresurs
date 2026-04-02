@@ -22,13 +22,11 @@ class InvoiceSerializer(serializers.ModelSerializer):
         if not obj.ksef_invoice_hash or not obj.ksef_reference_number:
             return None
         from django.conf import settings
-        
+
         is_sandbox = getattr(settings, 'KSEF_SANDBOX', True)
-        host = 'ksef-test.podatki.gov.pl' if is_sandbox else 'ksef.podatki.gov.pl'
-        base = f'https://{host}/web/common/verification'
-        
+        host = 'qr-test.ksef.mf.gov.pl' if is_sandbox else 'qr.ksef.mf.gov.pl'
         inv_hash = obj.ksef_invoice_hash.replace('+', '-').replace('/', '_').rstrip('=')
-        return f"{base}/{obj.ksef_reference_number}/{inv_hash}"
+        return f"https://{host}/{obj.ksef_reference_number}/{inv_hash}"
 
 class CreateInvoiceSerializer(serializers.Serializer):
     user_id = serializers.IntegerField()
