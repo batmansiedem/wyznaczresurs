@@ -23,6 +23,7 @@ class InvoiceSerializer(serializers.ModelSerializer):
             return None
         from django.conf import settings
         import re
+        
         is_test = getattr(settings, 'KSEF_SANDBOX', True)
         base = 'https://qr-test.ksef.mf.gov.pl/invoice' if is_test else 'https://qr.ksef.mf.gov.pl/invoice'
         inv_hash = obj.ksef_invoice_hash.replace('+', '-').replace('/', '_').rstrip('=')

@@ -162,10 +162,6 @@ const viewInvoice = (invoice) => {
   showDetailsDialog.value = true
 }
 
-const openInKSeF = (url) => {
-  window.open(url, '_blank')
-}
-
 const refreshInvoice = async (invoice) => {
   try {
     loading.value = true
