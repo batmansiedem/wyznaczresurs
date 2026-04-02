@@ -451,6 +451,9 @@ def submit_to_ksef(invoice, is_correction: bool = False):
         client.authenticate()
         xml = build_fa3_xml(invoice, is_correction)
         logger.info("KSeF: Wygenerowano XML FA(3).")
+        # Hash liczymy teraz — KSeF zwraca ten sam hash (SHA-256 przesłanego XML).
+        # Zapisujemy z góry, żeby faktura miała hash nawet jeśli poll_status go nie zwróci.
+        xml_hash = base64.b64encode(hashlib.sha256(xml).digest()).decode('ascii')
         client.open_session()
         inv_ref = client.send_invoice(xml)
         status, result, inv_hash = client.poll_status(inv_ref)
@@ -459,7 +462,7 @@ def submit_to_ksef(invoice, is_correction: bool = False):
         if status == "accepted":
             invoice.ksef_status = "accepted"
             invoice.ksef_reference_number = result
-            invoice.ksef_invoice_hash = inv_hash
+            invoice.ksef_invoice_hash = inv_hash or xml_hash  # fallback do lokalnego jeśli KSeF nie zwrócił
             invoice.save(update_fields=["ksef_status", "ksef_reference_number", "ksef_invoice_hash"])
             if not is_correction:
                 invoice.user.premium += invoice.points_added
@@ -483,42 +486,103 @@ def submit_correction(invoice): submit_to_ksef(invoice, is_correction=True)
 
 def refresh_ksef_qr(invoice):
     """
-    Pobiera hash faktury z KSeF na podstawie numeru referencyjnego.
-    Używa GET /invoices/info/{ksefReferenceNumber} — nie wymaga sesji, tylko autoryzacji.
-    Próbuje najpierw środowiska z ustawień, a potem drugiego jako fallback.
+    Pobiera hash faktury z KSeF dla kodu QR.
+    Środowisko (test/prod) pobierane wyłącznie z KSEF_SANDBOX w settings/.env.
+    Nie wymaga sesji — tylko autoryzacji JWT.
+
+    Strategia:
+    1. GET /invoices/{ref} — bezpośrednie pobranie XML → SHA-256 jako hash
+    2. POST /invoices/query + polling — async query, hash z metadanych
     """
     if not invoice.ksef_reference_number:
         raise ValueError("Faktura nie posiada numeru KSeF.")
 
-    envs_to_try = [settings.KSEF_SANDBOX, not settings.KSEF_SANDBOX]
-
-    last_err = None
-    for is_sandbox in envs_to_try:
-        client = KSeFClient()
-        client.base_url = 'https://api-test.ksef.mf.gov.pl/v2' if is_sandbox else 'https://api.ksef.mf.gov.pl/v2'
+    client = KSeFClient()
+    try:
+        client.authenticate()
+        inv_hash = _fetch_hash_direct(client, invoice) or _fetch_hash_via_query(client, invoice)
+        if not inv_hash:
+            raise KSeFError(f"KSeF nie zwrócił hash dla faktury {invoice.ksef_reference_number}")
+        invoice.ksef_invoice_hash = inv_hash
+        invoice.save(update_fields=["ksef_invoice_hash"])
+        logger.info("KSeF refresh_qr: Hash zapisany dla %s", invoice.ksef_reference_number)
+    finally:
         try:
-            client.authenticate()
-            resp = client._request("GET", f"/invoices/info/{invoice.ksef_reference_number}")
-            if resp.ok:
-                data = resp.json()
-                raw_hash = data.get("invoiceHash")
-                if isinstance(raw_hash, dict):
-                    inv_hash = raw_hash.get("hashSHA", {}).get("value")
-                else:
-                    inv_hash = raw_hash
-                if inv_hash:
-                    invoice.ksef_invoice_hash = inv_hash
-                    invoice.save(update_fields=["ksef_invoice_hash"])
-                    logger.info("KSeF refresh_qr: Hash pobrany dla %s", invoice.ksef_reference_number)
-                    return
-            logger.warning("KSeF refresh_qr: Brak hash w odpowiedzi (%d): %s", resp.status_code, resp.text[:500])
-        except Exception as e:
-            last_err = e
-            logger.warning("KSeF refresh_qr: Błąd dla %s (%s): %s", invoice.ksef_reference_number, 'sandbox' if is_sandbox else 'prod', e)
-        finally:
-            try:
-                client.logout()
-            except Exception:
-                pass
+            client.logout()
+        except Exception:
+            pass
 
-    raise KSeFError(f"Nie można pobrać hash faktury {invoice.ksef_reference_number} z KSeF: {last_err}")
+
+def _fetch_hash_direct(client: 'KSeFClient', invoice) -> Optional[str]:
+    """Pobiera XML faktury przez GET /invoices/ksef/{ref}. Hash z nagłówka x-ms-meta-hash."""
+    resp = client._request("GET", f"/invoices/ksef/{invoice.ksef_reference_number}")
+    if resp.ok:
+        # Preferujemy hash z nagłówka odpowiedzi (już Base64URL)
+        header_hash = resp.headers.get('x-ms-meta-hash')
+        if header_hash:
+            # Konwertujemy Base64URL → Base64 do przechowania
+            inv_hash = header_hash.replace('-', '+').replace('_', '/')
+            # Dopełniamy padding jeśli potrzeba
+            inv_hash += '=' * (-len(inv_hash) % 4)
+            logger.info("KSeF refresh_qr: Hash z nagłówka x-ms-meta-hash dla %s", invoice.ksef_reference_number)
+            return inv_hash
+        if resp.content:
+            inv_hash = base64.b64encode(hashlib.sha256(resp.content).digest()).decode('ascii')
+            logger.info("KSeF refresh_qr: Hash obliczony z XML dla %s", invoice.ksef_reference_number)
+            return inv_hash
+    logger.info("KSeF refresh_qr: GET /invoices/ksef/%s → %d, próbuję query", invoice.ksef_reference_number, resp.status_code)
+    return None
+
+
+def _fetch_hash_via_query(client: 'KSeFClient', invoice) -> Optional[str]:
+    """Używa async query KSeF do pobrania hash faktury po numerze referencyjnym."""
+    date_str = invoice.issue_date.strftime('%Y-%m-%d')
+    query_resp = client._request("POST", "/invoices/query", json={
+        "queryCriteria": {
+            "subjectType": "subject1",
+            "type": "range",
+            "invoicingDateFrom": f"{date_str}T00:00:00.000Z",
+            "invoicingDateTo": f"{date_str}T23:59:59.000Z",
+        }
+    })
+    if not query_resp.ok:
+        raise KSeFError(
+            f"/invoices/query HTTP {query_resp.status_code}",
+            query_resp.status_code, query_resp.text
+        )
+
+    data = query_resp.json()
+    query_ref = data.get("referenceNumber") or data.get("queryRef")
+    if not query_ref:
+        raise KSeFError(f"Brak referenceNumber w odpowiedzi /invoices/query: {data}")
+
+    logger.info("KSeF refresh_qr: Query zainicjowany (ref: %s), oczekiwanie...", query_ref)
+    for attempt in range(POLLING_MAX_RETRIES):
+        status_resp = client._request("GET", f"/invoices/query/{query_ref}")
+        if status_resp.ok:
+            code = status_resp.json().get("status", {}).get("code")
+            logger.info("KSeF query polling [%d/%d]: status=%s", attempt + 1, POLLING_MAX_RETRIES, code)
+            if code == 200:
+                break
+            if code and int(code) >= 400:
+                raise KSeFError(f"Query odrzucony przez KSeF: {code}")
+        time.sleep(POLLING_RETRY_DELAY)
+    else:
+        raise KSeFError("Timeout oczekiwania na wyniki /invoices/query")
+
+    result_resp = client._request("GET", f"/invoices/query/{query_ref}/invoices")
+    if not result_resp.ok:
+        raise KSeFError(
+            f"/invoices/query/{query_ref}/invoices HTTP {result_resp.status_code}",
+            result_resp.status_code, result_resp.text
+        )
+
+    for inv_info in result_resp.json().get("invoiceMetadataList", []):
+        if inv_info.get("ksefReferenceNumber") == invoice.ksef_reference_number:
+            raw_hash = inv_info.get("invoiceHash")
+            inv_hash = raw_hash.get("hashSHA", {}).get("value") if isinstance(raw_hash, dict) else raw_hash
+            if inv_hash:
+                logger.info("KSeF refresh_qr: Hash z query dla %s", invoice.ksef_reference_number)
+                return inv_hash
+
+    raise KSeFError(f"Faktura {invoice.ksef_reference_number} nie znaleziona w wynikach query")

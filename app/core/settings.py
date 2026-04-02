@@ -290,7 +290,7 @@ BACKUP_KEEP_LAST = int(os.environ.get('BACKUP_KEEP_LAST', '30'))
 KSEF_SANDBOX = os.environ.get('KSEF_SANDBOX', 'True') != 'False'
 KSEF_NIP     = os.environ.get('KSEF_NIP', '')
 KSEF_TOKEN   = os.environ.get('KSEF_TOKEN', '')
-KSEF_API_URL = 'https://api-test.ksef.mf.gov.pl/v2' if KSEF_SANDBOX else 'https://api.ksef.mf.gov.pl/v2'
+KSEF_API_URL = 'https://api-test.ksef.mf.gov.pl/api/v2' if KSEF_SANDBOX else 'https://api.ksef.mf.gov.pl/api/v2'
 
 # ==============================================================================
 # LOGOWANIE (LOGGING)

@@ -143,7 +143,9 @@ def generate_invoice_pdf(invoice) -> bytes:
             
             is_sandbox = getattr(settings, 'KSEF_SANDBOX', True)
             host = 'qr-test.ksef.mf.gov.pl' if is_sandbox else 'qr.ksef.mf.gov.pl'
-            qr_url = f"https://{host}/{invoice.ksef_reference_number}/{inv_hash}"
+            seller_nip = settings.INVOICE_SELLER_DATA['nip'].replace('-', '')
+            date_str = invoice.issue_date.strftime('%d-%m-%Y')
+            qr_url = f"https://{host}/invoice/{seller_nip}/{date_str}/{inv_hash}"
             
             qr = qrcode.QRCode(version=1, box_size=10, border=1)
             qr.add_data(qr_url)

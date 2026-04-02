@@ -25,8 +25,10 @@ class InvoiceSerializer(serializers.ModelSerializer):
 
         is_sandbox = getattr(settings, 'KSEF_SANDBOX', True)
         host = 'qr-test.ksef.mf.gov.pl' if is_sandbox else 'qr.ksef.mf.gov.pl'
+        seller_nip = settings.INVOICE_SELLER_DATA['nip'].replace('-', '')
+        date_str = obj.issue_date.strftime('%d-%m-%Y')
         inv_hash = obj.ksef_invoice_hash.replace('+', '-').replace('/', '_').rstrip('=')
-        return f"https://{host}/{obj.ksef_reference_number}/{inv_hash}"
+        return f"https://{host}/invoice/{seller_nip}/{date_str}/{inv_hash}"
 
 class CreateInvoiceSerializer(serializers.Serializer):
     user_id = serializers.IntegerField()
