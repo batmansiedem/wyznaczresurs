@@ -142,8 +142,13 @@ def generate_invoice_pdf(invoice) -> bytes:
             inv_hash = invoice.ksef_invoice_hash.replace('+', '-').replace('/', '_').rstrip('=')
             
             import re
-            is_test = getattr(settings, 'KSEF_SANDBOX', True)
-            base_qr_url = 'https://qr-test.ksef.mf.gov.pl/invoice' if is_test else 'https://qr.ksef.mf.gov.pl/invoice'
+            is_test_invoice = invoice.ksef_reference_number and invoice.ksef_reference_number.endswith('-8C')
+            is_sandbox_mode = getattr(settings, 'KSEF_SANDBOX', True)
+            
+            if is_test_invoice or is_sandbox_mode:
+                base_qr_url = 'https://qr-test.ksef.mf.gov.pl/invoice'
+            else:
+                base_qr_url = 'https://qr.ksef.mf.gov.pl/invoice'
             
             if invoice.ksef_reference_number:
                 # Faktura z numerem KSeF: [BASE]/[NrKSeF]/[HASH]

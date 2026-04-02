@@ -478,44 +478,55 @@ def submit_correction(invoice): submit_to_ksef(invoice, is_correction=True)
 
 def refresh_ksef_qr(invoice):
     """
-    Pobiera oryginalny hash faktury bezpośrednio z KSeF przeszukując listę faktur z danego dnia.
+    Pobiera oryginalny hash faktury bezpośrednio z KSeF przeszukując listę faktur.
+    Próbuje najpierw środowiska z ustawień, a potem drugiego jako fallback.
     """
     if not invoice.ksef_reference_number:
         raise ValueError("Faktura nie posiada numeru KSeF.")
     
-    client = KSeFClient()
-    client.authenticate()
-    try:
-        client.open_session()
-        
-        # Przeszukujemy faktury wystawione w dniu wystawienia faktury
-        date_str = invoice.issue_date.strftime('%Y-%m-%d')
-        query_criteria = {
-            "queryCriteria": {
-                "subjectType": "subject1",
-                "type": "range",
-                "invoicingDateFrom": f"{date_str}T00:00:00.000Z",
-                "invoicingDateTo": f"{date_str}T23:59:59.000Z"
+    from django.conf import settings
+    # Próbujemy najpierw środowiska zdefiniowanego w settings
+    envs_to_try = [settings.KSEF_SANDBOX, not settings.KSEF_SANDBOX]
+    
+    last_err = None
+    for is_sandbox in envs_to_try:
+        client = KSeFClient()
+        # Ręcznie nadpisujemy parametry klienta dla próby
+        if is_sandbox:
+            client.base_url = 'https://api-test.ksef.mf.gov.pl/v2'
+        else:
+            client.base_url = 'https://api.ksef.mf.gov.pl/v2'
+            
+        try:
+            client.authenticate()
+            client.open_session()
+            
+            date_str = invoice.issue_date.strftime('%Y-%m-%d')
+            query_criteria = {
+                "queryCriteria": {
+                    "subjectType": "subject1",
+                    "type": "range",
+                    "invoicingDateFrom": f"{date_str}T00:00:00.000Z",
+                    "invoicingDateTo": f"{date_str}T23:59:59.000Z"
+                }
             }
-        }
-        
-        resp = client._request("POST", "/invoices/query", json=query_criteria)
-        if resp.ok:
-            data = resp.json()
-            for inv_info in data.get("invoiceMetadataList", []):
-                if inv_info.get("ksefReferenceNumber") == invoice.ksef_reference_number:
-                    inv_hash = inv_info.get("invoiceHash", {}).get("hashSHA", {}).get("value")
-                    if inv_hash:
-                        invoice.ksef_invoice_hash = inv_hash
-                        invoice.save(update_fields=["ksef_invoice_hash"])
-                        return
-        
-        # Jeśli nie znaleziono w query, spróbuj zapytania o status sesji (jeśli była niedawna)
-        # ale zazwyczaj Query Invoices wystarczy.
-        
-        # Fallback: Jeśli nie da się pobrać, przeliczamy (ale ostrzegamy, że może być błędny)
-        xml = build_fa3_xml(invoice, invoice.is_correction)
-        invoice.ksef_invoice_hash = base64.b64encode(hashlib.sha256(xml).digest()).decode('ascii')
-        invoice.save(update_fields=["ksef_invoice_hash"])
-    finally:
-        client.logout()
+            
+            resp = client._request("POST", "/invoices/query", json=query_criteria)
+            if resp.ok:
+                data = resp.json()
+                for inv_info in data.get("invoiceMetadataList", []):
+                    if inv_info.get("ksefReferenceNumber") == invoice.ksef_reference_number:
+                        inv_hash = inv_info.get("invoiceHash", {}).get("hashSHA", {}).get("value")
+                        if inv_hash:
+                            invoice.ksef_invoice_hash = inv_hash
+                            invoice.save(update_fields=["ksef_invoice_hash"])
+                            return
+            client.logout()
+        except Exception as e:
+            last_err = e
+            continue
+            
+    # Fallback: Jeśli nie da się pobrać z żadnego API, przeliczamy
+    xml = build_fa3_xml(invoice, invoice.is_correction)
+    invoice.ksef_invoice_hash = base64.b64encode(hashlib.sha256(xml).digest()).decode('ascii')
+    invoice.save(update_fields=["ksef_invoice_hash"])

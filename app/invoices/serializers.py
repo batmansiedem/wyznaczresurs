@@ -24,8 +24,15 @@ class InvoiceSerializer(serializers.ModelSerializer):
         from django.conf import settings
         import re
         
-        is_test = getattr(settings, 'KSEF_SANDBOX', True)
-        base = 'https://qr-test.ksef.mf.gov.pl/invoice' if is_test else 'https://qr.ksef.mf.gov.pl/invoice'
+        # Inteligente wykrywanie środowiska: jeśli numer kończy się na -8C (test) lub sandbox jest True
+        is_test_invoice = obj.ksef_reference_number and obj.ksef_reference_number.endswith('-8C')
+        is_sandbox_mode = getattr(settings, 'KSEF_SANDBOX', True)
+        
+        if is_test_invoice or is_sandbox_mode:
+            base = 'https://qr-test.ksef.mf.gov.pl/invoice'
+        else:
+            base = 'https://qr.ksef.mf.gov.pl/invoice'
+            
         inv_hash = obj.ksef_invoice_hash.replace('+', '-').replace('/', '_').rstrip('=')
         
         if obj.ksef_reference_number:
