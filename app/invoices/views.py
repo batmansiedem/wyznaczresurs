@@ -121,10 +121,13 @@ class InvoiceViewSet(viewsets.ModelViewSet):
         if invoice.ksef_status != "accepted" or not invoice.ksef_reference_number:
             return Response({"detail": "Faktura nie ma numeru KSeF."}, status=status.HTTP_400_BAD_REQUEST)
             
-        from .ksef_service import refresh_ksef_qr
-        refresh_ksef_qr(invoice)
-        
-        return Response({"detail": "Zaktualizowano dane QR faktury."})
+        from .ksef_service import refresh_ksef_qr, KSeFError
+        try:
+            refresh_ksef_qr(invoice)
+        except (ValueError, KSeFError) as e:
+            return Response({"detail": str(e)}, status=status.HTTP_502_BAD_GATEWAY)
+
+        return Response({"detail": "Zaktualizowano dane QR faktury.", "ksef_qr_url": InvoiceSerializer(invoice).data.get("ksef_qr_url")})
 
     @action(detail=True, methods=["get"])
     def download_pdf(self, request, pk=None):
