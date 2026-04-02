@@ -145,10 +145,10 @@ def generate_invoice_pdf(invoice) -> bytes:
             base_qr_url = 'https://qr-test.ksef.mf.gov.pl/invoice' if is_test else 'https://qr.ksef.mf.gov.pl/invoice'
             
             if invoice.ksef_reference_number:
-                # Faktura z numerem KSeF
+                # Faktura z numerem KSeF: [BASE]/[NrKSeF]/[HASH]
                 qr_url = f"{base_qr_url}/{invoice.ksef_reference_number}/{inv_hash}"
             else:
-                # Faktura offline (bez numeru)
+                # Faktura offline (bez numeru): [BASE]/[NIP]/[YYYYMMDD]/[HASH]
                 seller_nip = settings.KSEF_NIP.replace('-', '').strip()
                 date_str = invoice.issue_date.strftime('%Y%m%d')
                 qr_url = f"{base_qr_url}/{seller_nip}/{date_str}/{inv_hash}"
