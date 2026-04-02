@@ -50,3 +50,295 @@
 [2026-04-02 16:27:48] INFO invoices.ksef: KSeF: Auth status (próba 1): 450
 [2026-04-02 16:27:48] ERROR invoices.ksef: KSeF Auth Polling Error 450: {"startDate":"2026-04-02T14:27:47.4711364+00:00","authenticationMethod":"Token","authenticationMethodInfo":{"category":"Token","code":"token.ksef","displayName":"Token KSeF"},"status":{"code":450,"description":"Uwierzytelnianie zakończone niepowodzeniem z powodu błędnego tokenu","details":["Token o numerze referencyjnym 20260330-EC-42D585E000-C61983CEC0-EB nie został znaleziony."]}}
 [2026-04-02 16:27:48] ERROR invoices.ksef: KSeF Submit Error: Auth Error: 450
+[2026-04-02 22:19:58] INFO invoices.ksef: KSeF: Start autoryzacji (nip: 7691427583)
+[2026-04-02 22:19:58] INFO invoices.ksef: KSeF API Request: GET https://api.ksef.mf.gov.pl/v2/security/public-key-certificates
+[2026-04-02 22:19:58] INFO invoices.ksef: KSeF API Response: 200 (GET) w 0.36s
+[2026-04-02 22:19:58] INFO invoices.ksef: KSeF API Request: POST https://api.ksef.mf.gov.pl/v2/auth/challenge
+[2026-04-02 22:19:58] INFO invoices.ksef: KSeF API Response: 200 (POST) w 0.07s
+[2026-04-02 22:19:58] INFO invoices.ksef: KSeF Challenge Info: timestamp=2026-04-02T20:19:58.613066+00:00, timestampMs=1775161198613
+[2026-04-02 22:19:58] INFO invoices.ksef: KSeF API Request: POST https://api.ksef.mf.gov.pl/v2/auth/ksef-token
+[2026-04-02 22:19:58] INFO invoices.ksef: KSeF API Response: 202 (POST) w 0.08s
+[2026-04-02 22:19:58] INFO invoices.ksef: KSeF: Oczekiwanie na potwierdzenie autoryzacji (ref: 20260402-AU-45CEC5F000-5ACCCEF9FE-69)...
+[2026-04-02 22:19:58] INFO invoices.ksef: KSeF API Request: GET https://api.ksef.mf.gov.pl/v2/auth/20260402-AU-45CEC5F000-5ACCCEF9FE-69
+[2026-04-02 22:19:58] INFO invoices.ksef: KSeF API Response: 200 (GET) w 0.06s
+[2026-04-02 22:19:58] INFO invoices.ksef: KSeF Auth Polling [1/60]: Status JSON = 200
+[2026-04-02 22:19:58] INFO invoices.ksef: KSeF API Request: POST https://api.ksef.mf.gov.pl/v2/auth/token/redeem
+[2026-04-02 22:19:58] INFO invoices.ksef: KSeF API Response: 200 (POST) w 0.10s
+[2026-04-02 22:19:58] INFO invoices.ksef: KSeF: Autoryzacja udana
+[2026-04-02 22:19:58] INFO invoices.ksef: KSeF: Wygenerowano XML FA(3).
+[2026-04-02 22:19:58] INFO invoices.ksef: KSeF API Request: GET https://api.ksef.mf.gov.pl/v2/security/public-key-certificates
+[2026-04-02 22:19:59] INFO invoices.ksef: KSeF API Response: 200 (GET) w 0.06s
+[2026-04-02 22:19:59] INFO invoices.ksef: KSeF API Request: POST https://api.ksef.mf.gov.pl/v2/sessions/online
+[2026-04-02 22:19:59] INFO invoices.ksef: KSeF API Response: 201 (POST) w 0.10s
+[2026-04-02 22:19:59] INFO invoices.ksef: KSeF: Sesja otwarta (20260402-SO-45CED9D000-BD0DC04470-C5)
+[2026-04-02 22:19:59] INFO invoices.ksef: KSeF: Sprawdzanie gotowości sesji 20260402-SO-45CED9D000-BD0DC04470-C5...
+[2026-04-02 22:19:59] INFO invoices.ksef: KSeF API Request: GET https://api.ksef.mf.gov.pl/v2/sessions/20260402-SO-45CED9D000-BD0DC04470-C5
+[2026-04-02 22:19:59] INFO invoices.ksef: KSeF API Response: 200 (GET) w 0.07s
+[2026-04-02 22:19:59] INFO invoices.ksef: KSeF: Sesja gotowa (status: 100)
+[2026-04-02 22:19:59] INFO invoices.ksef: KSeF: Przygotowanie payloadu (rozmiar XML: 1254 bajtów)
+[2026-04-02 22:19:59] INFO invoices.ksef: KSeF: Wysyłanie faktury do sesji 20260402-SO-45CED9D000-BD0DC04470-C5...
+[2026-04-02 22:19:59] INFO invoices.ksef: KSeF API Request: POST https://api.ksef.mf.gov.pl/v2/sessions/online/20260402-SO-45CED9D000-BD0DC04470-C5/invoices
+[2026-04-02 22:19:59] INFO invoices.ksef: KSeF API Response: 202 (POST) w 0.10s
+[2026-04-02 22:19:59] INFO invoices.ksef: KSeF: Faktura wysłana. Ref: 20260402-EE-45CEE4A000-56AB1F8530-F3
+[2026-04-02 22:19:59] INFO invoices.ksef: KSeF: Sprawdzanie statusu faktury 20260402-EE-45CEE4A000-56AB1F8530-F3
+[2026-04-02 22:19:59] INFO invoices.ksef: KSeF API Request: GET https://api.ksef.mf.gov.pl/v2/sessions/20260402-SO-45CED9D000-BD0DC04470-C5/invoices/20260402-EE-45CEE4A000-56AB1F8530-F3
+[2026-04-02 22:19:59] INFO invoices.ksef: KSeF API Response: 200 (GET) w 0.08s
+[2026-04-02 22:19:59] INFO invoices.ksef: KSeF poll_status [1/60]: Status code = 150
+[2026-04-02 22:20:02] INFO invoices.ksef: KSeF API Request: GET https://api.ksef.mf.gov.pl/v2/sessions/20260402-SO-45CED9D000-BD0DC04470-C5/invoices/20260402-EE-45CEE4A000-56AB1F8530-F3
+[2026-04-02 22:20:02] INFO invoices.ksef: KSeF API Response: 200 (GET) w 0.08s
+[2026-04-02 22:20:02] INFO invoices.ksef: KSeF poll_status [2/60]: Status code = 450
+[2026-04-02 22:20:02] INFO invoices.ksef: KSeF: Zamykanie sesji 20260402-SO-45CED9D000-BD0DC04470-C5
+[2026-04-02 22:20:02] INFO invoices.ksef: KSeF API Request: POST https://api.ksef.mf.gov.pl/v2/sessions/online/20260402-SO-45CED9D000-BD0DC04470-C5/close
+[2026-04-02 22:20:02] INFO invoices.ksef: KSeF API Response: 204 (POST) w 0.14s
+[2026-04-02 22:20:02] INFO invoices.ksef: KSeF: Sesja 20260402-SO-45CED9D000-BD0DC04470-C5 zamknięta
+[2026-04-02 22:20:02] ERROR invoices.ksef: KSeF Error (FV/TEST/CORR/2): KSeF rejected: Odrzucona
+Traceback (most recent call last):
+  File "D:\wyznaczresurs/app\invoices\ksef_service.py", line 457, in submit_to_ksef
+    raise RuntimeError(f"KSeF rejected: {result}")
+RuntimeError: KSeF rejected: Odrzucona
+[2026-04-02 22:20:02] INFO invoices.ksef: KSeF API Request: DELETE https://api.ksef.mf.gov.pl/v2/auth/sessions/current
+[2026-04-02 22:20:02] INFO invoices.ksef: KSeF API Response: 204 (DELETE) w 0.07s
+[2026-04-02 22:20:49] INFO invoices.ksef: KSeF: Start autoryzacji (nip: 7691427583)
+[2026-04-02 22:20:49] INFO invoices.ksef: KSeF API Request: GET https://api.ksef.mf.gov.pl/v2/security/public-key-certificates
+[2026-04-02 22:20:49] INFO invoices.ksef: KSeF API Response: 200 (GET) w 0.44s
+[2026-04-02 22:20:49] INFO invoices.ksef: KSeF API Request: POST https://api.ksef.mf.gov.pl/v2/auth/challenge
+[2026-04-02 22:20:49] INFO invoices.ksef: KSeF API Response: 200 (POST) w 0.07s
+[2026-04-02 22:20:49] INFO invoices.ksef: KSeF Challenge Info: timestamp=2026-04-02T20:20:49.6988262+00:00, timestampMs=1775161249698
+[2026-04-02 22:20:49] INFO invoices.ksef: KSeF API Request: POST https://api.ksef.mf.gov.pl/v2/auth/ksef-token
+[2026-04-02 22:20:49] INFO invoices.ksef: KSeF API Response: 202 (POST) w 0.15s
+[2026-04-02 22:20:49] INFO invoices.ksef: KSeF: Oczekiwanie na potwierdzenie autoryzacji (ref: 20260402-AU-45DB427000-960D0F57EC-3C)...
+[2026-04-02 22:20:49] INFO invoices.ksef: KSeF API Request: GET https://api.ksef.mf.gov.pl/v2/auth/20260402-AU-45DB427000-960D0F57EC-3C
+[2026-04-02 22:20:50] INFO invoices.ksef: KSeF API Response: 200 (GET) w 0.07s
+[2026-04-02 22:20:50] INFO invoices.ksef: KSeF Auth Polling [1/60]: Status JSON = 200
+[2026-04-02 22:20:50] INFO invoices.ksef: KSeF API Request: POST https://api.ksef.mf.gov.pl/v2/auth/token/redeem
+[2026-04-02 22:20:50] INFO invoices.ksef: KSeF API Response: 200 (POST) w 0.11s
+[2026-04-02 22:20:50] INFO invoices.ksef: KSeF: Autoryzacja udana
+[2026-04-02 22:20:50] INFO invoices.ksef: KSeF API Request: GET https://api.ksef.mf.gov.pl/v2/security/public-key-certificates
+[2026-04-02 22:20:50] INFO invoices.ksef: KSeF API Response: 200 (GET) w 0.06s
+[2026-04-02 22:20:50] INFO invoices.ksef: KSeF API Request: POST https://api.ksef.mf.gov.pl/v2/sessions/online
+[2026-04-02 22:20:50] INFO invoices.ksef: KSeF API Response: 201 (POST) w 0.12s
+[2026-04-02 22:20:50] INFO invoices.ksef: KSeF: Sesja otwarta (20260402-SO-45DB58D000-C4DABAA4D4-2C)
+[2026-04-02 22:20:50] INFO invoices.ksef: KSeF: Sprawdzanie gotowości sesji 20260402-SO-45DB58D000-C4DABAA4D4-2C...
+[2026-04-02 22:20:50] INFO invoices.ksef: KSeF API Request: GET https://api.ksef.mf.gov.pl/v2/sessions/20260402-SO-45DB58D000-C4DABAA4D4-2C
+[2026-04-02 22:20:50] INFO invoices.ksef: KSeF API Response: 200 (GET) w 0.08s
+[2026-04-02 22:20:50] INFO invoices.ksef: KSeF: Sesja gotowa (status: 100)
+[2026-04-02 22:20:50] INFO invoices.ksef: KSeF: Przygotowanie payloadu (rozmiar XML: 1254 bajtów)
+[2026-04-02 22:20:50] INFO invoices.ksef: KSeF: Wysyłanie faktury do sesji 20260402-SO-45DB58D000-C4DABAA4D4-2C...
+[2026-04-02 22:20:50] INFO invoices.ksef: KSeF API Request: POST https://api.ksef.mf.gov.pl/v2/sessions/online/20260402-SO-45DB58D000-C4DABAA4D4-2C/invoices
+[2026-04-02 22:20:50] INFO invoices.ksef: KSeF API Response: 202 (POST) w 0.12s
+[2026-04-02 22:20:50] INFO invoices.ksef: KSeF: Faktura wysłana. Ref: 20260402-EE-45DB658000-A9626DAA09-E0
+[2026-04-02 22:20:53] INFO invoices.ksef: KSeF API Request: GET https://api.ksef.mf.gov.pl/v2/sessions/20260402-SO-45DB58D000-C4DABAA4D4-2C/invoices/20260402-EE-45DB658000-A9626DAA09-E0
+[2026-04-02 22:20:53] INFO invoices.ksef: KSeF API Response: 200 (GET) w 0.07s
+[2026-04-02 22:20:53] INFO invoices.ksef: KSeF: Zamykanie sesji 20260402-SO-45DB58D000-C4DABAA4D4-2C
+[2026-04-02 22:20:53] INFO invoices.ksef: KSeF API Request: POST https://api.ksef.mf.gov.pl/v2/sessions/online/20260402-SO-45DB58D000-C4DABAA4D4-2C/close
+[2026-04-02 22:20:53] INFO invoices.ksef: KSeF API Response: 204 (POST) w 0.09s
+[2026-04-02 22:20:53] INFO invoices.ksef: KSeF: Sesja 20260402-SO-45DB58D000-C4DABAA4D4-2C zamknięta
+[2026-04-02 22:21:40] INFO invoices.ksef: KSeF: Start autoryzacji (nip: 7691427583)
+[2026-04-02 22:21:40] INFO invoices.ksef: KSeF API Request: GET https://api.ksef.mf.gov.pl/v2/security/public-key-certificates
+[2026-04-02 22:21:41] INFO invoices.ksef: KSeF API Response: 200 (GET) w 0.39s
+[2026-04-02 22:21:41] INFO invoices.ksef: KSeF API Request: POST https://api.ksef.mf.gov.pl/v2/auth/challenge
+[2026-04-02 22:21:41] INFO invoices.ksef: KSeF API Response: 200 (POST) w 0.07s
+[2026-04-02 22:21:41] INFO invoices.ksef: KSeF Challenge Info: timestamp=2026-04-02T20:21:41.1030696+00:00, timestampMs=1775161301103
+[2026-04-02 22:21:41] INFO invoices.ksef: KSeF API Request: POST https://api.ksef.mf.gov.pl/v2/auth/ksef-token
+[2026-04-02 22:21:41] INFO invoices.ksef: KSeF API Response: 202 (POST) w 0.09s
+[2026-04-02 22:21:41] INFO invoices.ksef: KSeF: Oczekiwanie na potwierdzenie autoryzacji (ref: 20260402-AU-45E7CCD000-56AC63A1B4-65)...
+[2026-04-02 22:21:41] INFO invoices.ksef: KSeF API Request: GET https://api.ksef.mf.gov.pl/v2/auth/20260402-AU-45E7CCD000-56AC63A1B4-65
+[2026-04-02 22:21:41] INFO invoices.ksef: KSeF API Response: 200 (GET) w 0.06s
+[2026-04-02 22:21:41] INFO invoices.ksef: KSeF Auth Polling [1/60]: Status JSON = 200
+[2026-04-02 22:21:41] INFO invoices.ksef: KSeF API Request: POST https://api.ksef.mf.gov.pl/v2/auth/token/redeem
+[2026-04-02 22:21:41] INFO invoices.ksef: KSeF API Response: 200 (POST) w 0.09s
+[2026-04-02 22:21:41] INFO invoices.ksef: KSeF: Autoryzacja udana
+[2026-04-02 22:21:41] INFO invoices.ksef: KSeF: Wygenerowano XML FA(3).
+[2026-04-02 22:21:41] INFO invoices.ksef: KSeF API Request: GET https://api.ksef.mf.gov.pl/v2/security/public-key-certificates
+[2026-04-02 22:21:41] INFO invoices.ksef: KSeF API Response: 200 (GET) w 0.06s
+[2026-04-02 22:21:41] INFO invoices.ksef: KSeF API Request: POST https://api.ksef.mf.gov.pl/v2/sessions/online
+[2026-04-02 22:21:41] INFO invoices.ksef: KSeF API Response: 201 (POST) w 0.10s
+[2026-04-02 22:21:41] INFO invoices.ksef: KSeF: Sesja otwarta (20260402-SO-45E7DF1000-5AC000C488-1A)
+[2026-04-02 22:21:41] INFO invoices.ksef: KSeF: Sprawdzanie gotowości sesji 20260402-SO-45E7DF1000-5AC000C488-1A...
+[2026-04-02 22:21:41] INFO invoices.ksef: KSeF API Request: GET https://api.ksef.mf.gov.pl/v2/sessions/20260402-SO-45E7DF1000-5AC000C488-1A
+[2026-04-02 22:21:41] INFO invoices.ksef: KSeF API Response: 200 (GET) w 0.06s
+[2026-04-02 22:21:41] INFO invoices.ksef: KSeF: Sesja gotowa (status: 100)
+[2026-04-02 22:21:41] INFO invoices.ksef: KSeF: Przygotowanie payloadu (rozmiar XML: 1254 bajtów)
+[2026-04-02 22:21:41] INFO invoices.ksef: KSeF: Wysyłanie faktury do sesji 20260402-SO-45E7DF1000-5AC000C488-1A...
+[2026-04-02 22:21:41] INFO invoices.ksef: KSeF API Request: POST https://api.ksef.mf.gov.pl/v2/sessions/online/20260402-SO-45E7DF1000-5AC000C488-1A/invoices
+[2026-04-02 22:21:41] INFO invoices.ksef: KSeF API Response: 202 (POST) w 0.10s
+[2026-04-02 22:21:41] INFO invoices.ksef: KSeF: Faktura wysłana. Ref: 20260402-EE-45E7EA0000-021C06A0C2-58
+[2026-04-02 22:21:41] INFO invoices.ksef: KSeF: Sprawdzanie statusu faktury 20260402-EE-45E7EA0000-021C06A0C2-58
+[2026-04-02 22:21:41] INFO invoices.ksef: KSeF API Request: GET https://api.ksef.mf.gov.pl/v2/sessions/20260402-SO-45E7DF1000-5AC000C488-1A/invoices/20260402-EE-45E7EA0000-021C06A0C2-58
+[2026-04-02 22:21:41] INFO invoices.ksef: KSeF API Response: 200 (GET) w 0.07s
+[2026-04-02 22:21:41] INFO invoices.ksef: KSeF poll_status [1/60]: Status code = 150
+[2026-04-02 22:21:44] INFO invoices.ksef: KSeF API Request: GET https://api.ksef.mf.gov.pl/v2/sessions/20260402-SO-45E7DF1000-5AC000C488-1A/invoices/20260402-EE-45E7EA0000-021C06A0C2-58
+[2026-04-02 22:21:44] INFO invoices.ksef: KSeF API Response: 200 (GET) w 0.07s
+[2026-04-02 22:21:44] INFO invoices.ksef: KSeF poll_status [2/60]: Status code = 200
+[2026-04-02 22:21:44] INFO invoices.ksef: KSeF: Zamykanie sesji 20260402-SO-45E7DF1000-5AC000C488-1A
+[2026-04-02 22:21:44] INFO invoices.ksef: KSeF API Request: POST https://api.ksef.mf.gov.pl/v2/sessions/online/20260402-SO-45E7DF1000-5AC000C488-1A/close
+[2026-04-02 22:21:45] INFO invoices.ksef: KSeF API Response: 204 (POST) w 0.08s
+[2026-04-02 22:21:45] INFO invoices.ksef: KSeF: Sesja 20260402-SO-45E7DF1000-5AC000C488-1A zamknięta
+[2026-04-02 22:21:45] INFO invoices.ksef: KSeF API Request: DELETE https://api.ksef.mf.gov.pl/v2/auth/sessions/current
+[2026-04-02 22:21:45] INFO invoices.ksef: KSeF API Response: 204 (DELETE) w 0.07s
+[2026-04-02 22:21:48] INFO invoices.ksef: KSeF: Start autoryzacji (nip: 7691427583)
+[2026-04-02 22:21:48] INFO invoices.ksef: KSeF API Request: GET https://api.ksef.mf.gov.pl/v2/security/public-key-certificates
+[2026-04-02 22:21:48] INFO invoices.ksef: KSeF API Response: 200 (GET) w 0.38s
+[2026-04-02 22:21:48] INFO invoices.ksef: KSeF API Request: POST https://api.ksef.mf.gov.pl/v2/auth/challenge
+[2026-04-02 22:21:48] INFO invoices.ksef: KSeF API Response: 200 (POST) w 0.09s
+[2026-04-02 22:21:48] INFO invoices.ksef: KSeF Challenge Info: timestamp=2026-04-02T20:21:48.6148967+00:00, timestampMs=1775161308614
+[2026-04-02 22:21:48] INFO invoices.ksef: KSeF API Request: POST https://api.ksef.mf.gov.pl/v2/auth/ksef-token
+[2026-04-02 22:21:48] INFO invoices.ksef: KSeF API Response: 202 (POST) w 0.12s
+[2026-04-02 22:21:48] INFO invoices.ksef: KSeF: Oczekiwanie na potwierdzenie autoryzacji (ref: 20260402-AU-45E9A41000-5ACA9B0968-DD)...
+[2026-04-02 22:21:48] INFO invoices.ksef: KSeF API Request: GET https://api.ksef.mf.gov.pl/v2/auth/20260402-AU-45E9A41000-5ACA9B0968-DD
+[2026-04-02 22:21:48] INFO invoices.ksef: KSeF API Response: 200 (GET) w 0.08s
+[2026-04-02 22:21:48] INFO invoices.ksef: KSeF Auth Polling [1/60]: Status JSON = 200
+[2026-04-02 22:21:48] INFO invoices.ksef: KSeF API Request: POST https://api.ksef.mf.gov.pl/v2/auth/token/redeem
+[2026-04-02 22:21:50] INFO invoices.ksef: KSeF API Response: 200 (POST) w 1.25s
+[2026-04-02 22:21:50] INFO invoices.ksef: KSeF: Autoryzacja udana
+[2026-04-02 22:21:50] INFO invoices.ksef: KSeF: Wygenerowano XML FA(3).
+[2026-04-02 22:21:50] INFO invoices.ksef: KSeF API Request: GET https://api.ksef.mf.gov.pl/v2/security/public-key-certificates
+[2026-04-02 22:21:50] INFO invoices.ksef: KSeF API Response: 200 (GET) w 0.08s
+[2026-04-02 22:21:50] INFO invoices.ksef: KSeF API Request: POST https://api.ksef.mf.gov.pl/v2/sessions/online
+[2026-04-02 22:21:50] INFO invoices.ksef: KSeF API Response: 201 (POST) w 0.10s
+[2026-04-02 22:21:50] INFO invoices.ksef: KSeF: Sesja otwarta (20260402-SO-45EA021000-A96D847943-B6)
+[2026-04-02 22:21:50] INFO invoices.ksef: KSeF: Sprawdzanie gotowości sesji 20260402-SO-45EA021000-A96D847943-B6...
+[2026-04-02 22:21:50] INFO invoices.ksef: KSeF API Request: GET https://api.ksef.mf.gov.pl/v2/sessions/20260402-SO-45EA021000-A96D847943-B6
+[2026-04-02 22:21:50] INFO invoices.ksef: KSeF API Response: 200 (GET) w 0.06s
+[2026-04-02 22:21:50] INFO invoices.ksef: KSeF: Sesja gotowa (status: 100)
+[2026-04-02 22:21:50] INFO invoices.ksef: KSeF: Przygotowanie payloadu (rozmiar XML: 1526 bajtów)
+[2026-04-02 22:21:50] INFO invoices.ksef: KSeF: Wysyłanie faktury do sesji 20260402-SO-45EA021000-A96D847943-B6...
+[2026-04-02 22:21:50] INFO invoices.ksef: KSeF API Request: POST https://api.ksef.mf.gov.pl/v2/sessions/online/20260402-SO-45EA021000-A96D847943-B6/invoices
+[2026-04-02 22:21:50] INFO invoices.ksef: KSeF API Response: 202 (POST) w 0.11s
+[2026-04-02 22:21:50] INFO invoices.ksef: KSeF: Faktura wysłana. Ref: 20260402-EE-45EA0D6000-9DAED40367-FB
+[2026-04-02 22:21:50] INFO invoices.ksef: KSeF: Sprawdzanie statusu faktury 20260402-EE-45EA0D6000-9DAED40367-FB
+[2026-04-02 22:21:50] INFO invoices.ksef: KSeF API Request: GET https://api.ksef.mf.gov.pl/v2/sessions/20260402-SO-45EA021000-A96D847943-B6/invoices/20260402-EE-45EA0D6000-9DAED40367-FB
+[2026-04-02 22:21:50] INFO invoices.ksef: KSeF API Response: 200 (GET) w 0.07s
+[2026-04-02 22:21:50] INFO invoices.ksef: KSeF poll_status [1/60]: Status code = 150
+[2026-04-02 22:21:53] INFO invoices.ksef: KSeF API Request: GET https://api.ksef.mf.gov.pl/v2/sessions/20260402-SO-45EA021000-A96D847943-B6/invoices/20260402-EE-45EA0D6000-9DAED40367-FB
+[2026-04-02 22:21:53] INFO invoices.ksef: KSeF API Response: 200 (GET) w 0.13s
+[2026-04-02 22:21:53] INFO invoices.ksef: KSeF poll_status [2/60]: Status code = 450
+[2026-04-02 22:21:53] INFO invoices.ksef: KSeF: Zamykanie sesji 20260402-SO-45EA021000-A96D847943-B6
+[2026-04-02 22:21:53] INFO invoices.ksef: KSeF API Request: POST https://api.ksef.mf.gov.pl/v2/sessions/online/20260402-SO-45EA021000-A96D847943-B6/close
+[2026-04-02 22:21:53] INFO invoices.ksef: KSeF API Response: 204 (POST) w 0.08s
+[2026-04-02 22:21:53] INFO invoices.ksef: KSeF: Sesja 20260402-SO-45EA021000-A96D847943-B6 zamknięta
+[2026-04-02 22:21:53] ERROR invoices.ksef: KSeF Error (KOR/TEST/CORR/4): KSeF rejected: Odrzucona
+Traceback (most recent call last):
+  File "D:\wyznaczresurs/app\invoices\ksef_service.py", line 457, in submit_to_ksef
+    raise RuntimeError(f"KSeF rejected: {result}")
+RuntimeError: KSeF rejected: Odrzucona
+[2026-04-02 22:21:53] INFO invoices.ksef: KSeF API Request: DELETE https://api.ksef.mf.gov.pl/v2/auth/sessions/current
+[2026-04-02 22:21:54] INFO invoices.ksef: KSeF API Response: 204 (DELETE) w 0.10s
+[2026-04-02 22:22:44] INFO invoices.ksef: KSeF: Start autoryzacji (nip: 7691427583)
+[2026-04-02 22:22:44] INFO invoices.ksef: KSeF API Request: GET https://api.ksef.mf.gov.pl/v2/security/public-key-certificates
+[2026-04-02 22:22:44] INFO invoices.ksef: KSeF API Response: 200 (GET) w 0.39s
+[2026-04-02 22:22:44] INFO invoices.ksef: KSeF API Request: POST https://api.ksef.mf.gov.pl/v2/auth/challenge
+[2026-04-02 22:22:44] INFO invoices.ksef: KSeF API Response: 200 (POST) w 0.08s
+[2026-04-02 22:22:44] INFO invoices.ksef: KSeF Challenge Info: timestamp=2026-04-02T20:22:44.7613346+00:00, timestampMs=1775161364761
+[2026-04-02 22:22:44] INFO invoices.ksef: KSeF API Request: POST https://api.ksef.mf.gov.pl/v2/auth/ksef-token
+[2026-04-02 22:22:44] INFO invoices.ksef: KSeF API Response: 202 (POST) w 0.08s
+[2026-04-02 22:22:44] INFO invoices.ksef: KSeF: Oczekiwanie na potwierdzenie autoryzacji (ref: 20260402-AU-45F7569000-9DA346B5DA-21)...
+[2026-04-02 22:22:44] INFO invoices.ksef: KSeF API Request: GET https://api.ksef.mf.gov.pl/v2/auth/20260402-AU-45F7569000-9DA346B5DA-21
+[2026-04-02 22:22:45] INFO invoices.ksef: KSeF API Response: 200 (GET) w 0.08s
+[2026-04-02 22:22:45] INFO invoices.ksef: KSeF Auth Polling [1/60]: Status JSON = 200
+[2026-04-02 22:22:45] INFO invoices.ksef: KSeF API Request: POST https://api.ksef.mf.gov.pl/v2/auth/token/redeem
+[2026-04-02 22:22:45] INFO invoices.ksef: KSeF API Response: 200 (POST) w 0.10s
+[2026-04-02 22:22:45] INFO invoices.ksef: KSeF: Autoryzacja udana
+[2026-04-02 22:22:45] INFO invoices.ksef: KSeF API Request: GET https://api.ksef.mf.gov.pl/v2/security/public-key-certificates
+[2026-04-02 22:22:45] INFO invoices.ksef: KSeF API Response: 200 (GET) w 0.21s
+[2026-04-02 22:22:45] INFO invoices.ksef: KSeF API Request: POST https://api.ksef.mf.gov.pl/v2/sessions/online
+[2026-04-02 22:22:45] INFO invoices.ksef: KSeF API Response: 201 (POST) w 0.10s
+[2026-04-02 22:22:45] INFO invoices.ksef: KSeF: Sesja otwarta (20260402-SO-45F774D000-2F9577D248-83)
+[2026-04-02 22:22:45] INFO invoices.ksef: KSeF: Sprawdzanie gotowości sesji 20260402-SO-45F774D000-2F9577D248-83...
+[2026-04-02 22:22:45] INFO invoices.ksef: KSeF API Request: GET https://api.ksef.mf.gov.pl/v2/sessions/20260402-SO-45F774D000-2F9577D248-83
+[2026-04-02 22:22:45] INFO invoices.ksef: KSeF API Response: 200 (GET) w 0.06s
+[2026-04-02 22:22:45] INFO invoices.ksef: KSeF: Sesja gotowa (status: 100)
+[2026-04-02 22:22:45] INFO invoices.ksef: KSeF: Przygotowanie payloadu (rozmiar XML: 1526 bajtów)
+[2026-04-02 22:22:45] INFO invoices.ksef: KSeF: Wysyłanie faktury do sesji 20260402-SO-45F774D000-2F9577D248-83...
+[2026-04-02 22:22:45] INFO invoices.ksef: KSeF API Request: POST https://api.ksef.mf.gov.pl/v2/sessions/online/20260402-SO-45F774D000-2F9577D248-83/invoices
+[2026-04-02 22:22:45] INFO invoices.ksef: KSeF API Response: 202 (POST) w 0.11s
+[2026-04-02 22:22:45] INFO invoices.ksef: KSeF: Faktura wysłana. Ref: 20260402-EE-45F7801000-113518DA19-24
+[2026-04-02 22:22:48] INFO invoices.ksef: KSeF API Request: GET https://api.ksef.mf.gov.pl/v2/sessions/20260402-SO-45F774D000-2F9577D248-83/invoices/20260402-EE-45F7801000-113518DA19-24
+[2026-04-02 22:22:48] INFO invoices.ksef: KSeF API Response: 200 (GET) w 0.07s
+[2026-04-02 22:22:48] INFO invoices.ksef: KSeF: Zamykanie sesji 20260402-SO-45F774D000-2F9577D248-83
+[2026-04-02 22:22:48] INFO invoices.ksef: KSeF API Request: POST https://api.ksef.mf.gov.pl/v2/sessions/online/20260402-SO-45F774D000-2F9577D248-83/close
+[2026-04-02 22:22:48] INFO invoices.ksef: KSeF API Response: 204 (POST) w 0.08s
+[2026-04-02 22:22:48] INFO invoices.ksef: KSeF: Sesja 20260402-SO-45F774D000-2F9577D248-83 zamknięta
+[2026-04-02 23:14:01] INFO invoices.ksef: KSeF: Start autoryzacji (nip: 7691427583)
+[2026-04-02 23:14:01] INFO invoices.ksef: KSeF API Request: GET https://api.ksef.mf.gov.pl/v2/security/public-key-certificates
+[2026-04-02 23:14:01] INFO invoices.ksef: KSeF API Response: 200 (GET) w 0.41s
+[2026-04-02 23:14:01] INFO invoices.ksef: KSeF API Request: POST https://api.ksef.mf.gov.pl/v2/auth/challenge
+[2026-04-02 23:14:01] INFO invoices.ksef: KSeF API Response: 200 (POST) w 0.07s
+[2026-04-02 23:14:01] INFO invoices.ksef: KSeF Challenge Info: timestamp=2026-04-02T21:14:01.2851495+00:00, timestampMs=1775164441285
+[2026-04-02 23:14:01] INFO invoices.ksef: KSeF API Request: POST https://api.ksef.mf.gov.pl/v2/auth/ksef-token
+[2026-04-02 23:14:01] INFO invoices.ksef: KSeF API Response: 202 (POST) w 0.10s
+[2026-04-02 23:14:01] INFO invoices.ksef: KSeF: Oczekiwanie na potwierdzenie autoryzacji (ref: 20260402-AU-48E671B000-A18576F054-B8)...
+[2026-04-02 23:14:01] INFO invoices.ksef: KSeF API Request: GET https://api.ksef.mf.gov.pl/v2/auth/20260402-AU-48E671B000-A18576F054-B8
+[2026-04-02 23:14:01] INFO invoices.ksef: KSeF API Response: 200 (GET) w 0.06s
+[2026-04-02 23:14:01] INFO invoices.ksef: KSeF Auth Polling [1/60]: Status JSON = 200
+[2026-04-02 23:14:01] INFO invoices.ksef: KSeF API Request: POST https://api.ksef.mf.gov.pl/v2/auth/token/redeem
+[2026-04-02 23:14:01] INFO invoices.ksef: KSeF API Response: 200 (POST) w 0.09s
+[2026-04-02 23:14:01] INFO invoices.ksef: KSeF: Autoryzacja udana
+[2026-04-02 23:14:01] INFO invoices.ksef: KSeF: Wygenerowano XML FA(3).
+[2026-04-02 23:14:01] INFO invoices.ksef: KSeF API Request: GET https://api.ksef.mf.gov.pl/v2/security/public-key-certificates
+[2026-04-02 23:14:01] INFO invoices.ksef: KSeF API Response: 200 (GET) w 0.06s
+[2026-04-02 23:14:01] INFO invoices.ksef: KSeF API Request: POST https://api.ksef.mf.gov.pl/v2/sessions/online
+[2026-04-02 23:14:02] INFO invoices.ksef: KSeF API Response: 201 (POST) w 0.09s
+[2026-04-02 23:14:02] INFO invoices.ksef: KSeF: Sesja otwarta (20260402-SO-48E684B000-BD00EACF04-6C)
+[2026-04-02 23:14:02] INFO invoices.ksef: KSeF: Sprawdzanie gotowości sesji 20260402-SO-48E684B000-BD00EACF04-6C...
+[2026-04-02 23:14:02] INFO invoices.ksef: KSeF API Request: GET https://api.ksef.mf.gov.pl/v2/sessions/20260402-SO-48E684B000-BD00EACF04-6C
+[2026-04-02 23:14:02] INFO invoices.ksef: KSeF API Response: 200 (GET) w 0.07s
+[2026-04-02 23:14:02] INFO invoices.ksef: KSeF: Sesja gotowa (status: 100)
+[2026-04-02 23:14:02] INFO invoices.ksef: KSeF: Przygotowanie payloadu (rozmiar XML: 1522 bajtów)
+[2026-04-02 23:14:02] INFO invoices.ksef: KSeF: Wysyłanie faktury do sesji 20260402-SO-48E684B000-BD00EACF04-6C...
+[2026-04-02 23:14:02] INFO invoices.ksef: KSeF API Request: POST https://api.ksef.mf.gov.pl/v2/sessions/online/20260402-SO-48E684B000-BD00EACF04-6C/invoices
+[2026-04-02 23:14:02] INFO invoices.ksef: KSeF API Response: 202 (POST) w 0.10s
+[2026-04-02 23:14:02] INFO invoices.ksef: KSeF: Faktura wysłana. Ref: 20260402-EE-48E68ED000-96694E2A9F-BF
+[2026-04-02 23:14:02] INFO invoices.ksef: KSeF: Sprawdzanie statusu faktury 20260402-EE-48E68ED000-96694E2A9F-BF
+[2026-04-02 23:14:02] INFO invoices.ksef: KSeF API Request: GET https://api.ksef.mf.gov.pl/v2/sessions/20260402-SO-48E684B000-BD00EACF04-6C/invoices/20260402-EE-48E68ED000-96694E2A9F-BF
+[2026-04-02 23:14:02] INFO invoices.ksef: KSeF API Response: 200 (GET) w 0.06s
+[2026-04-02 23:14:02] INFO invoices.ksef: KSeF poll_status [1/60]: Status code = 150
+[2026-04-02 23:14:05] INFO invoices.ksef: KSeF API Request: GET https://api.ksef.mf.gov.pl/v2/sessions/20260402-SO-48E684B000-BD00EACF04-6C/invoices/20260402-EE-48E68ED000-96694E2A9F-BF
+[2026-04-02 23:14:05] INFO invoices.ksef: KSeF API Response: 200 (GET) w 0.07s
+[2026-04-02 23:14:05] INFO invoices.ksef: KSeF poll_status [2/60]: Status code = 450
+[2026-04-02 23:14:05] INFO invoices.ksef: KSeF: Zamykanie sesji 20260402-SO-48E684B000-BD00EACF04-6C
+[2026-04-02 23:14:05] INFO invoices.ksef: KSeF API Request: POST https://api.ksef.mf.gov.pl/v2/sessions/online/20260402-SO-48E684B000-BD00EACF04-6C/close
+[2026-04-02 23:14:05] INFO invoices.ksef: KSeF API Response: 204 (POST) w 0.08s
+[2026-04-02 23:14:05] INFO invoices.ksef: KSeF: Sesja 20260402-SO-48E684B000-BD00EACF04-6C zamknięta
+[2026-04-02 23:14:05] ERROR invoices.ksef: KSeF Error (KOR/TEST/QR/1): KSeF rejected: Odrzucona
+Traceback (most recent call last):
+  File "D:\wyznaczresurs/app\invoices\ksef_service.py", line 460, in submit_to_ksef
+    raise RuntimeError(f"KSeF rejected: {result}")
+RuntimeError: KSeF rejected: Odrzucona
+[2026-04-02 23:14:05] INFO invoices.ksef: KSeF API Request: DELETE https://api.ksef.mf.gov.pl/v2/auth/sessions/current
+[2026-04-02 23:14:05] INFO invoices.ksef: KSeF API Response: 204 (DELETE) w 0.07s
+[2026-04-02 23:15:03] INFO invoices.ksef: KSeF: Start autoryzacji (nip: 7691427583)
+[2026-04-02 23:15:03] INFO invoices.ksef: KSeF API Request: GET https://api.ksef.mf.gov.pl/v2/security/public-key-certificates
+[2026-04-02 23:15:03] INFO invoices.ksef: KSeF API Response: 200 (GET) w 0.37s
+[2026-04-02 23:15:03] INFO invoices.ksef: KSeF API Request: POST https://api.ksef.mf.gov.pl/v2/auth/challenge
+[2026-04-02 23:15:04] INFO invoices.ksef: KSeF API Response: 200 (POST) w 0.07s
+[2026-04-02 23:15:04] INFO invoices.ksef: KSeF Challenge Info: timestamp=2026-04-02T21:15:03.7014809+00:00, timestampMs=1775164503701
+[2026-04-02 23:15:04] INFO invoices.ksef: KSeF API Request: POST https://api.ksef.mf.gov.pl/v2/auth/ksef-token
+[2026-04-02 23:15:04] INFO invoices.ksef: KSeF API Response: 202 (POST) w 0.08s
+[2026-04-02 23:15:04] INFO invoices.ksef: KSeF: Oczekiwanie na potwierdzenie autoryzacji (ref: 20260402-AU-48F5AEA000-5ACF1D981A-BF)...
+[2026-04-02 23:15:04] INFO invoices.ksef: KSeF API Request: GET https://api.ksef.mf.gov.pl/v2/auth/20260402-AU-48F5AEA000-5ACF1D981A-BF
+[2026-04-02 23:15:04] INFO invoices.ksef: KSeF API Response: 200 (GET) w 0.08s
+[2026-04-02 23:15:04] INFO invoices.ksef: KSeF Auth Polling [1/60]: Status JSON = 200
+[2026-04-02 23:15:04] INFO invoices.ksef: KSeF API Request: POST https://api.ksef.mf.gov.pl/v2/auth/token/redeem
+[2026-04-02 23:15:04] INFO invoices.ksef: KSeF API Response: 200 (POST) w 0.10s
+[2026-04-02 23:15:04] INFO invoices.ksef: KSeF: Autoryzacja udana
+[2026-04-02 23:15:04] INFO invoices.ksef: KSeF API Request: GET https://api.ksef.mf.gov.pl/v2/security/public-key-certificates
+[2026-04-02 23:15:04] INFO invoices.ksef: KSeF API Response: 200 (GET) w 0.06s
+[2026-04-02 23:15:04] INFO invoices.ksef: KSeF API Request: POST https://api.ksef.mf.gov.pl/v2/sessions/online
+[2026-04-02 23:15:04] INFO invoices.ksef: KSeF API Response: 201 (POST) w 0.09s
+[2026-04-02 23:15:04] INFO invoices.ksef: KSeF: Sesja otwarta (20260402-SO-48F5C31001-BEA945ADF8-3B)
+[2026-04-02 23:15:04] INFO invoices.ksef: KSeF: Sprawdzanie gotowości sesji 20260402-SO-48F5C31001-BEA945ADF8-3B...
+[2026-04-02 23:15:04] INFO invoices.ksef: KSeF API Request: GET https://api.ksef.mf.gov.pl/v2/sessions/20260402-SO-48F5C31001-BEA945ADF8-3B
+[2026-04-02 23:15:04] INFO invoices.ksef: KSeF API Response: 200 (GET) w 0.06s
+[2026-04-02 23:15:04] INFO invoices.ksef: KSeF: Sesja gotowa (status: 100)
+[2026-04-02 23:15:04] INFO invoices.ksef: KSeF: Przygotowanie payloadu (rozmiar XML: 1522 bajtów)
+[2026-04-02 23:15:04] INFO invoices.ksef: KSeF: Wysyłanie faktury do sesji 20260402-SO-48F5C31001-BEA945ADF8-3B...
+[2026-04-02 23:15:04] INFO invoices.ksef: KSeF API Request: POST https://api.ksef.mf.gov.pl/v2/sessions/online/20260402-SO-48F5C31001-BEA945ADF8-3B/invoices
+[2026-04-02 23:15:04] INFO invoices.ksef: KSeF API Response: 202 (POST) w 0.11s
+[2026-04-02 23:15:04] INFO invoices.ksef: KSeF: Faktura wysłana. Ref: 20260402-EE-48F5CE4000-960424CAC7-24
+[2026-04-02 23:15:07] INFO invoices.ksef: KSeF API Request: GET https://api.ksef.mf.gov.pl/v2/sessions/20260402-SO-48F5C31001-BEA945ADF8-3B/invoices/20260402-EE-48F5CE4000-960424CAC7-24
+[2026-04-02 23:15:07] INFO invoices.ksef: KSeF API Response: 200 (GET) w 0.28s
+[2026-04-02 23:15:07] INFO invoices.ksef: KSeF: Zamykanie sesji 20260402-SO-48F5C31001-BEA945ADF8-3B
+[2026-04-02 23:15:07] INFO invoices.ksef: KSeF API Request: POST https://api.ksef.mf.gov.pl/v2/sessions/online/20260402-SO-48F5C31001-BEA945ADF8-3B/close
+[2026-04-02 23:15:08] INFO invoices.ksef: KSeF API Response: 204 (POST) w 0.31s
+[2026-04-02 23:15:08] INFO invoices.ksef: KSeF: Sesja 20260402-SO-48F5C31001-BEA945ADF8-3B zamknięta

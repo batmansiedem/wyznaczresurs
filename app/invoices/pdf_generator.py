@@ -133,6 +133,39 @@ def generate_invoice_pdf(invoice) -> bytes:
     if invoice.ksef_reference_number:
         story.append(Paragraph("Informacje dodatkowe", label_style))
         story.append(Paragraph(f"Faktura przesłana do KSeF. Numer referencyjny: {invoice.ksef_reference_number}", value_style))
+        
+        if getattr(invoice, 'ksef_invoice_hash', None):
+            import qrcode
+            from reportlab.platypus import Image as RLImage
+            
+            # Base64URL encoding (RFC 4648)
+            inv_hash = invoice.ksef_invoice_hash.replace('+', '-').replace('/', '_').rstrip('=')
+            
+            env_url = 'https://ksef-test.mf.gov.pl' if getattr(settings, 'KSEF_SANDBOX', True) else 'https://ksef.mf.gov.pl'
+            qr_url = f"{env_url}/web/verify/{invoice.ksef_reference_number}/{inv_hash}"
+            
+            qr = qrcode.QRCode(version=1, box_size=10, border=1)
+            qr.add_data(qr_url)
+            qr.make(fit=True)
+            img = qr.make_image(fill_color="black", back_color="white")
+            
+            qr_buffer = BytesIO()
+            img.save(qr_buffer, format="PNG")
+            qr_buffer.seek(0)
+            
+            qr_image = RLImage(qr_buffer, width=3*cm, height=3*cm)
+            
+            qr_table_data = [
+                [qr_image],
+                [Paragraph(invoice.ksef_reference_number, ParagraphStyle('QRLabel', parent=styles['Normal'], fontSize=7, alignment=1, fontName='DejaVuSans'))]
+            ]
+            qr_table = Table(qr_table_data, colWidths=[4*cm])
+            qr_table.setStyle(TableStyle([
+                ('ALIGN', (0,0), (-1,-1), 'CENTER'),
+                ('VALIGN', (0,0), (-1,-1), 'TOP'),
+            ]))
+            story.append(Spacer(1, 0.5*cm))
+            story.append(qr_table)
 
     # 6. Stopka
     story.append(Spacer(1, 2*cm))

@@ -556,6 +556,10 @@
                         @click="startCorrection(props.row)">
                         <q-tooltip>Wystaw fakturę korygującą</q-tooltip>
                       </q-btn>
+                      <q-btn v-if="props.row.ksef_status === 'accepted'" flat round dense icon="qr_code" color="secondary" size="sm"
+                        @click="refreshInvoiceQr(props.row)">
+                        <q-tooltip>Odśwież QR (KSeF)</q-tooltip>
+                      </q-btn>
                       <q-btn flat round dense icon="picture_as_pdf" color="primary" size="sm"
                         @click="downloadInvoicePdf(props.row)">
                         <q-tooltip>Pobierz PDF</q-tooltip>
@@ -2311,6 +2315,20 @@ async function downloadInvoicePdf(inv) {
     URL.revokeObjectURL(url)
   } catch {
     $q.notify({ type: 'negative', message: 'Błąd pobierania PDF.', position: 'top' })
+  }
+}
+
+async function refreshInvoiceQr(inv) {
+  try {
+    invLoading.value = true
+    const { data } = await api.post(`/billing/invoices/${inv.id}/refresh_qr/`)
+    $q.notify({ type: 'positive', message: data.detail || 'Zaktualizowano QR', position: 'top' })
+    fetchInvoiceReport()
+    fetchUserInvoices()
+  } catch (err) {
+    $q.notify({ type: 'negative', message: err.response?.data?.detail || 'Błąd odświeżania QR.', position: 'top' })
+  } finally {
+    invLoading.value = false
   }
 }
 

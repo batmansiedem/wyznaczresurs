@@ -41,6 +41,9 @@ class Invoice(models.Model):
     ksef_reference_number = models.CharField(
         max_length=100, blank=True, null=True, verbose_name=_("Numer referencyjny KSeF")
     )
+    ksef_invoice_hash = models.CharField(
+        max_length=255, blank=True, null=True, verbose_name=_("Hash faktury KSeF (Base64)")
+    )
     ksef_status = models.CharField(
         max_length=20, choices=STATUS_CHOICES, default="pending", verbose_name=_("Status KSeF")
     )

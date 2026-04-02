@@ -109,6 +109,21 @@ class InvoiceViewSet(viewsets.ModelViewSet):
         # Zwykły użytkownik — wszystkie faktury (z widocznym statusem KSeF)
         return Invoice.objects.filter(user=self.request.user)
 
+    @action(detail=True, methods=["post"])
+    def refresh_qr(self, request, pk=None):
+        """Generuje brakujący hash (dla QR) z obecnego XML (fallback dla starych faktur)."""
+        if not request.user.is_staff:
+            return Response({"detail": "Brak uprawnień."}, status=status.HTTP_403_FORBIDDEN)
+            
+        invoice = self.get_object()
+        if invoice.ksef_status != "accepted" or not invoice.ksef_reference_number:
+            return Response({"detail": "Faktura nie ma numeru KSeF."}, status=status.HTTP_400_BAD_REQUEST)
+            
+        from .ksef_service import refresh_ksef_qr
+        refresh_ksef_qr(invoice)
+        
+        return Response({"detail": "Zaktualizowano dane QR faktury."})
+
     @action(detail=True, methods=["get"])
     def download_pdf(self, request, pk=None):
         invoice = self.get_object()
