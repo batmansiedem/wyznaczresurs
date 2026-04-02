@@ -47,7 +47,9 @@ class KSeFClient:
 
     def __init__(self):
         self.base_url = settings.KSEF_API_URL.rstrip('/')
-        self.nip = settings.KSEF_NIP.replace('-', '').strip()
+        # Czyścimy NIP ze wszystkiego co nie jest cyfrą (usuwa PL, nip-, spacje, myślniki)
+        import re
+        self.nip = "".join(re.findall(r'\d+', settings.KSEF_NIP))
         
         # Parsowanie tokena (zawsze używamy NIP jako identyfikatora, a z .env bierzemy tylko klucz)
         full_token = settings.KSEF_TOKEN.strip()

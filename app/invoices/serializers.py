@@ -22,6 +22,7 @@ class InvoiceSerializer(serializers.ModelSerializer):
         if not obj.ksef_invoice_hash:
             return None
         from django.conf import settings
+        import re
         is_test = getattr(settings, 'KSEF_SANDBOX', True)
         base = 'https://qr-test.ksef.mf.gov.pl/invoice' if is_test else 'https://qr.ksef.mf.gov.pl/invoice'
         inv_hash = obj.ksef_invoice_hash.replace('+', '-').replace('/', '_').rstrip('=')
@@ -31,7 +32,7 @@ class InvoiceSerializer(serializers.ModelSerializer):
             return f"{base}/{obj.ksef_reference_number}/{inv_hash}"
         else:
             # Format dla faktur bez numeru (offline)
-            nip = settings.KSEF_NIP.replace('-', '').strip()
+            nip = "".join(re.findall(r'\d+', settings.KSEF_NIP))
             date_str = obj.issue_date.strftime('%Y%m%d')
             return f"{base}/{nip}/{date_str}/{inv_hash}"
 

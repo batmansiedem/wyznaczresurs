@@ -53,16 +53,16 @@
             <q-btn
               v-if="props.row.ksef_qr_url"
               flat round dense color="orange-9" icon="open_in_new"
-              @click="openInKSeF(props.row.ksef_qr_url)"
+              type="a" :href="props.row.ksef_qr_url" target="_blank"
             >
               <q-tooltip>Zobacz/Pobierz w portalu KSeF</q-tooltip>
             </q-btn>
             <q-btn
-              v-if="props.row.ksef_status === 'accepted' && !props.row.ksef_invoice_hash"
+              v-if="props.row.ksef_status === 'accepted'"
               flat round dense color="secondary" icon="refresh"
               @click="refreshInvoice(props.row)"
             >
-              <q-tooltip>Odśwież dane QR</q-tooltip>
+              <q-tooltip>Aktualizuj dane QR (z KSeF)</q-tooltip>
             </q-btn>
             <q-btn
               flat round dense
