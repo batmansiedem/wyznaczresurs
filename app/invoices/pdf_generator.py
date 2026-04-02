@@ -138,11 +138,20 @@ def generate_invoice_pdf(invoice) -> bytes:
             import qrcode
             from reportlab.platypus import Image as RLImage
             
-            # Base64URL encoding (RFC 4648)
+            # KSeF v2 QR format: [BASE_URL]/[DATA]/[NIP]/[HASH]
+            # HASH must be Base64URL (RFC 4648)
             inv_hash = invoice.ksef_invoice_hash.replace('+', '-').replace('/', '_').rstrip('=')
             
-            env_url = 'https://ksef-test.mf.gov.pl' if getattr(settings, 'KSEF_SANDBOX', True) else 'https://ksef.mf.gov.pl'
-            qr_url = f"{env_url}/web/verify/{invoice.ksef_reference_number}/{inv_hash}"
+            # NIP sprzedawcy (bez myślników)
+            seller_nip = settings.KSEF_NIP.replace('-', '').strip()
+            
+            # Data wystawienia (P_1) w formacie DD-MM-RRRR
+            date_str = invoice.issue_date.strftime('%d-%m-%Y')
+            
+            is_test = getattr(settings, 'KSEF_SANDBOX', True)
+            base_qr_url = 'https://qr-test.ksef.mf.gov.pl/invoice' if is_test else 'https://qr.ksef.mf.gov.pl/invoice'
+            
+            qr_url = f"{base_qr_url}/{date_str}/{seller_nip}/{inv_hash}"
             
             qr = qrcode.QRCode(version=1, box_size=10, border=1)
             qr.add_data(qr_url)
@@ -166,6 +175,7 @@ def generate_invoice_pdf(invoice) -> bytes:
             ]))
             story.append(Spacer(1, 0.5*cm))
             story.append(qr_table)
+            story.append(Paragraph(f"<font size='7' color='grey'>Link weryfikacyjny KSeF v2</font>", ParagraphStyle('QRHint', parent=styles['Normal'], alignment=1, fontName='DejaVuSans')))
 
     # 6. Stopka
     story.append(Spacer(1, 2*cm))

@@ -51,6 +51,20 @@
               <q-tooltip>Podgląd szczegółów</q-tooltip>
             </q-btn>
             <q-btn
+              v-if="props.row.ksef_qr_url"
+              flat round dense color="orange-9" icon="open_in_new"
+              @click="openInKSeF(props.row.ksef_qr_url)"
+            >
+              <q-tooltip>Zobacz/Pobierz w portalu KSeF</q-tooltip>
+            </q-btn>
+            <q-btn
+              v-if="props.row.ksef_status === 'accepted' && !props.row.ksef_invoice_hash"
+              flat round dense color="secondary" icon="refresh"
+              @click="refreshInvoice(props.row)"
+            >
+              <q-tooltip>Odśwież dane QR</q-tooltip>
+            </q-btn>
+            <q-btn
               flat round dense
               :color="(props.row.is_proforma || props.row.ksef_status === 'accepted') ? 'secondary' : 'grey-5'"
               icon="download"
@@ -59,7 +73,7 @@
             >
               <q-tooltip>
                 <span v-if="props.row.is_proforma">Pobierz PDF Proforma</span>
-                <span v-else-if="props.row.ksef_status === 'accepted'">Pobierz PDF</span>
+                <span v-else-if="props.row.ksef_status === 'accepted'">Pobierz PDF z kodem QR</span>
                 <span v-else>PDF dostępny po akceptacji KSeF</span>
               </q-tooltip>
             </q-btn>
@@ -146,6 +160,23 @@ const fetchInvoices = async () => {
 const viewInvoice = (invoice) => {
   selectedInvoice.value = invoice
   showDetailsDialog.value = true
+}
+
+const openInKSeF = (url) => {
+  window.open(url, '_blank')
+}
+
+const refreshInvoice = async (invoice) => {
+  try {
+    loading.value = true
+    const { data } = await api.post(`/billing/invoices/${invoice.id}/refresh_qr/`)
+    Notify.create({ type: 'positive', message: data.detail || 'Zaktualizowano dane QR.', position: 'top' })
+    await fetchInvoices()
+  } catch (err) {
+    Notify.create({ type: 'negative', message: err.response?.data?.detail || 'Błąd odświeżania.', position: 'top' })
+  } finally {
+    loading.value = false
+  }
 }
 
 const downloadInvoice = async (invoice) => {

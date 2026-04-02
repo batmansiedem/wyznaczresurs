@@ -112,10 +112,12 @@ class InvoiceViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=["post"])
     def refresh_qr(self, request, pk=None):
         """Generuje brakujący hash (dla QR) z obecnego XML (fallback dla starych faktur)."""
-        if not request.user.is_staff:
+        invoice = self.get_object()
+        
+        # Pozwalamy właścicielowi lub adminowi
+        if not request.user.is_staff and invoice.user != request.user:
             return Response({"detail": "Brak uprawnień."}, status=status.HTTP_403_FORBIDDEN)
             
-        invoice = self.get_object()
         if invoice.ksef_status != "accepted" or not invoice.ksef_reference_number:
             return Response({"detail": "Faktura nie ma numeru KSeF."}, status=status.HTTP_400_BAD_REQUEST)
             
@@ -133,6 +135,14 @@ class InvoiceViewSet(viewsets.ModelViewSet):
                 {"detail": "PDF dostępny dopiero po akceptacji przez KSeF."},
                 status=status.HTTP_403_FORBIDDEN,
             )
+        # Auto-refresh QR hash if missing for accepted invoices
+        if invoice.ksef_status == "accepted" and invoice.ksef_reference_number and not invoice.ksef_invoice_hash:
+            try:
+                from .ksef_service import refresh_ksef_qr
+                refresh_ksef_qr(invoice)
+            except Exception:
+                pass # Nie krytyczne, wygeneruje PDF bez QR
+
         pdf_content = generate_invoice_pdf(invoice)
         response = HttpResponse(pdf_content, content_type="application/pdf")
         filename = f"Faktura_{invoice.invoice_number.replace('/', '_')}.pdf"

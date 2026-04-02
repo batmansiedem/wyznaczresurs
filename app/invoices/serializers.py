@@ -11,11 +11,23 @@ class UserSimpleSerializer(serializers.ModelSerializer):
 
 class InvoiceSerializer(serializers.ModelSerializer):
     user_email = serializers.EmailField(source='user.email', read_only=True)
+    ksef_qr_url = serializers.SerializerMethodField()
     
     class Meta:
         model = Invoice
         fields = '__all__'
         read_only_fields = ('invoice_number', 'ksef_reference_number', 'ksef_status', 'issue_date', 'created_at')
+
+    def get_ksef_qr_url(self, obj):
+        if not obj.ksef_reference_number or not obj.ksef_invoice_hash:
+            return None
+        from django.conf import settings
+        is_test = getattr(settings, 'KSEF_SANDBOX', True)
+        base = 'https://qr-test.ksef.mf.gov.pl/invoice' if is_test else 'https://qr.ksef.mf.gov.pl/invoice'
+        date_str = obj.issue_date.strftime('%d-%m-%Y')
+        nip = settings.KSEF_NIP.replace('-', '').strip()
+        inv_hash = obj.ksef_invoice_hash.replace('+', '-').replace('/', '_').rstrip('=')
+        return f"{base}/{date_str}/{nip}/{inv_hash}"
 
 class CreateInvoiceSerializer(serializers.Serializer):
     user_id = serializers.IntegerField()
