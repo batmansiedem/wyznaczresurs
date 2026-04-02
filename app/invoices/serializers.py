@@ -19,23 +19,16 @@ class InvoiceSerializer(serializers.ModelSerializer):
         read_only_fields = ('invoice_number', 'ksef_reference_number', 'ksef_status', 'issue_date', 'created_at')
 
     def get_ksef_qr_url(self, obj):
-        if not obj.ksef_invoice_hash:
+        if not obj.ksef_invoice_hash or not obj.ksef_reference_number:
             return None
         from django.conf import settings
-        import re
         
-        # Wykrywanie środowiska: numer -8C sugeruje testy
-        is_test_invoice = obj.ksef_reference_number and obj.ksef_reference_number.endswith('-8C')
-        is_sandbox_mode = getattr(settings, 'KSEF_SANDBOX', True)
+        is_sandbox = getattr(settings, 'KSEF_SANDBOX', True)
+        host = 'ksef-test.podatki.gov.pl' if is_sandbox else 'ksef.podatki.gov.pl'
+        base = f'https://{host}/web/common/verification'
         
-        base = 'https://qr-test.ksef.mf.gov.pl/invoice' if (is_test_invoice or is_sandbox_mode) else 'https://qr.ksef.mf.gov.pl/invoice'
-        
-        # Oficjalny format FA(3): /invoice/{NIP}/{DATA}/{HASH}
-        nip = "".join(re.findall(r'\d+', settings.KSEF_NIP))
-        date_str = obj.issue_date.strftime('%d-%m-%Y')
         inv_hash = obj.ksef_invoice_hash.replace('+', '-').replace('/', '_').rstrip('=')
-        
-        return f"{base}/{nip}/{date_str}/{inv_hash}"
+        return f"{base}/{obj.ksef_reference_number}/{inv_hash}"
 
 class CreateInvoiceSerializer(serializers.Serializer):
     user_id = serializers.IntegerField()

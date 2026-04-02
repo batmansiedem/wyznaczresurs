@@ -141,16 +141,11 @@ def generate_invoice_pdf(invoice) -> bytes:
             # KSeF v2 QR format: [BASE_URL]/[NrKSeF]/[HASH] lub [BASE_URL]/[NIP]/[DATA]/[HASH]
             inv_hash = invoice.ksef_invoice_hash.replace('+', '-').replace('/', '_').rstrip('=')
             
-            import re
-            is_test_invoice = invoice.ksef_reference_number and invoice.ksef_reference_number.endswith('-8C')
-            is_sandbox_mode = getattr(settings, 'KSEF_SANDBOX', True)
+            is_sandbox = getattr(settings, 'KSEF_SANDBOX', True)
+            host = 'ksef-test.podatki.gov.pl' if is_sandbox else 'ksef.podatki.gov.pl'
             
-            base_qr_url = 'https://qr-test.ksef.mf.gov.pl/invoice' if (is_test_invoice or is_sandbox_mode) else 'https://qr.ksef.mf.gov.pl/invoice'
-            
-            # Oficjalny format FA(3): /invoice/{NIP}/{DATA}/{HASH}
-            seller_nip = "".join(re.findall(r'\d+', settings.KSEF_NIP))
-            date_str = invoice.issue_date.strftime('%d-%m-%Y')
-            qr_url = f"{base_qr_url}/{seller_nip}/{date_str}/{inv_hash}"
+            base = f'https://{host}/web/common/verification'
+            qr_url = f"{base}/{invoice.ksef_reference_number}/{inv_hash}"
             
             qr = qrcode.QRCode(version=1, box_size=10, border=1)
             qr.add_data(qr_url)
