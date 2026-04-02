@@ -1,6 +1,7 @@
 .venv
 .claude
 CLAUDE.md
+app/db.sqlite3
 GEMINI.md
 public_html
 app/.env
@@ -8,4 +9,3 @@ members.sql
 u685896714_calculators.sql
 members.csv
 u685896714_calculators.csv
-app/db.sqlite3

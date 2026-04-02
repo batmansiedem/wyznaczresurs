@@ -494,7 +494,7 @@ const initPaypal = async () => {
 
       onApprove: async (data) => {
         try {
-          const res = await api.post(`/billing/paypal/capture-order/${data.orderID}/`)
+          const res = await api.post(`/billing/paypal/capture-order/${data.orderID}/`, {}, { timeout: 300000 })
           const invoice = res.data.invoice
           await userStore.fetchUser()
           $q.notify({

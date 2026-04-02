@@ -6,7 +6,7 @@ import { useUserStore } from 'stores/user-store'
 const api = axios.create({
   baseURL: process.env.API_BASE_URL || 'http://localhost:8000/api',
   withCredentials: true,
-  timeout: 30000,
+  timeout: 60000,
   headers: {
     'Content-Type': 'application/json',
   }

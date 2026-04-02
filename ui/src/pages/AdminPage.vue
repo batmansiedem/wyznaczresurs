@@ -1588,7 +1588,7 @@ async function submitInvoice() {
       recipient_address: invoice.value.recipient_address,
       payment_terms: invoice.value.payment_terms
     }
-    await api.post('/billing/invoices/', payload)
+    await api.post('/billing/invoices/', payload, { timeout: 300000 })
     $q.notify({ type: 'positive', message: invoice.value.is_proforma ? 'Wystawiono proformę.' : 'Faktura wystawiona.', position: 'top' })
     newInvoiceDialog.value = false
     fetchUserInvoices()
@@ -1615,7 +1615,7 @@ async function approveProforma(inv) {
     persistent: true
   }).onOk(async () => {
     try {
-      await api.post(`/billing/invoices/${inv.id}/approve_proforma/`)
+      await api.post(`/billing/invoices/${inv.id}/approve_proforma/`, {}, { timeout: 300000 })
       $q.notify({ type: 'positive', message: 'Faktura zatwierdzona i wysłana do KSeF.', position: 'top' })
       fetchUserInvoices()
       const { data } = await api.get(`/auth/admin/users/${selectedUser.value.id}/`)
@@ -1676,7 +1676,7 @@ async function submitCorrection() {
         net_amount: correctionForm.value.net_amount,
         gross_amount: correctionForm.value.gross_amount,
         reason: correctionForm.value.reason
-      })
+      }, { timeout: 300000 })
       $q.notify({ type: 'positive', message: 'Faktura korygująca wystawiona i wysłana do KSeF.', position: 'top' })
       correctionDialog.value = false
       fetchUserInvoices()

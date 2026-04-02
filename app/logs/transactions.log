@@ -1,11 +1,52 @@
-[2026-04-01 20:11:18] INFO invoices.ksef: KSeF: rozpoczynam autoryzację (sandbox=False, NIP=7691427583)
-[2026-04-01 20:11:20] INFO invoices.ksef: KSeF: uzyskano accessToken (...HlcKjaR_U18Q)
-[2026-04-01 20:11:21] INFO invoices.ksef: KSeF: sesja online otwarta, ref=20260401-SO-3E726B4000-9DA62A7BAB-57
-[2026-04-01 20:11:21] ERROR invoices.ksef: KSeF /invoices — odpowiedź: {"exception":{"exceptionDetailList":[{"exceptionCode":21180,"exceptionDescription":"Status sesji nie pozwala na wykonanie operacji.","details":["Status sesji (415) uniemożliwia wysyłkę faktur."]}],"serviceCode":"00-f9ae734489037fba2c6cf1396ad973a4-b6e5fff38c48095f-00","timestamp":"2026-04-01T18:11:20.7908912Z"}}
-[2026-04-01 20:25:14] INFO invoices.ksef: KSeF: rozpoczynam autoryzację (sandbox=False, NIP=7691427583)
-[2026-04-01 20:25:16] INFO invoices.ksef: KSeF: uzyskano accessToken (...PbUs4PDFrCgc)
-[2026-04-01 20:25:16] INFO invoices.ksef: KSeF: sesja online otwarta, ref=20260401-SO-3F3E5A1000-2E03FFA422-E0
-[2026-04-01 20:25:16] ERROR invoices.ksef: KSeF /invoices — odpowiedź: {"exception":{"exceptionDetailList":[{"exceptionCode":21180,"exceptionDescription":"Status sesji nie pozwala na wykonanie operacji.","details":["Status sesji (415) uniemożliwia wysyłkę faktur."]}],"serviceCode":"00-12216c9378036556149913531e79827e-e0a27e6629d96293-00","timestamp":"2026-04-01T18:25:16.0765497Z"}}
-[2026-04-01 20:28:32] INFO invoices.ksef: KSeF: rozpoczynam autoryzację (sandbox=False, NIP=7691427583)
-[2026-04-01 20:28:32] ERROR invoices.ksef: KSeF /auth/challenge — odpowiedź: 
-[2026-04-01 20:34:26] INFO invoices.ksef: KSeF: rozpoczynam autoryzację (sandbox=True, NIP=7691427583)
+[2026-04-02 16:09:18] INFO invoices.ksef: KSeF: Start procesu wysyłki FV/2026/04/08341F36
+[2026-04-02 16:09:18] INFO invoices.ksef: KSeF: Start autoryzacji (NIP=7691427583)...
+[2026-04-02 16:09:19] INFO invoices.ksef: KSeF: Pobrano challenge=20260402-CR-30993CB000-BBDA3FC5C7-54
+[2026-04-02 16:09:19] INFO invoices.ksef: KSeF: Wybrano certyfikat MF (usage: ['kseftokenencryption'])
+[2026-04-02 16:09:20] INFO invoices.ksef: KSeF: Wysłano ksef-token, ref=20260402-AU-30996CB000-0E80E58FBF-C4. Start pollingu statusu...
+[2026-04-02 16:09:20] INFO invoices.ksef: KSeF: Auth status (próba 1): 450
+[2026-04-02 16:09:20] ERROR invoices.ksef: KSeF Auth Polling Error 450: {"startDate":"2026-04-02T14:09:20.067557+00:00","authenticationMethod":"Token","authenticationMethodInfo":{"category":"Token","code":"token.ksef","displayName":"Token KSeF"},"status":{"code":450,"description":"Uwierzytelnianie zakończone niepowodzeniem z powodu błędnego tokenu","details":["Token o numerze referencyjnym 20260330-EC-42D585E000-C61983CEC0-EB nie został znaleziony."]}}
+[2026-04-02 16:09:20] ERROR invoices.ksef: KSeF Submit Error: Auth Error: 450
+[2026-04-02 16:13:05] INFO invoices.ksef: KSeF: Start procesu wysyłki FV/2026/04/B21E600B
+[2026-04-02 16:13:05] INFO invoices.ksef: KSeF: Start autoryzacji (NIP=7691427583)...
+[2026-04-02 16:13:06] INFO invoices.ksef: KSeF: Pobrano challenge=20260402-CR-30D0B3F000-0E8E8DBC2C-33
+[2026-04-02 16:13:07] INFO invoices.ksef: KSeF: Wybrano certyfikat MF (usage: ['kseftokenencryption'])
+[2026-04-02 16:13:07] INFO invoices.ksef: KSeF: Wysłano ksef-token, ref=20260402-AU-30D0F71000-0E87847FE4-6C. Start pollingu statusu...
+[2026-04-02 16:13:07] INFO invoices.ksef: KSeF: Auth status (próba 1): 450
+[2026-04-02 16:13:07] ERROR invoices.ksef: KSeF Auth Polling Error 450: {"startDate":"2026-04-02T14:13:07.5607517+00:00","authenticationMethod":"Token","authenticationMethodInfo":{"category":"Token","code":"token.ksef","displayName":"Token KSeF"},"status":{"code":450,"description":"Uwierzytelnianie zakończone niepowodzeniem z powodu błędnego tokenu","details":["Token o numerze referencyjnym 20260330-EC-42D585E000-C61983CEC0-EB nie został znaleziony."]}}
+[2026-04-02 16:13:07] ERROR invoices.ksef: KSeF Submit Error: Auth Error: 450
+[2026-04-02 16:18:10] INFO invoices.ksef: KSeF: Start procesu wysyłki FV/2026/04/E65CF118
+[2026-04-02 16:18:10] INFO invoices.ksef: KSeF: Start autoryzacji (NIP=7691427583)...
+[2026-04-02 16:18:11] INFO invoices.ksef: KSeF: Pobrano challenge=20260402-CR-311B14D000-BBD9652703-EE
+[2026-04-02 16:18:11] INFO invoices.ksef: KSeF: Wysłano ksef-token, ref=20260402-AU-311B29A000-BBD85DA8BD-3E. Start pollingu statusu...
+[2026-04-02 16:18:11] INFO invoices.ksef: KSeF: Auth status (próba 1): 450
+[2026-04-02 16:18:11] ERROR invoices.ksef: KSeF Auth Polling Error 450: {"startDate":"2026-04-02T14:18:11.4737959+00:00","authenticationMethod":"Token","authenticationMethodInfo":{"category":"Token","code":"token.ksef","displayName":"Token KSeF"},"status":{"code":450,"description":"Uwierzytelnianie zakończone niepowodzeniem z powodu błędnego tokenu","details":["Token o numerze referencyjnym 20260330-EC-42D585E000-C61983CEC0-EB nie został znaleziony."]}}
+[2026-04-02 16:18:11] ERROR invoices.ksef: KSeF Submit Error: Auth Error: 450
+[2026-04-02 16:18:14] INFO invoices.ksef: KSeF: Start procesu wysyłki FV/2026/04/AF815DDF
+[2026-04-02 16:18:14] INFO invoices.ksef: KSeF: Start autoryzacji (NIP=7691427583)...
+[2026-04-02 16:18:15] INFO invoices.ksef: KSeF: Pobrano challenge=20260402-CR-311C10B000-0E8982A07D-C2
+[2026-04-02 16:18:15] INFO invoices.ksef: KSeF: Wysłano ksef-token, ref=20260402-AU-311C257000-DC397FCEDF-8A. Start pollingu statusu...
+[2026-04-02 16:18:15] INFO invoices.ksef: KSeF: Auth status (próba 1): 450
+[2026-04-02 16:18:15] ERROR invoices.ksef: KSeF Auth Polling Error 450: {"startDate":"2026-04-02T14:18:15.5034483+00:00","authenticationMethod":"Token","authenticationMethodInfo":{"category":"Token","code":"token.ksef","displayName":"Token KSeF"},"status":{"code":450,"description":"Uwierzytelnianie zakończone niepowodzeniem z powodu błędnego tokenu","details":["Token o numerze referencyjnym 20260330-EC-42D585E000-C61983CEC0-EB nie został znaleziony."]}}
+[2026-04-02 16:18:15] ERROR invoices.ksef: KSeF Submit Error: Auth Error: 450
+[2026-04-02 16:27:22] INFO invoices.ksef: KSeF: Start procesu wysyłki FV/2026/04/717A7770
+[2026-04-02 16:27:22] INFO invoices.ksef: KSeF: Start autoryzacji (NIP=7691427583)...
+[2026-04-02 16:27:22] INFO invoices.ksef: KSeF: Pobrano challenge=20260402-CR-31A1BCB000-0E89B50AE3-44
+[2026-04-02 16:27:23] INFO invoices.ksef: KSeF: Wybrano certyfikat MF (usage: ['kseftokenencryption'])
+[2026-04-02 16:27:23] INFO invoices.ksef: KSeF: Wysłano ksef-token, ref=20260402-AU-31A1EA3000-BBD6AB1B61-86. Start pollingu statusu...
+[2026-04-02 16:27:23] INFO invoices.ksef: KSeF: Auth status (próba 1): 450
+[2026-04-02 16:27:23] ERROR invoices.ksef: KSeF Auth Polling Error 450: {"startDate":"2026-04-02T14:27:23.4183508+00:00","authenticationMethod":"Token","authenticationMethodInfo":{"category":"Token","code":"token.ksef","displayName":"Token KSeF"},"status":{"code":450,"description":"Uwierzytelnianie zakończone niepowodzeniem z powodu błędnego tokenu","details":["Token o numerze referencyjnym 20260330-EC-42D585E000-C61983CEC0-EB nie został znaleziony."]}}
+[2026-04-02 16:27:23] ERROR invoices.ksef: KSeF Submit Error: Auth Error: 450
+[2026-04-02 16:27:33] INFO invoices.ksef: KSeF: Start procesu wysyłki FV/2026/04/1B7F035E
+[2026-04-02 16:27:33] INFO invoices.ksef: KSeF: Start autoryzacji (NIP=7691427583)...
+[2026-04-02 16:27:33] INFO invoices.ksef: KSeF: Pobrano challenge=20260402-CR-31A4750000-DC3253F04E-60
+[2026-04-02 16:27:34] INFO invoices.ksef: KSeF: Wysłano ksef-token, ref=20260402-AU-31A4897000-0E8E7EF665-05. Start pollingu statusu...
+[2026-04-02 16:27:34] INFO invoices.ksef: KSeF: Auth status (próba 1): 450
+[2026-04-02 16:27:34] ERROR invoices.ksef: KSeF Auth Polling Error 450: {"startDate":"2026-04-02T14:27:34.160245+00:00","authenticationMethod":"Token","authenticationMethodInfo":{"category":"Token","code":"token.ksef","displayName":"Token KSeF"},"status":{"code":450,"description":"Uwierzytelnianie zakończone niepowodzeniem z powodu błędnego tokenu","details":["Token o numerze referencyjnym 20260330-EC-42D585E000-C61983CEC0-EB nie został znaleziony."]}}
+[2026-04-02 16:27:34] ERROR invoices.ksef: KSeF Submit Error: Auth Error: 450
+[2026-04-02 16:27:46] INFO invoices.ksef: KSeF: Start procesu wysyłki FV/2026/04/89B9B645
+[2026-04-02 16:27:46] INFO invoices.ksef: KSeF: Start autoryzacji (NIP=7691427583)...
+[2026-04-02 16:27:47] INFO invoices.ksef: KSeF: Pobrano challenge=20260402-CR-31A7AF8000-DC3AE452F6-62
+[2026-04-02 16:27:47] INFO invoices.ksef: KSeF: Wysłano ksef-token, ref=20260402-AU-31A7C96000-0E8486C876-3C. Start pollingu statusu...
+[2026-04-02 16:27:48] INFO invoices.ksef: KSeF: Auth status (próba 1): 450
+[2026-04-02 16:27:48] ERROR invoices.ksef: KSeF Auth Polling Error 450: {"startDate":"2026-04-02T14:27:47.4711364+00:00","authenticationMethod":"Token","authenticationMethodInfo":{"category":"Token","code":"token.ksef","displayName":"Token KSeF"},"status":{"code":450,"description":"Uwierzytelnianie zakończone niepowodzeniem z powodu błędnego tokenu","details":["Token o numerze referencyjnym 20260330-EC-42D585E000-C61983CEC0-EB nie został znaleziony."]}}
+[2026-04-02 16:27:48] ERROR invoices.ksef: KSeF Submit Error: Auth Error: 450
