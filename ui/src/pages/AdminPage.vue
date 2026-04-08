@@ -763,7 +763,8 @@
                   :options="[
                     { label: 'Zapłacono przelewem', value: 'paid' },
                     { label: 'Do zapłaty w ciągu 7 dni', value: '7_days' },
-                    { label: 'Do zapłaty w ciągu 14 dni', value: '14_days' }
+                    { label: 'Do zapłaty w ciągu 14 dni', value: '14_days' },
+                    { label: 'Do zapłaty w ciągu 30 dni', value: '30_days' }
                   ]"
                   emit-value map-options />
               </div>
@@ -1337,6 +1338,7 @@ import VueApexCharts from 'vue3-apexcharts'
 import CalculationResultReport from 'components/CalculationResultReport.vue'
 
 const $q = useQuasar()
+const ksefSandbox = ref(true)
 
 // ---- Zakładki ----
 const mainTab = ref('users')
@@ -2430,7 +2432,13 @@ async function saveAllPrices() {
   }
 }
 
-onMounted(() => {
+onMounted(async () => {
+  try {
+    const res = await api.get('/billing/public-config/')
+    ksefSandbox.value = res.data.ksef_sandbox
+  } catch (e) {
+    console.error('Błąd pobierania konfiguracji public-config:', e)
+  }
   fetchUsers()
   fetchStats()
   fetchAllTransactions()

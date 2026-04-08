@@ -76,6 +76,7 @@ class Invoice(models.Model):
         ("paid", "Zapłacono przelewem"),
         ("7_days", "Do zapłaty w ciągu 7 dni"),
         ("14_days", "Do zapłaty w ciągu 14 dni"),
+        ("30_days", "Do zapłaty w ciągu 30 dni"),
     )
     payment_terms = models.CharField(
         max_length=20, 

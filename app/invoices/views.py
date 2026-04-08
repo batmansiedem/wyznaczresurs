@@ -92,6 +92,7 @@ class PublicConfigView(APIView):
         return Response({
             'paypal_client_id': settings.PAYPAL_CLIENT_ID,
             'is_sandbox': settings.PAYPAL_SANDBOX,
+            'ksef_sandbox': getattr(settings, 'KSEF_SANDBOX', True),
         })
 
 class InvoiceViewSet(viewsets.ModelViewSet):
@@ -177,7 +178,7 @@ class InvoiceViewSet(viewsets.ModelViewSet):
         data = serializer.validated_data
 
         target_user = User.objects.get(id=data["user_id"])
-        if data.get("gross_amount"):
+        if data.get("gross_amount") is not None:
             gross = data["gross_amount"]
             net   = (gross / Decimal("1.23")).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
             vat   = gross - net
@@ -201,7 +202,7 @@ class InvoiceViewSet(viewsets.ModelViewSet):
             gross_amount=gross,
             is_proforma=is_pro,
             service_name=data.get("service_name") or "Wyznaczenie resursu UTB GTU_12",
-            points_added=data["points_to_add"],
+            points_added=int(gross),
             ksef_status="pending",
             buyer_name=data.get("buyer_name") or buyer["buyer_name"],
             buyer_nip=data.get("buyer_nip") or buyer["buyer_nip"],
@@ -251,7 +252,7 @@ class InvoiceViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         data = serializer.validated_data
 
-        if data.get("gross_amount"):
+        if data.get("gross_amount") is not None:
             gross = data["gross_amount"]
             net   = (gross / Decimal("1.23")).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
             vat   = gross - net

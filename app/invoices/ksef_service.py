@@ -8,7 +8,7 @@ import hashlib
 import logging
 import os
 import time
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from xml.etree import ElementTree as ET
 from typing import Optional, Dict, Any, Tuple
 
@@ -330,7 +330,9 @@ class KSeFClient:
                         inv_hash = raw_hash
                     return "accepted", ksef_no, inv_hash
                 if code and int(code) >= 400 and code != 405:
-                    return "rejected", data.get("processingDescription", "Odrzucona"), None
+                    events = data.get("invoiceProcessingEvents", [])
+                    logger.error("KSeF rejection details for %s: %s", inv_ref, events)
+                    return "rejected", f"{data.get('processingDescription', 'Odrzucona')} | {events}", None
             time.sleep(POLLING_RETRY_DELAY)
         raise KSeFError("Timeout statusu faktury")
 
@@ -381,6 +383,20 @@ def build_fa3_xml(invoice, is_correction: bool = False) -> bytes:
     ET.SubElement(p2, q('JST')).text = '2'
     ET.SubElement(p2, q('GV')).text = '2'
 
+    # Podmiot3 (Odbiorca)
+    if invoice.recipient_name:
+        p3 = ET.SubElement(root, q('Podmiot3'))
+        ds3 = ET.SubElement(p3, q('DaneIdentyfikacyjne'))
+        ET.SubElement(ds3, q('BrakID')).text = '1'
+        ET.SubElement(ds3, q('Nazwa')).text = invoice.recipient_name
+        
+        if invoice.recipient_address:
+            adr3 = ET.SubElement(p3, q('Adres'))
+            ET.SubElement(adr3, q('KodKraju')).text = 'PL'
+            ET.SubElement(adr3, q('AdresL1')).text = invoice.recipient_address
+        
+        ET.SubElement(p3, q('Rola')).text = '1'
+
     # Dane faktury
     fa = ET.SubElement(root, q('Fa'))
     ET.SubElement(fa, q('KodWaluty')).text = 'PLN'
@@ -412,16 +428,17 @@ def build_fa3_xml(invoice, is_correction: bool = False) -> bytes:
     ET.SubElement(fa, q('RodzajFaktury')).text = 'KOR' if is_correction else 'VAT'
 
     if is_correction and invoice.corrected_invoice:
+        if invoice.correction_reason:
+            ET.SubElement(fa, q('PrzyczynaKorekty')).text = invoice.correction_reason
+            
         k_fa = ET.SubElement(fa, q('DaneFaKorygowanej'))
         ET.SubElement(k_fa, q('DataWystFaKorygowanej')).text = invoice.corrected_invoice.issue_date.strftime('%Y-%m-%d')
         ET.SubElement(k_fa, q('NrFaKorygowanej')).text = invoice.corrected_invoice.invoice_number
         if invoice.corrected_invoice.ksef_reference_number:
-            ET.SubElement(k_fa, q('NrKSeF')).text = invoice.corrected_invoice.ksef_reference_number
+            ET.SubElement(k_fa, q('NrKSeF')).text = '1'
+            ET.SubElement(k_fa, q('NrKSeFFaKorygowanej')).text = invoice.corrected_invoice.ksef_reference_number
         else:
             ET.SubElement(k_fa, q('NrKSeFN')).text = '1'
-        
-        if invoice.correction_reason:
-            ET.SubElement(fa, q('PrzyczynaKorekty')).text = invoice.correction_reason
 
     # Pozycje
     w = ET.SubElement(fa, q('FaWiersz'))
@@ -431,10 +448,21 @@ def build_fa3_xml(invoice, is_correction: bool = False) -> bytes:
         ET.SubElement(w, q(t)).text = v
 
     if invoice.payment_terms != 'paid':
+        days_to_add = 0
+        if invoice.payment_terms == '7_days':
+            days_to_add = 7
+        elif invoice.payment_terms == '14_days':
+            days_to_add = 14
+        elif invoice.payment_terms == '30_days':
+            days_to_add = 30
+
+        due_date = invoice.issue_date + timedelta(days=days_to_add)
+
         platn = ET.SubElement(fa, q('Platnosc'))
-        ET.SubElement(platn, q('Zaplacono')).text = '0'
-        ET.SubElement(ET.SubElement(platn, q('TerminPlatnosci')), q('Termin')).text = invoice.issue_date.strftime('%Y-%m-%d')
-        ET.SubElement(ET.SubElement(platn, q('RachunekBankowy')), q('NrRB')).text = seller['bank_account'].replace(' ', '')
+        term_platn = ET.SubElement(platn, q('TerminPlatnosci'))
+        ET.SubElement(term_platn, q('Termin')).text = due_date.strftime('%Y-%m-%d')
+        rach_bank = ET.SubElement(platn, q('RachunekBankowy'))
+        ET.SubElement(rach_bank, q('NrRB')).text = seller['bank_account'].replace(' ', '')
 
     xml_content = ET.tostring(root, encoding='utf-8')
     xml_declaration = b'<?xml version="1.0" encoding="UTF-8"?>\n'

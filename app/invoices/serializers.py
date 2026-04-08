@@ -28,7 +28,7 @@ class InvoiceSerializer(serializers.ModelSerializer):
         seller_nip = settings.INVOICE_SELLER_DATA['nip'].replace('-', '')
         date_str = obj.issue_date.strftime('%d-%m-%Y')
         inv_hash = obj.ksef_invoice_hash.replace('+', '-').replace('/', '_').rstrip('=')
-        return f"https://{host}/invoice/{seller_nip}/{date_str}/{inv_hash}"
+        return f"https://{host}/invoice?d={date_str}&n={seller_nip}&h={inv_hash}"
 
 class CreateInvoiceSerializer(serializers.Serializer):
     user_id = serializers.IntegerField()
@@ -67,7 +67,7 @@ class CreateCorrectionSerializer(serializers.Serializer):
     reason = serializers.CharField(max_length=500)
 
     def validate(self, attrs):
-        if not attrs.get('net_amount') and not attrs.get('gross_amount'):
+        if attrs.get('net_amount') is None and attrs.get('gross_amount') is None:
             raise serializers.ValidationError(
                 "Podaj skorygowaną kwotę netto (net_amount) lub brutto (gross_amount)."
             )
