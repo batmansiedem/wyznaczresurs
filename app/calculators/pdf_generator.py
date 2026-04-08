@@ -1152,7 +1152,8 @@ INPUT_LABELS = {
     'max_cykle_prod':       'Graniczna ilość cykli wg producenta',
     'spec':                 'Wyznaczenie po pierwszym przeglądzie specjalnym',
     'ponowny_resurs':       'Ponowne wyznaczenie resursu',
-    'ostatni_resurs':       'Wykorzystanie resursu — poprzednie obliczenia',
+    'ostatni_resurs':       'Wykorzystanie resursu — poprzednie obliczenia [%]',
+    'ostatni_licznik':      'Stan licznika przy poprzednich obliczeniach [mth]',
     'data_resurs':          'Data poprzednich obliczeń resursu',
     'ster':                 'Rodzaj sterowania',
     'gnp':                  'Grupa natężenia pracy',
@@ -1224,15 +1225,15 @@ INPUT_LABELS = {
     'procent_podnosnik':    'Procent motogodzin przypadający na pracę jako podnośnik koszowy [%]',
     'ilosc_moto':           'Łączna ilość motogodzin',
     # Wózek jezdniowy
-    'alfa':                 'Kąt przechyłu masztu α [°]',
-    'beta':                 'Kąt przechyłu masztu β [°]',
-    'widly_check':          'Sprawność wideł',
-    'srodowisko':           'Warunki środowiskowe',
-    'temperatura':          'Temperatura pracy [°C]',
-    'ostatni_resurs_mech_pod': 'Wykorz. resursu mech. podnoszenia — poprzednie obliczenia',
-    'ostatni_resurs_mech_jaz': 'Wykorz. resursu mech. jazdy — poprzednie obliczenia',
-    'ostatni_resurs_mech_prz': 'Wykorz. resursu mech. przesuwu — poprzednie obliczenia',
-    'ostatni_resurs_mech_mas': 'Wykorz. resursu mech. odchylenia masztu — poprzednie obliczenia',
+    'alfa':                 'Kąt przechyłu masztu α',
+    'beta':                 'Kąt przechyłu masztu β',
+    'widly_check':          'Oryginalna długość wideł',
+    'srodowisko':           'Środowisko agresywne',
+    'temperatura':          'Temperatura pracy',
+    'ostatni_resurs_mech_pod': 'Wykorz. resursu mech. podnoszenia — poprzednie obliczenia [%]',
+    'ostatni_resurs_mech_jaz': 'Wykorz. resursu mech. jazdy — poprzednie obliczenia [%]',
+    'ostatni_resurs_mech_prz': 'Wykorz. resursu mech. przesuwu — poprzednie obliczenia [%]',
+    'ostatni_resurs_mech_mas': 'Wykorz. resursu mech. odchylenia masztu — poprzednie oblicz. [%]',
     # Dźwig
     'licznik_godzin':       'Licznik godzin',
     # Widmo Kd
@@ -1308,7 +1309,7 @@ _PARAM_SECTIONS = [
         'typ', 'typ_urzadzenia', 'rodzaj_urzadzenia', 'q_max', 'q_o', 'uwagi',
     ]),
     ('Informacje o obliczeniach', [
-        'spec', 'ponowny_resurs', 'data_resurs', 'ostatni_resurs',
+        'spec', 'ponowny_resurs', 'data_resurs', 'ostatni_resurs', 'ostatni_licznik',
         'ostatni_resurs_mech_pod', 'ostatni_resurs_mech_jaz',
         'ostatni_resurs_mech_prz', 'ostatni_resurs_mech_mas',
     ]),
@@ -1635,11 +1636,22 @@ def generate_result_pdf(result, calculator_name: str,
             if not unit:
                 unit = _extract_unit(label)
             
-            # Mapowanie wartości inspekcji tylko dla pól typu inspection_status
+            # Mapowanie wartości inspekcji / pól select z 0/1 (stare dane PHP)
             field_def = _load_device_config(_pdf_slug).get('fields', {}).get(key, {})
             if field_def.get('type') == 'inspection_status':
                 val = _INSPECTION_VALS.get(str(val).strip(), val)
-            
+            elif field_def.get('type') == 'select':
+                opts = field_def.get('options', [])
+                # Stare dane z PHP mogą mieć 0/1 zamiast tekstu opcji
+                try:
+                    int_val = int(float(val))
+                    if int_val == 1 and len(opts) >= 1:
+                        val = opts[0]
+                    elif int_val == 0 and len(opts) >= 2:
+                        val = opts[1]
+                except (ValueError, TypeError):
+                    pass
+
             section_rows.append((label, val, unit))
             seen.add(key)
         if section_rows:
@@ -1663,7 +1675,19 @@ def generate_result_pdf(result, calculator_name: str,
         label = INPUT_LABELS.get(key, key.replace('_', ' ').capitalize())
         if not unit:
             unit = _extract_unit(label)
-        val = _INSPECTION_VALS.get(str(val).strip(), val)
+        field_def2 = _load_device_config(_pdf_slug).get('fields', {}).get(key, {})
+        if field_def2.get('type') == 'inspection_status':
+            val = _INSPECTION_VALS.get(str(val).strip(), val)
+        elif field_def2.get('type') == 'select':
+            opts2 = field_def2.get('options', [])
+            try:
+                iv2 = int(float(val))
+                if iv2 == 1 and len(opts2) >= 1:
+                    val = opts2[0]
+                elif iv2 == 0 and len(opts2) >= 2:
+                    val = opts2[1]
+            except (ValueError, TypeError):
+                pass
         extra_rows.append((label, val, unit))
     if extra_rows:
         story.append(KeepTogether([
