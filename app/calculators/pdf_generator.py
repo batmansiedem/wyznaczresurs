@@ -1214,6 +1214,27 @@ INPUT_LABELS = {
     'motogodziny':          'Łączna ilość motogodzin',
     'efektywny_czas':       'Efektywny czas pracy',
     'klasa_naprezenia':     'Klasa współczynnika naprężeń',
+    # Mechanizmy
+    'czas_cykle':           'Średni czas pracy mechanizmu / cykl',
+    'typ_urzadzenia':       'Typ urządzenia',
+    'rodzaj_urzadzenia':    'Rodzaj urządzenia',
+    # Wózek specjalizowany
+    'sposob_pracy':         'Przeznaczenie',
+    'procent_jazda':        'Procent motogodzin przypadający na jazdę [%]',
+    'procent_podnosnik':    'Procent motogodzin przypadający na pracę jako podnośnik koszowy [%]',
+    'ilosc_moto':           'Łączna ilość motogodzin',
+    # Wózek jezdniowy
+    'alfa':                 'Kąt przechyłu masztu α [°]',
+    'beta':                 'Kąt przechyłu masztu β [°]',
+    'widly_check':          'Sprawność wideł',
+    'srodowisko':           'Warunki środowiskowe',
+    'temperatura':          'Temperatura pracy [°C]',
+    'ostatni_resurs_mech_pod': 'Wykorz. resursu mech. podnoszenia — poprzednie obliczenia',
+    'ostatni_resurs_mech_jaz': 'Wykorz. resursu mech. jazdy — poprzednie obliczenia',
+    'ostatni_resurs_mech_prz': 'Wykorz. resursu mech. przesuwu — poprzednie obliczenia',
+    'ostatni_resurs_mech_mas': 'Wykorz. resursu mech. odchylenia masztu — poprzednie obliczenia',
+    # Dźwig
+    'licznik_godzin':       'Licznik godzin',
     # Widmo Kd
     'q_1': 'Ciężar — cykl C₁',   'c_1': 'Udział cykli C₁',
     'q_2': 'Ciężar — cykl C₂',   'c_2': 'Udział cykli C₂',
@@ -1264,34 +1285,47 @@ OUTPUT_LABELS = {
     'resurs_prog_jaz':           ('Prognoza mechanizmu jazdy',               'dni'),
     'resurs_wyk_prz':            ('Wykorzystanie resursu mechanizmu przesuwu',    '%'),
     'resurs_prog_prz':           ('Prognoza mechanizmu przesuwu',            'dni'),
-    'resurs_wyk_mas':           ('Wykorzystanie resursu mechanizmu masztu',     '%'),
-    'resurs_prog_mas':          ('Prognoza mechanizmu masztu',              'dni'),
-    'resurs_prognoza_dni':      ('Dni do wyczerpania resursu',              'dni'),
-    'data_prog_pod':            ('Symulowana data (mech. podnoszenia)',     ''),
-    't_max_pod':                ('Zdolność resursowa t_max',                'h'),
-    't_sum_pod':                ('Czas pracy t_sum',                        'h'),
-    }
+    'resurs_wyk_mas':            ('Wykorzystanie resursu mechanizmu masztu',     '%'),
+    'resurs_prog_mas':           ('Prognoza mechanizmu masztu',              'dni'),
+    # resurs_prognoza_dni — usunięto duplikat (wpis wyżej jest autorytatywny)
+    'data_prog_pod':             ('Symulowana data (mech. podnoszenia)',     ''),
+    't_max_pod':                 ('Zdolność resursowa t_max',                'h'),
+    't_sum_pod':                 ('Czas pracy t_sum',                        'h'),
+    # Wyniki dodatkowe (dźwig, wózek specjalizowany, stare dane)
+    'ilosc_motogodzin_rok':      ('Ilość motogodzin / rok',                  'mth/rok'),
+    'ilosc_motogodzin_dzien':    ('Ilość motogodzin / dzień',               'mth/dzień'),
+    'ilosc_moto_rok':            ('Ilość motogodzin / rok',                  'mth/rok'),
+    'resurs_prognoza':           ('Ilość dni pozostałych do wyczerpania resursu *', 'dni'),
+    's_factor':                  ('Współczynnik przebiegu naprężeń S',       '—'),
+    'kss':                       ('Współczynnik badania specjalnego k_ss',   '—'),
+    'klasa_wykorzystania':       ('Klasa wykorzystania',                     ''),
+    'klasa_wykorzystania_txt':   ('Klasa intensywności pracy',               ''),
+}
 
 _PARAM_SECTIONS = [
     ('Dane urządzenia', [
         'wykonawca', 'nr_fabryczny', 'nr_ewidencyjny', 'nr_udt', 'producent',
-        'typ', 'q_max', 'q_o', 'uwagi',
+        'typ', 'typ_urzadzenia', 'rodzaj_urzadzenia', 'q_max', 'q_o', 'uwagi',
     ]),
     ('Informacje o obliczeniach', [
         'spec', 'ponowny_resurs', 'data_resurs', 'ostatni_resurs',
+        'ostatni_resurs_mech_pod', 'ostatni_resurs_mech_jaz',
+        'ostatni_resurs_mech_prz', 'ostatni_resurs_mech_mas',
     ]),
     ('Dane o eksploatacji', [
         'lata_pracy', 'ilosc_cykli', 'cykle_zmiana', 'tryb_pracy', 'dni_robocze',
         'sposob_rejestracji', 'gnp', 'gnp_check', 'gnp_czas',
-        'ster', 'mechanizm_pomocniczy', 'czas_pracy_mech', 'max_cykle_prod',
+        'ster', 'mechanizm_pomocniczy', 'czas_pracy_mech', 'czas_cykle', 'max_cykle_prod',
         'h_max', 'L_b_max', 'v_pod', 'v_jaz', 'v_prz', 's_sz',
         'rok_budowy', 'przeznaczenie', 'operator', 'budynek', 'przystanki',
-        'liczba_dzwigow', 'h_pod', 'pyt_motogodzin', 'licznik_pracy', 'cykle_dzwig',
+        'liczba_dzwigow', 'h_pod', 'pyt_motogodzin', 'licznik_pracy', 'licznik_godzin', 'cykle_dzwig',
         'licznik_pracy_pod', 'licznik_pracy_jaz', 'licznik_pracy_prz',
         'naped', 'operatorzy', 'powierzchnia', 'serwis',
-        'dlugosc_widel', 'kat_masztu_alfa', 'kat_masztu_beta',
+        'dlugosc_widel', 'kat_masztu_alfa', 'kat_masztu_beta', 'alfa', 'beta',
+        'widly_check', 'srodowisko', 'temperatura',
         'motogodziny', 'efektywny_czas', 'klasa_naprezenia',
         's_factor', 'moto_podest_ruchomy', 'max_moto_prod', 'procent_bumar',
+        'sposob_pracy', 'procent_jazda', 'procent_podnosnik', 'ilosc_moto',
     ]),
     ('Stan techniczny', [
         'konstrukcja', 'automatyka', 'sworznie', 'ciegna',
@@ -1309,13 +1343,16 @@ _PARAM_SECTIONS = [
 _PARAM_ORDER = [k for _, keys in _PARAM_SECTIONS for k in keys]
 
 _RESULT_ORDER = [
-    'wsp_kdr', 'wsp_km', 'ss_factor',
+    'wsp_kdr', 'wsp_km',
     'stan_obciazenia', 'F_X',
     'U_WSK', 'T_WSK', 'moto_efektywne', 'moto_rok',
     'ilosc_cykli', 'czas_uzytkowania_mech',
     'ilosc_cykli_rok', 'czas_uzytkowania_mech_rok',
+    'ilosc_motogodzin_rok', 'ilosc_motogodzin_dzien', 'ilosc_moto_rok',
+    'klasa_wykorzystania', 'klasa_wykorzystania_txt',
+    'kss', 's_factor', 'ss_factor',
     'resurs_wykorzystanie',
-    'resurs_prognoza_dni', 'data_prognoza',
+    'resurs_prognoza', 'resurs_prognoza_dni', 'data_prognoza',
     'prognoza', 'wiek_dzwigu',
 ]
 
@@ -1345,6 +1382,8 @@ _SKIP_KEYS = {
     'max_czas',
     # Pola wewnętrzne wózka specjalizowanego
     'technical_state_reached', 'resurs_prognoza_dni',
+    # Pola wewnętrzne mechanizmów (klucze powiązania z urządzeniem nadrzędnym)
+    'id_urzadzenie',
 }
 
 

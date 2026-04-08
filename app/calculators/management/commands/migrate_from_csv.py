@@ -68,8 +68,8 @@ DEFAULT_CALCS_CSV   = BASE_DIR / 'u685896714_calculators.csv'
 # Potwierdzone przez analizę unikalnych kolumn i wartości pola typ w każdej sekcji
 # ---------------------------------------------------------------------------
 SECTION_SLUGS = [
-    'autotransporter',        #  1 (19 wierszy, nakretka, typ=tlokowy/mechaniczny)
-    'podnosnik_samochodowy',  #  2 (218, +HDR h_1/cc_1/hdr)
+    'autotransporter',        #  1 (19 wierszy, nakretka, typ=tlokowy/mechaniczny, BEZ ponowny_resurs)
+    'dzwignik',               #  2 (218, +HDR h_1/cc_1/hdr, typ=śrubowy/tłokowy-hydrauliczny/dźwigniowy)
     'dzwig',                  #  3 (212, +przystanki/liczba_dzwigow)
     'hakowiec',               #  4 (113, typ=Hakowiec)
     'mech_jazdy_suwnicy',     #  5 (350, typ_urzadzenia=Suwnica)
@@ -80,14 +80,14 @@ SECTION_SLUGS = [
     'mech_zmiany_wysiegu',    # 10 (164, typ_urzadzenia=Zuraw)
     'podest_ruchomy',         # 11 (1185, +p_1..p_25/moto_podest_ruchomy)
     'zuraw_przeladunkowy',    # 12 (474, hamulce=True, typ=hydrauliczny prostowodowy)
-    'wozek_specjalizowany',   # 13 (215, nakretka, ponowny_resurs)
+    'podnosnik_samochodowy',  # 13 (215, nakretka, ponowny_resurs, typ=mechaniczny/hydrauliczny/mieszany)
     'suwnica',                # 14 (614, gnp=True, typ=Suwnica warsztatowa)
     'ukladnica_magazynowa',   # 15 (143, +ster/licznik_pracy_pod/jaz/prz)
     'wciagarka',              # 16 (41,  gnp=True, typ=Wciagarka warsztatowa)
     'wciagnik',               # 17 (255, gnp=True, typ=Wciagnik warsztatowy)
     'winda_dekarska',         # 18 (16,  +producent/nr_udt/a_1/a_2/a_3)
     'wozek_jezdniowy',        # 19 (1272,+naped/widly_check/dlugosc_widel)
-    'dzwignik',               # 20 (117, +sposob_pracy/procent_jazda/procent_podnosnik)
+    'wozek_specjalizowany',   # 20 (117, +sposob_pracy/procent_jazda/procent_podnosnik, brak pola typ)
     'podest_zaladowczy',      # 21 (489, +L_b_max/s_factor/ldr/p_1..p_25)
     'zuraw',                  # 22 (506, +gnp_check/gnp_czas/q_o)
 ]

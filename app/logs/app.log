@@ -1767,3 +1767,8 @@ RuntimeError: KSeF rejected: Odrzucona | []
 [2026-04-08 19:43:14] INFO django.utils.autoreload: D:\wyznaczresurs\app\invoices\views.py changed, reloading.
 [2026-04-08 19:43:15] INFO django.utils.autoreload: Watching for file changes with StatReloader
 [2026-04-08 19:44:17] INFO django.utils.autoreload: Watching for file changes with StatReloader
+[2026-04-08 22:23:55] INFO django.utils.autoreload: Watching for file changes with StatReloader
+[2026-04-08 22:24:08] WARNING django.request: Unauthorized: /api/auth/user/
+[2026-04-08 22:56:00] INFO django.utils.autoreload: Watching for file changes with StatReloader
+[2026-04-08 23:07:18] INFO django.utils.autoreload: D:\wyznaczresurs\app\calculators\pdf_generator.py changed, reloading.
+[2026-04-08 23:07:19] INFO django.utils.autoreload: Watching for file changes with StatReloader
