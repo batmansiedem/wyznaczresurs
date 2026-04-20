@@ -509,8 +509,17 @@ const activeSections = computed(() => {
     .filter(s => s.fieldKeys.some(k => isFieldVisible(k)))
 })
 
+function getSavedInputField(row, key) {
+  const val = row.input_data?.[key]
+  if (val === null || val === undefined) return '—'
+  if (typeof val === 'object' && val.value !== undefined) return val.value || '—'
+  return val || '—'
+}
+
 const savedResultsColumns = [
-  { name: 'created_at', label: 'Data', align: 'left', field: 'created_at', sortable: true, format: val => new Date(val).toLocaleString('pl-PL') },
+  { name: 'created_at', label: 'Data', align: 'left', field: 'created_at', sortable: true, sort: (a, b) => new Date(b) - new Date(a), format: val => new Date(val).toLocaleString('pl-PL') },
+  { name: 'nr_fabryczny', label: 'Nr fabr.', align: 'left', field: row => getSavedInputField(row, 'nr_fabryczny'), sortable: true },
+  { name: 'nr_ewidencyjny', label: 'Nr ewid.', align: 'left', field: row => getSavedInputField(row, 'nr_ewidencyjny'), sortable: true },
   { name: 'resurs', label: 'Zużycie [%]', align: 'left', field: row => row.is_locked ? null : `${row.output_data?.resurs_wykorzystanie ?? row.output_data?.resurs ?? 0}%`, sortable: true },
   { name: 'status', label: 'Status', align: 'center' },
   { name: 'actions', label: 'Akcje', align: 'center' }
@@ -541,6 +550,13 @@ function calculateClientCycles() {
   const lata = getLataPracy()
   const cykli = Math.round((cycleHelper.cykle_zmiana || 0) * (shifts[cycleHelper.tryb_pracy] || 1) * (cycleHelper.dni_robocze || 0) * lata)
   formData.value.ilosc_cykli = { value: cykli, unit: formData.value.ilosc_cykli?.unit || 'cykl' }
+  // Synchronizuj wartości pomocnicze do formData (żeby pojawiały się poprawnie na wydruku)
+  if ('cykle_zmiana' in formData.value) {
+    formData.value.cykle_zmiana = { ...(typeof formData.value.cykle_zmiana === 'object' ? formData.value.cykle_zmiana : {}), value: cycleHelper.cykle_zmiana }
+  }
+  if ('dni_robocze' in formData.value) {
+    formData.value.dni_robocze = { ...(typeof formData.value.dni_robocze === 'object' ? formData.value.dni_robocze : {}), value: cycleHelper.dni_robocze }
+  }
   cycleHelperOpen.value = false
 }
 
@@ -558,7 +574,7 @@ async function fetchSavedResults() {
     const response = await api.get('/calculators/results/for_calculator/', {
       params: { slug: calculatorSlug.value }
     })
-    savedResults.value = response.data
+    savedResults.value = [...response.data].sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
   } catch {
     Notify.create({ type: 'negative', message: 'Błąd pobierania historii.', position: 'top' })
   } finally {

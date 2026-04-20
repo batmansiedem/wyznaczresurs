@@ -1772,3 +1772,5 @@ RuntimeError: KSeF rejected: Odrzucona | []
 [2026-04-08 22:56:00] INFO django.utils.autoreload: Watching for file changes with StatReloader
 [2026-04-08 23:07:18] INFO django.utils.autoreload: D:\wyznaczresurs\app\calculators\pdf_generator.py changed, reloading.
 [2026-04-08 23:07:19] INFO django.utils.autoreload: Watching for file changes with StatReloader
+[2026-04-20 22:49:44] INFO django.utils.autoreload: Watching for file changes with StatReloader
+[2026-04-20 22:50:07] INFO django.utils.autoreload: Watching for file changes with StatReloader

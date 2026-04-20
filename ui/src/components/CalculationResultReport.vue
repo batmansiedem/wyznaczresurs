@@ -342,21 +342,53 @@ const barChartSeries = computed(() => {
   const out = props.result?.output_data
   const inp = props.result?.input_data
   if (!out) return []
-  const fx = parseFloat(out.F_X ?? 1)
+  const fx = parseFloat(out.F_X ?? 1) || 1
   let val1, val2, limit, unit
-  if (out.U_WSK !== undefined) {
-    val1 = parseFloat(inp?.ilosc_cykli?.value ?? inp?.ilosc_cykli ?? 0)
+
+  if (out.U_WSK != null) {
+    // Kalkulatory cyklowe — out.ilosc_cykli to wartość po przetworzeniu przez backend
+    val1 = parseFloat(out.ilosc_cykli ?? inp?.ilosc_cykli?.value ?? inp?.ilosc_cykli ?? 0)
     limit = parseFloat(out.U_WSK)
     val2 = Math.round(val1 * fx)
     unit = 'cykli'
-  } else if (out.T_WSK !== undefined) {
-    val1 = parseFloat(out.suma_godzin ?? 0) || parseFloat(inp?.ilosc_godzin?.value ?? inp?.ilosc_godzin ?? 0)
-    limit = parseFloat(out.T_WSK)
-    val2 = Math.round(val1 * fx * 100) / 100
-    unit = 'h'
+  } else if (out.T_WSK != null) {
+    // Kalkulatory czasowe (motogodziny)
+    const tWsk = out.T_WSK
+    limit = (tWsk !== null && typeof tWsk === 'object') ? parseFloat(tWsk.value ?? 0) : parseFloat(tWsk ?? 0)
+
+    if (out.czas_uzytkowania_mech != null) {
+      // Mechanizmy: czas_uzytkowania_mech już zawiera F_X
+      val2 = parseFloat(out.czas_uzytkowania_mech)
+      val1 = Math.round(val2 / fx * 100) / 100
+    } else if (out.moto_efektywne != null) {
+      // podest_ruchomy BUMAR: efektywne motogodziny (bez F_X)
+      val1 = parseFloat(out.moto_efektywne)
+      val2 = Math.round(val1 * fx * 100) / 100
+    } else if (out.ilosc_moto_cal != null) {
+      // wozek_specjalizowany (wózek widłowy/ładowarka)
+      val1 = parseFloat(out.ilosc_moto_cal)
+      val2 = Math.round(val1 * fx * 100) / 100
+    } else {
+      val1 = parseFloat(inp?.ilosc_mth?.value ?? inp?.ilosc_mth ?? inp?.ilosc_godzin?.value ?? inp?.ilosc_godzin ?? 0)
+      val2 = Math.round(val1 * fx * 100) / 100
+    }
+    unit = 'mth'
   } else {
     return []
   }
+
+  // Fallback: gdy wartości wyszły 0 lub NaN (np. ponowny_resurs=Tak bez nowych danych),
+  // wylicz z procentu zużycia — zawsze spójne z wykresem radialnym
+  if (limit > 0 && (isNaN(val2) || val2 === 0)) {
+    const resursPercent = parseFloat(out.resurs_wykorzystanie ?? 0)
+    if (resursPercent > 0) {
+      val2 = Math.round(resursPercent / 100 * limit * 100) / 100
+      val1 = fx > 1 ? Math.round(val2 / fx * 100) / 100 : val2
+    }
+  }
+  if (isNaN(val1)) val1 = 0
+  if (isNaN(val2)) val2 = 0
+
   return [{
     name: 'Wartość',
     data: [

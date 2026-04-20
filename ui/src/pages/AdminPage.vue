@@ -759,14 +759,16 @@
                   :rules="[v => v >= 0 || 'Nie może być ujemne']" />
               </div>
               <div class="col-12 col-sm-6">
-                <q-select v-model="invoice.payment_terms" label="Warunki płatności" outlined dense
+                <q-select v-model="invoice.payment_terms" label="Warunki płatności *" outlined dense
                   :options="[
                     { label: 'Zapłacono przelewem', value: 'paid' },
                     { label: 'Do zapłaty w ciągu 7 dni', value: '7_days' },
                     { label: 'Do zapłaty w ciągu 14 dni', value: '14_days' },
                     { label: 'Do zapłaty w ciągu 30 dni', value: '30_days' }
                   ]"
-                  emit-value map-options />
+                  emit-value map-options
+                  :rules="[v => !!v || 'Wybierz warunki płatności']"
+                  lazy-rules="ondemand" />
               </div>
 
               <!-- OPCJA SAMORZĄD -->
@@ -1535,12 +1537,14 @@ const invoice = ref({
   buyer_address: '',
   recipient_name: '',
   recipient_address: '',
-  payment_terms: 'paid'
+  payment_terms: null
 })
 
 function onNetUpdate(val) {
   if (val && val > 0) {
-    invoice.value.gross_amount = Number((val * 1.23).toFixed(2))
+    const gross = Number((val * 1.23).toFixed(2))
+    invoice.value.gross_amount = gross
+    invoice.value.points_to_add = Math.round(gross)
   } else if (!val) {
     invoice.value.gross_amount = null
   }
@@ -1549,6 +1553,7 @@ function onNetUpdate(val) {
 function onGrossUpdate(val) {
   if (val && val > 0) {
     invoice.value.net_amount = Number((val / 1.23).toFixed(2))
+    invoice.value.points_to_add = Math.round(val)
   } else if (!val) {
     invoice.value.net_amount = null
   }
@@ -1571,7 +1576,7 @@ function openNewInvoiceForUser() {
     buyer_address: addr,
     recipient_name: '',
     recipient_address: '',
-    payment_terms: 'paid'
+    payment_terms: null
   }
   newInvoiceDialog.value = true
 }

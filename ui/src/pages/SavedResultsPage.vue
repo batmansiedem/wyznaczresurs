@@ -115,9 +115,18 @@ const showDetailsDialog = ref(false)
 const selectedResult = ref(null)
 const unlocking = ref(false)
 const downloadingPdf = ref(false)
+function getInputField(row, key) {
+  const val = row.input_data?.[key]
+  if (val === null || val === undefined) return '—'
+  if (typeof val === 'object' && val.value !== undefined) return val.value || '—'
+  return val || '—'
+}
+
 const columns = [
   { name: 'calculator_name', required: true, label: 'Urządzenie', align: 'left', field: 'calculator_name', sortable: true },
-  { name: 'created_at', label: 'Data obliczeń', align: 'left', field: 'created_at', sortable: true, format: val => new Date(val).toLocaleDateString('pl-PL') },
+  { name: 'nr_fabryczny', label: 'Nr fabryczny', align: 'left', field: row => getInputField(row, 'nr_fabryczny'), sortable: true },
+  { name: 'nr_ewidencyjny', label: 'Nr ewid. UDT/TDT/WDT', align: 'left', field: row => getInputField(row, 'nr_ewidencyjny'), sortable: true },
+  { name: 'created_at', label: 'Data obliczeń', align: 'left', field: 'created_at', sortable: true, sort: (a, b) => new Date(b) - new Date(a), format: val => new Date(val).toLocaleDateString('pl-PL') },
   { name: 'status', label: 'Status', align: 'center', field: 'is_locked' },
   { name: 'actions', label: 'Dostępne akcje', align: 'center' }
 ]
@@ -126,7 +135,7 @@ async function fetchResults() {
   loading.value = true
   try {
     const response = await api.get('/calculators/results/')
-    results.value = response.data
+    results.value = [...response.data].sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
   } catch {
     Notify.create({ type: 'negative', message: 'Nie udało się załadować wyników.', position: 'top' })
   } finally {

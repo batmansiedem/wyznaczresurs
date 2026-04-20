@@ -699,7 +699,7 @@ class HakowiecCalculator(BaseCalculator):
         if max_cykle_prod > 0:
             U_WSK = max_cykle_prod * kss
         else:
-            U_WSK = -2000 * wsp_kdr + 50000 * kss
+            U_WSK = (-2000 * wsp_kdr + 50000) * kss
         U_WSK = U_WSK.to_integral_value(rounding='ROUND_CEILING')
 
         # --- Stan obciazenia (load state) ---
@@ -1029,16 +1029,17 @@ class PodestZaladowczyCalculator(BaseCalculator):
         lata_pracy = common_inputs['lata_pracy']
         ilosc_cykli = common_inputs['ilosc_cykli']
         sposob_rejestracji = common_inputs['sposob_rejestracji']
-        ponowny_resurs = self._get_val('ponowny_resurs')
+        ponowny_resurs = common_inputs['ponowny_resurs']
         ostatni_resurs = common_inputs['ostatni_resurs']
 
         wsp_kdr = self._calculate_wsp_kdr(ilosc_cykli)
-        
+        kss = self._get_kss()
+
         max_cykle_prod = self._get_val('max_cykle_prod')
         if max_cykle_prod > 0:
-            U_WSK = max_cykle_prod
+            U_WSK = max_cykle_prod * kss
         else:
-            U_WSK = -2000 * wsp_kdr + Decimal('65000')
+            U_WSK = (-2000 * wsp_kdr + Decimal('65000')) * kss
         U_WSK = U_WSK.to_integral_value(rounding='ROUND_CEILING')
 
         F_X = _FX_EXTENDED.get(sposob_rejestracji, Decimal('1.0'))
@@ -1904,6 +1905,7 @@ CalculatorFactory.register_calculator(AutotransporterCalculator)
 CalculatorFactory.register_calculator(HakowiecCalculator)
 CalculatorFactory.register_calculator(MechJazdySuwnicyCalculator)
 CalculatorFactory.register_calculator(MechJazdyWciagarkiCalculator)
+CalculatorFactory.register_calculator(MechJazdyWciagnikaCalculator)
 CalculatorFactory.register_calculator(MechJazdyZurawiaCalculator)
 CalculatorFactory.register_calculator(MechPodnoszeniaCalculator)
 CalculatorFactory.register_calculator(MechZmianyObrotuCalculator)

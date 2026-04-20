@@ -46,7 +46,7 @@ class CreateInvoiceSerializer(serializers.Serializer):
     recipient_name = serializers.CharField(max_length=255, required=False, allow_blank=True)
     recipient_address = serializers.CharField(style={'base_template': 'textarea.html'}, required=False, allow_blank=True)
 
-    payment_terms = serializers.ChoiceField(choices=Invoice.PAYMENT_TERM_CHOICES, default="paid")
+    payment_terms = serializers.ChoiceField(choices=Invoice.PAYMENT_TERM_CHOICES, required=True)
 
     def validate(self, attrs):
         if not attrs.get('net_amount') and not attrs.get('gross_amount'):

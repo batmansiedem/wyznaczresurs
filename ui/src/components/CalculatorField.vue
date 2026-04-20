@@ -171,6 +171,7 @@
           <div class="gnp-norm-mapping q-mt-sm">
             <div v-if="card.pn79 !== '-'" class="norm-item">PN-79: <b>{{ card.pn79 }}</b></div>
             <div v-if="card.pn63 !== '-'" class="norm-item">PN-63: <b>{{ card.pn63 }}</b></div>
+            <div v-if="card.stsev" class="norm-item">ST SEV: <b>{{ card.stsev }}</b></div>
           </div>
         </div>
         <div class="gnp-card-footer" :style="{ color: card.color }">
@@ -224,15 +225,16 @@ const GNP_CARDS_A = [
 ]
 
 // Karty GNP M1–M8 (mechanizmy: podnoszenia, jazdy, obrotu, wysięgu)
+// femCode wg FEM 9.511, pn79 wg PN-79/M-06504, stsev wg ST SEV 2077-80
 const GNP_CARDS_M = [
-  { value: 'M1', intensity: 1, label_pl: 'Nieregularne',    sub_pl: 'T0–T2 (200–800 h)',          color: '#2E7D32', femCode: '1',  pn79: '-', pn63: '-' },
-  { value: 'M2', intensity: 2, label_pl: 'Nieregularne',    sub_pl: 'T1–T3 (400–1 600 h)',        color: '#558B2F', femCode: '2',  pn79: '-', pn63: '-' },
-  { value: 'M3', intensity: 3, label_pl: 'Reg. lekkie',     sub_pl: 'T2–T4 (800–3 200 h)',        color: '#F9A825', femCode: '2/3',pn79: '-', pn63: '-' },
-  { value: 'M4', intensity: 4, label_pl: 'Reg. przeciętne', sub_pl: 'T3–T5 (1 600–6 300 h)',      color: '#EF6C00', femCode: '3/4',pn79: '-', pn63: '-' },
-  { value: 'M5', intensity: 5, label_pl: 'Intensywne',      sub_pl: 'T4–T6 (3 200–12 500 h)',     color: '#E65100', femCode: '4',  pn79: '-', pn63: '-' },
-  { value: 'M6', intensity: 6, label_pl: 'B. intensywne',   sub_pl: 'T5–T7 (6 300–25 000 h)',     color: '#BF360C', femCode: '4/5',pn79: '-', pn63: '-' },
-  { value: 'M7', intensity: 7, label_pl: 'B. intensywne',   sub_pl: 'T6–T8 (12 500–50 000 h)',    color: '#B71C1C', femCode: '5/6',pn79: '-', pn63: '-' },
-  { value: 'M8', intensity: 8, label_pl: 'Ekstremalne',     sub_pl: 'T7–T9 (25 000–100 000 h)',   color: '#880E4F', femCode: '6',  pn79: '-', pn63: '-' },
+  { value: 'M1', intensity: 1, label_pl: 'Nieregularne',    sub_pl: 'T0–T2 (200–800 h)',          color: '#2E7D32', femCode: '1mB', pn79: '1M', pn63: '-', stsev: '1' },
+  { value: 'M2', intensity: 2, label_pl: 'Nieregularne',    sub_pl: 'T1–T3 (400–1 600 h)',        color: '#558B2F', femCode: '1mB', pn79: '1M', pn63: '-', stsev: '1' },
+  { value: 'M3', intensity: 3, label_pl: 'Reg. lekkie',     sub_pl: 'T2–T4 (800–3 200 h)',        color: '#F9A825', femCode: '1mB', pn79: '2M', pn63: '-', stsev: '1' },
+  { value: 'M4', intensity: 4, label_pl: 'Reg. przeciętne', sub_pl: 'T3–T5 (1 600–6 300 h)',      color: '#EF6C00', femCode: '1mA', pn79: '3M', pn63: '-', stsev: '2' },
+  { value: 'M5', intensity: 5, label_pl: 'Intensywne',      sub_pl: 'T4–T6 (3 200–12 500 h)',     color: '#E65100', femCode: '2m',  pn79: '4M', pn63: '-', stsev: '3' },
+  { value: 'M6', intensity: 6, label_pl: 'B. intensywne',   sub_pl: 'T5–T7 (6 300–25 000 h)',     color: '#BF360C', femCode: '3m',  pn79: '5M', pn63: '-', stsev: '4' },
+  { value: 'M7', intensity: 7, label_pl: 'B. intensywne',   sub_pl: 'T6–T8 (12 500–50 000 h)',    color: '#B71C1C', femCode: '4m',  pn79: '6M', pn63: '-', stsev: '5' },
+  { value: 'M8', intensity: 8, label_pl: 'Ekstremalne',     sub_pl: 'T7–T9 (25 000–100 000 h)',   color: '#880E4F', femCode: '5m',  pn79: '6M', pn63: '-', stsev: '6' },
 ]
 
 const GNP_CARDS = computed(() =>

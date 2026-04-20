@@ -79,9 +79,10 @@ class Invoice(models.Model):
         ("30_days", "Do zapłaty w ciągu 30 dni"),
     )
     payment_terms = models.CharField(
-        max_length=20, 
-        choices=PAYMENT_TERM_CHOICES, 
-        default="paid", 
+        max_length=20,
+        choices=PAYMENT_TERM_CHOICES,
+        blank=True,
+        default="",
         verbose_name=_("Warunki płatności")
     )
 
