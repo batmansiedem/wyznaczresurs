@@ -127,6 +127,9 @@ def generate_invoice_pdf(invoice) -> bytes:
     terms_map = dict(invoice.PAYMENT_TERM_CHOICES)
     term_label = terms_map.get(invoice.payment_terms, invoice.payment_terms)
     story.append(Paragraph(f"<b>Sposób i termin płatności:</b> {term_label}", value_style))
+    bank_account = settings.INVOICE_SELLER_DATA.get('bank_account', '')
+    if bank_account:
+        story.append(Paragraph(f"<b>Numer rachunku bankowego:</b> {bank_account}", value_style))
     story.append(Spacer(1, 0.5*cm))
 
     # 5. KSeF info

@@ -174,6 +174,16 @@
             <template #body-cell-created_at="props">
               <q-td :props="props">{{ formatDate(props.row.created_at) }}</q-td>
             </template>
+            <template #body-cell-tx_pdf="props">
+              <q-td :props="props" class="text-center">
+                <q-btn flat round dense icon="picture_as_pdf" color="deep-orange" size="sm"
+                  :loading="pdfLoadingId === props.row.id"
+                  :disable="props.row.is_locked"
+                  @click="downloadUserResultPdf(props.row)">
+                  <q-tooltip>{{ props.row.is_locked ? 'Wynik zablokowany' : 'Pobierz PDF (wygląd użytkownika)' }}</q-tooltip>
+                </q-btn>
+              </q-td>
+            </template>
           </q-table>
         </q-card>
 
@@ -496,6 +506,12 @@
                         @click="openTxDetail(props.row)">
                         <q-tooltip>Pełne dane</q-tooltip>
                       </q-btn>
+                      <q-btn flat round dense icon="picture_as_pdf" color="deep-orange" size="sm"
+                        :loading="pdfLoadingId === props.row.id"
+                        :disable="props.row.is_locked"
+                        @click="downloadUserResultPdf(props.row)">
+                        <q-tooltip>{{ props.row.is_locked ? 'Wynik zablokowany' : 'Pobierz PDF (wygląd użytkownika)' }}</q-tooltip>
+                      </q-btn>
                       <q-btn flat round dense icon="save" color="secondary" size="sm"
                         @click="() => { selectedTx = props.row; copyResultToAdmin() }">
                         <q-tooltip>Zapisz na moje konto</q-tooltip>
@@ -648,6 +664,9 @@
                   </template>
                   <template #body-cell-logo_actions="props">
                     <q-td :props="props" class="text-center">
+                      <q-btn flat round dense icon="edit" color="secondary" size="sm" @click="openEditLogo(props.row)">
+                        <q-tooltip>Edytuj logo</q-tooltip>
+                      </q-btn>
                       <q-btn flat round dense icon="delete" color="negative" size="sm" @click="deleteUserLogo(props.row.id)">
                         <q-tooltip>Usuń logo</q-tooltip>
                       </q-btn>
@@ -1279,6 +1298,54 @@
       </q-card>
     </q-dialog>
 
+    <!-- ===================== DIALOG EDYCJI LOGA PRZEZ ADMINA ===================== -->
+    <q-dialog v-model="editLogoDialog" persistent>
+      <q-card style="min-width:380px" class="rounded-borders">
+        <q-card-section class="bg-primary text-white row items-center q-pb-none">
+          <div class="text-h6 text-weight-bold">Edytuj logo</div>
+          <q-space />
+          <q-btn icon="close" flat round dense v-close-popup />
+        </q-card-section>
+
+        <q-card-section class="q-pt-md">
+          <q-form @submit="handleEditLogoSubmit">
+            <div class="row q-col-gutter-md">
+              <div class="col-12">
+                <q-input v-model="editLogoForm.name" label="Nazwa własna loga" outlined dense />
+              </div>
+              <div class="col-6">
+                <q-input v-model.number="editLogoForm.width" label="Szerokość (mm)" type="number" outlined dense />
+              </div>
+              <div class="col-6">
+                <q-input v-model.number="editLogoForm.height" label="Wysokość (mm)" type="number" outlined dense />
+              </div>
+              <div class="col-12">
+                <q-select v-model="editLogoForm.position" label="Pozycja" outlined dense emit-value map-options
+                  :options="[ {label:'Lewo', value:'left'}, {label:'Góra', value:'top_center'}, {label:'Prawo', value:'right'} ]" />
+              </div>
+              <div class="col-12">
+                <q-input v-model="editLogoForm.theme_color" label="Kolor motywu" outlined dense readonly class="cursor-pointer">
+                  <template v-slot:append>
+                    <q-icon name="colorize" class="cursor-pointer" color="primary">
+                      <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+                        <q-color v-model="editLogoForm.theme_color" no-header-footer />
+                      </q-popup-proxy>
+                    </q-icon>
+                  </template>
+                </q-input>
+              </div>
+              <div class="col-12">
+                <div class="row justify-end q-gutter-sm">
+                  <q-btn flat label="Anuluj" v-close-popup />
+                  <q-btn label="Zapisz zmiany" color="primary" unelevated type="submit" :loading="editLogoLoading" />
+                </div>
+              </div>
+            </div>
+          </q-form>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
+
     <!-- ===================== DIALOG DODAWANIA PODPISU PRZEZ ADMINA ===================== -->
     <q-dialog v-model="adminSignatureDialog" persistent>
       <q-card style="min-width:400px" class="rounded-borders">
@@ -1336,6 +1403,7 @@
 import { ref, computed, onMounted, watch } from 'vue'
 import { api } from 'boot/axios'
 import { useQuasar } from 'quasar'
+import { downloadBlob } from 'src/utils/download'
 import VueApexCharts from 'vue3-apexcharts'
 import CalculationResultReport from 'components/CalculationResultReport.vue'
 
@@ -1820,6 +1888,53 @@ async function setAdminDefaultLogo(logoId) {
   }
 }
 
+// ---- Edycja logo ----
+const editLogoDialog = ref(false)
+const editLogoLoading = ref(false)
+const editLogoId = ref(null)
+const editLogoForm = ref({ name: '', width: 45, height: 20, position: 'right', theme_color: '#1565C0' })
+
+function openEditLogo(row) {
+  editLogoId.value = row.id
+  editLogoForm.value = { name: row.name || '', width: row.width, height: row.height, position: row.position, theme_color: row.theme_color }
+  editLogoDialog.value = true
+}
+
+async function handleEditLogoSubmit() {
+  editLogoLoading.value = true
+  try {
+    await api.patch(`/auth/logos/${editLogoId.value}/`, editLogoForm.value)
+    $q.notify({ type: 'positive', message: 'Logo zaktualizowane.', position: 'top' })
+    editLogoDialog.value = false
+    fetchUserLogos()
+  } catch {
+    $q.notify({ type: 'negative', message: 'Błąd podczas edycji loga.', position: 'top' })
+  } finally {
+    editLogoLoading.value = false
+  }
+}
+
+// ---- Podgląd wydruku użytkownika ----
+const pdfLoadingId = ref(null)
+
+async function downloadUserResultPdf(result) {
+  pdfLoadingId.value = result.id
+  try {
+    const res = await api.get(`/calculators/results/${result.id}/pdf/`, {
+      params: { use_owner_logo: 'true' },
+      responseType: 'blob'
+    })
+    const calcName = (result.calculator_definition?.name || result.calculator_name || 'obliczenie').replace(/[^a-zA-Z0-9_-]/g, '_')
+    const rawNr = result.nr_fabryczny || result.input_data?.nr_fabryczny?.value || result.input_data?.nr_fabryczny || String(result.id)
+    const nrFab = String(rawNr).replace(/[^a-zA-Z0-9_-]/g, '_')
+    downloadBlob(res.data, `${calcName}_${nrFab}.pdf`)
+  } catch {
+    $q.notify({ type: 'negative', message: 'Błąd pobierania PDF.', position: 'top' })
+  } finally {
+    pdfLoadingId.value = null
+  }
+}
+
 // ---- Podpisy użytkownika (Zarządzanie przez admina) ----
 const userSignatures = ref([])
 const userSignaturesLoading = ref(false)
@@ -2240,6 +2355,7 @@ const txColumns = [
   { name: 'user_display', label: 'Użytkownik', field: 'user_display', align: 'left' },
   { name: 'is_locked', label: 'Status', field: 'is_locked', align: 'center' },
   { name: 'created_at', label: 'Data', field: 'created_at', align: 'left', sortable: true },
+  { name: 'tx_pdf', label: 'PDF', field: 'id', align: 'center' },
 ]
 
 const txAnalysisColumns = [

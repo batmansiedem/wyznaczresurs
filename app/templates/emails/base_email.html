@@ -11,14 +11,14 @@
             margin: 0;
             padding: 0;
             width: 100% !important;
-            background-color: #f4f7fa;
+            background-color: #f0f4f8;
             font-family: 'Roboto', 'Segoe UI', Arial, sans-serif;
             -webkit-font-smoothing: antialiased;
         }
 
         .email-wrapper {
             width: 100%;
-            background-color: #f4f7fa;
+            background-color: #f0f4f8;
             padding: 40px 0;
         }
 
@@ -28,58 +28,56 @@
             background-color: #ffffff;
             border-radius: 8px;
             overflow: hidden;
-            box-shadow: 0 12px 40px rgba(10, 25, 41, 0.12);
+            box-shadow: 0 4px 24px rgba(21, 101, 192, 0.08);
+            border: 1px solid #e2eaf4;
         }
 
         /* HERO SECTION */
         .hero {
-            background: #1565C0;
-            background: linear-gradient(145deg, #1565C0 0%, #0c3c73 100%);
-            color: #ffffff;
-            padding: 55px 40px;
-            text-align: center;
+            background-color: #ffffff;
+            border-bottom: 1px solid #e2eaf4;
+            padding: 18px 40px;
+            text-align: left;
+            display: block;
         }
 
         .hero-logo {
-            font-size: 32px;
+            font-size: 16px;
             font-weight: 900;
-            letter-spacing: -1px;
+            letter-spacing: -0.5px;
             text-decoration: none;
-            color: #ffffff;
+            color: #0A1929;
         }
 
         .hero-logo span {
-            color: #1976D2;
+            color: #1565C0;
         }
 
         .hero-sub {
-            margin-top: 15px;
-            font-size: 16px;
-            opacity: 0.85;
-            font-weight: 400;
+            display: none;
         }
 
         /* COMPLIANCE STRIP */
         .compliance-strip {
-            background-color: #0A1929;
-            color: #ffffff;
-            padding: 15px 20px;
+            background-color: #f8fbff;
+            color: #1565C0;
+            padding: 12px 20px;
             text-align: center;
             font-family: 'Roboto Mono', monospace;
-            font-size: 11px;
+            font-size: 10px;
             letter-spacing: 1px;
             text-transform: uppercase;
-            border-bottom: 2px solid #1976D2;
+            border-bottom: 1px solid #e2eaf4;
         }
 
         .content {
-            padding: 45px 40px;
+            padding: 40px 40px;
             color: #334155;
             line-height: 1.8;
         }
 
         h2 {
-            font-size: 24px;
+            font-size: 22px;
             font-weight: 900;
             color: #0A1929;
             margin-top: 0;
@@ -97,32 +95,33 @@
             display: inline-block;
             background-color: #1565C0;
             color: #ffffff !important;
-            padding: 16px 36px;
+            padding: 14px 34px;
             border-radius: 4px;
             text-decoration: none;
             font-weight: 700;
-            font-size: 16px;
-            box-shadow: 0 4px 15px rgba(21, 101, 192, 0.3);
+            font-size: 15px;
+            box-shadow: 0 4px 12px rgba(21, 101, 192, 0.25);
         }
 
         .footer {
-            background-color: #0A1929;
-            padding: 40px;
+            background-color: #f8fbff;
+            border-top: 1px solid #e2eaf4;
+            padding: 32px 40px;
             text-align: center;
-            color: rgba(255, 255, 255, 0.5);
+            color: #94a3b8;
             font-size: 12px;
         }
 
         .footer-logo {
             font-weight: 700;
-            color: #ffffff;
-            font-size: 14px;
-            margin-bottom: 12px;
+            color: #0A1929;
+            font-size: 13px;
+            margin-bottom: 10px;
             display: block;
         }
 
         .footer a {
-            color: #1976D2;
+            color: #1565C0;
             text-decoration: none;
         }
     </style>
@@ -133,14 +132,10 @@
         <div class="container">
             <div class="hero">
                 <a href="https://wyznaczresurs.com" class="hero-logo">wyznacz<span>resurs</span>.com</a>
-                <div class="hero-sub">{% block email_subject %}{{ subject }}{% endblock %}</div>
-            </div>
-
-            <div class="compliance-strip">
-                FEM 9.511 &bull; ISO 4301 &bull; ROZP. MPiT 2018 &bull; UDT
             </div>
 
             <div class="content">
+                <h2>{% block email_subject %}{{ subject }}{% endblock %}</h2>
                 {% block email_content %}
                 {{ content|safe }}
                 {% endblock %}

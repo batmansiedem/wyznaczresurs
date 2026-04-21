@@ -42,6 +42,9 @@ class UserLogoViewSet(viewsets.ModelViewSet):
     parser_classes = [parsers.MultiPartParser, parsers.FormParser, parsers.JSONParser]
 
     def get_queryset(self):
+        # Admin może zarządzać logotypami wszystkich użytkowników
+        if self.request.user.is_staff:
+            return UserLogo.objects.all().order_by('-is_default', '-created_at')
         return UserLogo.objects.filter(user=self.request.user).order_by('-is_default', '-created_at')
 
     def create(self, request, *args, **kwargs):
@@ -78,9 +81,9 @@ class UserLogoViewSet(viewsets.ModelViewSet):
 
     def perform_update(self, serializer):
         logo = serializer.save()
-        user = self.request.user
-        # Jeśli edytowane logo jest domyślne, zaktualizuj też pola w CustomUser
+        # Synchronizacja z CustomUser dla właściciela logo (nie request.user — admin może edytować cudze)
         if logo.is_default:
+            user = logo.user
             user.custom_logo = logo.image
             user.logo_width = logo.width
             user.logo_height = logo.height
@@ -88,21 +91,41 @@ class UserLogoViewSet(viewsets.ModelViewSet):
             user.theme_color = logo.theme_color
             user.save()
 
+    def perform_destroy(self, instance):
+        user = instance.user
+        was_default = instance.is_default
+        instance.delete()
+        # Jeśli usunięte logo było domyślnym, zaktualizuj CustomUser
+        if was_default:
+            next_logo = UserLogo.objects.filter(user=user).first()
+            if next_logo:
+                next_logo.is_default = True
+                next_logo.save()
+                user.custom_logo = next_logo.image
+                user.logo_width = next_logo.width
+                user.logo_height = next_logo.height
+                user.logo_position = next_logo.position
+                user.theme_color = next_logo.theme_color
+            else:
+                user.has_custom_logo = False
+                user.custom_logo = None
+            user.save()
+
     @action(detail=True, methods=['post'])
     def set_default(self, request, pk=None):
         logo = self.get_object()
         logo.is_default = True
         logo.save()
-        
-        # Aktualizacja CustomUser
-        user = request.user
+
+        # Aktualizacja CustomUser właściciela logo (nie request.user)
+        user = logo.user
         user.custom_logo = logo.image
         user.logo_width = logo.width
         user.logo_height = logo.height
         user.logo_position = logo.position
         user.theme_color = logo.theme_color
         user.save()
-        
+
         return Response({"message": "Logo ustawione jako domyślne."})
 
 class UserSignatureViewSet(viewsets.ModelViewSet):
@@ -112,17 +135,20 @@ class UserSignatureViewSet(viewsets.ModelViewSet):
     parser_classes = [parsers.MultiPartParser, parsers.FormParser, parsers.JSONParser]
 
     def get_queryset(self):
+        # Admin może zarządzać podpisami wszystkich użytkowników
+        if self.request.user.is_staff:
+            return UserSignature.objects.all().order_by('-is_default', '-created_at')
         return UserSignature.objects.filter(user=self.request.user).order_by('-is_default', '-created_at')
 
     def create(self, request, *args, **kwargs):
         user = request.user
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        
+
         # Podpisy są obecnie darmowe
         is_first = not UserSignature.objects.filter(user=user).exists()
         serializer.save(user=user, is_default=is_first)
-        
+
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     @action(detail=True, methods=['post'])

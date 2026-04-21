@@ -1774,3 +1774,172 @@ RuntimeError: KSeF rejected: Odrzucona | []
 [2026-04-08 23:07:19] INFO django.utils.autoreload: Watching for file changes with StatReloader
 [2026-04-20 22:49:44] INFO django.utils.autoreload: Watching for file changes with StatReloader
 [2026-04-20 22:50:07] INFO django.utils.autoreload: Watching for file changes with StatReloader
+[2026-04-20 22:50:14] WARNING axes.handlers.database: AXES: New login failure by {username: "********************", ip_address: "********************", user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36 OPR/129.0.0.0 (Edition ms_store)", path_info: "/api/auth/login/"}. Created new record in the database.
+[2026-04-20 22:50:14] WARNING django.request: Bad Request: /api/auth/login/
+[2026-04-20 22:50:35] WARNING django.request: Unauthorized: /api/auth/user/
+[2026-04-20 22:50:35] WARNING django.request: Unauthorized: /api/auth/token/refresh/
+[2026-04-20 22:50:40] WARNING django.request: Unauthorized: /api/auth/user/
+[2026-04-20 22:50:40] WARNING django.request: Unauthorized: /api/auth/token/refresh/
+[2026-04-20 22:50:57] WARNING django.request: Unauthorized: /api/auth/user/
+[2026-04-20 22:50:57] WARNING django.request: Unauthorized: /api/auth/token/refresh/
+[2026-04-20 22:51:00] WARNING axes.handlers.database: AXES: Repeated login failure by {username: "********************", ip_address: "********************", user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36 OPR/129.0.0.0 (Edition ms_store)", path_info: "/api/auth/login/"}. Updated existing record in the database.
+[2026-04-20 22:51:00] WARNING django.request: Bad Request: /api/auth/login/
+[2026-04-20 22:51:07] WARNING axes.handlers.database: AXES: Repeated login failure by {username: "********************", ip_address: "********************", user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36 OPR/129.0.0.0 (Edition ms_store)", path_info: "/api/auth/login/"}. Updated existing record in the database.
+[2026-04-20 22:51:07] WARNING django.request: Bad Request: /api/auth/login/
+[2026-04-20 22:51:56] WARNING axes.handlers.database: AXES: Repeated login failure by {username: "********************", ip_address: "********************", user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36 OPR/129.0.0.0 (Edition ms_store)", path_info: "/api/auth/login/"}. Updated existing record in the database.
+[2026-04-20 22:51:56] WARNING django.request: Bad Request: /api/auth/login/
+[2026-04-20 22:52:10] WARNING axes.handlers.database: AXES: Repeated login failure by {username: "********************", ip_address: "********************", user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36 OPR/129.0.0.0 (Edition ms_store)", path_info: "/api/auth/login/"}. Updated existing record in the database.
+[2026-04-20 22:52:10] WARNING axes.handlers.database: AXES: Locking out {username: "********************", ip_address: "********************", user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36 OPR/129.0.0.0 (Edition ms_store)", path_info: "/api/auth/login/"} after repeated login failures.
+[2026-04-20 22:52:10] WARNING django.request: Bad Request: /api/auth/login/
+[2026-04-20 22:52:17] WARNING django.request: Unauthorized: /api/auth/user/
+[2026-04-20 22:52:17] WARNING django.request: Unauthorized: /api/auth/token/refresh/
+[2026-04-20 22:52:26] WARNING axes.handlers.database: AXES: Repeated login failure by {username: "********************", ip_address: "********************", user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36 OPR/129.0.0.0 (Edition ms_store)", path_info: "/api/auth/login/"}. Updated existing record in the database.
+[2026-04-20 22:52:26] WARNING axes.handlers.database: AXES: Locking out {username: "********************", ip_address: "********************", user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36 OPR/129.0.0.0 (Edition ms_store)", path_info: "/api/auth/login/"} after repeated login failures.
+[2026-04-20 22:52:26] WARNING django.request: Bad Request: /api/auth/login/
+[2026-04-20 22:52:36] WARNING axes.handlers.database: AXES: Repeated login failure by {username: "********************", ip_address: "********************", user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36 OPR/129.0.0.0 (Edition ms_store)", path_info: "/api/auth/login/"}. Updated existing record in the database.
+[2026-04-20 22:52:36] WARNING axes.handlers.database: AXES: Locking out {username: "********************", ip_address: "********************", user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36 OPR/129.0.0.0 (Edition ms_store)", path_info: "/api/auth/login/"} after repeated login failures.
+[2026-04-20 22:52:36] WARNING django.request: Bad Request: /api/auth/login/
+[2026-04-20 22:52:42] WARNING axes.handlers.database: AXES: Repeated login failure by {username: "********************", ip_address: "********************", user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36 OPR/129.0.0.0 (Edition ms_store)", path_info: "/api/auth/login/"}. Updated existing record in the database.
+[2026-04-20 22:52:42] WARNING axes.handlers.database: AXES: Locking out {username: "********************", ip_address: "********************", user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36 OPR/129.0.0.0 (Edition ms_store)", path_info: "/api/auth/login/"} after repeated login failures.
+[2026-04-20 22:52:42] WARNING django.request: Bad Request: /api/auth/login/
+[2026-04-20 22:52:50] WARNING axes.handlers.database: AXES: Repeated login failure by {username: "********************", ip_address: "********************", user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36 OPR/129.0.0.0 (Edition ms_store)", path_info: "/api/auth/login/"}. Updated existing record in the database.
+[2026-04-20 22:52:50] WARNING axes.handlers.database: AXES: Locking out {username: "********************", ip_address: "********************", user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36 OPR/129.0.0.0 (Edition ms_store)", path_info: "/api/auth/login/"} after repeated login failures.
+[2026-04-20 22:52:50] WARNING django.request: Bad Request: /api/auth/login/
+[2026-04-20 22:53:44] WARNING django.request: Not Found: /
+[2026-04-20 22:53:44] WARNING django.request: Not Found: /favicon.ico
+[2026-04-20 22:54:04] WARNING axes.handlers.database: AXES: New login failure by {username: "********************", ip_address: "********************", user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36 OPR/129.0.0.0 (Edition ms_store)", path_info: "/admin/login/"}. Created new record in the database.
+[2026-04-20 22:54:13] WARNING axes.handlers.database: AXES: Repeated login failure by {username: "********************", ip_address: "********************", user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36 OPR/129.0.0.0 (Edition ms_store)", path_info: "/admin/login/"}. Updated existing record in the database.
+[2026-04-20 22:55:19] WARNING django.request: Unauthorized: /api/auth/user/
+[2026-04-20 22:55:19] WARNING django.request: Unauthorized: /api/auth/token/refresh/
+[2026-04-20 22:55:19] WARNING django.request: Unauthorized: /api/auth/user/
+[2026-04-20 22:55:19] WARNING django.request: Unauthorized: /api/auth/token/refresh/
+[2026-04-20 22:56:03] INFO invoices.ksef: KSeF: Start autoryzacji (nip: 7691427583)
+[2026-04-20 22:56:03] INFO invoices.ksef: KSeF API Request: GET https://api-test.ksef.mf.gov.pl/api/v2/security/public-key-certificates
+[2026-04-20 22:56:03] INFO invoices.ksef: KSeF API Response: 200 (GET) w 0.40s
+[2026-04-20 22:56:03] INFO invoices.ksef: KSeF API Request: POST https://api-test.ksef.mf.gov.pl/api/v2/auth/challenge
+[2026-04-20 22:56:03] INFO invoices.ksef: KSeF API Response: 200 (POST) w 0.07s
+[2026-04-20 22:56:03] INFO invoices.ksef: KSeF Challenge Info: timestamp=2026-04-20T20:56:03.7995425+00:00, timestampMs=1776718563799
+[2026-04-20 22:56:03] INFO invoices.ksef: KSeF API Request: POST https://api-test.ksef.mf.gov.pl/api/v2/auth/ksef-token
+[2026-04-20 22:56:03] INFO invoices.ksef: KSeF API Response: 202 (POST) w 0.09s
+[2026-04-20 22:56:03] INFO invoices.ksef: KSeF: Oczekiwanie na potwierdzenie autoryzacji (ref: 20260420-AU-47DF62C000-8A9C065954-A9)...
+[2026-04-20 22:56:03] INFO invoices.ksef: KSeF API Request: GET https://api-test.ksef.mf.gov.pl/api/v2/auth/20260420-AU-47DF62C000-8A9C065954-A9
+[2026-04-20 22:56:04] INFO invoices.ksef: KSeF API Response: 200 (GET) w 0.08s
+[2026-04-20 22:56:04] INFO invoices.ksef: KSeF Auth Polling [1/60]: Status JSON = 200
+[2026-04-20 22:56:04] INFO invoices.ksef: KSeF API Request: POST https://api-test.ksef.mf.gov.pl/api/v2/auth/token/redeem
+[2026-04-20 22:56:04] INFO invoices.ksef: KSeF API Response: 200 (POST) w 0.24s
+[2026-04-20 22:56:04] INFO invoices.ksef: KSeF: Autoryzacja udana
+[2026-04-20 22:56:04] INFO invoices.ksef: KSeF: Wygenerowano XML FA(3).
+[2026-04-20 22:56:04] INFO invoices.ksef: KSeF API Request: GET https://api-test.ksef.mf.gov.pl/api/v2/security/public-key-certificates
+[2026-04-20 22:56:04] INFO invoices.ksef: KSeF API Response: 200 (GET) w 0.26s
+[2026-04-20 22:56:04] INFO invoices.ksef: KSeF API Request: POST https://api-test.ksef.mf.gov.pl/api/v2/sessions/online
+[2026-04-20 22:56:04] INFO invoices.ksef: KSeF API Response: 201 (POST) w 0.11s
+[2026-04-20 22:56:04] INFO invoices.ksef: KSeF: Sesja otwarta (20260420-SO-47DF8D5000-9DF5F64765-E9)
+[2026-04-20 22:56:04] INFO invoices.ksef: KSeF: Sprawdzanie gotowości sesji 20260420-SO-47DF8D5000-9DF5F64765-E9...
+[2026-04-20 22:56:04] INFO invoices.ksef: KSeF API Request: GET https://api-test.ksef.mf.gov.pl/api/v2/sessions/20260420-SO-47DF8D5000-9DF5F64765-E9
+[2026-04-20 22:56:04] INFO invoices.ksef: KSeF API Response: 200 (GET) w 0.07s
+[2026-04-20 22:56:04] INFO invoices.ksef: KSeF: Sesja gotowa (status: 100)
+[2026-04-20 22:56:04] INFO invoices.ksef: KSeF: Przygotowanie payloadu (rozmiar XML: 1418 bajtów)
+[2026-04-20 22:56:04] INFO invoices.ksef: KSeF: Wysyłanie faktury do sesji 20260420-SO-47DF8D5000-9DF5F64765-E9...
+[2026-04-20 22:56:04] INFO invoices.ksef: KSeF API Request: POST https://api-test.ksef.mf.gov.pl/api/v2/sessions/online/20260420-SO-47DF8D5000-9DF5F64765-E9/invoices
+[2026-04-20 22:56:04] INFO invoices.ksef: KSeF API Response: 202 (POST) w 0.10s
+[2026-04-20 22:56:04] INFO invoices.ksef: KSeF: Faktura wysłana. Ref: 20260420-EE-47DF995000-8A9CD83A12-6A
+[2026-04-20 22:56:04] INFO invoices.ksef: KSeF: Sprawdzanie statusu faktury 20260420-EE-47DF995000-8A9CD83A12-6A
+[2026-04-20 22:56:04] INFO invoices.ksef: KSeF API Request: GET https://api-test.ksef.mf.gov.pl/api/v2/sessions/20260420-SO-47DF8D5000-9DF5F64765-E9/invoices/20260420-EE-47DF995000-8A9CD83A12-6A
+[2026-04-20 22:56:04] INFO invoices.ksef: KSeF API Response: 200 (GET) w 0.06s
+[2026-04-20 22:56:04] INFO invoices.ksef: KSeF poll_status [1/60]: Status code = 150
+[2026-04-20 22:56:07] INFO invoices.ksef: KSeF API Request: GET https://api-test.ksef.mf.gov.pl/api/v2/sessions/20260420-SO-47DF8D5000-9DF5F64765-E9/invoices/20260420-EE-47DF995000-8A9CD83A12-6A
+[2026-04-20 22:56:08] INFO invoices.ksef: KSeF API Response: 200 (GET) w 0.16s
+[2026-04-20 22:56:08] INFO invoices.ksef: KSeF poll_status [2/60]: Status code = 200
+[2026-04-20 22:56:08] INFO invoices.ksef: KSeF: Zamykanie sesji 20260420-SO-47DF8D5000-9DF5F64765-E9
+[2026-04-20 22:56:08] INFO invoices.ksef: KSeF API Request: POST https://api-test.ksef.mf.gov.pl/api/v2/sessions/online/20260420-SO-47DF8D5000-9DF5F64765-E9/close
+[2026-04-20 22:56:08] INFO invoices.ksef: KSeF API Response: 204 (POST) w 0.17s
+[2026-04-20 22:56:08] INFO invoices.ksef: KSeF: Sesja 20260420-SO-47DF8D5000-9DF5F64765-E9 zamknięta
+[2026-04-20 22:56:08] INFO invoices.ksef: KSeF API Request: DELETE https://api-test.ksef.mf.gov.pl/api/v2/auth/sessions/current
+[2026-04-20 22:56:08] INFO invoices.ksef: KSeF API Response: 204 (DELETE) w 0.07s
+[2026-04-20 22:59:26] DEBUG invoices.paypal: PayPal: pobieranie access_token (sandbox=True)
+[2026-04-20 22:59:27] ERROR invoices.paypal: PayPal: błąd autoryzacji OAuth2 — HTTP 401: {"error":"invalid_client","error_description":"Client Authentication failed"}
+[2026-04-20 22:59:27] ERROR django.request: Bad Gateway: /api/billing/paypal/create-order/
+[2026-04-20 23:03:13] DEBUG invoices.paypal: PayPal: pobieranie access_token (sandbox=True)
+[2026-04-20 23:03:14] ERROR invoices.paypal: PayPal: błąd autoryzacji OAuth2 — HTTP 401: {"error":"invalid_client","error_description":"Client Authentication failed"}
+[2026-04-20 23:03:14] ERROR django.request: Bad Gateway: /api/billing/paypal/create-order/
+[2026-04-20 23:23:15] WARNING django.request: Unauthorized: /api/calculators/definitions/
+[2026-04-21 23:10:52] INFO django.utils.autoreload: Watching for file changes with StatReloader
+[2026-04-21 23:11:30] WARNING django.request: Unauthorized: /api/auth/user/
+[2026-04-21 23:14:34] WARNING django.request: Not Found: /api/auth/logos/1/
+[2026-04-21 23:14:39] WARNING django.request: Not Found: /api/auth/logos/1/
+[2026-04-21 23:16:14] WARNING django.request: Not Found: /api/auth/logos/1/
+[2026-04-21 23:16:40] INFO django.utils.autoreload: D:\wyznaczresurs\app\invoices\pdf_generator.py changed, reloading.
+[2026-04-21 23:16:40] INFO django.utils.autoreload: Watching for file changes with StatReloader
+[2026-04-21 23:16:58] INFO invoices.ksef: KSeF: Start autoryzacji (nip: 7691427583)
+[2026-04-21 23:16:58] INFO invoices.ksef: KSeF API Request: GET https://api-test.ksef.mf.gov.pl/api/v2/security/public-key-certificates
+[2026-04-21 23:16:59] INFO invoices.ksef: KSeF API Response: 200 (GET) w 0.87s
+[2026-04-21 23:16:59] INFO invoices.ksef: KSeF API Request: POST https://api-test.ksef.mf.gov.pl/api/v2/auth/challenge
+[2026-04-21 23:17:00] INFO invoices.ksef: KSeF API Response: 200 (POST) w 0.93s
+[2026-04-21 23:17:00] INFO invoices.ksef: KSeF Challenge Info: timestamp=2026-04-21T21:16:59.9056825+00:00, timestampMs=1776806219905
+[2026-04-21 23:17:00] INFO invoices.ksef: KSeF API Request: POST https://api-test.ksef.mf.gov.pl/api/v2/auth/ksef-token
+[2026-04-21 23:17:00] INFO invoices.ksef: KSeF API Response: 202 (POST) w 0.10s
+[2026-04-21 23:17:00] INFO invoices.ksef: KSeF: Oczekiwanie na potwierdzenie autoryzacji (ref: 20260421-AU-4912111000-AB8AF24B78-FB)...
+[2026-04-21 23:17:00] INFO invoices.ksef: KSeF API Request: GET https://api-test.ksef.mf.gov.pl/api/v2/auth/20260421-AU-4912111000-AB8AF24B78-FB
+[2026-04-21 23:17:00] INFO invoices.ksef: KSeF API Response: 200 (GET) w 0.07s
+[2026-04-21 23:17:00] INFO invoices.ksef: KSeF Auth Polling [1/60]: Status JSON = 100
+[2026-04-21 23:17:03] INFO invoices.ksef: KSeF API Request: GET https://api-test.ksef.mf.gov.pl/api/v2/auth/20260421-AU-4912111000-AB8AF24B78-FB
+[2026-04-21 23:17:03] INFO invoices.ksef: KSeF API Response: 200 (GET) w 0.23s
+[2026-04-21 23:17:03] INFO invoices.ksef: KSeF Auth Polling [2/60]: Status JSON = 200
+[2026-04-21 23:17:03] INFO invoices.ksef: KSeF API Request: POST https://api-test.ksef.mf.gov.pl/api/v2/auth/token/redeem
+[2026-04-21 23:17:03] INFO invoices.ksef: KSeF API Response: 200 (POST) w 0.18s
+[2026-04-21 23:17:03] INFO invoices.ksef: KSeF: Autoryzacja udana
+[2026-04-21 23:17:03] INFO invoices.ksef: KSeF: Wygenerowano XML FA(3).
+[2026-04-21 23:17:03] INFO invoices.ksef: KSeF API Request: GET https://api-test.ksef.mf.gov.pl/api/v2/security/public-key-certificates
+[2026-04-21 23:17:03] INFO invoices.ksef: KSeF API Response: 200 (GET) w 0.18s
+[2026-04-21 23:17:03] INFO invoices.ksef: KSeF API Request: POST https://api-test.ksef.mf.gov.pl/api/v2/sessions/online
+[2026-04-21 23:17:03] INFO invoices.ksef: KSeF API Response: 201 (POST) w 0.10s
+[2026-04-21 23:17:03] INFO invoices.ksef: KSeF: Sesja otwarta (20260421-SO-4912FD1000-A3CF41D0EC-2A)
+[2026-04-21 23:17:03] INFO invoices.ksef: KSeF: Sprawdzanie gotowości sesji 20260421-SO-4912FD1000-A3CF41D0EC-2A...
+[2026-04-21 23:17:03] INFO invoices.ksef: KSeF API Request: GET https://api-test.ksef.mf.gov.pl/api/v2/sessions/20260421-SO-4912FD1000-A3CF41D0EC-2A
+[2026-04-21 23:17:04] INFO invoices.ksef: KSeF API Response: 200 (GET) w 0.07s
+[2026-04-21 23:17:04] INFO invoices.ksef: KSeF: Sesja gotowa (status: 100)
+[2026-04-21 23:17:04] INFO invoices.ksef: KSeF: Przygotowanie payloadu (rozmiar XML: 1371 bajtów)
+[2026-04-21 23:17:04] INFO invoices.ksef: KSeF: Wysyłanie faktury do sesji 20260421-SO-4912FD1000-A3CF41D0EC-2A...
+[2026-04-21 23:17:04] INFO invoices.ksef: KSeF API Request: POST https://api-test.ksef.mf.gov.pl/api/v2/sessions/online/20260421-SO-4912FD1000-A3CF41D0EC-2A/invoices
+[2026-04-21 23:17:04] INFO invoices.ksef: KSeF API Response: 202 (POST) w 0.15s
+[2026-04-21 23:17:04] INFO invoices.ksef: KSeF: Faktura wysłana. Ref: 20260421-EE-491307B000-AB82A2F1AB-E5
+[2026-04-21 23:17:04] INFO invoices.ksef: KSeF: Sprawdzanie statusu faktury 20260421-EE-491307B000-AB82A2F1AB-E5
+[2026-04-21 23:17:04] INFO invoices.ksef: KSeF API Request: GET https://api-test.ksef.mf.gov.pl/api/v2/sessions/20260421-SO-4912FD1000-A3CF41D0EC-2A/invoices/20260421-EE-491307B000-AB82A2F1AB-E5
+[2026-04-21 23:17:04] INFO invoices.ksef: KSeF API Response: 200 (GET) w 0.10s
+[2026-04-21 23:17:04] INFO invoices.ksef: KSeF poll_status [1/60]: Status code = 150
+[2026-04-21 23:17:07] INFO invoices.ksef: KSeF API Request: GET https://api-test.ksef.mf.gov.pl/api/v2/sessions/20260421-SO-4912FD1000-A3CF41D0EC-2A/invoices/20260421-EE-491307B000-AB82A2F1AB-E5
+[2026-04-21 23:17:07] INFO invoices.ksef: KSeF API Response: 200 (GET) w 0.07s
+[2026-04-21 23:17:07] INFO invoices.ksef: KSeF poll_status [2/60]: Status code = 200
+[2026-04-21 23:17:07] INFO invoices.ksef: KSeF: Zamykanie sesji 20260421-SO-4912FD1000-A3CF41D0EC-2A
+[2026-04-21 23:17:07] INFO invoices.ksef: KSeF API Request: POST https://api-test.ksef.mf.gov.pl/api/v2/sessions/online/20260421-SO-4912FD1000-A3CF41D0EC-2A/close
+[2026-04-21 23:17:07] INFO invoices.ksef: KSeF API Response: 204 (POST) w 0.08s
+[2026-04-21 23:17:07] INFO invoices.ksef: KSeF: Sesja 20260421-SO-4912FD1000-A3CF41D0EC-2A zamknięta
+[2026-04-21 23:17:07] INFO invoices.ksef: KSeF API Request: DELETE https://api-test.ksef.mf.gov.pl/api/v2/auth/sessions/current
+[2026-04-21 23:17:07] INFO invoices.ksef: KSeF API Response: 204 (DELETE) w 0.08s
+[2026-04-21 23:24:28] INFO django.utils.autoreload: D:\wyznaczresurs\app\users\views.py changed, reloading.
+[2026-04-21 23:24:29] INFO django.utils.autoreload: Watching for file changes with StatReloader
+[2026-04-21 23:24:38] INFO django.utils.autoreload: D:\wyznaczresurs\app\users\views.py changed, reloading.
+[2026-04-21 23:24:39] INFO django.utils.autoreload: Watching for file changes with StatReloader
+[2026-04-21 23:24:50] INFO django.utils.autoreload: D:\wyznaczresurs\app\calculators\views.py changed, reloading.
+[2026-04-21 23:24:51] INFO django.utils.autoreload: Watching for file changes with StatReloader
+[2026-04-21 23:26:13] INFO django.utils.autoreload: D:\wyznaczresurs\app\calculators\views.py changed, reloading.
+[2026-04-21 23:26:13] INFO django.utils.autoreload: Watching for file changes with StatReloader
+[2026-04-21 23:26:34] WARNING django.request: Unauthorized: /api/auth/user/
+[2026-04-21 23:38:27] INFO django.utils.autoreload: D:\wyznaczresurs\app\calculators\views.py changed, reloading.
+[2026-04-21 23:38:27] INFO django.utils.autoreload: Watching for file changes with StatReloader
+[2026-04-21 23:42:28] WARNING django.request: Unauthorized: /api/calculators/definitions/
+[2026-04-21 23:42:59] INFO django.utils.autoreload: D:\wyznaczresurs\app\calculators\pdf_generator.py changed, reloading.
+[2026-04-21 23:43:00] INFO django.utils.autoreload: Watching for file changes with StatReloader
+[2026-04-21 23:45:18] WARNING django.request: Not Found: /api/auth/signatures/3/
+[2026-04-21 23:45:27] INFO django.utils.autoreload: D:\wyznaczresurs\app\calculators\pdf_generator.py changed, reloading.
+[2026-04-21 23:45:27] INFO django.utils.autoreload: Watching for file changes with StatReloader
+[2026-04-21 23:46:06] INFO django.utils.autoreload: D:\wyznaczresurs\app\users\views.py changed, reloading.
+[2026-04-21 23:46:07] INFO django.utils.autoreload: Watching for file changes with StatReloader
+[2026-04-21 23:58:46] WARNING django.request: Unauthorized: /api/calculators/results/
+[2026-04-22 00:05:45] INFO django.utils.autoreload: D:\wyznaczresurs\app\calculators\calculation_logic.py changed, reloading.
+[2026-04-22 00:05:46] INFO django.utils.autoreload: Watching for file changes with StatReloader
+[2026-04-22 00:05:55] INFO django.utils.autoreload: D:\wyznaczresurs\app\calculators\calculation_logic.py changed, reloading.
+[2026-04-22 00:05:56] INFO django.utils.autoreload: Watching for file changes with StatReloader
+[2026-04-22 00:11:44] INFO django.utils.autoreload: D:\wyznaczresurs\app\calculators\calculation_logic.py changed, reloading.
+[2026-04-22 00:11:45] INFO django.utils.autoreload: Watching for file changes with StatReloader
+[2026-04-22 00:16:08] WARNING django.request: Unauthorized: /api/calculators/definitions/

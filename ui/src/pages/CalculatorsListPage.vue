@@ -142,34 +142,40 @@ function getDeviceDescription(slug) {
   return DEVICE_DESCRIPTIONS[slug] || 'Obliczanie stopnia wykorzystania resursu.'
 }
 
-import calculatorFields from 'src/data/calculator_fields.json'
+const schemas = ref({})
 
-// Mechanizmy: slugi które mają parent_devices w JSON
-const ALL_MECH_SLUGS = new Set(
-  Object.keys(calculatorFields).filter(slug => calculatorFields[slug].parent_devices?.length)
+const mechSlugs = computed(() =>
+  new Set(Object.keys(schemas.value).filter(slug => schemas.value[slug].parent_devices?.length))
 )
-// Odwrócona mapa: urządzenie → lista slugów mechanizmów
-const DEVICE_MECHANISMS = {}
-for (const [mechSlug, def] of Object.entries(calculatorFields)) {
-  if (!def.parent_devices?.length) continue
-  for (const parent of def.parent_devices) {
-    if (!DEVICE_MECHANISMS[parent]) DEVICE_MECHANISMS[parent] = []
-    DEVICE_MECHANISMS[parent].push(mechSlug)
-  }
-}
 
-const deviceCalcs = computed(() => calculators.value.filter(c => !ALL_MECH_SLUGS.has(c.slug)))
+const deviceMechanisms = computed(() => {
+  const map = {}
+  for (const [mechSlug, def] of Object.entries(schemas.value)) {
+    if (!def.parent_devices?.length) continue
+    for (const parent of def.parent_devices) {
+      if (!map[parent]) map[parent] = []
+      map[parent].push(mechSlug)
+    }
+  }
+  return map
+})
+
+const deviceCalcs = computed(() => calculators.value.filter(c => !mechSlugs.value.has(c.slug)))
 const calcBySlug = computed(() => Object.fromEntries(calculators.value.map(c => [c.slug, c])))
 
 function getDeviceMechanisms(deviceSlug) {
-  return (DEVICE_MECHANISMS[deviceSlug] || []).map(s => calcBySlug.value[s]).filter(Boolean)
+  return (deviceMechanisms.value[deviceSlug] || []).map(s => calcBySlug.value[s]).filter(Boolean)
 }
 
 async function fetchCalculators() {
   loading.value = true
   try {
-    const response = await api.get('/calculators/definitions/')
-    calculators.value = response.data
+    const [defsRes, schemasRes] = await Promise.all([
+      api.get('/calculators/definitions/'),
+      api.get('/calculators/definitions/schemas/')
+    ])
+    calculators.value = defsRes.data
+    schemas.value = schemasRes.data
   } finally {
     loading.value = false
   }

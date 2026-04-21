@@ -186,33 +186,70 @@ function getUtilColor(val) {
 }
 
 function getWorkData(r) {
-  // BUMAR (podest_ruchomy) — motogodziny z pola moto_podest_ruchomy
-  const moto = r.input_data?.moto_podest_ruchomy
-  if (moto != null && moto !== 0 && moto !== '') {
-    const current = typeof moto === 'object' ? parseFloat(moto?.value || 0) : parseFloat(moto || 0)
-    const tWsk = r.output_data?.T_WSK
-    const total = tWsk
-      ? (typeof tWsk === 'object' ? parseFloat(tWsk.value || 0) : parseFloat(tWsk || 0))
-      : 0
+  const out = r.output_data || {}
+  const inp = r.input_data || {}
+
+  function pv(v) {
+    if (v == null) return 0
+    if (typeof v === 'object') return parseFloat(v?.value || 0)
+    return parseFloat(v || 0)
+  }
+
+  // 1. BUMAR (podest_ruchomy) — typ = 'składany na pojeździe BUMAR'
+  //    Wykrywaj po typie, nie wartości moto (może być 0 przy ponowny_resurs)
+  const typVal = typeof inp.typ === 'object' ? inp.typ?.value : inp.typ
+  if (typVal === 'składany na pojeździe BUMAR') {
+    const current = pv(inp.moto_podest_ruchomy)
+    const total = pv(out.T_WSK)
     return {
       current, total,
-      percent: total ? Math.min(current / total, 1) : 0,
+      percent: total
+        ? Math.min(current / total, 1)
+        : parseFloat(out.resurs_wykorzystanie || 0) / 100,
       unit: 'mth',
       label: total ? `${current.toLocaleString('pl-PL')} / ${total.toLocaleString('pl-PL')}` : `${current.toLocaleString('pl-PL')} mth`
     }
   }
 
-  // Dźwig / urządzenia z motogodzinami
-  const isHours = !!r.input_data?.licznik_pracy || !!r.input_data?.pyt_motogodzin
-  const val = r.input_data?.ilosc_cykli || r.input_data?.licznik_pracy || 0
-  const current = typeof val === 'object' ? parseFloat(val?.value || 0) : parseFloat(val || 0)
-  const total = parseFloat(r.output_data?.U_WSK || r.output_data?.U_res || r.output_data?.resurs_h_max || 100000)
+  // 2. Kalkulatory mechanizmów — czas_uzytkowania_mech + T_WSK w output
+  if (out.czas_uzytkowania_mech != null && out.T_WSK != null) {
+    const current = parseFloat(out.czas_uzytkowania_mech || 0)
+    const total = pv(out.T_WSK)
+    return {
+      current, total,
+      percent: total ? Math.min(current / total, 1) : 0,
+      unit: 'mth',
+      label: `${Math.round(current).toLocaleString('pl-PL')} / ${total.toLocaleString('pl-PL')}`
+    }
+  }
+
+  // 3. Dźwig (winda) — unikalny kalkulator oparty o wiek, nie cykle
+  if (out.wiek_dzwigu != null) {
+    const current = parseFloat(out.licznik_godzin || 0)
+    return {
+      current, total: 0,
+      percent: parseFloat(out.resurs_wykorzystanie || 0) / 100,
+      unit: 'mth',
+      label: `${Math.round(current).toLocaleString('pl-PL')} mth`
+    }
+  }
+
+  // 4. Cycle-based (domyślna) — ilosc_cykli vs U_WSK
+  //    Dzwig/wozek z licznikiem: tylko gdy pyt_motogodzin === 'Tak'
+  const usesHours = inp.pyt_motogodzin === 'Tak'
+  const rawVal = usesHours ? (inp.licznik_pracy ?? 0) : (inp.ilosc_cykli ?? inp.licznik_pracy ?? 0)
+  const current = pv(rawVal)
+  const total = parseFloat(out.U_WSK || out.U_res || 0)
+  const unit = usesHours ? 'mth' : 'cykli'
   return {
-    current,
-    total,
-    percent: Math.min(current / total, 1),
-    unit: isHours ? 'mth' : 'cykli',
-    label: `${current.toLocaleString('pl-PL')} / ${total.toLocaleString('pl-PL')}`
+    current, total,
+    percent: total
+      ? Math.min(current / total, 1)
+      : parseFloat(out.resurs_wykorzystanie || 0) / 100,
+    unit,
+    label: total
+      ? `${current.toLocaleString('pl-PL')} / ${total.toLocaleString('pl-PL')}`
+      : `${current.toLocaleString('pl-PL')} ${unit}`
   }
 }
 

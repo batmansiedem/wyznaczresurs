@@ -419,9 +419,12 @@ class ZurawCalculator(BaseCalculator):
         U_WSK *= kss
 
         if ponowny_resurs == 1:
+            # Zmniejszamy U_WSK o już zużyty resurs — _calculate_resurs_prognosis
+            # NIE dostaje ponowny_resurs=1, żeby nie dodać ostatni_resurs po raz drugi
             U_WSK = ((100 - ostatni_resurs) * Decimal('0.01')) * U_WSK
-
-        resurs_prognosis_data = self._calculate_resurs_prognosis(U_WSK, F_X, ilosc_cykli, lata_pracy, ponowny_resurs, ostatni_resurs)
+            resurs_prognosis_data = self._calculate_resurs_prognosis(U_WSK, F_X, ilosc_cykli, lata_pracy, 0, Decimal(0))
+        else:
+            resurs_prognosis_data = self._calculate_resurs_prognosis(U_WSK, F_X, ilosc_cykli, lata_pracy, ponowny_resurs, ostatni_resurs)
 
         resurs_message = resurs_prognosis_data['resurs_message']
         resurs_wykorzystanie = resurs_prognosis_data['resurs_wykorzystanie']
@@ -592,15 +595,17 @@ class DzwigCalculator(BaseCalculator):
 
         self.output_data.update({
             'resurs': resurs,
+            'resurs_wykorzystanie': resurs,  # alias dla spójności z pozostałymi kalkulatorami
             'ilosc_cykli': ilosc_cykli,
             'wiek_dzwigu': wiek_dzwigu,
             'ilosc_cykli_rok': (ilosc_cykli / lata_pracy).to_integral_value(rounding='ROUND_FLOOR') if lata_pracy > 0 else Decimal(0),
             'ilosc_motogodzin_rok': round(licznik_godzin / lata_pracy, 1) if lata_pracy > 0 else Decimal(0),
             'ilosc_motogodzin_dzien': round(ilosc_motogodzin_dzien, 1),
+            'licznik_godzin': round(licznik_godzin, 1),
             'prognoza': prognoza,
             'data_prognoza': data_prognoza,
             'wsp_kdr': wsp_kdr,
-            'stan_obciazenia': 'N/A', # Dzwig PHP doesn't define stan_obciazenia from wsp_kdr
+            'stan_obciazenia': 'N/A',
             'zalecenia': zalecenia,
         })
         return self.output_data
@@ -1127,9 +1132,12 @@ class SuwnicaCalculator(BaseCalculator):
         U_WSK *= kss
 
         if ponowny_resurs == 1:
+            # Zmniejszamy U_WSK o już zużyty resurs — _calculate_resurs_prognosis
+            # NIE dostaje ponowny_resurs=1, żeby nie dodać ostatni_resurs po raz drugi
             U_WSK = ((100 - ostatni_resurs) * Decimal('0.01')) * U_WSK
-
-        resurs_prognosis_data = self._calculate_resurs_prognosis(U_WSK, F_X, ilosc_cykli, lata_pracy, ponowny_resurs, ostatni_resurs)
+            resurs_prognosis_data = self._calculate_resurs_prognosis(U_WSK, F_X, ilosc_cykli, lata_pracy, 0, Decimal(0))
+        else:
+            resurs_prognosis_data = self._calculate_resurs_prognosis(U_WSK, F_X, ilosc_cykli, lata_pracy, ponowny_resurs, ostatni_resurs)
 
         resurs_message = resurs_prognosis_data['resurs_message']
         resurs_wykorzystanie = resurs_prognosis_data['resurs_wykorzystanie']

@@ -285,25 +285,45 @@ class CalculatorResultViewSet(
         from .pdf_generator import generate_result_pdf
         from users.models import UserLogo, UserSignature
 
-        result = self.get_object()
-        if result.is_locked:
-            raise PermissionDenied("Odblokuj wyniki, aby pobrać PDF.")
-        
-        logo_id = request.query_params.get('logo_id')
-        logo_obj = None
-        if logo_id:
-            try:
-                logo_obj = UserLogo.objects.get(id=logo_id, user=request.user)
-            except UserLogo.DoesNotExist:
-                pass
+        # Admin może pobrać PDF dowolnego obliczenia
+        if request.user.is_staff:
+            result = get_object_or_404(CalculatorResult, pk=pk)
+        else:
+            result = self.get_object()
 
-        signature_id = request.query_params.get('signature_id')
+        if result.is_locked and not request.user.is_staff:
+            raise PermissionDenied("Odblokuj wyniki, aby pobrać PDF.")
+
+        logo_obj = None
         signature_obj = None
-        if signature_id:
-            try:
-                signature_obj = UserSignature.objects.get(id=signature_id, user=request.user)
-            except UserSignature.DoesNotExist:
-                pass
+
+        if request.user.is_staff:
+            # Admin może użyć logo wybranego użytkownika: ?preview_user_id=X lub ?use_owner_logo=true
+            preview_user_id = request.query_params.get('preview_user_id')
+            use_owner_logo = request.query_params.get('use_owner_logo') == 'true'
+            target_user_id = preview_user_id or (result.user_id if use_owner_logo else None)
+            if target_user_id:
+                from django.contrib.auth import get_user_model
+                try:
+                    target_user = get_user_model().objects.get(pk=target_user_id)
+                    logo_obj = UserLogo.objects.filter(user=target_user, is_default=True).first()
+                    signature_obj = UserSignature.objects.filter(user=target_user, is_default=True).first()
+                except get_user_model().DoesNotExist:
+                    pass
+        else:
+            logo_id = request.query_params.get('logo_id')
+            if logo_id:
+                try:
+                    logo_obj = UserLogo.objects.get(id=logo_id, user=request.user)
+                except UserLogo.DoesNotExist:
+                    pass
+
+            signature_id = request.query_params.get('signature_id')
+            if signature_id:
+                try:
+                    signature_obj = UserSignature.objects.get(id=signature_id, user=request.user)
+                except UserSignature.DoesNotExist:
+                    pass
         
         calculator_name = result.calculator_definition.name
         pdf_bytes = generate_result_pdf(result, calculator_name, logo_obj=logo_obj, signature_obj=signature_obj)

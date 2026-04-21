@@ -136,45 +136,17 @@
         <div class="section-label">Podgląd stylu e-maila</div>
         <q-card flat bordered class="rounded-borders shadow-1 overflow-hidden email-preview-card" style="min-height: 400px;">
 
-          <!-- Hero — nawiązuje do landing page -->
+          <!-- Hero — biały nagłówek (jak w base_email.html) -->
           <div class="email-hero">
-            <!-- Siatka techniczna (SVG jak na landing) -->
-            <svg class="email-hero-grid" viewBox="0 0 600 160" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-              <defs>
-                <pattern id="ep-minor" width="20" height="20" patternUnits="userSpaceOnUse">
-                  <path d="M20 0L0 0 0 20" fill="none" stroke="white" stroke-width="0.3" stroke-opacity="0.12"/>
-                </pattern>
-                <pattern id="ep-major" width="100" height="100" patternUnits="userSpaceOnUse">
-                  <rect width="100" height="100" fill="url(#ep-minor)"/>
-                  <path d="M100 0L0 0 0 100" fill="none" stroke="white" stroke-width="0.6" stroke-opacity="0.18"/>
-                </pattern>
-              </defs>
-              <rect width="100%" height="100%" fill="url(#ep-major)"/>
-              <g transform="translate(540,80)" stroke="white" fill="none" stroke-opacity="0.13">
-                <circle r="130" stroke-width="0.5"/>
-                <circle r="90"  stroke-width="0.6"/>
-                <circle r="50"  stroke-width="0.5"/>
-                <line x1="-140" x2="140" y1="0" y2="0" stroke-width="0.5"/>
-                <line x1="0" x2="0" y1="-140" y2="140" stroke-width="0.5"/>
-              </g>
-            </svg>
-
-            <div class="email-hero-content">
-              <!-- Logo -->
-              <div class="email-logo">
-                wyznacz<span class="email-logo-accent">resurs</span>.com
-              </div>
-
-              <!-- Temat jako podtytuł -->
-              <div v-if="formData.subject" class="email-subject">
-                {{ formData.subject }}
-              </div>
+            <div class="email-logo">
+              wyznacz<span class="email-logo-accent">resurs</span>.com
             </div>
           </div>
 
           <!-- Treść -->
           <div class="email-content-wrapper">
             <div class="email-body">
+              <h2 v-if="formData.subject" class="email-body-subject">{{ formData.subject }}</h2>
               <div v-html="formData.content || '<p style=\'color:#94a3b8;font-style:italic\'>Wprowadź treść wiadomości, aby zobaczyć podgląd...</p>'"></div>
 
               <!-- Bonus Code Preview -->
@@ -378,65 +350,33 @@ onMounted(() => {
   .body--dark & { background: #0d1b2a; }
 }
 
-// ── Hero (landing page style) ──────────────────────────
+// ── Hero — biały jak base_email.html ───────────────────
 .email-hero {
-  position: relative;
-  overflow: hidden;
-  background: linear-gradient(145deg, #1565C0 0%, #0c3472 100%);
-  padding: 36px 24px 30px;
-}
-
-.email-hero-grid {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-}
-
-.email-hero-content {
-  position: relative;
-  z-index: 1;
-}
-
-.email-norm-chips {
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
-  margin-bottom: 16px;
-}
-
-.email-norm-chip {
-  font-family: 'Roboto Mono', monospace;
-  font-size: 0.6rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  padding: 2px 8px;
-  border: 1px solid rgba(255, 255, 255, 0.32);
-  border-radius: 3px;
-  color: rgba(255, 255, 255, 0.75);
-  background: rgba(255, 255, 255, 0.07);
+  background: #ffffff;
+  border-bottom: 1px solid #e2eaf4;
+  padding: 14px 24px;
 }
 
 .email-logo {
-  font-size: 1.6rem;
+  font-size: 1rem;
   font-weight: 900;
   letter-spacing: -0.03em;
-  color: #ffffff;
+  color: #0A1929;
   line-height: 1;
-  margin-bottom: 10px;
+  text-decoration: none;
 }
 
 .email-logo-accent {
-  color: rgba(255, 255, 255, 0.45);
+  color: #1565C0;
 }
 
-.email-subject {
-  font-size: 0.88rem;
-  color: rgba(255, 255, 255, 0.7);
-  font-weight: 400;
-  line-height: 1.4;
-  max-width: 420px;
+.email-body-subject {
+  font-size: 1.2rem;
+  font-weight: 900;
+  color: #0A1929;
+  margin-top: 0;
+  margin-bottom: 16px;
+  line-height: 1.2;
 }
 
 // ── Body ───────────────────────────────────────────────

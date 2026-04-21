@@ -866,18 +866,22 @@ def _diagram_ad(input_data: dict, theme: colors.Color) -> list:
             Spacer(1, 0.15 * cm), combo, Spacer(1, 0.35 * cm)]
 
 
-def _signature_block(theme: colors.Color) -> list:
-    """Blok podpisów z szeroką przestrzenią (~3.5cm) na każdy podpis."""
+def _signature_block(theme: colors.Color, signature_obj=None, result_date=None) -> list:
+    """Blok podpisów. Dla 'Osoba wykonująca obliczenia' wstawia grafikę podpisu i datę obliczeń."""
     items = [_section_header('Podpisy', theme), Spacer(1, 0.4 * cm)]
 
-    for label in ('Osoba wykonująca obliczenia', 'Eksploatujący urządzenie'):
-        items.append(_p(label.upper(), font='DVSB', size=7.5,
-                        color=_alpha(theme, 0.7)))
+    for i, label in enumerate(('Osoba wykonująca obliczenia', 'Eksploatujący urządzenie')):
+        is_wykonujacy = (i == 0)
+        items.append(_p(label.upper(), font='DVSB', size=7.5, color=_alpha(theme, 0.7)))
         items.append(Spacer(1, 0.2 * cm))
 
-        # Wiersz: Data: _______________
+        # Wiersz: Data
+        date_val = ''
+        if is_wykonujacy and result_date:
+            date_val = result_date.strftime('%d.%m.%Y')
         date_row = Table(
-            [[_p('Data:', font='DVS', size=8, color=C_GREY_TXT), '']],
+            [[_p('Data:', font='DVS', size=8, color=C_GREY_TXT),
+              _p(date_val, font='DVS', size=8) if date_val else '']],
             colWidths=[1.6 * cm, USABLE_W - 1.6 * cm],
         )
         date_row.setStyle(TableStyle([
@@ -888,7 +892,34 @@ def _signature_block(theme: colors.Color) -> list:
             ('TOPPADDING',    (0, 0), (-1, -1), 0),
         ]))
         items.append(date_row)
-        items.append(Spacer(1, 3.5 * cm))   # przestrzeń na podpis
+
+        # Przestrzeń na podpis — dla wykonującego obliczenia wstawiamy grafikę
+        if is_wykonujacy and signature_obj:
+            try:
+                with PILImage.open(signature_obj.image.path) as pil:
+                    ow, oh = pil.size
+                aspect = oh / float(ow)
+                ws = (signature_obj.width / 10.0) * cm
+                hs = ws * aspect
+                max_hs = min((signature_obj.height / 10.0) * cm, 3.2 * cm)
+                if hs > max_hs:
+                    hs = max_hs
+                    ws = hs / aspect
+                sig_img = Image(signature_obj.image.path, width=ws, height=hs)
+                align = {'bottom_left': 'LEFT', 'bottom_center': 'CENTER'}.get(
+                    signature_obj.position, 'LEFT')
+                sig_t = Table([[sig_img]], colWidths=[USABLE_W])
+                sig_t.setStyle(TableStyle([('ALIGN', (0, 0), (0, 0), align)]))
+                items.append(Spacer(1, 0.2 * cm))
+                items.append(sig_t)
+                if signature_obj.name:
+                    al = {'bottom_left': 0, 'bottom_center': 1}.get(signature_obj.position, 0)
+                    items.append(_p(signature_obj.name, size=7.5, color=C_GREY_TXT, align=al))
+                items.append(Spacer(1, 0.15 * cm))
+            except Exception:
+                items.append(Spacer(1, 3.5 * cm))
+        else:
+            items.append(Spacer(1, 3.5 * cm))
 
         # Wiersz: Podpis: _______________
         sign_row = Table(
@@ -916,10 +947,11 @@ def _build_header(result, calc_name: str, logo_obj, theme: colors.Color) -> list
     logo_w_cm = 4.5
     logo_pos = 'right'
 
-    # Logo: pokaż jeśli użytkownik ma włączoną opcję i wykupione logo
+    # Logo: pokaż jeśli logo_obj przekazane jawnie (np. tryb preview admina)
+    # lub jeśli właściciel wyniku ma włączoną opcję i wykupione logo
     use_logo = getattr(result.user, 'show_logo_on_pdf', True)
     has_purchased = getattr(result.user, 'has_custom_logo', False)
-    if use_logo and (logo_obj or has_purchased):
+    if logo_obj or (use_logo and has_purchased):
         active_img_obj = logo_obj
         if not active_img_obj:
             try:
@@ -1939,45 +1971,20 @@ def generate_result_pdf(result, calculator_name: str,
     status_items.append(Spacer(1, 0.4 * cm))
     story += status_items
 
-    # ── Podpis cyfrowy (pieczęć/grafika) ────────────────────────────────────────
+    # ── Blok podpisów ────────────────────────────────────────────────────────────
     story.append(CondPageBreak(10 * cm))
     story.append(Spacer(1, 0.2 * cm))
-    if getattr(result.user, 'show_signature_on_pdf', True):
-        if not signature_obj:
-            try:
-                from users.models import UserSignature
-                signature_obj = UserSignature.objects.filter(
-                    user=result.user, is_default=True).first()
-            except Exception:
-                pass
-        if signature_obj:
-            try:
-                with PILImage.open(signature_obj.image.path) as pil:
-                    ow, oh = pil.size
-                aspect = oh / float(ow)
-                ws = (signature_obj.width  / 10.0) * cm
-                hs = ws * aspect
-                max_hs = (signature_obj.height / 10.0) * cm
-                if hs > max_hs:
-                    hs = max_hs
-                    ws = hs / aspect
-                sig_img = Image(signature_obj.image.path, width=ws, height=hs)
-                align = {'bottom_left': 'LEFT', 'bottom_center': 'CENTER'}.get(
-                    signature_obj.position, 'RIGHT')
-                sig_t = Table([[sig_img]], colWidths=[USABLE_W])
-                sig_t.setStyle(TableStyle([('ALIGN', (0, 0), (0, 0), align)]))
-                story.append(sig_t)
-                if signature_obj.name:
-                    al = {'bottom_left': 0, 'bottom_center': 1}.get(
-                        signature_obj.position, 2)
-                    story.append(_p(signature_obj.name, size=7.5,
-                                    color=C_GREY_TXT, align=al))
-                story.append(Spacer(1, 0.3 * cm))
-            except Exception:
-                pass
-
-    # ── Blok podpisów (z dużą przestrzenią, nie może być ucięty) ─────────────────
-    story.append(KeepTogether(_signature_block(THEME)))
+    # Pobierz podpis jeśli nie przekazano z zewnątrz
+    if not signature_obj and getattr(result.user, 'show_signature_on_pdf', True):
+        try:
+            from users.models import UserSignature
+            signature_obj = UserSignature.objects.filter(
+                user=result.user, is_default=True).first()
+        except Exception:
+            pass
+    # Jawnie przekazany signature_obj (np. preview admina) — zawsze użyj; inaczej sprawdź ustawienia właściciela
+    sig_for_block = signature_obj if (signature_obj or getattr(result.user, 'show_signature_on_pdf', True)) else None
+    story.append(KeepTogether(_signature_block(THEME, signature_obj=sig_for_block, result_date=result.created_at)))
 
     # ── Stopka prawna ─────────────────────────────────────────────────────────
     legal = [

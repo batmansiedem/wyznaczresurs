@@ -23,6 +23,37 @@
         <p class="text-subtitle1 opacity-80 q-mb-none">{{ currentCalculatorDefinition.description }}</p>
       </div>
 
+      <!-- Selektor logo użytkownika (tylko dla admina) -->
+      <div v-if="userStore.user?.is_staff" class="q-mb-md">
+        <q-banner v-if="pdfLogoUser" inline-actions rounded class="bg-orange-1 text-orange-9">
+          <template #avatar><q-icon name="photo_library" color="orange-7" /></template>
+          PDF będzie generowany z logotypem użytkownika: <b>{{ pdfLogoUser.display_name }} ({{ pdfLogoUser.email }})</b>
+          <template #action>
+            <q-btn flat dense no-caps label="Wyłącz" icon="close" @click="pdfLogoUser = null" />
+          </template>
+        </q-banner>
+        <q-select v-else
+          v-model="pdfLogoUser"
+          use-input
+          input-debounce="300"
+          :options="pdfLogoUserOptions"
+          :loading="pdfLogoUserLoading"
+          emit-value
+          map-options
+          option-value="value"
+          option-label="label"
+          outlined dense clearable
+          label="Logo użytkownika w PDF (opcjonalne)"
+          hint="Wybierz klienta, którego logotyp ma być użyty w PDF"
+          class="bg-white"
+          style="max-width:480px"
+          @filter="searchPdfLogoUsers"
+        >
+          <template #prepend><q-icon name="photo_library" color="grey-6" /></template>
+          <template #no-option><q-item><q-item-section class="text-grey">Wpisz min. 2 znaki…</q-item-section></q-item></template>
+        </q-select>
+      </div>
+
       <q-tabs v-model="activeTab" align="left" class="text-primary q-mb-md" active-color="primary" indicator-color="primary" narrow-indicator>
         <q-tab name="calculator" icon="calculate" label="Arkusz obliczeniowy" no-caps />
         <q-tab name="results" icon="history" :label="`Zapisane wyniki (${savedResults.length})`" no-caps />
@@ -340,6 +371,30 @@ const calculatedResult = ref(null)
 const loading = ref(true)
 const calculating = ref(false)
 const downloadingPdf = ref(false)
+
+// Tryb logo użytkownika (tylko dla admina) — PDF generowany z logo wybranego klienta
+const pdfLogoUser = ref(null)        // { id, email, display_name }
+const pdfLogoUserOptions = ref([])
+const pdfLogoUserLoading = ref(false)
+
+async function searchPdfLogoUsers(val, update) {
+  if (!val || val.length < 2) { update(() => { pdfLogoUserOptions.value = [] }); return }
+  pdfLogoUserLoading.value = true
+  try {
+    const { data } = await api.get('/auth/admin/users/', { params: { search: val } })
+    const list = Array.isArray(data) ? data : (data.results ?? [])
+    update(() => {
+      pdfLogoUserOptions.value = list.map(u => ({
+        label: `${u.display_name} (${u.email})`,
+        value: { id: u.id, email: u.email, display_name: u.display_name }
+      }))
+    })
+  } catch {
+    update(() => { pdfLogoUserOptions.value = [] })
+  } finally {
+    pdfLogoUserLoading.value = false
+  }
+}
 const unlocking = ref(false)
 const currentResultId = ref(null)
 
@@ -667,7 +722,11 @@ async function downloadPdf(resultId = null) {
   if (!id) return
   downloadingPdf.value = true
   try {
-    const response = await api.get(`/calculators/results/${id}/pdf/`, { responseType: 'blob' })
+    const params = {}
+    if (userStore.user?.is_staff && pdfLogoUser.value) {
+      params.preview_user_id = pdfLogoUser.value.id
+    }
+    const response = await api.get(`/calculators/results/${id}/pdf/`, { params, responseType: 'blob' })
     const cd = response.headers['content-disposition'] || ''
     const match = cd.match(/filename="([^"]+)"/)
     const filename = match?.[1] || `resurs_${id}.pdf`
