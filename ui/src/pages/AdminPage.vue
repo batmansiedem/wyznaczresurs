@@ -685,7 +685,7 @@
                     label="Pokazuj podpis na obliczeniu PDF dla tego użytkownika"
                     color="primary"
                     left-label
-                    @update:model-value="updateUserPdfSettings"
+                    @update:model-value="updateUserAdminSettings"
                   />
                 </div>
                 <div class="col-auto">
