@@ -123,19 +123,33 @@ def _get_num(raw):
 
 
 def _fmt_num(s: str) -> str:
-    """Formatuje liczbę do wyświetlenia: 2 miejsca po przecinku, spacja jako separator tysięcy,
-    bez notacji wykładniczej. Zwraca niezmieniony string jeśli to nie liczba."""
+    """Formatuje liczbę do wyświetlenia: od 2 do 6 miejsc po przecinku (zależnie od wielkości),
+    spacja jako separator tysięcy, bez notacji wykładniczej."""
     if s in ('-', '', None):
         return s or '-'
     try:
+        # Usuwamy spacje i zamieniamy przecinek na kropkę przed konwersją na float
         f = float(str(s).replace(',', '.').replace(' ', ''))
+        
+        # Jeśli to liczba całkowita (lub bardzo blisko niej) i nie jest ogromna
         if abs(f - round(f)) < 1e-9 and abs(f) < 1e12:
             return f'{int(round(f)):,}'.replace(',', ' ')
         else:
-            prec = 4 if f != 0 and abs(f) < 0.01 else 2
-            rounded = round(f, prec)
-            parts = f'{rounded:,.{prec}f}'.split('.')
-            return parts[0].replace(',', ' ') + ',' + parts[1]
+            # Dla małych wartości współczynników (np. Kd < 0.01) używamy większej precyzji
+            prec = 2
+            if f != 0 and abs(f) < 0.01:
+                prec = 4
+                if abs(f) < 0.0001:
+                    prec = 6
+            
+            # Formatowanie z wymaganą precyzją, używamy przecinka jako separatora tysięcy, a potem go zamieniamy
+            fmt = f',.{prec}f'
+            formatted = f'{f:{fmt}}'
+            if '.' in formatted:
+                parts = formatted.split('.')
+                return parts[0].replace(',', ' ') + ',' + parts[1]
+            else:
+                return formatted.replace(',', ' ')
     except (ValueError, TypeError):
         return str(s)
 
@@ -1785,7 +1799,8 @@ def generate_result_pdf(result, calculator_name: str,
             _kd_rows = []
             if _wsp_raw is not None:
                 try:
-                    _kd_rows.append(('Współczynnik K_d', f'{float(_wsp_raw):.4f}'.replace('.', ','), '—'))
+                    _kd_label = 'Współczynnik K_m' if _is_mech else 'Współczynnik K_d'
+                    _kd_rows.append((_kd_label, _fmt_num(str(_wsp_raw)), '—'))
                 except (ValueError, TypeError):
                     pass
             _stan_opis_kd = next((v for k, v in _STAN_OPISY_KD.items() if str(_stan_kd).startswith(k)), _stan_kd)

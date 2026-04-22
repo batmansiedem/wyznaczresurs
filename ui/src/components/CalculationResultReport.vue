@@ -260,9 +260,13 @@ function fmtNum(v) {
   const n = parseFloat(String(v).replace(',', '.').replace(/\s/g, ''))
   if (isNaN(n)) return String(v)
   if (Number.isInteger(n) && Math.abs(n) < 1e12) return n.toLocaleString('pl-PL')
-  // Dla małych wartości współczynników (np. Kd < 0.01) używaj 4 miejsc dziesiętnych
-  const prec = n !== 0 && Math.abs(n) < 0.01 ? 4 : 2
-  return parseFloat(n.toFixed(prec)).toLocaleString('pl-PL', { minimumFractionDigits: prec, maximumFractionDigits: prec })
+  // Dla małych wartości współczynników (np. Kd < 0.01) używaj 4 lub 6 miejsc dziesiętnych
+  let prec = 2
+  if (n !== 0 && Math.abs(n) < 0.01) {
+    prec = 4
+    if (Math.abs(n) < 0.0001) prec = 6
+  }
+  return n.toLocaleString('pl-PL', { minimumFractionDigits: prec, maximumFractionDigits: prec })
 }
 
 function formatValue(value, fieldDef) {

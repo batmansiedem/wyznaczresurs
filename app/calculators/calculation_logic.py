@@ -391,7 +391,7 @@ class ZurawCalculator(BaseCalculator):
         # Żuraw: Kd uwzględnia masę osprzętu Q_o → Kd = Σ[ci/100 * ((Qi + Q_o) / Qmax)^3]
         q_max = self._get_kg_val('q_max')     # zawsze w kg
         q_o = self._get_kg_val('q_o')         # zawsze w kg
-        q_vals = [self._get_val(f'q_{i}') for i in range(1, 6)]  # z diagramu, zawsze kg
+        q_vals = [self._get_kg_val(f'q_{i}') for i in range(1, 6)]  # zawsze w kg
         c_vals = [self._get_val(f'c_{i}') for i in range(1, 6)]
         if q_o > 0:
             q_vals = [q + q_o for q in q_vals]
@@ -1366,7 +1366,7 @@ class WozekJezdniowyCalculator(BaseCalculator):
         """Nadpisanie Kd dla wózka: uwzględnia masę osprzętu Q_o (zgodnie z PHP)."""
         q_max = self._get_kg_val('q_max')
         q_o = self._get_kg_val('q_o')
-        q_vals = [self._get_val(f'q_{i}') for i in range(1, 6)]  # z diagramu, zawsze kg
+        q_vals = [self._get_kg_val(f'q_{i}') for i in range(1, 6)]  # zawsze w kg
         c_vals = [self._get_val(f'c_{i}') for i in range(1, 6)]
         if q_o > 0:
             q_vals = [q + q_o for q in q_vals]
