@@ -120,13 +120,13 @@
     },
     "ostatni_resurs": {
       "type": "number",
-      "label": "Motogodziny z poprzedniego okresu",
+      "label": "Procent wykorzystania resursu z ostatnich obliczeń",
       "required": false,
       "show_if": {
         "field": "ponowny_resurs",
         "value": "Tak"
       },
-      "default_unit": "mth"
+      "default_unit": "%"
     },
     "data_resurs": {
       "type": "date",

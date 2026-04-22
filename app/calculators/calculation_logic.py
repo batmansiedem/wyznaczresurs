@@ -824,10 +824,6 @@ class MechJazdySuwnicyCalculator(TimeBasedCalculator):
 
             czas_uzytkowania_mech = ilosc_cykli * czas_cykle_h * F_X
 
-        # ostatni_resurs podany jest w mth — przelicz na % zużycia resursu
-        if ponowny_resurs == 1 and ostatni_resurs > 0:
-            ostatni_resurs = (ostatni_resurs / T_WSK) * 100
-
         prognosis_data = self._calculate_time_based_prognosis(T_WSK, czas_uzytkowania_mech, lata_pracy, ponowny_resurs, ostatni_resurs)
 
         self.output_data.update({

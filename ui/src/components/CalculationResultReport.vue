@@ -387,8 +387,21 @@ const barChartSeries = computed(() => {
       val1 = parseFloat(inp?.ilosc_mth?.value ?? inp?.ilosc_mth ?? inp?.ilosc_godzin?.value ?? inp?.ilosc_godzin ?? 0)
       val2 = Math.round(val1 * fx * 100) / 100
     }
+
+    const isPonowny = inp?.ponowny_resurs === 'Tak'
+    if (isPonowny && limit > 0) {
+      const ostatniPct = parseFloat(inp?.ostatni_resurs?.value ?? inp?.ostatni_resurs ?? 0)
+      if (ostatniPct > 0) {
+        // Dodaj motogodziny odpowiadające procentowi poprzedniego resursu
+        const ostatniMth = (ostatniPct / 100) * limit
+        val2 += ostatniMth
+        // val1 (Bez Fx) też powinno zawierać bazę z poprzedniego resursu? 
+        // Tak, dla spójności zestawienia "całościowego"
+        val1 += ostatniMth
+      }
+    }
     unit = 'mth'
-  } else {
+    } else {
     return []
   }
 
