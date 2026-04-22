@@ -1850,8 +1850,11 @@ def generate_result_pdf(result, calculator_name: str,
         if val is None:
             continue
         label, unit_hint = OUTPUT_LABELS.get(key, (key.replace('_', ' ').capitalize(), ''))
-        if key == 'ilosc_cykli' and _ponowny:
-            label = 'Ilość odbytych cykli od ostatniego wyznaczonego resursu'
+        if _ponowny:
+            if key == 'ilosc_cykli':
+                label = 'Całkowita ilość odbytych cykli (z F\u2093)'
+            elif key == 'czas_uzytkowania_mech':
+                label = 'Skumulowany czas użytkowania (z F\u2093)'
         v, u = _split_value_unit(val, unit_hint)
         if v == '-':
             continue
@@ -1900,26 +1903,30 @@ def generate_result_pdf(result, calculator_name: str,
     if u_wsk is not None and ilosc is not None:
         try:
             uv = float(u_wsk)
-            iv, _ = _split_value_unit(ilosc)
-            iv = float(iv.replace(',', '.').replace('', '').replace(' ', ''))
+            iv_fx, _ = _split_value_unit(output_data.get('ilosc_cykli'))
+            iv_fx = float(iv_fx.replace(',', '.').replace(' ', ''))
             fx = float(output_data.get('F_X', 1) or 1)
+            
             if _ponowny:
-                resurs_pct = float(output_data.get('resurs_wykorzystanie') or 0)
-                if resurs_pct > 0 and uv > 0:
-                    iv_fx = round(resurs_pct / 100 * uv, 2)
-                    iv = round(iv_fx / fx, 2) if fx > 1 else iv_fx
-                else:
-                    iv_fx = round(iv * fx, 2)
+                # iv_fx to już suma bieżące*Fx + poprzednie
+                iv = round(iv_fx / fx, 2) if fx > 1 else iv_fx
+                lbl_iv = 'Skumulowane cykle (bez F\u2093)'
+                lbl_iv_fx = 'Skumulowane cykle (z F\u2093)'
             else:
+                iv, _ = _split_value_unit(input_data.get('ilosc_cykli'))
+                iv = float(iv.replace(',', '.').replace(' ', ''))
                 iv_fx = round(iv * fx, 2)
+                lbl_iv = 'Odbyte cykle (bez F\u2093)'
+                lbl_iv_fx = 'Odbyte cykle (z F\u2093)'
+
             max_v = max(uv, iv, iv_fx) * 1.1
             story.append(KeepTogether([
                 _section_header('Zestawienie — Ilość cykli vs maks. ilość cykli', THEME),
                 Spacer(1, 0.15 * cm),
                 Table([[_bar_chart([
                     ('Maks. ilość cykli U_WSK', uv, max_v),
-                    ('Odbyte cykle (bez F\u2093)', iv,    max_v),
-                    ('Odbyte cykle (z F\u2093)',   iv_fx, max_v),
+                    (lbl_iv, iv,    max_v),
+                    (lbl_iv_fx,   iv_fx, max_v),
                 ], THEME)]], colWidths=[USABLE_W]),
                 Spacer(1, 0.4 * cm),
             ]))
@@ -1932,18 +1939,33 @@ def generate_result_pdf(result, calculator_name: str,
     if t_wsk is not None and czas is not None:
         try:
             tv = float(t_wsk)
-            cv, _ = _split_value_unit(czas)
-            cv = float(cv.replace(',', '.').replace(' ', ''))
+            cv_fx, _ = _split_value_unit(czas)
+            cv_fx = float(cv_fx.replace(',', '.').replace(' ', ''))
             fx = float(output_data.get('F_X', 1) or 1)
-            cv_fx = round(cv * fx, 2)
+            
+            if _ponowny:
+                # cv_fx to już suma bieżące*Fx + poprzednie
+                cv = round(cv_fx / fx, 2) if fx > 1 else cv_fx
+                lbl_cv = 'Skumulowany czas (bez F\u2093) [h]'
+                lbl_cv_fx = 'Skumulowany czas (z F\u2093) [h]'
+            else:
+                # cv to surowe motogodziny / czas pracy z wejścia
+                cv_raw = input_data.get('ilosc_mth') or input_data.get('ilosc_godzin') or 0
+                cv, _ = _split_value_unit(cv_raw)
+                cv = float(cv.replace(',', '.').replace(' ', ''))
+                if cv == 0: # Jeśli nie ma mth, może z cykli?
+                    cv = round(cv_fx / fx, 2) if fx > 1 else cv_fx
+                lbl_cv = 'Czas użytkowania (bez F\u2093) [h]'
+                lbl_cv_fx = 'Czas użytkowania (z F\u2093) [h]'
+
             max_v = max(tv, cv, cv_fx) * 1.1
             story.append(KeepTogether([
                 _section_header('Zestawienie — Czas użytkowania vs T_WSK', THEME),
                 Spacer(1, 0.15 * cm),
                 Table([[_bar_chart([
                     ('Limit T_WSK [h]',              tv,    max_v),
-                    ('Czas użytkowania (bez F\u2093) [h]', cv,    max_v),
-                    ('Czas użytkowania (z F\u2093) [h]',   cv_fx, max_v),
+                    (lbl_cv, cv,    max_v),
+                    (lbl_cv_fx,   cv_fx, max_v),
                 ], THEME)]], colWidths=[USABLE_W]),
                 Spacer(1, 0.4 * cm),
             ]))

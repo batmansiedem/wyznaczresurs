@@ -285,6 +285,11 @@ class BaseCalculator(ABC):
         
         resurs_message = "Resurs został osiągnięty. Zaleca się wykonanie przeglądu specjalnego." if resurs_wykorzystanie >= 100 else "Resurs nie został osiągnięty."
 
+        # Cykle całkowite (bieżące z Fx + poprzedni resurs przeliczony na cykle)
+        ilosc_cykli_total = ilosc_cykli * F_X
+        if ponowny_resurs == 1:
+            ilosc_cykli_total += (ostatni_resurs / 100) * U_WSK
+
         return {
             'resurs_wykorzystanie': resurs_wykorzystanie,
             'resurs_message': resurs_message,
@@ -293,7 +298,7 @@ class BaseCalculator(ABC):
             'ilosc_cykli_rok': ilosc_cykli_rok,
             'U_WSK': U_WSK,
             'F_X': F_X,
-            'ilosc_cykli': ilosc_cykli,
+            'ilosc_cykli': ilosc_cykli_total,
         }
 
 
@@ -747,6 +752,11 @@ class TimeBasedCalculator(BaseCalculator):
         data_prognoza = (date.today() + timedelta(days=int(resurs_prognoza_dni))).isoformat()
         resurs_message = "Resurs został osiągnięty. Zaleca się wykonanie przeglądu specjalnego." if resurs_wykorzystanie >= 100 else "Resurs nie został osiągnięty."
 
+        # Czas całkowity (bieżący + poprzedni resurs przeliczony na h)
+        czas_uzytkowania_mech_total = czas_uzytkowania_mech
+        if ponowny_resurs == 1:
+            czas_uzytkowania_mech_total += (ostatni_resurs / 100) * T_WSK
+
         return {
             'resurs_wykorzystanie': resurs_wykorzystanie,
             'resurs_message': resurs_message,
@@ -754,6 +764,7 @@ class TimeBasedCalculator(BaseCalculator):
             'resurs_prognoza_dni': resurs_prognoza_dni,
             'czas_uzytkowania_mech_rok': czas_uzytkowania_mech_rok,
             'T_WSK': T_WSK,
+            'czas_uzytkowania_mech': czas_uzytkowania_mech_total,
         }
 
 class MechJazdySuwnicyCalculator(TimeBasedCalculator):
@@ -983,12 +994,20 @@ class PodestRuchomyCalculator(BaseCalculator):
                 resurs_prognoza_dni = min((remaining_usage / (usage_per_year * (procent_bumar / 100))) * 365, Decimal(3650)) if procent_bumar > 0 else 0
                 resurs_prognoza_dni = Decimal(str(resurs_prognoza_dni)).to_integral_value(rounding='ROUND_FLOOR')
 
+            resurs_message = "Resurs został osiągnięty. Zaleca się wykonanie przeglądu specjalnego." if resurs_wykorzystanie >= 100 else "Resurs nie został osiągnięty."
+
+            # Skumulowane motogodziny efektywne
+            moto_total = effective_usage
+            if common_inputs['ponowny_resurs'] == 1:
+                moto_total += (common_inputs['ostatni_resurs'] / 100) * U_WSK
+
             prognosis_data = {
                 'resurs_wykorzystanie': resurs_wykorzystanie,
+                'resurs_message': resurs_message,
                 'resurs_prognoza_dni': resurs_prognoza_dni,
                 'data_prognoza': (date.today() + timedelta(days=int(resurs_prognoza_dni))).isoformat(),
                 'T_WSK': {'value': U_WSK, 'unit': 'mth'},
-                'moto_efektywne': round(effective_usage, 2),
+                'moto_efektywne': round(moto_total, 2),
                 'moto_rok': round(usage_per_year, 2) if usage_per_year else None,
                 'ilosc_cykli_rok': (common_inputs['ilosc_cykli'] * F_X / common_inputs['lata_pracy']).to_integral_value(rounding='ROUND_CEILING') if common_inputs['lata_pracy'] > 0 else Decimal(0),
             }

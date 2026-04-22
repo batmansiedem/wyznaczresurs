@@ -208,7 +208,20 @@ async function fetchDeviceConfig(s) {
 watch(slug, (s) => fetchDeviceConfig(s), { immediate: true })
 
 const inputFields = computed(() => deviceConfig.value?.fields || {})
-const outputFields = computed(() => deviceConfig.value?.output_fields || {})
+const outputFields = computed(() => {
+  const fields = JSON.parse(JSON.stringify(deviceConfig.value?.output_fields || {}))
+  const isPonowny = props.result.input_data?.ponowny_resurs === 'Tak'
+
+  if (isPonowny) {
+    if (fields.ilosc_cykli) {
+      fields.ilosc_cykli.label = 'Całkowita ilość odbytych cykli (z F<sub>X</sub>)'
+    }
+    if (fields.czas_uzytkowania_mech) {
+      fields.czas_uzytkowania_mech.label = 'Skumulowany czas użytkowania (z F<sub>X</sub>)'
+    }
+  }
+  return fields
+})
 
 const resursValue = computed(() => {
   const v = props.result.output_data?.resurs_wykorzystanie ?? props.result.output_data?.resurs ?? 0
@@ -371,38 +384,37 @@ const barChartSeries = computed(() => {
     const tWsk = out.T_WSK
     limit = (tWsk !== null && typeof tWsk === 'object') ? parseFloat(tWsk.value ?? 0) : parseFloat(tWsk ?? 0)
 
+    const isPonowny = inp?.ponowny_resurs === 'Tak'
     if (out.czas_uzytkowania_mech != null) {
-      // Mechanizmy: czas_uzytkowania_mech już zawiera F_X
+      // Mechanizmy: czas_uzytkowania_mech już zawiera F_X i poprzedni resurs (jeśli dotyczy)
       val2 = parseFloat(out.czas_uzytkowania_mech)
       val1 = Math.round(val2 / fx * 100) / 100
     } else if (out.moto_efektywne != null) {
       // podest_ruchomy BUMAR: efektywne motogodziny (bez F_X)
       val1 = parseFloat(out.moto_efektywne)
+      if (isPonowny && limit > 0) {
+        const ostatniPct = parseFloat(inp?.ostatni_resurs?.value ?? inp?.ostatni_resurs ?? 0)
+        val1 += (ostatniPct / 100) * limit
+      }
       val2 = Math.round(val1 * fx * 100) / 100
     } else if (out.ilosc_moto_cal != null) {
       // wozek_specjalizowany (wózek widłowy/ładowarka)
       val1 = parseFloat(out.ilosc_moto_cal)
+      if (isPonowny && limit > 0) {
+        const ostatniPct = parseFloat(inp?.ostatni_resurs?.value ?? inp?.ostatni_resurs ?? 0)
+        val1 += (ostatniPct / 100) * limit
+      }
       val2 = Math.round(val1 * fx * 100) / 100
     } else {
       val1 = parseFloat(inp?.ilosc_mth?.value ?? inp?.ilosc_mth ?? inp?.ilosc_godzin?.value ?? inp?.ilosc_godzin ?? 0)
+      if (isPonowny && limit > 0) {
+        const ostatniPct = parseFloat(inp?.ostatni_resurs?.value ?? inp?.ostatni_resurs ?? 0)
+        val1 += (ostatniPct / 100) * limit
+      }
       val2 = Math.round(val1 * fx * 100) / 100
     }
-
-    const isPonowny = inp?.ponowny_resurs === 'Tak'
-    if (isPonowny && limit > 0) {
-      const ostatniPct = parseFloat(inp?.ostatni_resurs?.value ?? inp?.ostatni_resurs ?? 0)
-      if (ostatniPct > 0) {
-        // Dodaj motogodziny odpowiadające procentowi poprzedniego resursu
-        const ostatniMth = (ostatniPct / 100) * limit
-        val2 += ostatniMth
-        // val1 (Bez Fx) też powinno zawierać bazę z poprzedniego resursu? 
-        // Tak, dla spójności zestawienia "całościowego"
-        val1 += ostatniMth
-      }
-    }
     unit = 'mth'
-    } else {
-    return []
+  } else {    return []
   }
 
   // Fallback: gdy wartości wyszły 0 lub NaN (np. ponowny_resurs=Tak bez nowych danych),
