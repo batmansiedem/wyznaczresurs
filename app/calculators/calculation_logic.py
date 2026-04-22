@@ -277,7 +277,8 @@ class BaseCalculator(ABC):
 
         resurs_prognoza_dni = 0
         if resurs_wykorzystanie < 100 and ilosc_cykli_rok > 0:
-            remaining_cycles = U_WSK - (ilosc_cykli * F_X)
+            correction = ostatni_resurs / 100 if ponowny_resurs == 1 else Decimal(0)
+            remaining_cycles = U_WSK * (1 - correction) - (ilosc_cykli * F_X)
             resurs_prognoza_dni = min((remaining_cycles / ilosc_cykli_rok) * 365, Decimal(3650)).to_integral_value(rounding='ROUND_FLOOR')
             
         data_prognoza = date.today() + timedelta(days=int(resurs_prognoza_dni))
@@ -418,13 +419,7 @@ class ZurawCalculator(BaseCalculator):
         
         U_WSK *= kss
 
-        if ponowny_resurs == 1:
-            # Zmniejszamy U_WSK o już zużyty resurs — _calculate_resurs_prognosis
-            # NIE dostaje ponowny_resurs=1, żeby nie dodać ostatni_resurs po raz drugi
-            U_WSK = ((100 - ostatni_resurs) * Decimal('0.01')) * U_WSK
-            resurs_prognosis_data = self._calculate_resurs_prognosis(U_WSK, F_X, ilosc_cykli, lata_pracy, 0, Decimal(0))
-        else:
-            resurs_prognosis_data = self._calculate_resurs_prognosis(U_WSK, F_X, ilosc_cykli, lata_pracy, ponowny_resurs, ostatni_resurs)
+        resurs_prognosis_data = self._calculate_resurs_prognosis(U_WSK, F_X, ilosc_cykli, lata_pracy, ponowny_resurs, ostatni_resurs)
 
         resurs_message = resurs_prognosis_data['resurs_message']
         resurs_wykorzystanie = resurs_prognosis_data['resurs_wykorzystanie']
@@ -1131,13 +1126,7 @@ class SuwnicaCalculator(BaseCalculator):
         U_WSK = Decimal(_U_WSK_MATRIX.get(stan_obciazenia, {}).get(gnp, 0))
         U_WSK *= kss
 
-        if ponowny_resurs == 1:
-            # Zmniejszamy U_WSK o już zużyty resurs — _calculate_resurs_prognosis
-            # NIE dostaje ponowny_resurs=1, żeby nie dodać ostatni_resurs po raz drugi
-            U_WSK = ((100 - ostatni_resurs) * Decimal('0.01')) * U_WSK
-            resurs_prognosis_data = self._calculate_resurs_prognosis(U_WSK, F_X, ilosc_cykli, lata_pracy, 0, Decimal(0))
-        else:
-            resurs_prognosis_data = self._calculate_resurs_prognosis(U_WSK, F_X, ilosc_cykli, lata_pracy, ponowny_resurs, ostatni_resurs)
+        resurs_prognosis_data = self._calculate_resurs_prognosis(U_WSK, F_X, ilosc_cykli, lata_pracy, ponowny_resurs, ostatni_resurs)
 
         resurs_message = resurs_prognosis_data['resurs_message']
         resurs_wykorzystanie = resurs_prognosis_data['resurs_wykorzystanie']

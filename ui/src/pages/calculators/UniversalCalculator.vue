@@ -99,7 +99,7 @@
                           <SchemAd v-else-if="currentCalculatorDefinition.fields[key].svg === 'schemat_ad'" :data="formData" />
                         </template>
                         <template v-else>
-                          <CalculatorField :field="currentCalculatorDefinition.fields[key]" v-model="formData[key]" :units="units" :disabled="!!currentResultId && ['nr_fabryczny', 'lata_pracy', 'data_resurs', 'ostatni_resurs'].includes(key)" />
+                          <CalculatorField :field="getFieldDef(key)" v-model="formData[key]" :units="units" :disabled="!!currentResultId && ['nr_fabryczny', 'lata_pracy', 'data_resurs', 'ostatni_resurs'].includes(key)" />
                           <!-- Kalkulator pomocniczy cykli — expansion po polu ilosc_cykli -->
                           <q-expansion-item
                             v-if="key === 'ilosc_cykli' && hasCycleHelper"
@@ -792,6 +792,14 @@ function initializeFormData() {
   // Mutuj istniejący obiekt zamiast go zamieniać — SchemKd trzyma referencję do tego samego obiektu
   for (const k of Object.keys(formData.value)) delete formData.value[k]
   Object.assign(formData.value, newData)
+}
+
+function getFieldDef(key) {
+  const field = currentCalculatorDefinition.value?.fields[key]
+  if (key === 'ilosc_cykli' && formData.value.ponowny_resurs === 'Tak') {
+    return { ...field, label: 'Ilość odbytych cykli od ostatniego wyznaczonego resursu' }
+  }
+  return field
 }
 
 function isFieldVisible(key) {

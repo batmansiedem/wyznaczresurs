@@ -1665,9 +1665,11 @@ def generate_result_pdf(result, calculator_name: str,
             if val == '-':
                 continue
             label = INPUT_LABELS.get(key, key.replace('_', ' ').capitalize())
+            if key == 'ilosc_cykli' and str(input_data.get('ponowny_resurs', '')).lower() in ('tak', '1', 'true'):
+                label = 'Ilość odbytych cykli od ostatniego wyznaczonego resursu'
             if not unit:
                 unit = _extract_unit(label)
-            
+
             # Mapowanie wartości inspekcji / pól select z 0/1 (stare dane PHP)
             field_def = _load_device_config(_pdf_slug).get('fields', {}).get(key, {})
             if field_def.get('type') == 'inspection_status':
@@ -1705,6 +1707,8 @@ def generate_result_pdf(result, calculator_name: str,
         if val == '-':
             continue
         label = INPUT_LABELS.get(key, key.replace('_', ' ').capitalize())
+        if key == 'ilosc_cykli' and str(input_data.get('ponowny_resurs', '')).lower() in ('tak', '1', 'true'):
+            label = 'Ilość odbytych cykli od ostatniego wyznaczonego resursu'
         if not unit:
             unit = _extract_unit(label)
         field_def2 = _load_device_config(_pdf_slug).get('fields', {}).get(key, {})
@@ -1823,11 +1827,15 @@ def generate_result_pdf(result, calculator_name: str,
     # ── Sekcja: Wyniki obliczeń resursu ──────────────────────────────────────
     result_rows = []
     seen_out = set()
+    _ponowny = str(input_data.get('ponowny_resurs', '')).lower() in ('tak', '1', 'true')
+
     for key in _RESULT_ORDER:
         val = output_data.get(key)
         if val is None:
             continue
         label, unit_hint = OUTPUT_LABELS.get(key, (key.replace('_', ' ').capitalize(), ''))
+        if key == 'ilosc_cykli' and _ponowny:
+            label = 'Ilość odbytych cykli od ostatniego wyznaczonego resursu'
         v, u = _split_value_unit(val, unit_hint)
         if v == '-':
             continue
@@ -1838,6 +1846,8 @@ def generate_result_pdf(result, calculator_name: str,
         if key in seen_out or key in _SKIP_KEYS:
             continue
         label, unit_hint = OUTPUT_LABELS.get(key, (key.replace('_', ' ').capitalize(), ''))
+        if key == 'ilosc_cykli' and _ponowny:
+            label = 'Ilość odbytych cykli od ostatniego wyznaczonego resursu'
         v, u = _split_value_unit(raw, unit_hint)
         if v != '-':
             result_rows.append((label, _fmt_num(v), u))
