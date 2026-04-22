@@ -132,8 +132,9 @@ def _fmt_num(s: str) -> str:
         if abs(f - round(f)) < 1e-9 and abs(f) < 1e12:
             return f'{int(round(f)):,}'.replace(',', ' ')
         else:
-            rounded = round(f, 2)
-            parts = f'{rounded:,.2f}'.split('.')
+            prec = 4 if f != 0 and abs(f) < 0.01 else 2
+            rounded = round(f, prec)
+            parts = f'{rounded:,.{prec}f}'.split('.')
             return parts[0].replace(',', ' ') + ',' + parts[1]
     except (ValueError, TypeError):
         return str(s)
@@ -1784,7 +1785,7 @@ def generate_result_pdf(result, calculator_name: str,
             _kd_rows = []
             if _wsp_raw is not None:
                 try:
-                    _kd_rows.append(('Współczynnik K_d', f'{float(_wsp_raw):.4f}', '—'))
+                    _kd_rows.append(('Współczynnik K_d', f'{float(_wsp_raw):.4f}'.replace('.', ','), '—'))
                 except (ValueError, TypeError):
                     pass
             _stan_opis_kd = next((v for k, v in _STAN_OPISY_KD.items() if str(_stan_kd).startswith(k)), _stan_kd)
@@ -1887,7 +1888,15 @@ def generate_result_pdf(result, calculator_name: str,
             iv, _ = _split_value_unit(ilosc)
             iv = float(iv.replace(',', '.').replace('', '').replace(' ', ''))
             fx = float(output_data.get('F_X', 1) or 1)
-            iv_fx = round(iv * fx, 2)
+            if _ponowny:
+                resurs_pct = float(output_data.get('resurs_wykorzystanie') or 0)
+                if resurs_pct > 0 and uv > 0:
+                    iv_fx = round(resurs_pct / 100 * uv, 2)
+                    iv = round(iv_fx / fx, 2) if fx > 1 else iv_fx
+                else:
+                    iv_fx = round(iv * fx, 2)
+            else:
+                iv_fx = round(iv * fx, 2)
             max_v = max(uv, iv, iv_fx) * 1.1
             story.append(KeepTogether([
                 _section_header('Zestawienie — Ilość cykli vs maks. ilość cykli', THEME),

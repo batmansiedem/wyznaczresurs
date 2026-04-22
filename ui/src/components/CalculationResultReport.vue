@@ -260,7 +260,9 @@ function fmtNum(v) {
   const n = parseFloat(String(v).replace(',', '.').replace(/\s/g, ''))
   if (isNaN(n)) return String(v)
   if (Number.isInteger(n) && Math.abs(n) < 1e12) return n.toLocaleString('pl-PL')
-  return parseFloat(n.toFixed(2)).toLocaleString('pl-PL', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+  // Dla małych wartości współczynników (np. Kd < 0.01) używaj 4 miejsc dziesiętnych
+  const prec = n !== 0 && Math.abs(n) < 0.01 ? 4 : 2
+  return parseFloat(n.toFixed(prec)).toLocaleString('pl-PL', { minimumFractionDigits: prec, maximumFractionDigits: prec })
 }
 
 function formatValue(value, fieldDef) {
@@ -346,10 +348,19 @@ const barChartSeries = computed(() => {
   let val1, val2, limit, unit
 
   if (out.U_WSK != null) {
-    // Kalkulatory cyklowe — out.ilosc_cykli to wartość po przetworzeniu przez backend
-    val1 = parseFloat(out.ilosc_cykli ?? inp?.ilosc_cykli?.value ?? inp?.ilosc_cykli ?? 0)
     limit = parseFloat(out.U_WSK)
-    val2 = Math.round(val1 * fx)
+    const isPonowny = inp?.ponowny_resurs === 'Tak'
+    if (isPonowny) {
+      // Ponowny resurs: pokaż skumulowane cykle (bieżący okres + poprzedni)
+      // spójne z wykresem radialnym (resurs_wykorzystanie obejmuje oba okresy)
+      const resursPercent = parseFloat(out.resurs_wykorzystanie ?? 0)
+      val2 = resursPercent > 0 && limit > 0 ? Math.round(resursPercent / 100 * limit) : 0
+      val1 = fx > 1 ? Math.round(val2 / fx * 100) / 100 : val2
+    } else {
+      // Zwykłe obliczenie — bieżący okres
+      val1 = parseFloat(out.ilosc_cykli ?? inp?.ilosc_cykli?.value ?? inp?.ilosc_cykli ?? 0)
+      val2 = Math.round(val1 * fx)
+    }
     unit = 'cykli'
   } else if (out.T_WSK != null) {
     // Kalkulatory czasowe (motogodziny)
