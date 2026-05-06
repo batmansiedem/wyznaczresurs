@@ -1,4 +1,5 @@
 from django.urls import path, include
+from django.views.generic import TemplateView
 from rest_framework.routers import DefaultRouter
 from .views import (
     set_csrf_token, AdminUserViewSet, AdminAllTransactionsView,
@@ -14,6 +15,10 @@ router.register(r'signatures', UserSignatureViewSet, basename='user-signatures')
 urlpatterns = [
     # Endpoint pomocniczy — CSRF
     path('csrf/', set_csrf_token, name='csrf'),
+
+    # Widok wymagany przez dj-rest-auth do generowania linku w mailu. 
+    # Fizycznie nieużywany, bo adapter.py podmienia link na frontendowy.
+    path('password-reset/confirm/<uidb64>/<token>/', TemplateView.as_view(), name='password_reset_confirm'),
 
     # Własne logo
     path('purchase-custom-logo/', PurchaseCustomLogoView.as_view(), name='purchase-custom-logo'),
