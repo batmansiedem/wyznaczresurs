@@ -29,7 +29,9 @@ class CustomAccountAdapter(DefaultAccountAdapter):
         Nadpisujemy send_mail aby logować próby wysyłki oraz poprawiać linki 
         dla SPA (np. reset hasła).
         """
+        logger.info(f"send_mail called with prefix: {template_prefix}")
         if template_prefix == 'account/email/password_reset_key':
+            logger.debug(f"Password reset context: {context}")
             frontend_url = getattr(settings, 'FRONTEND_URL', 'http://localhost:9000')
             # context['password_reset_url'] to zwykle URL do backendu, 
             # zmieniamy na frontend: /password-reset/confirm/uid/token

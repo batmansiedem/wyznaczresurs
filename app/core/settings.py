@@ -342,18 +342,13 @@ LOGGING = {
         # Błędy Django (500, złe zapytania itp.)
         'django.request': {
             'handlers': ['console', 'file_app'],
-            'level': 'WARNING',
-            'propagate': False,
-        },
-        'django.core.mail': {
-            'handlers': ['console', 'file_app'],
-            'level': 'DEBUG',
-            'propagate': False,
+            'level': 'ERROR',
+            'propagate': True,
         },
         'allauth': {
             'handlers': ['console', 'file_app'],
             'level': 'DEBUG',
-            'propagate': False,
+            'propagate': True,
         },
         # Faktury, KSeF, PayPal
         'invoices': {
