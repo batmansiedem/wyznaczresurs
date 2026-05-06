@@ -378,6 +378,13 @@ class AdminUserViewSet(viewsets.ModelViewSet):
         obj = self._annotated_qs().get(pk=user.pk)
         return Response(AdminUserListSerializer(obj).data, status=status.HTTP_201_CREATED)
 
+    @action(detail=True, methods=['post'])
+    def activate(self, request, pk=None):
+        """Ręczna aktywacja konta użytkownika."""
+        user = self.get_object()
+        user.activate_email()
+        return Response({"message": f"Użytkownik {user.email} został aktywowany."})
+
     def partial_update(self, request, *args, **kwargs):
         user = self.get_object()
         serializer = AdminUpdateUserSerializer(user, data=request.data, partial=True)

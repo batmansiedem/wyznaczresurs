@@ -284,7 +284,7 @@
     },
     "q_o": {
       "type": "number",
-      "label": "Ciężar ładunku Qo",
+      "label": "Masa osprzętu Q<sub>osp</sub>",
       "required": true,
       "unit_type": "mass",
       "default_unit": "kg"

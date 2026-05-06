@@ -1943,3 +1943,21 @@ RuntimeError: KSeF rejected: Odrzucona | []
 [2026-04-22 00:11:44] INFO django.utils.autoreload: D:\wyznaczresurs\app\calculators\calculation_logic.py changed, reloading.
 [2026-04-22 00:11:45] INFO django.utils.autoreload: Watching for file changes with StatReloader
 [2026-04-22 00:16:08] WARNING django.request: Unauthorized: /api/calculators/definitions/
+[2026-05-06 15:39:44] INFO django.utils.autoreload: Watching for file changes with StatReloader
+[2026-05-06 15:40:12] WARNING django.request: Unauthorized: /api/auth/user/
+[2026-05-06 15:40:13] WARNING django.request: Unauthorized: /api/auth/token/refresh/
+[2026-05-06 15:45:12] ERROR django.request: Internal Server Error: /api/auth/login/
+[2026-05-06 15:45:15] WARNING django.request: Unauthorized: /api/auth/user/
+[2026-05-06 15:45:15] WARNING django.request: Unauthorized: /api/auth/token/refresh/
+[2026-05-06 15:45:32] INFO django.utils.autoreload: Watching for file changes with StatReloader
+[2026-05-06 15:45:35] WARNING django.request: Unauthorized: /api/auth/user/
+[2026-05-06 15:45:35] WARNING django.request: Unauthorized: /api/auth/token/refresh/
+[2026-05-06 15:45:39] WARNING django.request: Unauthorized: /api/auth/user/
+[2026-05-06 15:45:39] WARNING django.request: Unauthorized: /api/auth/token/refresh/
+[2026-05-06 15:46:05] WARNING django.request: Unauthorized: /api/auth/user/
+[2026-05-06 15:46:05] WARNING django.request: Unauthorized: /api/auth/token/refresh/
+[2026-05-06 16:28:56] ERROR django.request: Internal Server Error: /api/auth/password/reset/
+[2026-05-06 16:29:46] INFO django.utils.autoreload: D:\wyznaczresurs\app\users\adapter.py changed, reloading.
+[2026-05-06 16:29:46] INFO django.utils.autoreload: Watching for file changes with StatReloader
+[2026-05-06 16:29:53] INFO django.utils.autoreload: D:\wyznaczresurs\app\users\adapter.py changed, reloading.
+[2026-05-06 16:29:54] INFO django.utils.autoreload: Watching for file changes with StatReloader

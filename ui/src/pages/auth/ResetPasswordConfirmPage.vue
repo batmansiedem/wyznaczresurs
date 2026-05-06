@@ -1,23 +1,75 @@
 <template>
-  <q-page class="flex flex-center q-pa-lg">
-    <q-card style="width: 350px" class="shadow-10">
-      <q-card-section><div class="text-h6">Nowe hasło</div></q-card-section>
-      <q-card-section>
-        <q-form @submit="onSubmit" class="q-gutter-md">
-           <q-input v-model="pass1" label="Nowe hasło" type="password" filled :rules="[val => !!val || 'Wymagane']" />
-           <q-input v-model="pass2" label="Powtórz" type="password" filled :rules="[val => val === pass1 || 'Różne hasła']" />
-           <q-btn label="Zapisz" type="submit" color="primary" class="full-width" :loading="loading" />
-        </q-form>
-      </q-card-section>
-    </q-card>
+  <q-page class="auth-page">
+    <div class="auth-grid">
+      <!-- Lewa sekcja -->
+      <div class="auth-left">
+        <div class="auth-left-bg" aria-hidden="true">
+          <svg viewBox="0 0 600 800" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <pattern id="al-m" width="20" height="20" patternUnits="userSpaceOnUse">
+                <path d="M20 0L0 0 0 20" fill="none" stroke="white" stroke-width="0.3" stroke-opacity="0.12"/>
+              </pattern>
+              <pattern id="al-M" width="100" height="100" patternUnits="userSpaceOnUse">
+                <rect width="100" height="100" fill="url(#al-m)"/>
+                <path d="M100 0L0 0 0 100" fill="none" stroke="white" stroke-width="0.6" stroke-opacity="0.18"/>
+              </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#al-M)"/>
+            <g transform="translate(500, 160)" stroke="white" fill="none" stroke-opacity="0.15">
+              <circle r="220" stroke-width="0.5"/><circle r="170" stroke-width="0.7"/>
+              <circle r="120" stroke-width="0.5"/><circle r="70" stroke-width="0.9"/>
+            </g>
+          </svg>
+        </div>
+        <div class="auth-left-content">
+          <div class="auth-brand">wyznacz<span style="opacity:0.6">resurs</span>.com</div>
+          <h2 class="auth-left-h2">Nowe hasło</h2>
+          <p class="text-white opacity-70">Ustaw silne, unikalne hasło dla swojego konta.</p>
+        </div>
+      </div>
+
+      <!-- Prawa sekcja -->
+      <div class="auth-right">
+        <div class="auth-form-wrap">
+          <h1 class="auth-form-title">Ustaw hasło</h1>
+          <p class="auth-form-sub">Po zmianie zostaniesz przekierowany do logowania.</p>
+
+          <q-form @submit="onSubmit">
+            <div class="row q-col-gutter-md">
+              <div class="col-12">
+                <q-input v-model="pass1" label="Nowe hasło" type="password" outlined
+                  :rules="[val => !!val || 'Wymagane', val => val.length >= 8 || 'Min. 8 znaków']" />
+              </div>
+              <div class="col-12">
+                <q-input v-model="pass2" label="Powtórz nowe hasło" type="password" outlined
+                  :rules="[val => val === pass1 || 'Hasła muszą być identyczne']" />
+              </div>
+              <div class="col-12 q-mt-md">
+                <q-btn label="Zapisz i zaloguj się" type="submit" color="primary"
+                  class="full-width auth-submit" :loading="loading" unelevated size="lg" />
+              </div>
+            </div>
+          </q-form>
+
+          <!-- Linki prawne -->
+          <div class="auth-legal-links">
+            <router-link to="/regulamin" class="auth-legal-link">Regulamin</router-link>
+            <span class="auth-legal-sep">·</span>
+            <router-link to="/rodo" class="auth-legal-link">Polityka prywatności</router-link>
+          </div>
+        </div>
+      </div>
+    </div>
   </q-page>
 </template>
 
 <script setup>
 import { ref } from 'vue'
 import { api } from 'boot/axios'
-import { Notify } from 'quasar'
+import { Notify, useMeta } from 'quasar'
 import { useRouter } from 'vue-router'
+
+useMeta({ title: 'Ustaw nowe hasło | wyznaczresurs.com' })
 
 const props = defineProps(['uid', 'token'])
 const pass1 = ref('')
@@ -34,7 +86,11 @@ const onSubmit = async () => {
       new_password1: pass1.value,
       new_password2: pass2.value
     })
-    Notify.create({ type: 'positive', message: 'Hasło zmienione. Zaloguj się nowym hasłem.', position: 'top' })
+    Notify.create({ 
+      type: 'positive', 
+      message: 'Hasło zostało zmienione pomyślnie. Możesz się teraz zalogować.', 
+      position: 'top' 
+    })
     router.push('/login')
   } catch {
     // Błąd obsłużony przez interceptor axios
@@ -43,3 +99,23 @@ const onSubmit = async () => {
   }
 }
 </script>
+
+<style scoped>
+.auth-legal-links {
+  margin-top: 48px;
+  text-align: center;
+  font-size: 12px;
+}
+.auth-legal-link {
+  color: #666;
+  text-decoration: none;
+}
+.auth-legal-link:hover {
+  color: #1565C0;
+  text-decoration: underline;
+}
+.auth-legal-sep {
+  margin: 0 6px;
+  color: #ccc;
+}
+</style>

@@ -278,6 +278,45 @@ class CalculatorResultViewSet(
         )
         return Response(CalculatorResultSerializer(new_result).data, status=status.HTTP_201_CREATED)
 
+    @action(detail=False, methods=['post'], url_path='bulk_copy')
+    def bulk_copy(self, request):
+        """Admin kopiuje wiele wyników do wybranego użytkownika."""
+        if not request.user.is_staff:
+            raise PermissionDenied("Tylko administrator może kopiować obliczenia.")
+
+        result_ids = request.data.get('result_ids', [])
+        target_user_id = request.data.get('target_user_id')
+
+        if not result_ids:
+            return Response({'detail': 'Nie wybrano żadnych obliczeń.'}, status=400)
+
+        from django.contrib.auth import get_user_model
+        User = get_user_model()
+        
+        try:
+            target_user = User.objects.get(id=target_user_id) if target_user_id else request.user
+        except User.DoesNotExist:
+            return Response({'detail': 'Nie znaleziono użytkownika docelowego.'}, status=404)
+
+        sources = CalculatorResult.objects.filter(id__in=result_ids)
+        copied_count = 0
+        
+        with transaction.atomic():
+            for source in sources:
+                CalculatorResult.objects.create(
+                    calculator_definition=source.calculator_definition,
+                    user=target_user,
+                    input_data=source.input_data,
+                    output_data=source.output_data,
+                    is_locked=False,
+                )
+                copied_count += 1
+
+        return Response({
+            "message": f"Pomyślnie skopiowano {copied_count} obliczeń do użytkownika {target_user.email}.",
+            "copied_count": copied_count
+        })
+
     @action(detail=True, methods=['get'], url_path='pdf')
     def pdf_report(self, request, pk=None):
         """Generuje raport PDF dla danego wyniku obliczeń."""

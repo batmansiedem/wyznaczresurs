@@ -43,6 +43,10 @@ class CustomUser(AbstractUser):
     objects = CustomUserManager()
     # ---------------------------------------
 
+    # --- NOWE POLE DLA AKTYWACJI ---
+    is_email_verified = models.BooleanField(default=False, verbose_name="E-mail zweryfikowany?")
+    # ---------------------------------
+
     # --- TWOJE POLA ---
     # Flaga: True = Firma, False = Osoba prywatna
     is_company = models.BooleanField(default=False, verbose_name="Czy to firma?")
@@ -90,6 +94,15 @@ class CustomUser(AbstractUser):
         if full_name:
             return f"[Osoba] {full_name} ({self.email})"
         return f"[Użytkownik] {self.email}"
+
+    def activate_email(self):
+        """
+        Ręczna aktywacja użytkownika.
+        Ustawia is_email_verified na True oraz is_active na True.
+        """
+        self.is_email_verified = True
+        self.is_active = True
+        self.save(update_fields=['is_email_verified', 'is_active'])
 
 class UserLogo(models.Model):
     """Model przechowujący wiele logotypów użytkownika."""

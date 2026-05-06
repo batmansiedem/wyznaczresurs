@@ -97,6 +97,9 @@
             </template>
             <template #body-cell-actions="props">
               <q-td :props="props" @click.stop>
+                <q-btn v-if="!props.row.is_active" flat round dense icon="how_to_reg" color="warning" size="sm" @click="activateUser(props.row)">
+                  <q-tooltip>Aktywuj konto ręcznie</q-tooltip>
+                </q-btn>
                 <q-btn flat round dense icon="person_search" color="primary" size="sm" @click="openUserDetail(props.row)">
                   <q-tooltip>Szczegóły / obliczenia</q-tooltip>
                 </q-btn>
@@ -453,12 +456,18 @@
                       </q-input>
                     </div>
                     <div class="col-12 col-sm-auto">
-                      <q-btn icon="upload" color="secondary" unelevated no-caps
-                        label="Przekaż moje obliczenie"
-                        class="rounded-borders full-width"
-                        @click="openPickMyResult">
-                        <q-tooltip>Wybierz ze swoich obliczeń i skopiuj do tego użytkownika</q-tooltip>
-                      </q-btn>
+                      <div class="row q-gutter-sm">
+                        <q-btn v-if="selectedUserTransactions.length" icon="copy_all" color="primary" unelevated no-caps
+                          :label="`Kopiuj zaznaczone (${selectedUserTransactions.length})`"
+                          @click="openBulkCopyDialog">
+                          <q-tooltip>Kopiuj zaznaczone obliczenia do innego użytkownika</q-tooltip>
+                        </q-btn>
+                        <q-btn icon="upload" color="secondary" unelevated no-caps
+                          label="Przekaż moje obliczenie"
+                          @click="openPickMyResult">
+                          <q-tooltip>Wybierz ze swoich obliczeń i skopiuj do tego użytkownika</q-tooltip>
+                        </q-btn>
+                      </div>
                     </div>
                   </div>
                 </q-card-section>
@@ -466,9 +475,11 @@
 
               <q-card flat bordered class="rounded-borders">
                 <q-table
+                  v-model:selected="selectedUserTransactions"
                   :rows="userTransactions"
                   :columns="userTxColumns"
                   row-key="id"
+                  selection="multiple"
                   :loading="userTxLoading"
                   flat dense
                   no-data-label="Brak obliczeń"
@@ -1396,6 +1407,49 @@
       </q-card>
     </q-dialog>
 
+    <!-- ===================== DIALOG: MASOWE KOPIOWANIE ===================== -->
+    <q-dialog v-model="bulkCopyDialog" persistent>
+      <q-card style="min-width:450px" class="rounded-borders">
+        <q-card-section class="bg-primary text-white row items-center">
+          <q-icon name="copy_all" size="sm" class="q-mr-sm" />
+          <div class="text-h6 text-weight-bold">Kopiuj zaznaczone obliczenia</div>
+          <q-btn icon="close" flat round dense v-close-popup />
+        </q-card-section>
+
+        <q-card-section class="q-pt-md">
+          <div class="q-mb-md">
+            Zaznaczono: <b>{{ selectedUserTransactions.length }}</b> obliczeń.
+          </div>
+
+          <div class="text-subtitle2 q-mb-xs">Wybierz użytkownika docelowego:</div>
+          <q-select
+            v-model="bulkCopyTargetUserId"
+            :options="userOptionsForCopy"
+            label="Szukaj użytkownika…"
+            outlined dense use-input fill-input hide-selected
+            map-options emit-value
+            hint="Zostaw puste, aby skopiować na swoje konto (administratora)"
+            clearable
+          >
+            <template #no-option>
+              <q-item><q-item-section class="text-grey">Brak wyników</q-item-section></q-item>
+            </template>
+          </q-select>
+        </q-card-section>
+
+        <q-card-section class="q-pt-sm">
+          <div class="row justify-end q-gutter-sm">
+            <q-btn flat label="Anuluj" v-close-popup />
+            <q-btn
+              icon="save" label="Kopiuj teraz" color="primary" unelevated
+              :loading="bulkCopyLoading"
+              @click="confirmBulkCopy"
+            />
+          </div>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
+
   </q-page>
 </template>
 
@@ -1564,6 +1618,7 @@ const userTxLoading = ref(false)
 const detailTxYear = ref(null)
 const detailTxMonth = ref(null)
 const detailTxSearch = ref('')
+const selectedUserTransactions = ref([]) // Dodane dla masowego zaznaczania
 
 const userTxColumns = [
   { name: 'device', label: 'Urządzenie / identyfikacja', field: 'id', align: 'left' },
@@ -1576,6 +1631,7 @@ const userTxColumns = [
 async function fetchUserTransactions() {
   if (!selectedUser.value) return
   userTxLoading.value = true
+  selectedUserTransactions.value = [] // Resetuj zaznaczenie
   try {
     const params = {}
     if (detailTxYear.value) params.year = detailTxYear.value
@@ -1587,6 +1643,71 @@ async function fetchUserTransactions() {
     userTxLoading.value = false
   }
 }
+
+async function activateUser(user) {
+  $q.dialog({
+    title: 'Aktywuj użytkownika',
+    message: `Czy na pewno chcesz ręcznie aktywować konto <b>${user.email}</b>?`,
+    html: true,
+    cancel: true,
+    persistent: true
+  }).onOk(async () => {
+    try {
+      await api.post(`/auth/admin/users/${user.id}/activate/`)
+      $q.notify({ type: 'positive', message: 'Użytkownik został aktywowany.', position: 'top' })
+      fetchUsers()
+      if (selectedUser.value?.id === user.id) {
+        selectedUser.value.is_active = true
+      }
+    } catch {
+      $q.notify({ type: 'negative', message: 'Błąd podczas aktywacji.', position: 'top' })
+    }
+  })
+}
+
+// ---- Masowe kopiowanie obliczeń ----
+const bulkCopyDialog = ref(false)
+const bulkCopyLoading = ref(false)
+const bulkCopyTargetUserId = ref(null)
+
+const userOptionsForCopy = computed(() => {
+  return users.value.map(u => ({
+    label: u.display_name + ` (${u.email})`,
+    value: u.id
+  }))
+})
+
+function openBulkCopyDialog() {
+  bulkCopyTargetUserId.value = null
+  bulkCopyDialog.value = true
+}
+
+async function confirmBulkCopy() {
+  if (!selectedUserTransactions.value.length) return
+  
+  bulkCopyLoading.value = true
+  try {
+    const resultIds = selectedUserTransactions.value.map(t => t.id)
+    const { data } = await api.post('/calculators/results/bulk_copy/', {
+      result_ids: resultIds,
+      target_user_id: bulkCopyTargetUserId.value // Jeśli null, skopiuje do admina
+    })
+    
+    $q.notify({ type: 'positive', message: data.message || 'Skopiowano obliczenia.', position: 'top' })
+    bulkCopyDialog.value = false
+    selectedUserTransactions.value = []
+    
+    // Jeśli kopiowaliśmy do aktualnie podglądanego użytkownika, odśwież mu listę
+    if (bulkCopyTargetUserId.value === selectedUser.value?.id) {
+      fetchUserTransactions()
+    }
+  } catch {
+    $q.notify({ type: 'negative', message: 'Błąd podczas kopiowania.', position: 'top' })
+  } finally {
+    bulkCopyLoading.value = false
+  }
+}
+
 
 // ---- Faktury użytkownika ----
 const userInvoices = ref([])

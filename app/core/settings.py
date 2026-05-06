@@ -238,8 +238,15 @@ ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
-ACCOUNT_SIGNUP_PASSWORD_ENTER_TWICE = True
+ACCOUNT_CONFIRM_EMAIL_ON_GET = True
+ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 3
+ACCOUNT_EMAIL_SUBJECT_PREFIX = '[wyznaczresurs.com] '
+ACCOUNT_DEFAULT_HTTP_PROTOCOL = 'https' if not DEBUG else 'http'
 ACCOUNT_ADAPTER = 'users.adapter.CustomAccountAdapter'
+
+# Upewnij się, że allauth używa poprawnego adresu nadawcy
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'info@wyznaczresurs.com')
+ACCOUNT_EMAIL_FROM_EMAIL = DEFAULT_FROM_EMAIL
 
 # ==============================================================================
 # CORS & CSRF (Połączenie z Frontendem)

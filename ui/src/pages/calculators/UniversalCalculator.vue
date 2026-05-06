@@ -45,7 +45,6 @@
           outlined dense clearable
           label="Logo użytkownika w PDF (opcjonalne)"
           hint="Wybierz klienta, którego logotyp ma być użyty w PDF"
-          class="bg-white"
           style="max-width:480px"
           @filter="searchPdfLogoUsers"
         >
