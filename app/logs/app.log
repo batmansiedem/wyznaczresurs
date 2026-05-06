@@ -1961,3 +1961,7 @@ RuntimeError: KSeF rejected: Odrzucona | []
 [2026-05-06 16:29:46] INFO django.utils.autoreload: Watching for file changes with StatReloader
 [2026-05-06 16:29:53] INFO django.utils.autoreload: D:\wyznaczresurs\app\users\adapter.py changed, reloading.
 [2026-05-06 16:29:54] INFO django.utils.autoreload: Watching for file changes with StatReloader
+[2026-05-06 16:42:24] ERROR django.request: Internal Server Error: /api/auth/password/reset/
+[2026-05-06 16:42:52] ERROR django.request: Internal Server Error: /api/auth/password/reset/
+[2026-05-06 16:46:01] INFO django.utils.autoreload: D:\wyznaczresurs\app\users\adapter.py changed, reloading.
+[2026-05-06 16:46:02] INFO django.utils.autoreload: Watching for file changes with StatReloader

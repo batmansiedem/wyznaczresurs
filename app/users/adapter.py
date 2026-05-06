@@ -17,6 +17,13 @@ class CustomAccountAdapter(DefaultAccountAdapter):
         logger.info(f"Generating email confirmation URL for {emailconfirmation.email_address.email}: {url}")
         return url
 
+    def get_reset_password_from_key_url(self, key):
+        """
+        Nadpisujemy, aby uniknąć NoReverseMatch: 'account_reset_password_from_key'.
+        Zwracamy cokolwiek, bo i tak poprawiamy to w send_mail mając dostęp do UID.
+        """
+        return f"placeholder-url-for-key-{key}"
+
     def send_mail(self, template_prefix, email, context):
         """
         Nadpisujemy send_mail aby logować próby wysyłki oraz poprawiać linki 
