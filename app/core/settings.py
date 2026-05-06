@@ -252,6 +252,8 @@ ACCOUNT_EMAIL_FROM_EMAIL = DEFAULT_FROM_EMAIL
 # CORS & CSRF (Połączenie z Frontendem)
 # ==============================================================================
 _frontend_url = os.environ.get('FRONTEND_URL', 'http://localhost:9000')
+FRONTEND_URL = _frontend_url
+
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:9000",
     "http://127.0.0.1:9000",
@@ -365,7 +367,7 @@ LOGGING = {
     },
     'root': {
         'handlers': ['console', 'file_app'],
-        'level': 'WARNING',
+        'level': 'INFO',
     },
 }
 

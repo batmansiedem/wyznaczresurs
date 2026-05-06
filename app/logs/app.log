@@ -1975,3 +1975,8 @@ RuntimeError: KSeF rejected: Odrzucona | []
 [2026-05-06 17:00:09] INFO django.utils.autoreload: Watching for file changes with StatReloader
 [2026-05-06 17:03:00] INFO django.utils.autoreload: D:\wyznaczresurs\app\users\urls.py changed, reloading.
 [2026-05-06 17:03:01] INFO django.utils.autoreload: Watching for file changes with StatReloader
+[2026-05-06 17:05:03] INFO django.utils.autoreload: D:\wyznaczresurs\app\core\settings.py changed, reloading.
+[2026-05-06 17:05:04] INFO django.utils.autoreload: Watching for file changes with StatReloader
+[2026-05-06 17:06:51] INFO django.utils.autoreload: D:\wyznaczresurs\app\core\settings.py changed, reloading.
+[2026-05-06 17:06:52] INFO axes.apps: AXES: BEGIN version 8.3.1, blocking by combination of ip_address and username
+[2026-05-06 17:06:52] INFO django.utils.autoreload: Watching for file changes with StatReloader
