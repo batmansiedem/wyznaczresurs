@@ -2,10 +2,13 @@
 Jednolity handler wyjątków DRF — wszystkie błędy API zwracają {"detail": "..."}.
 Zastępuje domyślny handler DRF, który dla błędów walidacji zwraca {"field": ["error"]}.
 """
+import logging
+import traceback
 from rest_framework.views import exception_handler
 from rest_framework.response import Response
 from rest_framework import status
 
+logger = logging.getLogger('django.request')
 
 def custom_exception_handler(exc, context):
     """
@@ -15,7 +18,8 @@ def custom_exception_handler(exc, context):
     response = exception_handler(exc, context)
 
     if response is None:
-        # Nieobsługiwany wyjątek (500) — zwróć generyczny komunikat
+        # Nieobsługiwany wyjątek (500) — zaloguj traceback i zwróć generyczny komunikat
+        logger.error(f"Unhandled Exception: {str(exc)}\n{traceback.format_exc()}")
         return Response(
             {"detail": "Wystąpił błąd serwera. Spróbuj ponownie."},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR,
