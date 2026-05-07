@@ -479,9 +479,10 @@ import { api } from 'boot/axios'
 import { useQuasar, exportFile, useMeta } from 'quasar'
 
 useMeta({
-  title: 'Kalkulator Resursu UTB | wyznaczresurs.com',
+  title: 'Kalkulator Resursu UTB | Wyznaczanie trwałości FEM 9.511 / ISO 4301',
   meta: {
-    description:   { name: 'description',       content: 'Wyznacz resurs urządzeń transportu bliskiego (UTB) metodą cykli pracy FEM 9.511 / ISO 4301. Obliczenia akceptowane przez UDT/WDT/TDT. 22 typy urządzeń: suwnicy, żurawie, podesty, wózki, układnice.' },
+    description:   { name: 'description',       content: 'Wyznacz resurs urządzeń transportu bliskiego (UTB) metodą cykli pracy FEM 9.511 / ISO 4301. Profesjonalny kalkulator akceptowany przez UDT/WDT/TDT. 22 typy urządzeń: suwnice, żurawie, podesty, wózki.' },
+    keywords:      { name: 'keywords',          content: 'kalkulator resursu utb, resurs urządzenia, udt, suwnica, żuraw, podest ruchomy, fem 9.511, iso 4301, dozór techniczny, trwałość eksploatacyjna, wózek jezdniowy, wciągnik, wciągarka, obliczanie resursu' },
     ogTitle:       { property: 'og:title',       content: 'Kalkulator Resursu UTB | wyznaczresurs.com' },
     ogDescription: { property: 'og:description', content: 'Wyznacz resurs urządzeń transportu bliskiego metodą cykli pracy FEM 9.511 / ISO 4301. Obliczenia akceptowane przez UDT/WDT/TDT.' },
     ogUrl:         { property: 'og:url',         content: 'https://wyznaczresurs.com/' },
@@ -499,19 +500,49 @@ useMeta({
   script: {
     ldJson: {
       type: 'application/ld+json',
-      innerHTML: JSON.stringify({
-        '@context': 'https://schema.org',
-        '@type': 'WebApplication',
-        name: 'wyznaczresurs.com',
-        url: 'https://wyznaczresurs.com',
-        description: 'Kalkulator resursu urządzeń transportu bliskiego (UTB) metodą cykli pracy FEM 9.511 / ISO 4301. Obliczenia akceptowane przez UDT/WDT/TDT.',
-        applicationCategory: 'EngineeringApplication',
-        inLanguage: 'pl-PL',
-        offers: { '@type': 'Offer', price: '100', priceCurrency: 'PLN', description: '100 punktów za jedno obliczenie resursu UTB' },
-        publisher: { '@type': 'Organization', name: 'wyznaczresurs.com', url: 'https://wyznaczresurs.com' },
-      }),
-    },
-  },
+      innerHTML: JSON.stringify([
+        {
+          '@context': 'https://schema.org',
+          '@type': 'WebApplication',
+          name: 'wyznaczresurs.com',
+          url: 'https://wyznaczresurs.com',
+          description: 'Kalkulator resursu urządzeń transportu bliskiego (UTB) metodą cykli pracy FEM 9.511 / ISO 4301. Obliczenia akceptowane przez UDT/WDT/TDT.',
+          applicationCategory: 'EngineeringApplication',
+          operatingSystem: 'All',
+          inLanguage: 'pl-PL',
+          offers: { 
+            '@type': 'Offer', 
+            price: '100', 
+            priceCurrency: 'PLN', 
+            description: '100 punktów za jedno obliczenie resursu UTB' 
+          },
+          publisher: { 
+            '@type': 'Organization', 
+            name: 'wyznaczresurs.com', 
+            url: 'https://wyznaczresurs.com',
+            logo: 'https://wyznaczresurs.com/favicon.svg'
+          }
+        },
+        {
+          '@context': 'https://schema.org',
+          '@type': 'Organization',
+          name: 'wyznaczresurs.com',
+          url: 'https://wyznaczresurs.com',
+          logo: 'https://wyznaczresurs.com/favicon.svg',
+          contactPoint: {
+            '@type': 'ContactPoint',
+            telephone: '+48 666 625 752',
+            contactType: 'technical support',
+            availableLanguage: 'Polish'
+          },
+          sameAs: [
+            'https://www.facebook.com/Wyznacz-resurs-107911734048291/',
+            'https://www.youtube.com/channel/UC-fqGlD3TSgE'
+          ]
+        }
+      ])
+    }
+  }
 })
 
 const userStore = useUserStore()

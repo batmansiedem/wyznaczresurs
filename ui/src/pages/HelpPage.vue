@@ -108,6 +108,41 @@ useMeta({
     robots:        { name: 'robots',              content: 'index, follow' },
   },
   link: { canonical: { rel: 'canonical', href: 'https://wyznaczresurs.com/help' } },
+  script: {
+    faqJson: {
+      type: 'application/ld+json',
+      innerHTML: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        mainEntity: [
+          {
+            '@type': 'Question',
+            name: 'Jak kupić punkty premium?',
+            acceptedAnswer: {
+              '@type': 'Answer',
+              text: 'Przejdź do zakładki Cennik i punkty, wybierz płatność PayPal lub przelew bankowy. Punkty zostaną przypisane automatycznie.'
+            }
+          },
+          {
+            '@type': 'Question',
+            name: 'Czy obliczenia są zgodne z UDT?',
+            acceptedAnswer: {
+              '@type': 'Answer',
+              text: 'Tak. Wszystkie algorytmy opracowano na podstawie Rozporządzenia MPiT z dnia 30 października 2018 r. oraz wytycznych FEM 9.511 i normy ISO 4301.'
+            }
+          },
+          {
+            '@type': 'Question',
+            name: 'Co zawiera raport PDF?',
+            acceptedAnswer: {
+              '@type': 'Answer',
+              text: 'Raport zawiera dane identyfikacyjne urządzenia, historię eksploatacji, pełne obliczenia metodą cykli pracy (Kdr, UWSK, ρ), klasę stanu technicznego L1–L4 oraz wykresy.'
+            }
+          }
+        ]
+      })
+    }
+  }
 })
 
 const userStore = useUserStore()
