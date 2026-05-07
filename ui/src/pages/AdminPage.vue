@@ -78,6 +78,12 @@
                 <q-chip v-else-if="props.row.is_staff" color="orange" text-color="white" size="sm" dense class="q-ml-xs">Staff</q-chip>
               </q-td>
             </template>
+            <template #body-cell-is_email_verified="props">
+              <q-td :props="props" class="text-center">
+                <q-icon :name="props.row.is_email_verified ? 'verified' : 'pending'"
+                  :color="props.row.is_email_verified ? 'positive' : 'warning'" />
+              </q-td>
+            </template>
             <template #body-cell-is_active="props">
               <q-td :props="props" class="text-center">
                 <q-icon :name="props.row.is_active ? 'check_circle' : 'cancel'"
@@ -384,6 +390,11 @@
             <div class="text-caption" style="opacity:.8">{{ selectedUser?.email }}</div>
           </div>
           <q-space />
+          <q-btn v-if="selectedUser && (!selectedUser.is_active || !selectedUser.is_email_verified)"
+            icon="how_to_reg" flat dense label="Weryfikuj/Aktywuj" class="q-mr-sm"
+            @click="activateUser(selectedUser)">
+            <q-tooltip>Ręczna weryfikacja adresu email i aktywacja konta</q-tooltip>
+          </q-btn>
           <q-btn icon="edit" flat dense label="Edytuj" class="q-mr-sm" @click="openEditUserDialog(selectedUser)" />
           <q-btn icon="close" flat round dense v-close-popup />
         </q-card-section>
@@ -1147,6 +1158,7 @@
               </div>
               <div class="col-12 col-sm-6 self-center q-gutter-x-md">
                 <q-toggle v-model="editUser.is_active" label="Konto aktywne" />
+                <q-toggle v-model="editUser.is_email_verified" label="Email zweryfikowany" />
               </div>
               <div class="col-12">
                 <q-separator class="q-my-sm" />
@@ -1580,6 +1592,7 @@ const userColumns = [
   { name: 'transaction_count', label: 'Obl.', field: 'transaction_count', align: 'center', sortable: true },
   { name: 'invoice_count', label: 'Fakt.', field: 'invoice_count', align: 'center', sortable: true },
   { name: 'last_login', label: 'Ost. logowanie', field: 'last_login', align: 'left', sortable: true },
+  { name: 'is_email_verified', label: 'Weryf.', field: 'is_email_verified', align: 'center' },
   { name: 'is_active', label: 'Akt.', field: 'is_active', align: 'center' },
   { name: 'actions', label: 'Akcje', field: 'id', align: 'center' },
 ]
@@ -2416,6 +2429,7 @@ async function submitEditUser() {
       premium: editUser.value.premium,
       discount_percent: editUser.value.discount_percent,
       is_active: editUser.value.is_active,
+      is_email_verified: editUser.value.is_email_verified,
     })
     $q.notify({ type: 'positive', message: 'Zaktualizowano.', position: 'top' })
     editUserDialog.value = false

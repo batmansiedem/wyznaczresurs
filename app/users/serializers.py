@@ -107,7 +107,7 @@ class AdminUserListSerializer(serializers.ModelSerializer):
             'id', 'email', 'first_name', 'last_name', 'display_name',
             'is_company', 'company_name', 'nip',
             'address_line', 'postal_code', 'city',
-            'premium', 'discount_percent', 'is_staff', 'is_superuser', 'is_active',
+            'premium', 'discount_percent', 'is_staff', 'is_superuser', 'is_active', 'is_email_verified',
             'date_joined', 'last_login',
             'transaction_count', 'invoice_count',
             'has_custom_logo', 'show_logo_on_pdf', 'show_signature_on_pdf',
@@ -165,6 +165,7 @@ class AdminUpdateUserSerializer(serializers.ModelSerializer):
         model = User
         fields = (
             'first_name', 'last_name', 'is_company', 'company_name', 'nip',
-            'address_line', 'postal_code', 'city', 'premium', 'discount_percent', 'is_active',
+            'address_line', 'postal_code', 'city', 'premium', 'discount_percent', 
+            'is_active', 'is_email_verified',
             'show_logo_on_pdf', 'show_signature_on_pdf',
         )

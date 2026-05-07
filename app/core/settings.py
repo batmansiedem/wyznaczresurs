@@ -58,7 +58,6 @@ INSTALLED_APPS = [
     # --- Twoje aplikacje ---
     'users',                    # Twój niestandardowy model użytkownika
     'calculators',              # Nowa aplikacja do kalkulatorów
-    'specialists',              # Nowa aplikacja dla specjalistów (konserwatorów)
     'contacts',                 # Nowa aplikacja dla formularza kontaktowego
     'invoices',                 # Nowa aplikacja do faktur i punktów
     'notifications',            # Nowa aplikacja do powiadomień
@@ -225,6 +224,7 @@ REST_AUTH = {
     'JWT_AUTH_SAMESITE': 'Lax',
     'JWT_AUTH_SECURE': not DEBUG, 
     'SESSION_LOGIN': False,
+    'UPDATE_LAST_LOGIN': True,
     'REGISTER_SERIALIZER': 'users.serializers.CustomRegisterSerializer',
     'USER_DETAILS_SERIALIZER': 'users.serializers.CustomUserDetailsSerializer',
 }
