@@ -5,7 +5,7 @@
     "wykonawca": {
       "type": "text",
       "label": "Wykonawca",
-      "required": false
+      "required": true
     },
     "uwagi": {
       "type": "textarea",
@@ -24,17 +24,72 @@
     },
     "nr_fabryczny": {
       "type": "text",
-      "label": "Nr fabryczny",
+      "label": "1.1 Nr fabryczny wózka specjalizowanego",
       "required": true
     },
-    "nr_ewidencyjny": {
-      "type": "text",
-      "label": "Nr ewidencyjny UDT/TDT/WDT",
-      "required": false
+    "sposob_pracy": {
+      "type": "select",
+      "label": "1.2 Sposób pracy wózka specjalizowanego",
+      "required": true,
+      "options": [
+        "wózek widłowy/ładowarka",
+        "podnośnik koszowy/wózek widłowy/ładowarka"
+      ]
+    },
+    "procent_jazda": {
+      "type": "number",
+      "label": "1.2.1 Określ procent motogodzin przypadających na jazdę [%]",
+      "required": true,
+      "show_if": {
+        "field": "sposob_pracy",
+        "value": "wózek widłowy/ładowarka"
+      }
+    },
+    "procent_podnosnik": {
+      "type": "number",
+      "label": "1.2.1 Określ procent motogodzin przypadających na pracę jako podnośnik koszowy [%]",
+      "required": true,
+      "show_if": {
+        "field": "sposob_pracy",
+        "value": "podnośnik koszowy/wózek widłowy/ładowarka"
+      }
+    },
+    "operator": {
+      "type": "select",
+      "label": "1.3 Ilość operatorów",
+      "required": true,
+      "options": [
+        "1 operator",
+        "2 operatorów",
+        "3 operatorów",
+        "4 operatorów",
+        "5 i więcej operatorów"
+      ]
+    },
+    "h_max": {
+      "type": "number",
+      "label": "1.4 Maksymalna wysokość podnoszenia h<sub>max</sub> [m]",
+      "required": true,
+      "unit_type": "length",
+      "default_unit": "m"
+    },
+    "L_b_max": {
+      "type": "number",
+      "label": "1.5 Maksymalny wysięg boczny L<sub>b,max</sub> [m]",
+      "required": true,
+      "unit_type": "length",
+      "default_unit": "m"
+    },
+    "v_pod": {
+      "type": "number",
+      "label": "1.6 Prędkość podnoszenia/opuszczania v<sub>pod</sub> [m/min]",
+      "required": false,
+      "unit_type": "velocity",
+      "default_unit": "m/min"
     },
     "q_max": {
       "type": "number",
-      "label": "Udźwig maksymalny Q<sub>max</sub> [kg]",
+      "label": "1.7 Udźwig maksymalny wózka specjalizowanego Q<sub>max</sub> [kg]",
       "required": true,
       "unit_type": "mass",
       "default_unit": "kg",
@@ -45,7 +100,7 @@
     },
     "q_o": {
       "type": "number",
-      "label": "Masa osprzętu Q<sub>o</sub> [kg]",
+      "label": "1.8 Masa osprzętu Q<sub>osp</sub> [kg]",
       "required": false,
       "unit_type": "mass",
       "default_unit": "kg",
@@ -54,51 +109,9 @@
         "t"
       ]
     },
-    "h_max": {
-      "type": "number",
-      "label": "Maksymalna wysokość podnoszenia [m]",
-      "required": true,
-      "unit_type": "length",
-      "default_unit": "m"
-    },
-    "L_b_max": {
-      "type": "number",
-      "label": "Maksymalny wysięg boczny [m]",
-      "required": true,
-      "unit_type": "length",
-      "default_unit": "m"
-    },
-    "v_pod": {
-      "type": "number",
-      "label": "Prędkość podnoszenia/opuszczania [m/min]",
-      "required": false,
-      "unit_type": "velocity",
-      "default_unit": "m/min"
-    },
-    "sposob_pracy": {
-      "type": "select",
-      "label": "Sposób pracy wózka specjalizowanego",
-      "required": true,
-      "options": [
-        "wózek widłowy/ładowarka",
-        "podnośnik koszowy/wózek widłowy/ładowarka"
-      ]
-    },
-    "operator": {
-      "type": "select",
-      "label": "Ilość operatorów",
-      "required": true,
-      "options": [
-        "1 operator",
-        "2 operatorów",
-        "3 operatorów",
-        "4 operatorów",
-        "5 i więcej operatorów"
-      ]
-    },
     "lata_pracy": {
       "type": "number",
-      "label": "Ilość przepracowanych lat",
+      "label": "1.9 Ilość przepracowanych lat od ostatniego przeglądu specjalnego lub rozp. eksploatacji",
       "required": true,
       "unit_type": "time",
       "default_unit": "lata",
@@ -107,74 +120,47 @@
         "miesiące"
       ]
     },
-    "ilosc_moto": {
-      "type": "number",
-      "label": "Ilość motogodzin od początku eksploatacji",
-      "required": true,
-      "show_if": {
-        "field": "sposob_pracy",
-        "value": "wózek widłowy/ładowarka"
-      }
-    },
-    "procent_jazda": {
-      "type": "number",
-      "label": "Procent motogodzin przypadających na jazdę [%]",
-      "required": true,
-      "show_if": {
-        "field": "sposob_pracy",
-        "value": "wózek widłowy/ładowarka"
-      }
-    },
     "max_moto_prod": {
       "type": "number",
-      "label": "Graniczna ilość motogodzin określona przez producenta",
-      "required": false,
-      "default_value": 15000,
-      "show_if": {
-        "field": "sposob_pracy",
-        "value": "wózek widłowy/ładowarka"
-      }
+      "label": "1.10 Graniczna ilość motogodzin określona przez producenta [mth]",
+      "required": false
+    },
+    "ilosc_moto": {
+      "type": "number",
+      "label": "1.11 Ilość odbytych motogodzin od ostatniego przeglądu specjalnego lub rozp. eksploatacji [mth]",
+      "required": true
     },
     "ilosc_cykli": {
       "type": "number",
-      "label": "Ilość odbytych cykli",
+      "label": "1.12 Ilość odbytych cykli od ostatniego przeglądu specjalnego lub rozp. eksploatacji",
       "required": true,
       "unit_type": "dimensionless",
       "default_unit": "cykl"
     },
-    "procent_podnosnik": {
+    "cykle_zmiana": {
+      "label": "1.13.1 Ilość cykli przypadających na zmianę",
       "type": "number",
-      "label": "Procent motogodzin przypadających na pracę jako podnośnik koszowy [%]",
-      "required": true,
-      "show_if": {
-        "field": "sposob_pracy",
-        "value": "podnośnik koszowy/wózek widłowy/ładowarka"
-      }
+      "required": false
+    },
+    "dni_robocze": {
+      "label": "1.13.2 Ilość dni roboczych w roku",
+      "type": "number",
+      "required": false,
+      "default_value": 250
     },
     "tryb_pracy": {
-      "label": "Tryb pracy",
+      "label": "1.13.3 Tryb pracy",
       "type": "select",
-      "required": true,
+      "required": false,
       "options": [
         "jednozmianowy",
         "dwuzmianowy",
         "trzyzmianowy"
       ]
     },
-    "cykle_zmiana": {
-      "label": "Ilość cykli przypadających na zmianę",
-      "type": "number",
-      "required": true
-    },
-    "dni_robocze": {
-      "label": "Ilość dni roboczych w roku",
-      "type": "number",
-      "required": true,
-      "default_value": 250
-    },
     "sposob_rejestracji": {
       "type": "select",
-      "label": "Sposób rejestracji warunków eksploatacji",
+      "label": "2. Określ sposób rejestracji warunków eksploatacji",
       "required": true,
       "options": [
         "Rejestrowanie przyrządami",
@@ -185,91 +171,46 @@
         "Brak informacji o historii urządzenia"
       ]
     },
-    "spec": {
-      "type": "select",
-      "label": "Czy chcesz wyznaczyć resurs po pierwszym przeglądzie specjalnym?",
-      "required": true,
-      "options": [
-        "Nie",
-        "Tak"
-      ]
-    },
-    "ponowny_resurs": {
-      "type": "select",
-      "label": "Czy chcesz wykonać ponowne wyznaczenie resursu?",
-      "required": true,
-      "options": [
-        "Nie",
-        "Tak"
-      ]
-    },
-    "ostatni_resurs": {
-      "type": "number",
-      "label": "Procent wykorzystania resursu z ostatnich obliczeń",
-      "required": false,
-      "show_if": {
-        "field": "ponowny_resurs",
-        "value": "Tak"
-      },
-      "default_unit": "%"
-    },
-    "data_resurs": {
-      "type": "date",
-      "label": "Data wyznaczenia ostatniego resursu",
-      "required": false,
-      "show_if": {
-        "field": "ponowny_resurs",
-        "value": "Tak"
-      }
-    },
     "konstrukcja": {
       "type": "inspection_status",
-      "label": "Czy konstrukcja stalowa jest zdeformowana i/lub pojawiły się pęknięcia w złączach spawanych?",
+      "label": "5.1. Czy konstrukcja stalowa jest zdeformowana i/lub pojawiły się pęknięcia w złączach spawanych?",
       "required": true,
       "options": [
-        "Brak uszkodzeń",
-        "Uszkodzenia"
+        "Tak",
+        "Nie"
       ]
     },
     "automatyka": {
       "type": "inspection_status",
-      "label": "Czy automatyka sterująca i/lub zabezpieczająca jest sprawna i aktywna?",
+      "label": "6.1 Czy automatyka sterująca i/lub zabezpieczająca jest sprawna i aktywna?",
       "required": true,
       "options": [
-        "Sprawna",
-        "Niesprawna"
+        "Tak",
+        "Nie",
+        "N/D"
       ]
     },
     "sworznie": {
       "type": "inspection_status",
-      "label": "Czy sworznie oraz połączenia rozłączne są właściwie zmontowane i w dobrym stanie technicznym?",
+      "label": "7.1 Czy sworznie oraz połączenia rozłączne są właściwie zmontowane oraz w dobrym stanie technicznym?",
       "required": true,
       "options": [
-        "Prawidłowy",
-        "Nieprawidłowy"
-      ]
-    },
-    "ciegna": {
-      "type": "inspection_status",
-      "label": "Czy cięgna (łańcuchy, liny) są w dobrym stanie technicznym?",
-      "required": true,
-      "options": [
-        "Brak uszkodzeń",
-        "Uszkodzenia"
+        "Tak",
+        "Nie"
       ]
     },
     "eksploatacja": {
       "type": "inspection_status",
-      "label": "Czy urządzenie eksploatowane jest zgodnie z przeznaczeniem i instrukcją eksploatacji?",
+      "label": "8.1 Czy urządzenie eksploatowane jest zgodnie z przeznaczeniem i instrukcją eksploatacji?",
       "required": true,
       "options": [
-        "Zgodne",
-        "Niezgodne"
+        "Tak",
+        "Nie"
       ]
     },
     "szczelnosc": {
       "type": "inspection_status",
-      "label": "Czy układ hydrauliczny jest szczelny, a zawory zwrotne sprawne?",
+      "label": "9.1 Czy układ hydrauliczny jest szczelny, a zawory zwrotne sprawne?",
       "required": true,
       "options": [
         "Tak",
@@ -281,65 +222,44 @@
       "type": "diagram",
       "label": "Widmo obciążeń K<sub>d</sub>",
       "svg": "schemat_kd"
+    },
+    "diagram_ldr": {
+      "type": "diagram",
+      "label": "Współczynnik wykorzystania dł. wysięgu bocznego i wys. podnoszenia L<sub>dr</sub>",
+      "svg": "schemat_ldr"
     }
   },
   "sections": [
     {
-      "id": "informacje",
-      "title": "Informacja na temat resursu",
-      "icon": "info",
-      "fields": [
-        "spec",
-        "ponowny_resurs",
-        "data_resurs",
-        "ostatni_resurs"
-      ]
-    },
-    {
       "id": "dane",
-      "title": "Dane urządzenia",
+      "title": "1. Określ dane dla wózka specjalizowanego",
       "icon": "settings",
       "fields": [
         "wykonawca",
         "uwagi",
         "typ",
         "nr_fabryczny",
-        "nr_ewidencyjny",
-        "q_max",
-        "q_o",
+        "sposob_pracy",
+        "procent_jazda",
+        "procent_podnosnik",
+        "operator",
         "h_max",
         "L_b_max",
-        "v_pod"
-      ]
-    },
-    {
-      "id": "praca",
-      "title": "Warunki pracy",
-      "icon": "engineering",
-      "fields": [
-        "sposob_pracy",
-        "operator",
-        "lata_pracy"
-      ]
-    },
-    {
-      "id": "uzytkowanie",
-      "title": "Intensywność użytkowania",
-      "icon": "history",
-      "fields": [
-        "ilosc_moto",
-        "procent_jazda",
+        "v_pod",
+        "q_max",
+        "q_o",
+        "lata_pracy",
         "max_moto_prod",
+        "ilosc_moto",
         "ilosc_cykli",
-        "procent_podnosnik",
-        "tryb_pracy",
         "cykle_zmiana",
-        "dni_robocze"
+        "dni_robocze",
+        "tryb_pracy"
       ]
     },
     {
       "id": "rejestracja",
-      "title": "Rejestracja warunków",
+      "title": "2. Określ sposób rejestracji",
       "icon": "assignment",
       "fields": [
         "sposob_rejestracji"
@@ -347,38 +267,66 @@
     },
     {
       "id": "kd",
-      "title": "Współczynnik K<sub>d</sub>",
+      "title": "3 & 4. Współczynniki obciążenia i geometrii",
       "icon": "balance",
       "fields": [
-        "diagram_kd"
+        "diagram_kd",
+        "diagram_ldr"
       ]
     },
     {
-      "id": "inspekcja",
-      "title": "Ocena stanu technicznego",
-      "icon": "fact_check",
+      "id": "inspekcja_konstr",
+      "title": "5. Wizualnie oceń stan konstrukcji nośnej",
+      "icon": "architecture",
       "fields": [
-        "konstrukcja",
-        "automatyka",
-        "sworznie",
-        "ciegna",
-        "eksploatacja",
+        "konstrukcja"
+      ]
+    },
+    {
+      "id": "inspekcja_auto",
+      "title": "6. Automatyka sterująca i zabezpieczająca",
+      "icon": "auto_mode",
+      "fields": [
+        "automatyka"
+      ]
+    },
+    {
+      "id": "inspekcja_sworz",
+      "title": "7. Wizualnie oceń stan połączeń ruchowych i rozłącznych",
+      "icon": "construction",
+      "fields": [
+        "sworznie"
+      ]
+    },
+    {
+      "id": "inspekcja_ekspl",
+      "title": "8. Eksploatacja",
+      "icon": "engineering",
+      "fields": [
+        "eksploatacja"
+      ]
+    },
+    {
+      "id": "inspekcja_szczel",
+      "title": "9. Szczelność układu hydraulicznego",
+      "icon": "water_drop",
+      "fields": [
         "szczelnosc"
       ]
     }
   ],
   "output_fields": {
     "resurs_wykorzystanie": {
-      "label": "Wykorzystanie resursu",
+      "label": "Resurs wykorzystanie",
       "type": "percentage",
       "unit": "%"
     },
     "resurs_message": {
-      "label": "Status resursu",
+      "label": "Zalecenia",
       "type": "text"
     },
     "data_prognoza": {
-      "label": "Prognozowana data",
+      "label": "Symulowana data osiągnięcia resursu *",
       "type": "date"
     },
     "wsp_kdr": {
@@ -386,18 +334,28 @@
       "type": "number"
     },
     "stan_obciazenia": {
-      "label": "Stan obciążenia",
+      "label": "Stan obciążenia wózka specjalizowanego",
       "type": "text"
     },
     "T_WSK": {
-      "label": "Projektowa żywotność T<sub>WSK</sub>",
+      "label": "Maksymalna liczba motogodzin T<sub>WSK</sub>",
       "type": "number",
       "unit": "mth"
     },
     "U_WSK": {
-      "label": "Projektowa żywotność U<sub>WSK</sub>",
+      "label": "Maksymalna liczba cykli U<sub>WSK</sub>",
       "type": "number",
       "unit": "cykle"
+    },
+    "ldr": {
+      "label": "Współczynnik wykorzystania dł. wysięgu bocznego i wys. podnoszenia L<sub>dr</sub>",
+      "type": "number",
+      "unit": "[-]"
+    },
+    "F_X": {
+      "label": "Współczynnik F",
+      "type": "number",
+      "unit": "[-]"
     },
     "ilosc_moto_cal": {
       "label": "Zredukowana ilość motogodzin",
@@ -405,12 +363,12 @@
       "unit": "mth"
     },
     "ilosc_cykli_rok": {
-      "label": "Ilość cykli na rok",
+      "label": "ilość cykli przypadających na rok",
       "type": "number",
       "unit": "cykle/rok"
     },
     "moto_rok": {
-      "label": "Ilość motogodzin na rok",
+      "label": "ilość motogodzin przypadających na rok",
       "type": "number",
       "unit": "mth/rok"
     }

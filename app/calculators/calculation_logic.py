@@ -30,9 +30,9 @@ _YES_NO_MAP = {'Tak': Decimal(1), 'Nie': Decimal(0), 'tak': Decimal(1), 'nie': D
 # Stringi oznaczające problem z komponentem (pola select stanu komponentów)
 _PROBLEM_STRINGS = frozenset({
     'Uszkodzenia', 'Niezgodne', 'Nieszczelny', 'Niesprawna', 'Niesprawne',
-    'Nieprawidłowy', 'Niezgodne z instrukcją',
+    'Nieprawidłowy', 'Niezgodne z instrukcją', 'Nie',
     'uszkodzenia', 'niezgodne', 'nieszczelny', 'niesprawna', 'niesprawne',
-    'nieprawidłowy', 'niezgodne z instrukcją'
+    'nieprawidłowy', 'niezgodne z instrukcją', 'nie'
 })
 
 # Współczynnik niepewności rejestracji — wersja standardowa (żurawie, suwnicy, wciągarki itp.)
@@ -1710,7 +1710,7 @@ class WozekSpecjalizowanyCalculator(BaseCalculator):
     slug = 'wozek_specjalizowany'
 
     def _calculate_wsp_kdr(self, ilosc_cykli):
-        """Nadpisanie Kd dla wózka specjalizowanego: uwzględnia masę osprzętu Q_o (zgodnie z PHP)."""
+        """Nadpisanie Kd dla wózka specjalizowanego: uwzględnia masę osprzętu Q_osp (zgodnie z PHP)."""
         q_max = self._get_kg_val('q_max')
         q_o = self._get_kg_val('q_o')
         q_vals = [self._get_kg_val(f'q_{i}') for i in range(1, 6)]
@@ -1720,40 +1720,36 @@ class WozekSpecjalizowanyCalculator(BaseCalculator):
         return calculate_wsp_kdr(ilosc_cykli, q_max, q_vals, c_vals)
 
     def calculate(self):
-        common_inputs = self._extract_and_process_common_inputs()
-        lata_pracy = common_inputs['lata_pracy']
-        ilosc_cykli = common_inputs['ilosc_cykli']
-        sposob_rejestracji = common_inputs['sposob_rejestracji']
-        ponowny_resurs = common_inputs['ponowny_resurs']
-        ostatni_resurs = common_inputs['ostatni_resurs']
-        ostatni_licznik = self._get_val('ostatni_licznik') if ponowny_resurs == 1 else Decimal(0)
-
+        lata_pracy = self._get_val('lata_pracy')
+        ilosc_cykli = self._get_val('ilosc_cykli')
+        sposob_rejestracji = self._get_str('sposob_rejestracji')
         sposob_pracy = self._get_str('sposob_pracy')
         operator = self._get_str('operator')
 
-        F_X = _FX_EXTENDED.get(sposob_rejestracji, Decimal('1.0'))
+        # Współczynnik F_X wg PHP wozek_specjalizowany
+        if sposob_rejestracji == 'Rejestrowanie przyrządami': F_X = Decimal('1.0')
+        elif sposob_rejestracji == 'Rejestrowanie w dzienniku, łącznie ze stosowaniem licznika': F_X = Decimal('1.0')
+        elif sposob_rejestracji == 'Rejestrowanie na podstawie procesu technologicznego': F_X = Decimal('1.2')
+        elif sposob_rejestracji == 'Rejestrowanie na podstawie informacji o produkcji': F_X = Decimal('1.4')
+        elif sposob_rejestracji == 'Informacja o warunkach eksploatacji jest niekompletna': F_X = Decimal('1.5')
+        else: F_X = Decimal('1.8') # Brak informacji o historii urządzenia
 
+        # LDR Calculation (sum of 25 points)
         p_vals = [self._get_val(f'p_{i}') for i in range(1, 26)]
-        p_sum = sum(p_vals)
-        if p_sum > 0 and abs(p_sum - Decimal('100')) > Decimal('0.5'):
-            raise ValidationError(
-                f"Widmo LDR: suma udziałów p musi wynosić 100% (aktualnie {float(p_sum):.1f}%).")
         ldr_coeffs = _LDR_COEFFS
-        ldr = sum((p_vals[i] * Decimal('0.01')) * ldr_coeffs[i] ** 3 for i in range(25))
+        ldr = sum((p_vals[i] * Decimal('0.01')) * (ldr_coeffs[i] ** 3) for i in range(25))
 
-        k_oper_map = {'1 operator': 1, '2 operatorów': 0.99, '3 operatorów': 0.98, '4 operatorów': 0.97, '5 i więcej operatorów': 0.96}
+        k_oper_map = {'1 operator': 1.0, '2 operatorów': 0.99, '3 operatorów': 0.98, '4 operatorów': 0.97, '5 i więcej operatorów': 0.96}
         k_oper = Decimal(str(k_oper_map.get(operator, 1.0)))
 
         wsp_kdr = self._calculate_wsp_kdr(ilosc_cykli)
-
         final_data = {}
 
         if sposob_pracy == "wózek widłowy/ładowarka":
             max_moto_prod = self._get_val('max_moto_prod')
             T_WSK_base = max_moto_prod if max_moto_prod > 0 else Decimal('15000')
-
             T_WSK1 = Decimal('0.01') * (Decimal('-10') * ldr + Decimal('10')) * T_WSK_base
-
+            
             T_WSK2 = Decimal(0)
             if wsp_kdr <= Decimal('0.2'): T_WSK2 = Decimal('0.05') * T_WSK_base
             elif wsp_kdr <= Decimal('0.4'): T_WSK2 = Decimal('0.02') * T_WSK_base
@@ -1763,70 +1759,82 @@ class WozekSpecjalizowanyCalculator(BaseCalculator):
 
             ilosc_moto = self._get_val('ilosc_moto')
             procent_jazda = self._get_val('procent_jazda')
-
             ilosc_moto_cal = ilosc_moto - (ilosc_moto * Decimal('0.01') * procent_jazda)
-
-            ostatni_moto_cal = ostatni_licznik - (ostatni_licznik * Decimal('0.01') * procent_jazda) if ponowny_resurs == 1 else Decimal(0)
-            moto_delta = (ilosc_moto_cal - ostatni_moto_cal) if ponowny_resurs == 1 else ilosc_moto_cal
-
-            resurs_wykorzystanie = round((moto_delta * F_X / T_WSK) * 100, 2) if T_WSK > 0 else 0
-            if ponowny_resurs == 1:
-                resurs_wykorzystanie += ostatni_resurs
-
+            
             ilosc_moto_rok = ((ilosc_moto_cal * F_X) / lata_pracy).to_integral_value(rounding='ROUND_CEILING') if lata_pracy > 0 else Decimal(0)
+            resurs_wykorzystanie = round(((ilosc_moto_cal * F_X) / T_WSK) * 100, 2) if T_WSK > 0 else Decimal(0)
 
-            resurs_prognoza = Decimal(0)
+            resurs_prognoza_dni = 0
             if resurs_wykorzystanie < 100 and ilosc_moto_rok > 0:
-                correction = ostatni_resurs / 100 if ponowny_resurs == 1 else Decimal(0)
-                remaining_time = T_WSK * (1 - correction) - (moto_delta * F_X)
-                resurs_prognoza = min((remaining_time / ilosc_moto_rok) * 365, Decimal(3650))
+                resurs_prognoza_dni = min((((T_WSK - ilosc_moto_cal * F_X) / ilosc_moto_rok) * 365), Decimal(3650))
+                resurs_prognoza_dni = resurs_prognoza_dni.to_integral_value(rounding='ROUND_FLOOR')
 
-            data_prognoza = (date.today() + timedelta(days=int(resurs_prognoza.to_integral_value(rounding='ROUND_FLOOR')))).isoformat()
             resurs_msg = 'Resurs został osiągnięty. Zaleca się wykonanie przeglądu specjalnego.' if resurs_wykorzystanie >= 100 else 'Resurs nie został osiągnięty.'
-
             final_data = {
-                'T_WSK': T_WSK, 
-                'moto_rok': round(ilosc_moto_rok, 2), 
-                'resurs_wykorzystanie': resurs_wykorzystanie, 
-                'resurs_prognoza_dni': int(resurs_prognoza), 
-                'data_prognoza': data_prognoza, 
-                'resurs_message': resurs_msg,
-                'ilosc_moto_cal': round(ilosc_moto_cal, 2)
+                'T_WSK': T_WSK, 'moto_rok': ilosc_moto_rok, 'resurs_wykorzystanie': resurs_wykorzystanie,
+                'resurs_prognoza_dni': int(resurs_prognoza_dni), 'resurs_message': resurs_msg,
+                'ilosc_moto_cal': round(ilosc_moto_cal, 2), 'U_WSK': '-', 'ilosc_cykli_rok': '-'
             }
-
         else: # "podnośnik koszowy/wózek widłowy/ładowarka"
             U_WSK_base = (Decimal('2e6') * Decimal('0.008')) / wsp_kdr if wsp_kdr > 0 else Decimal(0)
             U_WSK1 = Decimal('0.01') * (Decimal('-10') * ldr + Decimal('10')) * U_WSK_base
-
+            
             procent_podnosnik = self._get_val('procent_podnosnik')
             U_WSK2 = Decimal(0)
             if procent_podnosnik < 15: U_WSK2 = Decimal('0.10') * U_WSK_base
-            elif procent_podnosnik < 25: U_WSK2 = Decimal('0.75') * U_WSK_base # Matching PHP
+            elif procent_podnosnik < 25: U_WSK2 = Decimal('0.75') * U_WSK_base
             elif procent_podnosnik < 50: U_WSK2 = Decimal('0.35') * U_WSK_base
 
             U_WSK = (U_WSK_base + U_WSK1 + U_WSK2) * k_oper
             U_WSK = U_WSK.to_integral_value(rounding='ROUND_CEILING')
 
-            prognosis_data = self._calculate_resurs_prognosis(U_WSK, F_X, ilosc_cykli, lata_pracy, ponowny_resurs, ostatni_resurs)
-            final_data = {**prognosis_data}
+            ilosc_cykli_rok = ((ilosc_cykli * F_X) / lata_pracy).to_integral_value(rounding='ROUND_CEILING') if lata_pracy > 0 else Decimal(0)
+            resurs_wykorzystanie = round(((ilosc_cykli * F_X) / U_WSK) * 100, 2) if U_WSK > 0 else Decimal(0)
 
-        # Common component checks
-        resurs_message = final_data.get('resurs_message', '')
-        resurs_wykorzystanie = final_data.get('resurs_wykorzystanie', 0)
-        component_fields = ['konstrukcja', 'automatyka', 'sworznie', 'ciegna', 'eksploatacja', 'szczelnosc']
-        resurs_message, resurs_wykorzystanie, has_technical_problems = self._apply_technical_state_logic(
-            component_fields, resurs_message, resurs_wykorzystanie
-        )
-        final_data['resurs_message'] = resurs_message
-        final_data['resurs_wykorzystanie'] = resurs_wykorzystanie
+            resurs_prognoza_dni = 0
+            if resurs_wykorzystanie < 100 and ilosc_cykli_rok > 0:
+                resurs_prognoza_dni = min((((U_WSK - ilosc_cykli * F_X) / ilosc_cykli_rok) * 365), Decimal(3650))
+                resurs_prognoza_dni = resurs_prognoza_dni.to_integral_value(rounding='ROUND_FLOOR')
+
+            resurs_msg = 'Resurs został osiągnięty. Zaleca się wykonanie przeglądu specjalnego.' if resurs_wykorzystanie >= 100 else 'Resurs nie został osiągnięty.'
+            final_data = {
+                'U_WSK': U_WSK, 'ilosc_cykli_rok': ilosc_cykli_rok, 'resurs_wykorzystanie': resurs_wykorzystanie,
+                'resurs_prognoza_dni': int(resurs_prognoza_dni), 'resurs_message': resurs_msg,
+                'T_WSK': '-', 'moto_rok': '-'
+            }
+
+        # Handle Checklist (5.1 is reversed in PHP: Tak=Bad)
+        resurs_message = final_data['resurs_message']
+        resurs_wyk = final_data['resurs_wykorzystanie']
+        has_tech_prob = False
+
+        if self._get_str('konstrukcja') == 'Tak': # Deformed = Bad
+            resurs_message = "Resurs został osiągnięty ze względu na stan techniczny urządzenia. Zaleca się wykonanie przeglądu specjalnego."
+            resurs_message += f" {_COMPONENT_MESSAGES.get('konstrukcja', '')}"
+            resurs_wyk = Decimal('100.00')
+            has_tech_prob = True
+        
+        # Others (6.1, 7.1, 8.1, 9.1: Nie = Bad)
+        for field in ['automatyka', 'sworznie', 'eksploatacja', 'szczelnosc']:
+            if self._get_str(field) == 'Nie':
+                if not has_tech_prob:
+                    resurs_message = "Resurs został osiągnięty ze względu na stan techniczny urządzenia. Zaleca się wykonanie przeglądu specjalnego."
+                    resurs_wyk = Decimal('100.00')
+                    has_tech_prob = True
+                resurs_message += f" {_COMPONENT_MESSAGES.get(field, '')}"
+
+        data_prognoza = (date.today() + timedelta(days=final_data['resurs_prognoza_dni'])).isoformat()
 
         self.output_data.update({
             **final_data,
+            'resurs_wykorzystanie': resurs_wyk,
+            'resurs_message': resurs_message.strip(),
+            'data_prognoza': data_prognoza,
             'wsp_kdr': wsp_kdr,
             'stan_obciazenia': self._get_stan_obciazenia(wsp_kdr),
-            'ldr': ldr,
-            'technical_state_reached': has_technical_problems,
-            'ilosc_cykli_rok': (ilosc_cykli * F_X / lata_pracy).to_integral_value(rounding='ROUND_CEILING') if lata_pracy > 0 else Decimal(0),
+            'ldr': round(ldr, 4) if ldr > 0 else '-',
+            'F_X': F_X,
+            'technical_state_reached': has_tech_prob
         })
         return self.output_data
 

@@ -259,7 +259,8 @@ function getInspectionOptions(opts) {
     // Oparte na etykiecie tekstowej
     else if (label.includes('nieprawidłowy') || label.includes('niezgodne') || label.includes('niezgodna') ||
              label.includes('niesprawna') || label.includes('niesprawne') || label.includes('nieszczelny') ||
-             label.includes('uszkodzenia') || label.includes('zły') || label.includes('występują')) {
+             label.includes('uszkodzenia') || label.includes('zły') || label.includes('występują') ||
+             label === 'nie') {
       type = 'negative'; icon = 'report_problem'
     }
     else if (label.includes('nie dotyczy') || label.includes('n/d')) {
@@ -267,7 +268,7 @@ function getInspectionOptions(opts) {
     }
     else if (label.includes('prawidłowy') || label.includes('brak uszkodzeń') || label.includes('zgodne') ||
              label.includes('sprawna') || label.includes('sprawne') || label.includes('szczelny') ||
-             label.includes('dobry') || label.includes('bez zastrzeżeń')) {
+             label.includes('dobry') || label.includes('bez zastrzeżeń') || label === 'tak') {
       type = 'positive'; icon = 'check_circle_outline'
     }
     else { type = 'neutral'; icon = 'info_outline' }
