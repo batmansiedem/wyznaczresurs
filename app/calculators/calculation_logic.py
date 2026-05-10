@@ -1803,19 +1803,12 @@ class WozekSpecjalizowanyCalculator(BaseCalculator):
                 'T_WSK': '-', 'moto_rok': '-'
             }
 
-        # Handle Checklist (5.1 is reversed in PHP: Tak=Bad)
+        # Handle Checklist (all fields: Nie = Bad)
         resurs_message = final_data['resurs_message']
         resurs_wyk = final_data['resurs_wykorzystanie']
         has_tech_prob = False
 
-        if self._get_str('konstrukcja') == 'Tak': # Deformed = Bad
-            resurs_message = "Resurs został osiągnięty ze względu na stan techniczny urządzenia. Zaleca się wykonanie przeglądu specjalnego."
-            resurs_message += f" {_COMPONENT_MESSAGES.get('konstrukcja', '')}"
-            resurs_wyk = Decimal('100.00')
-            has_tech_prob = True
-        
-        # Others (6.1, 7.1, 8.1, 9.1: Nie = Bad)
-        for field in ['automatyka', 'sworznie', 'eksploatacja', 'szczelnosc']:
+        for field in ['konstrukcja', 'automatyka', 'sworznie', 'eksploatacja', 'szczelnosc']:
             if self._get_str(field) == 'Nie':
                 if not has_tech_prob:
                     resurs_message = "Resurs został osiągnięty ze względu na stan techniczny urządzenia. Zaleca się wykonanie przeglądu specjalnego."
