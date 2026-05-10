@@ -385,7 +385,15 @@ const barChartSeries = computed(() => {
     limit = (tWsk !== null && typeof tWsk === 'object') ? parseFloat(tWsk.value ?? 0) : parseFloat(tWsk ?? 0)
 
     const isPonowny = inp?.ponowny_resurs === 'Tak'
-    if (out.czas_uzytkowania_mech != null) {
+    if (out.ilosc_moto_cal != null) {
+      // wozek_specjalizowany (wózek widłowy/ładowarka)
+      val1 = parseFloat(out.ilosc_moto_cal)
+      if (isPonowny && limit > 0) {
+        const ostatniPct = parseFloat(inp?.ostatni_resurs?.value ?? inp?.ostatni_resurs ?? 0)
+        val1 += (ostatniPct / 100) * limit
+      }
+      val2 = Math.round(val1 * fx * 100) / 100
+    } else if (out.czas_uzytkowania_mech != null) {
       // Mechanizmy: czas_uzytkowania_mech już zawiera F_X i poprzedni resurs (jeśli dotyczy)
       val2 = parseFloat(out.czas_uzytkowania_mech)
       val1 = Math.round(val2 / fx * 100) / 100
@@ -397,16 +405,9 @@ const barChartSeries = computed(() => {
         val1 += (ostatniPct / 100) * limit
       }
       val2 = Math.round(val1 * fx * 100) / 100
-    } else if (out.ilosc_moto_cal != null) {
-      // wozek_specjalizowany (wózek widłowy/ładowarka)
-      val1 = parseFloat(out.ilosc_moto_cal)
-      if (isPonowny && limit > 0) {
-        const ostatniPct = parseFloat(inp?.ostatni_resurs?.value ?? inp?.ostatni_resurs ?? 0)
-        val1 += (ostatniPct / 100) * limit
-      }
-      val2 = Math.round(val1 * fx * 100) / 100
     } else {
-      val1 = parseFloat(inp?.ilosc_mth?.value ?? inp?.ilosc_mth ?? inp?.ilosc_godzin?.value ?? inp?.ilosc_godzin ?? 0)
+      // Fallback dla pozostałych (w tym ilosc_moto jeśli cal nieobecne)
+      val1 = parseFloat(inp?.ilosc_moto?.value ?? inp?.ilosc_moto ?? inp?.ilosc_mth?.value ?? inp?.ilosc_mth ?? inp?.ilosc_godzin?.value ?? inp?.ilosc_godzin ?? 0)
       if (isPonowny && limit > 0) {
         const ostatniPct = parseFloat(inp?.ostatni_resurs?.value ?? inp?.ostatni_resurs ?? 0)
         val1 += (ostatniPct / 100) * limit

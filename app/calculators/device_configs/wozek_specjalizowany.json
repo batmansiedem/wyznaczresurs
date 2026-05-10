@@ -32,6 +32,70 @@
       "label": "Nr ewidencyjny UDT/TDT/WDT",
       "required": false
     },
+    "q_max": {
+      "type": "number",
+      "label": "Udźwig maksymalny Q<sub>max</sub> [kg]",
+      "required": true,
+      "unit_type": "mass",
+      "default_unit": "kg",
+      "unit_options": [
+        "kg",
+        "t"
+      ]
+    },
+    "q_o": {
+      "type": "number",
+      "label": "Masa osprzętu Q<sub>o</sub> [kg]",
+      "required": false,
+      "unit_type": "mass",
+      "default_unit": "kg",
+      "unit_options": [
+        "kg",
+        "t"
+      ]
+    },
+    "h_max": {
+      "type": "number",
+      "label": "Maksymalna wysokość podnoszenia [m]",
+      "required": true,
+      "unit_type": "length",
+      "default_unit": "m"
+    },
+    "L_b_max": {
+      "type": "number",
+      "label": "Maksymalny wysięg boczny [m]",
+      "required": true,
+      "unit_type": "length",
+      "default_unit": "m"
+    },
+    "v_pod": {
+      "type": "number",
+      "label": "Prędkość podnoszenia/opuszczania [m/min]",
+      "required": false,
+      "unit_type": "velocity",
+      "default_unit": "m/min"
+    },
+    "sposob_pracy": {
+      "type": "select",
+      "label": "Sposób pracy wózka specjalizowanego",
+      "required": true,
+      "options": [
+        "wózek widłowy/ładowarka",
+        "podnośnik koszowy/wózek widłowy/ładowarka"
+      ]
+    },
+    "operator": {
+      "type": "select",
+      "label": "Ilość operatorów",
+      "required": true,
+      "options": [
+        "1 operator",
+        "2 operatorów",
+        "3 operatorów",
+        "4 operatorów",
+        "5 i więcej operatorów"
+      ]
+    },
     "lata_pracy": {
       "type": "number",
       "label": "Ilość przepracowanych lat",
@@ -42,6 +106,50 @@
         "lata",
         "miesiące"
       ]
+    },
+    "ilosc_moto": {
+      "type": "number",
+      "label": "Ilość motogodzin od początku eksploatacji",
+      "required": true,
+      "show_if": {
+        "field": "sposob_pracy",
+        "value": "wózek widłowy/ładowarka"
+      }
+    },
+    "procent_jazda": {
+      "type": "number",
+      "label": "Procent motogodzin przypadających na jazdę [%]",
+      "required": true,
+      "show_if": {
+        "field": "sposob_pracy",
+        "value": "wózek widłowy/ładowarka"
+      }
+    },
+    "max_moto_prod": {
+      "type": "number",
+      "label": "Graniczna ilość motogodzin określona przez producenta",
+      "required": false,
+      "default_value": 15000,
+      "show_if": {
+        "field": "sposob_pracy",
+        "value": "wózek widłowy/ładowarka"
+      }
+    },
+    "ilosc_cykli": {
+      "type": "number",
+      "label": "Ilość odbytych cykli",
+      "required": true,
+      "unit_type": "dimensionless",
+      "default_unit": "cykl"
+    },
+    "procent_podnosnik": {
+      "type": "number",
+      "label": "Procent motogodzin przypadających na pracę jako podnośnik koszowy [%]",
+      "required": true,
+      "show_if": {
+        "field": "sposob_pracy",
+        "value": "podnośnik koszowy/wózek widłowy/ładowarka"
+      }
     },
     "tryb_pracy": {
       "label": "Tryb pracy",
@@ -64,16 +172,9 @@
       "required": true,
       "default_value": 250
     },
-    "ilosc_cykli": {
-      "type": "number",
-      "label": "Ilość odbytych cykli",
-      "required": true,
-      "unit_type": "dimensionless",
-      "default_unit": "cykl"
-    },
     "sposob_rejestracji": {
       "type": "select",
-      "label": "Sposób rejestracji przez eksploatującego warunków eksploatacji urządzenia",
+      "label": "Sposób rejestracji warunków eksploatacji",
       "required": true,
       "options": [
         "Rejestrowanie przyrządami",
@@ -82,32 +183,6 @@
         "Rejestrowanie na podstawie informacji o produkcji",
         "Informacja o warunkach eksploatacji jest niekompletna",
         "Brak informacji o historii urządzenia"
-      ]
-    },
-    "gnp": {
-      "type": "gnp_selector",
-      "label": "Grupa natężenia pracy",
-      "required": true,
-      "options": [
-        "A1",
-        "A2",
-        "A3",
-        "A4",
-        "A5",
-        "A6",
-        "A7",
-        "A8"
-      ]
-    },
-    "q_max": {
-      "type": "number",
-      "label": "Udźwig maksymalny Q<sub>max</sub>",
-      "required": true,
-      "unit_type": "mass",
-      "default_unit": "kg",
-      "unit_options": [
-        "kg",
-        "t"
       ]
     },
     "spec": {
@@ -192,6 +267,16 @@
         "Niezgodne"
       ]
     },
+    "szczelnosc": {
+      "type": "inspection_status",
+      "label": "Czy układ hydrauliczny jest szczelny, a zawory zwrotne sprawne?",
+      "required": true,
+      "options": [
+        "Tak",
+        "Nie",
+        "N/D"
+      ]
+    },
     "diagram_kd": {
       "type": "diagram",
       "label": "Widmo obciążeń K<sub>d</sub>",
@@ -212,7 +297,7 @@
     },
     {
       "id": "dane",
-      "title": "Określ dane dla wózka specjalizowanego",
+      "title": "Dane urządzenia",
       "icon": "settings",
       "fields": [
         "wykonawca",
@@ -221,8 +306,32 @@
         "nr_fabryczny",
         "nr_ewidencyjny",
         "q_max",
-        "lata_pracy",
+        "q_o",
+        "h_max",
+        "L_b_max",
+        "v_pod"
+      ]
+    },
+    {
+      "id": "praca",
+      "title": "Warunki pracy",
+      "icon": "engineering",
+      "fields": [
+        "sposob_pracy",
+        "operator",
+        "lata_pracy"
+      ]
+    },
+    {
+      "id": "uzytkowanie",
+      "title": "Intensywność użytkowania",
+      "icon": "history",
+      "fields": [
+        "ilosc_moto",
+        "procent_jazda",
+        "max_moto_prod",
         "ilosc_cykli",
+        "procent_podnosnik",
         "tryb_pracy",
         "cykle_zmiana",
         "dni_robocze"
@@ -230,23 +339,15 @@
     },
     {
       "id": "rejestracja",
-      "title": "Określ sposób rejestracji, wybierając odpowiednią opcję z tabeli",
+      "title": "Rejestracja warunków",
       "icon": "assignment",
       "fields": [
         "sposob_rejestracji"
       ]
     },
     {
-      "id": "gnp",
-      "title": "Określ grupę natężenia pracy wózka specjalizowanego, wybierając opcję z tabeli",
-      "icon": "speed",
-      "fields": [
-        "gnp"
-      ]
-    },
-    {
       "id": "kd",
-      "title": "Na podstawie kalkulatora współczynnika K<sub>d</sub> wyznacz stan obciążenia",
+      "title": "Współczynnik K<sub>d</sub>",
       "icon": "balance",
       "fields": [
         "diagram_kd"
@@ -261,7 +362,8 @@
         "automatyka",
         "sworznie",
         "ciegna",
-        "eksploatacja"
+        "eksploatacja",
+        "szczelnosc"
       ]
     }
   ],
@@ -286,6 +388,31 @@
     "stan_obciazenia": {
       "label": "Stan obciążenia",
       "type": "text"
+    },
+    "T_WSK": {
+      "label": "Projektowa żywotność T<sub>WSK</sub>",
+      "type": "number",
+      "unit": "mth"
+    },
+    "U_WSK": {
+      "label": "Projektowa żywotność U<sub>WSK</sub>",
+      "type": "number",
+      "unit": "cykle"
+    },
+    "ilosc_moto_cal": {
+      "label": "Zredukowana ilość motogodzin",
+      "type": "number",
+      "unit": "mth"
+    },
+    "ilosc_cykli_rok": {
+      "label": "Ilość cykli na rok",
+      "type": "number",
+      "unit": "cykle/rok"
+    },
+    "moto_rok": {
+      "label": "Ilość motogodzin na rok",
+      "type": "number",
+      "unit": "mth/rok"
     }
   }
 }

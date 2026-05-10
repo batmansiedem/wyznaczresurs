@@ -266,7 +266,7 @@ class BaseCalculator(ABC):
 
     def _calculate_resurs_prognosis(self, U_WSK, F_X, ilosc_cykli, lata_pracy, ponowny_resurs, ostatni_resurs):
         """Calculates resurs utilization and prognosis."""
-        ilosc_cykli_rok = (ilosc_cykli * F_X) / lata_pracy if lata_pracy > 0 else Decimal(0)
+        ilosc_cykli_rok = ((ilosc_cykli * F_X) / lata_pracy).to_integral_value(rounding='ROUND_CEILING') if lata_pracy > 0 else Decimal(0)
 
         if U_WSK <= 0:
             raise ValidationError("Nie można obliczyć resursu — U<sub>WSK</sub> wynosi 0. Sprawdź dane wejściowe.")
@@ -1162,8 +1162,6 @@ class SuwnicaCalculator(BaseCalculator):
         return self.output_data
 
 class UkladnicaMagazynowaCalculator(BaseCalculator):
-# ... (rest of UkladnicaMagazynowaCalculator)
-
     slug = 'ukladnica_magazynowa'
 
     def _calculate_pod_mechanism(self, lata_pracy, F_X, max_t, EDS_factor):
@@ -1352,7 +1350,7 @@ class WindaDekarskaCalculator(BaseCalculator):
         resurs_wykorzystanie = prognosis_data['resurs_wykorzystanie']
         
         # --- Component checks ---
-        component_fields = ['konstrukcja', 'automatyka', 'sworznie', 'eksploatacja', 'szczelnosc', 'hamulce']
+        component_fields = ['konstrukcja', 'automatyka', 'sworznie', 'ciegna', 'eksploatacja', 'szczelnosc', 'hamulce']
         resurs_message, resurs_wykorzystanie, has_technical_problems = self._apply_technical_state_logic(
             component_fields, resurs_message, resurs_wykorzystanie
         )
@@ -1371,7 +1369,6 @@ class WindaDekarskaCalculator(BaseCalculator):
             'data_prog_pod': data_prog_pod,
             'ilosc_cykli_rok': (ilosc_cykli * F_X / lata_pracy).to_integral_value(rounding='ROUND_CEILING') if lata_pracy > 0 else Decimal(0),
         })
-        return self.output_data
         return self.output_data
 
 class WozekJezdniowyCalculator(BaseCalculator):
@@ -1711,6 +1708,17 @@ class WozekJezdniowyCalculator(BaseCalculator):
 
 class WozekSpecjalizowanyCalculator(BaseCalculator):
     slug = 'wozek_specjalizowany'
+
+    def _calculate_wsp_kdr(self, ilosc_cykli):
+        """Nadpisanie Kd dla wózka specjalizowanego: uwzględnia masę osprzętu Q_o (zgodnie z PHP)."""
+        q_max = self._get_kg_val('q_max')
+        q_o = self._get_kg_val('q_o')
+        q_vals = [self._get_kg_val(f'q_{i}') for i in range(1, 6)]
+        c_vals = [self._get_val(f'c_{i}') for i in range(1, 6)]
+        if q_o > 0:
+            q_vals = [q + q_o for q in q_vals]
+        return calculate_wsp_kdr(ilosc_cykli, q_max, q_vals, c_vals)
+
     def calculate(self):
         common_inputs = self._extract_and_process_common_inputs()
         lata_pracy = common_inputs['lata_pracy']
@@ -1765,7 +1773,7 @@ class WozekSpecjalizowanyCalculator(BaseCalculator):
             if ponowny_resurs == 1:
                 resurs_wykorzystanie += ostatni_resurs
 
-            ilosc_moto_rok = (ilosc_moto_cal * F_X) / lata_pracy if lata_pracy > 0 else 0
+            ilosc_moto_rok = ((ilosc_moto_cal * F_X) / lata_pracy).to_integral_value(rounding='ROUND_CEILING') if lata_pracy > 0 else Decimal(0)
 
             resurs_prognoza = Decimal(0)
             if resurs_wykorzystanie < 100 and ilosc_moto_rok > 0:
@@ -1821,6 +1829,7 @@ class WozekSpecjalizowanyCalculator(BaseCalculator):
             'ilosc_cykli_rok': (ilosc_cykli * F_X / lata_pracy).to_integral_value(rounding='ROUND_CEILING') if lata_pracy > 0 else Decimal(0),
         })
         return self.output_data
+
 class ZurawPrzeladunkowyCalculator(BaseCalculator):
     slug = 'zuraw_przeladunkowy'
     def calculate(self):
