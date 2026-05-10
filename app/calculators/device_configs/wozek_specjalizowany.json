@@ -133,12 +133,22 @@
     "max_moto_prod": {
       "type": "number",
       "label": "Graniczna ilość motogodzin określona przez producenta",
-      "required": false
+      "required": false,
+      "unit_type": "time",
+      "default_unit": "mth",
+      "unit_options": [
+        "mth"
+      ]
     },
     "ilosc_moto": {
       "type": "number",
       "label": "Ilość odbytych motogodzin od ostatniego przeglądu specjalnego lub rozp. eksploatacji",
-      "required": true
+      "required": true,
+      "unit_type": "time",
+      "default_unit": "mth",
+      "unit_options": [
+        "mth"
+      ]
     },
     "ilosc_cykli": {
       "type": "number",
@@ -294,7 +304,7 @@
     },
     {
       "id": "inspekcja_auto",
-      "title": "Automatyka sterująca i zabezpieczająca",
+      "title": "6. Automatyka sterująca i zabezpieczająca",
       "icon": "auto_mode",
       "fields": [
         "automatyka"
