@@ -43,7 +43,7 @@
     },
     "procent_jazda": {
       "type": "number",
-      "label": "Określ procent motogodzin przypadających na jazdę [%]",
+      "label": "Określ procent motogodzin przypadających na jazdę",
       "required": true,
       "show_if": {
         "field": "sposob_pracy",
@@ -52,7 +52,7 @@
     },
     "procent_podnosnik": {
       "type": "number",
-      "label": "Określ procent motogodzin przypadających na pracę jako podnośnik koszowy [%]",
+      "label": "Określ procent motogodzin przypadających na pracę jako podnośnik koszowy",
       "required": true,
       "show_if": {
         "field": "sposob_pracy",
@@ -73,28 +73,33 @@
     },
     "h_max": {
       "type": "number",
-      "label": "Maksymalna wysokość podnoszenia h<sub>max</sub> [m]",
+      "label": "Maksymalna wysokość podnoszenia h<sub>max</sub>",
       "required": true,
       "unit_type": "length",
       "default_unit": "m"
     },
     "L_b_max": {
       "type": "number",
-      "label": "Maksymalny wysięg boczny L<sub>b,max</sub> [m]",
+      "label": "Maksymalny wysięg boczny L<sub>b,max</sub>",
       "required": true,
       "unit_type": "length",
       "default_unit": "m"
     },
     "v_pod": {
       "type": "number",
-      "label": "Prędkość podnoszenia/opuszczania v<sub>pod</sub> [m/min]",
+      "label": "Prędkość podnoszenia/opuszczania v<sub>pod</sub>",
       "required": false,
       "unit_type": "velocity",
-      "default_unit": "m/min"
+      "default_unit": "m/min",
+      "unit_options": [
+        "m/min",
+        "m/s",
+        "m/h"
+      ]
     },
     "q_max": {
       "type": "number",
-      "label": "Udźwig maksymalny wózka specjalizowanego Q<sub>max</sub> [kg]",
+      "label": "Udźwig maksymalny wózka specjalizowanego Q<sub>max</sub>",
       "required": true,
       "unit_type": "mass",
       "default_unit": "kg",
@@ -105,7 +110,7 @@
     },
     "q_o": {
       "type": "number",
-      "label": "Masa osprzętu Q<sub>osp</sub> [kg]",
+      "label": "Masa osprzętu Q<sub>osp</sub>",
       "required": false,
       "unit_type": "mass",
       "default_unit": "kg",
@@ -127,12 +132,12 @@
     },
     "max_moto_prod": {
       "type": "number",
-      "label": "Graniczna ilość motogodzin określona przez producenta [mth]",
+      "label": "Graniczna ilość motogodzin określona przez producenta",
       "required": false
     },
     "ilosc_moto": {
       "type": "number",
-      "label": "Ilość odbytych motogodzin od ostatniego przeglądu specjalnego lub rozp. eksploatacji [mth]",
+      "label": "Ilość odbytych motogodzin od ostatniego przeglądu specjalnego lub rozp. eksploatacji",
       "required": true
     },
     "ilosc_cykli": {
